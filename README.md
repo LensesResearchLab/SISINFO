@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="readme_banner.png" alt="Sisinfo logo" width="140" height="140">
+    <img src="readme_banner.png" alt="Sisinfo logo" width="300" height="140">
 </p>
 <h1 align="center">Sisinfo</h1>
 
@@ -40,20 +40,20 @@ Asegúrate de tener instalado lo siguiente:
    git clone https://github.com/TheSoftwareDesignLab/SISINFO
     ```
 2. Navega al directorio del proyecto:
-```bash
-cd sisinfo
-```
+    ```bash
+    cd sisinfo
+    ```
 
 3. Instala las dependencias:
-```bash
-npm install
-# o
-yarn install
-```
+    ```bash
+    npm install
+    # o
+    yarn install
+    ```
 4. Inicia el servidor de desarrollo:
-```bash
-npm run start
-```
+    ```bash
+    npm run start
+    ```
 5. Abre tu navegador y visita http://localhost:3000 para ver la aplicación en funcionamiento.
 
 #  Estructura del Proyecto
