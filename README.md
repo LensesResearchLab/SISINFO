@@ -4,7 +4,7 @@
 <h1 align="center">Sisinfo</h1>
 
 <p align="center">
-    Sisinfo es una aplicación web diseñada para gestionar múltiples tareas administrativas, como la aplicación a tesis, asistencias graduadas, publicación de ofertas de salones, entre otros. Desarrollada con t <strong>React 18</strong>, <strong>shadcn</strong> y <strong>Tailwind CSS</strong>.
+    Sisinfo es una aplicación web diseñada para gestionar múltiples tareas administrativas, como la aplicación a tesis, asistencias graduadas, publicación de ofertas de salones, entre otros. Desarrollada con <strong>React 18</strong>, <strong>shadcn</strong> y <strong>Tailwind CSS</strong>.
 </p>
 
 ---
