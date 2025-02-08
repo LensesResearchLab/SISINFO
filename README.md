@@ -84,6 +84,7 @@ sisinfo/
 │   ├── App.css                # Estilos globales de la aplicación
 │   ├── App.test.js            # Pruebas del componente App
 │   ├── App.tsx                # Componente principal de la aplicación
+│   ├── about.tsx              # Componente que contiene la información de funcionalidades
 │   └── index.css              # Estilos de entrada de la aplicación
 └── ...
 ```
