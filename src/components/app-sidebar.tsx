@@ -36,11 +36,11 @@ const data = {
         },
         {
           title: "Consultar inscripcion",
-          url: "/tesis_pregrado/fechas",
+          url: "/tesis_pregrado/estado_inscripcion",
         },
         {
           title: "Consultar fechas",
-          url: "/tesis_pregrado/estado_inscripcion",
+          url: "/tesis_pregrado/fechas",
         },
       ],
     },
