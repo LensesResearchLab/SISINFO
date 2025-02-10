@@ -14,6 +14,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "components/ui/sidebar"
+import ThesisList from 'undergraduateThesis/pages/thesis-list';
 import ThesisInscription from 'undergraduateThesis/pages/thesis-inscription';
 import ThesisStatus from 'undergraduateThesis/pages/thesis-status';
 import ThesisDates from 'undergraduateThesis/pages/thesis-dates';
@@ -21,6 +22,7 @@ import ThesisDates from 'undergraduateThesis/pages/thesis-dates';
 import Footer from 'components/custom/footer';
 import AssistanceInscription from 'graduatedAssistance/pages/assistance-Inscription';
 import AssistanceStatus from 'graduatedAssistance/pages/assistance-status';
+
 import Incidence from 'support/pages/incidence';
 import Tutorials from 'support/pages/tutorials';
 import Contact from 'support/pages/contact';
@@ -28,6 +30,8 @@ import Contact from 'support/pages/contact';
 
 import { Fragment } from 'react/jsx-runtime';
 import About from 'about';
+import Error404 from 'error404';
+
 
 /*
   This is the main component of the application. It is the entry point of the application.
@@ -101,9 +105,10 @@ function AppContent() {
         <main className="flex flex-grow bg-gray-100">
           <Routes>
             <Route path="/" element={<About />} />
+            <Route path="*" element={<Error404 />} />
 
-            <Route path="/tesis_pregrado/lista_de_tesis" element={<ThesisInscription />} />
-              <Route path="/tesis_pregrado/lista_de_tesis/:id" element={<ThesisStatus/>} />
+            <Route path="/tesis_pregrado/lista_de_tesis" element={<ThesisList />} />
+              <Route path="/tesis_pregrado/lista_de_tesis/:id" element={<ThesisInscription/>} />
             <Route path="/tesis_pregrado/fechas" element={<ThesisDates/>} />
             <Route path="/tesis_pregrado/estado_inscripcion" element={<ThesisStatus/>} />
 
