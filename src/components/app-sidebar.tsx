@@ -55,7 +55,7 @@ const data = {
         },
         {
           title: "Ver estado de inscripción",
-          url: "/asistencias_graduadas/estado_inscripcion",
+          url: "/asistencias_graduadas/lista_estados_inscripcion",
         },
       ],
     },

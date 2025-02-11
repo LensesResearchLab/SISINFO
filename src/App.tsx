@@ -19,7 +19,7 @@ import ThesisStatus from 'undergraduateThesis/pages/thesis-status';
 import ThesisDates from 'undergraduateThesis/pages/thesis-dates';
 
 import Footer from 'components/custom/footer';
-import AssistanceInscription from 'graduatedAssistance/pages/assistance-Inscription';
+import AssistanceList from 'graduatedAssistance/pages/assistance-list';
 import AssistanceStatus from 'graduatedAssistance/pages/assistance-status';
 import Incidence from 'support/pages/incidence';
 import Tutorials from 'support/pages/tutorials';
@@ -28,6 +28,8 @@ import Contact from 'support/pages/contact';
 
 import { Fragment } from 'react/jsx-runtime';
 import About from 'about';
+import AssistanceDetails from 'graduatedAssistance/pages/assistance-detail';
+import AssistanceAppliedList from 'graduatedAssistance/pages/assistance-applied-list';
 
 /*
   This is the main component of the application. It is the entry point of the application.
@@ -107,8 +109,10 @@ function AppContent() {
             <Route path="/tesis_pregrado/fechas" element={<ThesisDates/>} />
             <Route path="/tesis_pregrado/estado_inscripcion" element={<ThesisStatus/>} />
 
-            <Route path="/asistencias_graduadas/lista_de_asistencias" element={<AssistanceInscription />} />
-            <Route path="/asistencias_graduadas/estado_inscripcion" element={<AssistanceStatus/>} />
+            <Route path="/asistencias_graduadas/lista_de_asistencias" element={<AssistanceList />} />
+              <Route path="/asistencias_graduadas/lista_de_asistencias/:id" element={<AssistanceDetails />} />
+            <Route path="/asistencias_graduadas/lista_estados_inscripcion" element={<AssistanceAppliedList/>} />
+              <Route path="/asistencias_graduadas/lista_estados_inscripcion/:id" element={<AssistanceStatus/>} />
 
             <Route path="/soporte/reporte_incidencias" element={<Incidence />} />
             <Route path="/soporte/tutoriales" element={<Tutorials/>} />

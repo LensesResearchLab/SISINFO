@@ -39,7 +39,7 @@ export default function About() {
       Icon: PenSquare,
       title: "Ver estado de inscripción",
       description: "Consulta como se encuentra tu proceso de asistencia graduada.",
-      url: "/asistencias_graduadas/estado_inscripcion"
+      url: "/asistencias_graduadas/lista_estados_inscripcion"
     },
   ];
 
