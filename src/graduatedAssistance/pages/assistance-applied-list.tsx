@@ -192,7 +192,7 @@ export default function AssistanceAppliedList() {
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {typeof column.columnDef.header === "string" ? column.columnDef.header: "Unnamed Column"}
                   </DropdownMenuCheckboxItem>
                 )
               })}

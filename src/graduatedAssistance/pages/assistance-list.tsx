@@ -192,18 +192,18 @@ export default function AssistanceList() {
           <DropdownMenuContent align="end">
             {table
               .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
+              .filter((columns) => columns.getCanHide())
+              .map((columns) => {
                 return (
                   <DropdownMenuCheckboxItem
-                    key={column.id}
+                    key={columns.id}
                     className="capitalize"
-                    checked={column.getIsVisible()}
+                    checked={columns.getIsVisible()}
                     onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
+                      columns.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                  {typeof columns.columnDef.header === "string" ? columns.columnDef.header: "Unnamed Column"}
                   </DropdownMenuCheckboxItem>
                 )
               })}
