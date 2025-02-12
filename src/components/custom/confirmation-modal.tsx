@@ -85,12 +85,12 @@ function SuccessModal({successTitle, successText, url}: { successTitle: string, 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-[#00BED7] text-xl">{successTitle}</DialogTitle>
+            <DialogTitle className="text-sky-800 text-xl mx-auto">{successTitle}</DialogTitle>
           </div>
         </DialogHeader>
         <div className="flex flex-col items-center justify-center space-y-6 py-4">
-          <div className="rounded-full bg-[#00BED7]/10 p-3">
-            <Check className="h-16 w-16 text-[#00BED7]" />
+          <div className="rounded-full bg-sky-100 p-3">
+            <Check className="h-16 w-16 text-sky-800" />
           </div>
           <p className="text-center text-gray-600">{successText}</p>
           <Button className="bg-black hover:bg-black/90 w-32" onClick={() => {navigate(url);}}>

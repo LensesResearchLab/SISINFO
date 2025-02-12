@@ -15,7 +15,7 @@ export default function LoginPage() {
           <div className="flex items-center justify-center bg-white">
               <LogInForm/>
           </div>
-          <div className="bg-[#0A626A] justify-center items-center hidden lg:flex">
+          <div className="bg-sky-800 justify-center items-center hidden lg:flex">
             <SisinfoBanner />
           </div>
         </div>
