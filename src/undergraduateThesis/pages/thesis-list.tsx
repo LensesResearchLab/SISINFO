@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "components/ui/accordion"
 import { Button } from "components/ui/button";
-import { User } from 'lucide-react'
+import { ArrowUpDown, File, User } from 'lucide-react'
 
 import {
   Table,
@@ -19,76 +19,159 @@ import {
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUndergraduateThesis } from "../services/thesisService";
+import { getUndergraduateThesis, getUndegraduadeThesisSemesters } from "../services/thesisService";
 import { Skeleton } from "components/ui/skeleton";
 import { Thesis } from "undergraduateThesis/types/Thesis";
 
-/**
- * ThesisList Component
- * 
- * This component displays a list of undergraduate thesis projects organized by professor.
- * It fetches the thesis data and displays it in an accordion format.
- * 
- * States:
- * - isLoading: Boolean indicating if data is being fetched
- * - thesisList: Object containing thesis projects grouped by professor
- * 
- * Features:
- * - Shows loading skeleton while data is being fetched
- * - Displays thesis projects in collapsible accordion sections by professor
- * - Each professor section contains a table of their thesis projects
- * 
- * Layout:
- * - Full width/height container with padding and spacing
- * - White background accordion with shadow and rounded corners
- * - Professor sections can be expanded/collapsed individually
- * 
- * @returns {JSX.Element} A div containing either a loading skeleton or the thesis list accordion
- */
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "components/ui/select"
+
+
 export default function ThesisList() {
   const [isLoading, setIsLoading] = useState(true);
   const [thesisList, setThesisList] = useState<{[professor: string]: Thesis[]}>({});
-  
+  const [searchCategory, setSearchCategory] = useState<string>("professor");
+  const [order, setOrder] = useState<string[]>([]);
+  const [semesters, setSemesters] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<number>(1);
+
+  const toggleSort = () => setSortDirection(sortDirection * -1);
+
   useEffect(() => {
-    getUndergraduateThesis().then((data) => {setThesisList(data);} ).finally(() => setIsLoading(false));
+    Promise.all([
+      getUndergraduateThesis().then((data) => {
+        setThesisList(data);
+        const sortedKeys = Object.keys(data).sort((a, b) => sortDirection * a.localeCompare(b));
+        setOrder(sortedKeys);
+      }),
+      getUndegraduadeThesisSemesters().then((data) => setSemesters(data)),
+    ]).finally(() => setIsLoading(false));
   }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    getUndergraduateThesis(searchTerm, searchCategory).then((data) => {
+      setThesisList(data);
+      const sortedKeys = Object.keys(data).sort((a, b) => sortDirection * a.localeCompare(b));
+      setOrder(sortedKeys);
+    }).finally(() => setIsLoading(false));
+  }, [searchTerm, searchCategory]);
+
+  useEffect(() => {
+    const sortedKeys = Object.keys(thesisList).sort((a, b) => sortDirection * a.localeCompare(b));
+    setOrder(sortedKeys);
+
+    const sortedThesisList: { [professor: string]: Thesis[] } = {};
+    sortedKeys.forEach((key) => {
+      sortedThesisList[key] = thesisList[key];
+    });
+    setThesisList(sortedThesisList);
+  }, [sortDirection, thesisList]);
 
   return (
     <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
-      { isLoading ? <SkeletonAccordion /> :
-        (<Accordion type="single" collapsible className="w-full bg-white shadow-lg rounded-xl p-5 h-full">
-          {Object.keys(thesisList).map((professor) => (
-            <ProfessorAccordion professor={professor} key={professor}> 
-              <ProfessorThesisTable thesisList={thesisList[professor]} />
-            </ProfessorAccordion>
-          ))}
-        </Accordion>)
-      }
+        <Accordion type="single" collapsible className="w-full bg-white shadow-lg rounded-xl p-5 h-full">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <SelectSearchCategory setSearchCategory={setSearchCategory} />
+              <SelectSemester setSearchTerm={setSearchTerm} semesters={semesters} />
+            </div>
+
+            <Button variant="default" className="bg-sky-600 hover:bg-sky-700" onClick={toggleSort}>
+              <ArrowUpDown className="w-4 h-4 mr-2" />
+              {sortDirection === 1 ? "A-Z" : "Z-A"}
+            </Button>
+          </div>
+          { isLoading ? <SkeletonAccordion /> : <AccordionListSimpleFactory category={searchCategory} thesisList={thesisList} order={order}/>}
+        </Accordion>
+      
     </div>
   );
 }
 
-/**
- * SkeletonAccordion Component
- * 
- * This component renders a loading skeleton for the thesis list accordion.
- * It displays placeholder items while the actual thesis data is being fetched.
- * 
- * Features:
- * - Creates 8 skeleton accordion items to simulate loading state
- * - Each item has a user icon and a loading skeleton bar
- * - Matches the styling of the actual accordion for visual consistency
- * 
- * Layout:
- * - Full width accordion with white background and shadow
- * - Each item has a user icon and skeleton placeholder
- * - Maintains same spacing and padding as actual content
- * 
- * @returns {JSX.Element} An accordion containing skeleton loading items
- */
+function SelectSemester({setSearchTerm, semesters}: {setSearchTerm: (category: string) => void, semesters: string[]}) {
+  const handleClick = (category: string) => {setSearchTerm(category);};
+  return (
+    <Select onValueChange={handleClick}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Semestre" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Semestre</SelectLabel>
+          {
+            semesters.map((semester: string) => (
+              <SelectItem value={semester} key={semester}>{semester}</SelectItem>
+            ))
+          }
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  )
+}
+
+
+function SelectSearchCategory({setSearchCategory}: {setSearchCategory: (category: string) => void}) {
+  const handleClick = (category: string) => {setSearchCategory(category);};
+  return (
+    <Select onValueChange={handleClick}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Criterio de busqueda" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Criterio de busqueda</SelectLabel>
+          <SelectItem value="professor">Profesor</SelectItem>
+          <SelectItem value="areas_of_interest">Área de interés</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  )
+}
+
+function AccordionListSimpleFactory({category, thesisList, order}: {category: string, thesisList: {[professor: string]: Thesis[]}, order: string[]}) {
+  if (category === "areas_of_interest") return <AreaOfInterestAccordionList thesisList={thesisList} order={order} />
+  return <ProfessorAccordionList thesisList={thesisList} order={order} />
+}
+
+function AreaOfInterestAccordionList({thesisList, order}: {thesisList: {[field: string]: Thesis[]}, order: string[]}) {
+  return (
+    <>
+      {order.map((field) => (
+        <ElementAccordion element={field} key={field} icon={<File className="mr-2 h-5 w-5 text-sky-900" />}>
+          <ElementThesisTable thesisList={thesisList[field]} />
+        </ElementAccordion>
+      ))}
+    </>
+  )
+}
+
+
+function ProfessorAccordionList({thesisList, order}: {thesisList: {[professor: string]: Thesis[]}, order: string[]}) {
+  return (
+    <>
+      {order.map((professor) => (
+        <ElementAccordion element={professor} key={professor} icon={<User className="mr-2 h-5 w-5 text-sky-900" />}>
+          <ElementThesisTable thesisList={thesisList[professor]} />
+        </ElementAccordion>
+      ))}
+    </>
+  )
+}
+
+
+
 function SkeletonAccordion() {
   return (
-    <Accordion type="single" collapsible className="w-full bg-white shadow-lg rounded-xl p-5 h-full">
+    <>
       {Array.from({length: 8}).map((_, index) => (
         <AccordionItem key={index} value="loading">
           <AccordionTrigger>  
@@ -99,35 +182,18 @@ function SkeletonAccordion() {
           </AccordionTrigger>
         </AccordionItem>
       ))} 
-    </Accordion>
+    </>
   )
 }
 
-/**
- * ProfessorAccordion Component
- * 
- * This component renders an accordion item for a professor's thesis projects.
- * It displays the professor's name with a user icon in the trigger section
- * and renders child components in the expandable content area.
- * 
- * @param {Object} props - Component props
- * @param {string} props.professor - The name of the professor
- * @param {React.ReactNode} props.children - Child components to render in accordion content
- * 
- * Layout:
- * - Accordion item with professor name as value
- * - Trigger section with user icon and professor name
- * - Expandable content section containing children
- * 
- * @returns {JSX.Element} An accordion item for displaying professor thesis info
- */
-function ProfessorAccordion ({professor, children}: {professor: string, children?: React.ReactNode}) {
+
+function ElementAccordion({element, children, icon}: {element: string, children?: React.ReactNode, icon?: React.ReactNode}) {
   return (
-    <AccordionItem value={professor}>
+    <AccordionItem value={element}>
       <AccordionTrigger>  
         <div className="flex items-center">
-          <User className="mr-2 h-5 w-5 text-sky-900" />
-          <span>{professor}</span>
+          {icon}
+          <span>{element}</span>
         </div>
       </AccordionTrigger>
       <AccordionContent>  
@@ -160,7 +226,7 @@ function ProfessorAccordion ({professor, children}: {professor: string, children
  * 
  * @returns {JSX.Element} A table displaying thesis project information
  */
-function ProfessorThesisTable({thesisList}: {thesisList: Thesis[]}) {
+function ElementThesisTable({thesisList}: {thesisList: Thesis[]}) {
   const navigate = useNavigate();
   const handleClick = (id: number) => {navigate(id.toString());};
   return (

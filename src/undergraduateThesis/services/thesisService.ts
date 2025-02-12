@@ -1,6 +1,6 @@
 import { StatusInformation, Thesis } from "undergraduateThesis/types/Thesis";
 
-const thesis: {[professor: string]: Thesis[]} = {
+const thesisList: {[professor: string]: Thesis[]} = {
     "Camilo Escobar": [
       {
         id: 1,
@@ -145,16 +145,46 @@ const thesis: {[professor: string]: Thesis[]} = {
   }
 
 
+export async function getUndergraduateThesis(semester?: string, category?: string) {
+  if (category === "areas_of_interest") {
+    return getUndergraduateThesisByArea(semester, category);
+  } 
+  return getUndergraduateThesisByProfessor(semester, category);
+}
 
-export async function getUndergraduateThesis() {
+export async function getUndergraduateThesisByProfessor(semester?: string, category?: string) {
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    return thesis;
+    return thesisList;
+}
+
+
+
+async function getUndergraduateThesisByArea(semester?: string, category?: string) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const thesisPerField: {[field: string]: Thesis[]} = {};
+    for (const thesis of Object.values(thesisList).flat()) {
+      for (const field of thesis.areas_of_interest) {
+        if (field in thesisPerField) {
+          thesisPerField[field].push(thesis);
+        } else {
+          thesisPerField[field] = [thesis];
+        }
+      }
+    }
+    return thesisPerField;
+}
+
+
+
+export async function getUndegraduadeThesisSemesters() {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    return ["202510", "202520", "202610", "202620"];
 }
 
 export async function getUndergraduateThesisById(id: string) {
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    for (const professor in thesis) {
-        const project = thesis[professor].find(project => project.id === Number(id));
+    for (const professor in thesisList) {
+        const project = thesisList[professor].find(project => project.id === Number(id));
         if (project) {
             return project;
         }
@@ -232,8 +262,8 @@ export async function getThesisStatusInformation() {
       semester: "202510",
       projectTitle: "Historias medicas",
       advisor: "Camilo Escobar",
-      student: "Estudiante",
-      studentEmail: "Wilmer Arévalo",
+      student: "Wilmer Arévalo",
+      studentEmail: "w.arevalo@uniandes.edu.co",
       grade: "Aprobado",
       lastStep: "Inscrito",
     };
