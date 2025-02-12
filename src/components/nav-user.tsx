@@ -1,12 +1,10 @@
 "use client"
 
 import {
-  BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
+  ListTodo,
   LogOut,
-  Sparkles,
 } from "lucide-react"
 
 import {
@@ -29,6 +27,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "components/ui/sidebar"
+import { Link } from "react-router-dom"
 
 export function NavUser({
   user,
@@ -82,29 +81,25 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
+                <ListTodo />
+                
+                <Link to="/tesis_pregrado/tareas">
+                  Tareas de tesis
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />
-                Notifications
+                <Link to="/notificaciones">
+                  Notificaciones
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <LogOut />
-              Log out
+               <Link to="/login">
+                Cerrar sesión
+               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

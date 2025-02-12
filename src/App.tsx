@@ -31,6 +31,7 @@ import Contact from 'support/pages/contact';
 import { Fragment } from 'react/jsx-runtime';
 import About from 'about';
 import Error404 from 'error404';
+import Login from 'auth/pages/page';
 
 
 /*
@@ -38,6 +39,9 @@ import Error404 from 'error404';
   It uses the BrowserRouter to manage the routes of the application.
 */
 export default function App() {
+
+
+
   return (
     <div>
       <BrowserRouter>
@@ -66,6 +70,11 @@ function AppContent() {
 
     return breadcrumbs;
   };
+
+  
+  if (location.pathname === "/login") {
+    return <Login />;
+  }
 
   return (
     <SidebarProvider>

@@ -7,7 +7,7 @@ import Footer from 'components/custom/footer';
 
 
 
-export default function LoginPage() {
+export default function Login() {
   return (
     <div className="flex flex-col min-h-screen ">
       <main className="flex flex-grow ">
