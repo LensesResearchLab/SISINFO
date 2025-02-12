@@ -145,7 +145,7 @@ function AreasOfInterest({areas}: {areas: string[]}) {
     <h3 className="font-semibold text-lg">Áreas de interés:</h3>
     <div className="flex flex-wrap gap-2 mt-2">
       {areas.map((area) => (
-        <Badge  variant="secondary" className="bg-gray-200 text-gray-700 hover:bg-gray-300">
+        <Badge  variant="secondary" className="bg-gray-200 text-gray-700 hover:bg-gray-300" key={area}>
           {area}
         </Badge>
       ))}

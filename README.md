@@ -81,6 +81,7 @@ sisinfo/
 │   ├── undergraduateThesis/   # Funcionalidad de tesis de pregrado
 │   │   ├── pages/             # Páginas relacionadas con tesis de pregrado
 │   │   └── components/        # Componentes específicos de tesis de pregrado
+│   │   └── services/          # Contiene los servicios de la funcionalidad de tesis de pregrado
 │   ├── App.css                # Estilos globales de la aplicación
 │   ├── App.test.js            # Pruebas del componente App
 │   ├── App.tsx                # Componente principal de la aplicación

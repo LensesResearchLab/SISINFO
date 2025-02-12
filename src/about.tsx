@@ -1,11 +1,17 @@
-import { FileText, PenSquare, Calendar, AlertTriangle, BookOpen, Video } from "lucide-react"
+import { FileText, PenSquare, Calendar, AlertTriangle, BookOpen, Video, LucideIcon } from "lucide-react"
 import { Card, CardContent } from "components/ui/card"
 import { Link } from "react-router-dom";
 
-/*
-  This component is the home page of the application. It contains information about the features of the application.
-  It uses the InformationCard component to display the features.
-*/
+/**
+ * About Component
+ * 
+ * Main landing page component that displays the key features and functionality of the application
+ * organized into three main sections: thesis projects, graduate assistantships, and support.
+ * 
+ * Each section contains cards with icons and descriptions that link to their respective routes.
+ * 
+ * @returns {JSX.Element} A responsive grid layout of feature cards grouped by section
+ */
 export default function About() {
   const thesisFeatures = [
     {
@@ -96,16 +102,29 @@ export default function About() {
 }
 
 interface InformationCardProps {
-  Icon: any
+  /** Icon component to display */
+  Icon: LucideIcon;
+  /** Title text for the card */
   title: string;
+  /** Description text explaining the feature */
   description: string;
+  /** URL route that the card links to */
   url: string;
 }
 
-/*
-  This component is a card that contains an icon, a title, a description and a link to a specific route.
-  It is used to display the features of the application in the home page.
-*/
+/**
+ * InformationCard Component
+ * 
+ * A clickable card component that displays information about a feature or section of the application.
+ * Contains an icon, title, and description, and links to a specific route when clicked.
+ * 
+ * @param {InformationCardProps} props
+ * @param {LucideIcon} props.Icon - The icon component to display
+ * @param {string} props.title - The title of the feature
+ * @param {string} props.description - A description of the feature
+ * @param {string} props.url - The route to navigate to when clicked
+ * @returns {JSX.Element} A card component with icon, title and description that links to a route
+ */
 function InformationCard({ Icon, title, description, url }: InformationCardProps) {
   return (
     <Link to={url}>

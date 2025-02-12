@@ -40,7 +40,7 @@ export function ConfirmationModal({ dialogText, onConfirm}: { dialogText: Dialog
   if (isConfirmed) {
     return <SuccessModal successTitle={dialogText.successTitle} successText={dialogText.successText} url={dialogText.url} />
   }
-  const handleConfirm = (e: any) => {
+  const handleConfirm = (e: React.MouseEvent<HTMLButtonElement>) => {
     onConfirm(e);
     setIsConfirmed(true);
   }
