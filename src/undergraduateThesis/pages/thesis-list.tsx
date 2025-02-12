@@ -85,7 +85,7 @@ export default function ThesisList() {
               <SelectSemester setSearchTerm={setSearchTerm} semesters={semesters} />
             </div>
 
-            <Button variant="default" className="bg-sky-600 hover:bg-sky-700" onClick={toggleSort}>
+            <Button variant="default" className="bg-sky-800 hover:bg-sky-900" onClick={toggleSort}>
               <ArrowUpDown className="w-4 h-4 mr-2" />
               {sortDirection === 1 ? "A-Z" : "Z-A"}
             </Button>
