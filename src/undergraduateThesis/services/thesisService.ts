@@ -262,8 +262,8 @@ export async function getThesisStatusInformation() {
       semester: "202510",
       projectTitle: "Historias medicas",
       advisor: "Camilo Escobar",
-      student: "Wilmer Arévalo",
-      studentEmail: "w.arevalo@uniandes.edu.co",
+      student: "John Doe",
+      studentEmail: "john@example.com",
       grade: "Aprobado",
       lastStep: "Inscrito",
     };
