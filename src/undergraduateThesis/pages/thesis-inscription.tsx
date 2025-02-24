@@ -3,14 +3,15 @@ import { Badge } from "components/ui/badge"
 import { Mail, Users, Calendar, Tag, FileText } from "lucide-react"
 import { Button } from 'components/ui/button'
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { getUndergraduateThesisById } from '../services/thesisService';
 import { useNavigate } from 'react-router-dom';
-import { Skeleton } from 'components/ui/skeleton';
 import { Thesis } from 'undergraduateThesis/types/Thesis';
 import { Textarea } from 'components/ui/textarea';
 import { Checkbox } from 'components/ui/checkbox';
 import { ConfirmationModal } from 'components/custom/confirmation-modal';
+import { useEffect, useState } from 'react';
+import SpinnerPage from 'components/custom/spinner-page';
+
 
 /**
  * ThesisInscription Component
@@ -29,7 +30,6 @@ import { ConfirmationModal } from 'components/custom/confirmation-modal';
  * Child Components:
  * - ThesisDetails: Displays thesis information when not applying
  * - ThesisApplying: Shows application form when user is applying
- * - ThesisDetailsSkeleton: Loading state UI
  */
 export default function ThesisInscription() {
   const navigate = useNavigate();
@@ -45,13 +45,26 @@ export default function ThesisInscription() {
   const [loading, setLoading] = useState(true);
   const [isApplying, setIsApplying] = useState(false);
 
-  useEffect (() => {
-    !id ? navigate("/404") : getUndergraduateThesisById(id).then((data) => {setThesis(data);} ).catch(() => navigate("/404")).finally(() => setLoading(false));
+  useEffect(() => {
+    if (!id) {
+      navigate("/404");
+      return;
+    }
+  
+    getUndergraduateThesisById(id)
+      .then((data) => {
+        if (!data || !data.id) {
+          throw new Error("Datos de la tesis no válidos");
+        }
+        setThesis(data);
+      })
+      .catch(() => navigate("/404"))
+      .finally(() => setLoading(false));
   }, [id, navigate]);
 
-  if (loading) return <ThesisDetailsSkeleton />
+  if (loading) return <SpinnerPage />;
   return (
-    <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
+    <div className="min-h-full max-w-[900px] container mx-auto p-4 space-y-8">
       {!isApplying && <ThesisDetails thesis={thesis} setIsApplying={setIsApplying} />}
       {isApplying && <ThesisApplying thesis={thesis} setIsApplying={setIsApplying} />}
     </div>
@@ -79,8 +92,8 @@ export default function ThesisInscription() {
  */
 function ThesisDetails({thesis, setIsApplying}: {thesis: Thesis, setIsApplying: (value: boolean) => void}) {
   return (
-    <Card className="max-w-3xl  mx-auto shadow-lg">
-      <CardHeader className=" rounded-t-lg">
+    <Card className="w-full  mx-auto shadow-lg border-none">
+      <CardHeader>
         <CardTitle className="text-xl font-bold text-sky-800">Información del proyecto de grado</CardTitle>
       </CardHeader>
       <CardContent className="pt-6 space-y-6">
@@ -441,204 +454,6 @@ function ContactedCheckbox({contacted, setContacted}: {contacted: boolean, setCo
       >
         Contacté al profesor por otro medio
       </label>
-    </div>
-  )
-}
-
-
-/**
- * ThesisDetailsSkeleton Component
- * 
- * This component renders a loading skeleton for the thesis details view.
- * It displays placeholder content while the actual thesis data is being fetched.
- * 
- * Structure:
- * - Card container with header and content sections
- * - Main information section showing project name and description placeholders
- * - Areas of interest section with badge/tag placeholders
- * - Two-column grid layout for category/semester and students/contact info
- * - Centered button placeholder at the bottom
- * 
- * Styling:
- * - Responsive grid layout (1 column on mobile, 2 columns on medium screens)
- * - Consistent spacing and padding
- * - Shadow effect on card
- * - Sky blue theme colors matching the application style
- * 
- * Sub-components used:
- * - MainInformationSkeleton
- * - AreasOfInterestSkeleton
- * - CategoryAndSemesterInfoSkeleton
- * - StudentsAndContactInfoSkeleton
- * 
- * @returns {JSX.Element} A skeleton loading state UI for the thesis details view
- */
-function ThesisDetailsSkeleton() {
-  return (
-    <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
-      <Card className="max-w-3xl mx-auto shadow-lg">
-        <CardHeader className="rounded-t-lg">
-          <CardTitle className="text-xl font-bold text-sky-800">Información del proyecto de grado</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6 space-y-6">
-          <div className="space-y-4">
-            <MainInformationSkeleton />
-            <AreasOfInterestSkeleton />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <CategoryAndSemesterInfoSkeleton />
-              <StudentsAndContactInfoSkeleton />
-            </div>
-          </div>
-          <div className="flex justify-center pt-4"><Skeleton className="h-10 w-40" /></div>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
-/**
- * MainInformationSkeleton Component
- * 
- * This component renders a loading skeleton for the main thesis information section.
- * It displays placeholder content while the actual project name and description are being fetched.
- * 
- * Structure:
- * - Project name section with inline skeleton placeholder
- * - Description section with full width skeleton placeholder
- * 
- * Styling:
- * - Semibold headings with large text
- * - Consistent spacing between sections
- * - Gray text color for description area
- * - Flex layout for project name to align skeleton
- * 
- * @returns {JSX.Element} A skeleton loading state UI for the main thesis information
- */
-function MainInformationSkeleton() {
-  return  (
-    <div>
-      <h3 className="font-semibold text-lg flex items-center gap-2">Nombre del proyecto: <Skeleton className="h-6 w-[300px] inline-block" /></h3>
-      <h3 className="font-semibold text-lg mt-4">Descripción:</h3>
-      <p className="text-gray-700">              
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-full" />
-        </div>
-      </p>
-    </div>
-  )
-}
-
-/**
- * AreasOfInterestSkeleton Component
- * 
- * This component renders a loading skeleton for the areas of interest section.
- * It displays placeholder content while the actual areas of interest are being fetched.
- * 
- * Structure:
- * - Section heading for "Areas of Interest"
- * - Flex container with two skeleton pills representing loading areas
- * 
- * Styling:
- * - Semibold heading with large text and bottom margin
- * - Flex layout with wrapping for multiple area pills
- * - Rounded full styling for pill-shaped skeleton loaders
- * - Consistent spacing between skeleton pills
- * 
- * @returns {JSX.Element} A skeleton loading state UI for the areas of interest section
- */
-function AreasOfInterestSkeleton() {
-  return (
-    <div>
-      <h3 className="font-semibold text-lg mb-2">Áreas de interés:</h3>
-      <div className="flex flex-wrap gap-2 mt-2">
-        <Skeleton className="h-7 w-32 rounded-full" />
-        <Skeleton className="h-7 w-32 rounded-full" />
-      </div>
-    </div>
-  )
-}
-
-/**
- * CategoryAndSemesterInfoSkeleton Component
- * 
- * This component renders a loading skeleton for the category and semester information section.
- * It displays placeholder content while the actual data is being fetched.
- * 
- * Structure:
- * - Two sections with icons and labels:
- *   1. Category section with Tag icon
- *   2. Period/Semester section with Calendar icon
- * 
- * Styling:
- * - Flex layout with gap between icon and content
- * - Icons colored in sky blue
- * - Semibold headings
- * - Skeleton loaders with appropriate widths for data
- * - Consistent vertical spacing between sections
- * 
- * @returns {JSX.Element} A skeleton loading state UI for category and semester information
- */
-function CategoryAndSemesterInfoSkeleton() {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-start gap-2">
-        <Tag className="h-5 w-5 text-sky-800 mt-1" />
-        <div className="flex-1">
-          <h3 className="font-semibold">Categoría:</h3>
-          <Skeleton className="h-4 w-24 mt-1" />
-        </div>
-      </div>
-
-      <div className="flex items-start gap-2">
-        <Calendar className="h-5 w-5 text-sky-800 mt-1" />
-        <div className="flex-1">
-          <h3 className="font-semibold">Periodo:</h3>
-          <Skeleton className="h-4 w-20 mt-1" />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/**
- * StudentsAndContactInfoSkeleton Component
- * 
- * This component renders a loading skeleton for the students and contact information section.
- * It displays placeholder content while the actual data is being fetched.
- * 
- * Structure:
- * - Two sections with icons and labels:
- *   1. Maximum students section with Users icon
- *   2. Contact information section with Mail icon
- * 
- * Styling:
- * - Flex layout with gap between icon and content
- * - Icons colored in sky blue
- * - Semibold headings
- * - Skeleton loaders with appropriate widths for data
- * - Consistent vertical spacing between sections
- * 
- * @returns {JSX.Element} A skeleton loading state UI for students and contact information
- */
-function StudentsAndContactInfoSkeleton() {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-start gap-2">
-        <Users className="h-5 w-5 text-sky-800 mt-1" />
-        <div className="flex-1">
-          <h3 className="font-semibold">Número máximo de estudiantes:</h3>
-          <Skeleton className="h-4 w-8 mt-1" />
-        </div>
-      </div>
-
-      <div className="flex items-start gap-2">
-        <Mail className="h-5 w-5 text-sky-800 mt-1" />
-        <div className="flex-1">
-          <h3 className="font-semibold">Contacto:</h3>
-          <Skeleton className="h-4 w-48 mt-1" />
-          <Skeleton className="h-4 w-56 mt-1" />
-        </div>
-      </div>
     </div>
   )
 }

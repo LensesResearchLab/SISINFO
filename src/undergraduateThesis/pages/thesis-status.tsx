@@ -3,8 +3,9 @@ import { Calendar, FileText, Mail, Star, User } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getThesisStatusInformation } from "../services/thesisService";
 import TabStatus from "components/custom/tab-status";
-import TabStatusSkeleton from "components/custom/tab-status-skeleton";
 import { StatusInformation } from "../types/Thesis";
+import SpinnerPage from "components/custom/spinner-page";
+
 
 /**
  * ThesisStatus Component
@@ -32,7 +33,7 @@ import { StatusInformation } from "../types/Thesis";
  * @returns {JSX.Element} A tabbed interface showing thesis status and information
  */
 export default function ThesisStatus() {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
   const [statusInformation, setStatusInformation] = useState<StatusInformation>({
     semester: "",
     projectTitle: "",
@@ -53,7 +54,8 @@ export default function ThesisStatus() {
   const generalInformationProps = {title: "Información de inscripción proyecto de grado", sections}
   const statusProps = {currentStatus: statusInformation.lastStep, statusMessage: messagePerStep.get(statusInformation.lastStep) || "", steps, title: "Estado inscripción proyecto de grado"}
   
-  return (isLoading ? <TabStatusSkeleton/> : <TabStatus general={generalInformationProps} status={statusProps} />)
+  if (isLoading) return <SpinnerPage />;
+  return <TabStatus general={generalInformationProps} status={statusProps} />
 }
 
 /**
