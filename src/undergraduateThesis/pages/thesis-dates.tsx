@@ -1,7 +1,7 @@
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "components/ui/table";
-import { useEffect, useState } from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "components/ui/table";
 import { getUndergraduateThesisDates } from "../services/thesisService";
-import { Skeleton } from "components/ui/skeleton";
+import { useEffect, useState } from "react";
+import SpinnerPage from "components/custom/spinner-page";
 
 interface ThesisDatesInterface {
   title: string;
@@ -33,15 +33,13 @@ export default function ThesisDates() {
   useEffect(() => { 
     getUndergraduateThesisDates().then(setDates).finally(() => setIsLoading(false));
   }, []);
-
+  if (isLoading) return <SpinnerPage />;
   return (
-    <div className="min-h-full min-w-full mx-auto p-4 space-y-8 ">
+    <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[900px]">
       <div className="w-full bg-white shadow-lg rounded-xl p-5 h-full space-y-4">
-        { !isLoading 
-          ? (Object.keys(dates).map((dateName) => <DateTable key={dateName} title={dateName} dates={dates[dateName]} />)) 
-          : (Array.from({ length: 4 }).map((_, index) => <DateTableSkeleton key={index} />)
-          )
-        } 
+        {
+          Object.keys(dates).map((dateName) => <DateTable key={dateName} title={dateName} dates={dates[dateName]} />)
+        }
       </div>
     </div>
   )
@@ -63,10 +61,10 @@ function DateTable({title, dates}: {title:string, dates: ThesisDatesInterface[]}
     <div >
       <h2 className="text-xl font-semibold text-sky-800">{title}</h2>
         <Table>
-          <TableHeader className="bg-sky-800 text-white font-semibold">
+          <TableHeader >
             <TableRow>
-              <TableCell>Descripción</TableCell>
-              <TableCell>Fecha</TableCell>
+              <TableHead className="bg-sky-900 text-white text-center">Descripción</TableHead>
+              <TableHead className="bg-sky-900 text-white text-center">Fecha</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -80,47 +78,6 @@ function DateTable({title, dates}: {title:string, dates: ThesisDatesInterface[]}
             }
           </TableBody>
         </Table>
-    </div>
-  )
-}
-
-/**
- * DateTableSkeleton Component
- * 
- * This component renders a loading skeleton for the DateTable component.
- * It displays a placeholder layout while the actual date data is being fetched.
- * 
- * The skeleton includes:
- * - A title placeholder using Skeleton component
- * - A table with header cells for "Description" and "Date"
- * - 3 rows of skeleton cells to mimic loading data
- * 
- * @returns {JSX.Element} A skeleton loading state UI for the date table
- */
-function DateTableSkeleton() {
-  return (
-    <div className="my-2">
-      <Skeleton className="h-5 w-64 mb-2" />
-      <Table>
-        <TableHeader className="bg-sky-800 text-white font-semibold">
-          <TableRow>
-            <TableCell>Descripción</TableCell>
-            <TableCell>Fecha</TableCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {Array.from({ length: 3 }).map((_, index) => (
-            <TableRow key={index}>
-              <TableCell>
-                <Skeleton className="h-5" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="h-5" />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
     </div>
   )
 }
