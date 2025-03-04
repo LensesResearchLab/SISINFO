@@ -20,7 +20,7 @@ import ThesisStatus from 'undergraduateThesis/pages/thesis-status';
 import ThesisDates from 'undergraduateThesis/pages/thesis-dates';
 
 import Footer from 'components/custom/footer';
-import AssistanceInscription from 'graduatedAssistance/pages/assistance-Inscription';
+import AssistanceList from 'graduatedAssistance/pages/assistance-list';
 import AssistanceStatus from 'graduatedAssistance/pages/assistance-status';
 
 import Incidence from 'support/pages/incidence';
@@ -30,8 +30,12 @@ import Contact from 'support/pages/contact';
 
 import { Fragment } from 'react/jsx-runtime';
 import About from 'about';
+import AssistanceDetails from 'graduatedAssistance/pages/assistance-detail';
+import AssistanceAppliedList from 'graduatedAssistance/pages/assistance-applied-list';
+
 import Error404 from 'error404';
 import Login from 'auth/pages/page';
+
 
 
 
@@ -69,6 +73,23 @@ function AppContent() {
           </div>
         </header>
         <main className="flex flex-grow bg-gray-100">
+          <Routes>
+            <Route path="/" element={<About />} />
+
+            <Route path="/tesis_pregrado/lista_de_tesis" element={<ThesisInscription />} />
+              <Route path="/tesis_pregrado/lista_de_tesis/:id" element={<ThesisStatus/>} />
+            <Route path="/tesis_pregrado/fechas" element={<ThesisDates/>} />
+            <Route path="/tesis_pregrado/estado_inscripcion" element={<ThesisStatus/>} />
+
+            <Route path="/asistencias_graduadas/lista_de_asistencias" element={<AssistanceList />} />
+              <Route path="/asistencias_graduadas/lista_de_asistencias/:id" element={<AssistanceDetails />} />
+            <Route path="/asistencias_graduadas/lista_estados_inscripcion" element={<AssistanceAppliedList/>} />
+              <Route path="/asistencias_graduadas/lista_estados_inscripcion/:id" element={<AssistanceStatus/>} />
+
+            <Route path="/soporte/reporte_incidencias" element={<Incidence />} />
+            <Route path="/soporte/tutoriales" element={<Tutorials/>} />
+            <Route path="/soporte/contactar_coordinadores" element={<Contact/>} />
+          </Routes>
           <SisinfoRoutes/>
         </main>
         <Footer />

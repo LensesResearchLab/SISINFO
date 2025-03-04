@@ -67,6 +67,7 @@ export default function TabStatus({general, status, children}: {general: General
  */
 function TabGeneralCard({title, sections, children}: {title:string, sections: SectionProps[], children?: React.ReactNode}) {
   return (
+    <Card className="max-w-3xl">
     <Card className="max-w-3xl border-none">
       <CardHeader>
         <h2 className="text-2xl font-medium text-sky-800">{title}</h2>
@@ -127,6 +128,7 @@ export function TabStatusCard({status}: {status: StatusProps}) {
   })
 
   return (
+    <Card>
     <Card className="border-none max-w-3xl">
       <CardContent className="p-0">
         <div className="space-y-8 p-6">
