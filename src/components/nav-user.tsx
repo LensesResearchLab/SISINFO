@@ -1,17 +1,17 @@
 "use client"
 
 import {
-  Bell,
   ChevronsUpDown,
-  ListTodo,
   LogOut,
+  ListTodo,
 } from "lucide-react"
 
+import Link from "next/link"
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "components/ui/avatar"
+} from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,14 +20,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "components/ui/sidebar"
-import { Link } from "react-router-dom"
+} from "@/components/ui/sidebar"
 
 export function NavUser({
   user,
@@ -81,23 +80,17 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <ListTodo />
+                <ListTodo className="text-white"  />
                 
-                <Link to="/tesis_pregrado/tareas">
+                <Link href="/undergraduate-thesis/task">
                   Tareas de tesis
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                <Link to="/notificaciones">
-                  Notificaciones
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut />
-               <Link to="/login">
+              <LogOut className="text-white" />
+               <Link href="/auth">
                 Cerrar sesión
                </Link>
             </DropdownMenuItem>

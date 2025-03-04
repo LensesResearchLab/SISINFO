@@ -4,7 +4,7 @@
 <h1 align="center">Sisinfo</h1>
 
 <p align="center">
-    Sisinfo es una aplicación web diseñada para gestionar múltiples tareas administrativas, como la aplicación a tesis, asistencias graduadas, publicación de ofertas de salones, entre otros. Desarrollada con <strong>React 18</strong>, <strong>shadcn</strong> y <strong>Tailwind CSS</strong>.
+    Sisinfo es una aplicación web diseñada para gestionar múltiples tareas administrativas, como la aplicación a tesis, asistencias graduadas, publicación de ofertas de salones, entre otros. Desarrollada con <strong>Next.js</strong>, <strong>shadcn</strong> y <strong>Tailwind CSS</strong>.
 </p>
 
 ---
@@ -13,7 +13,7 @@
 
 Sisinfo está construido con las siguientes tecnologías:
 
-- **React 18**: Una biblioteca de JavaScript para construir interfaces de usuario interactivas y reactivas.
+- **Next.js**: Un framework de React para la construcción de aplicaciones web modernas con renderizado híbrido y optimización automática.
 - **shadcn**: Un conjunto de componentes UI modernos, personalizables y accesibles.
 - **Tailwind CSS**: Un framework de CSS utilitario que permite diseñar interfaces de manera rápida y eficiente.
 - **Node.js**: Entorno de ejecución para JavaScript en el servidor.
@@ -38,7 +38,7 @@ Asegúrate de tener instalado lo siguiente:
 1. Clona el repositorio (o descarga el código fuente):
    ```bash
    git clone https://github.com/TheSoftwareDesignLab/SISINFO
-    ```
+   ```
 2. Navega al directorio del proyecto:
     ```bash
     cd sisinfo
@@ -52,64 +52,73 @@ Asegúrate de tener instalado lo siguiente:
     ```
 4. Inicia el servidor de desarrollo:
     ```bash
-    npm run start
+    npm run dev
     ```
 5. Abre tu navegador y visita http://localhost:3000 para ver la aplicación en funcionamiento.
 
-#  Estructura del Proyecto
-El proyecto está organizado de la siguiente manera:
+# 📂 Estructura del Proyecto
 
 ```bash
 sisinfo/
 ├── README.md                  # Documentación del proyecto
-├── src/                       # Código fuente de la aplicación
-│   ├── assets/                # Recursos estáticos (imágenes, fuentes, etc.)
-│   ├── auth/                  # Funcionalidad de autenticación
-│   │   ├── pages/             # Páginas relacionadas con la autenticación
-│   │   └── components/        # Componentes específicos de autenticación
-│   ├── components/            # Componentes globales reutilizables
-│   │   ├── ui/                # Componentes de shadcn
-│   │   └── custom/            # Componentes personalizados creados a mano
-│   ├── graduatedAssistance/   # Funcionalidad de asistencias graduadas
-│   │   ├── pages/             # Páginas relacionadas con asistencias graduadas
-│   │   └── components/        # Componentes específicos de asistencias graduadas
-│   ├── hooks/                 # Hooks personalizados
-│   ├── lib/                   # Librerías o utilidades compartidas
-│   ├── support/               # Funcionalidad de soporte
-│   │   ├── pages/             # Páginas relacionadas con soporte
-│   │   └── components/        # Componentes específicos de soporte
-│   ├── undergraduateThesis/   # Funcionalidad de tesis de pregrado
-│   │   ├── pages/             # Páginas relacionadas con tesis de pregrado
-│   │   └── components/        # Componentes específicos de tesis de pregrado
-│   │   └── services/          # Contiene los servicios de la funcionalidad de tesis de pregrado
-│   ├── App.css                # Estilos globales de la aplicación
-│   ├── App.test.js            # Pruebas del componente App
-│   ├── App.tsx                # Componente principal de la aplicación
-│   ├── about.tsx              # Componente que contiene la información de funcionalidades
-│   └── index.css              # Estilos de entrada de la aplicación
+├── public/                    # Recursos estáticos como imágenes y fuentes
+├── src/                        # Código fuente de la aplicación
+│   ├── auth/                   # Módulo de autenticación y autorización
+│   ├── app/                    # Páginas principales y funcionalidades
+│   │   ├── home/               # Página principal de la aplicación
+│   │   ├── undergraduate-thesis/ # Funcionalidad de tesis de pregrado
+│   │   │   ├── thesis-list/        # Lista de tesis disponibles
+│   │   │   ├── thesis-dates/       # Fechas importantes de tesis
+│   │   │   ├── thesis-status/      # Estado actual de las tesis
+│   │   │   ├── types/              # Definición de tipos de datos
+│   │   ├── graduated-assistance/   # Funcionalidad de asistencias graduadas
+│   │   │   ├── assistance-list/     # Lista de asistencias disponibles
+│   │   │   ├── assistance-applied-list/ # Asistencias aplicadas
+│   │   │   ├── types/               # Definición de tipos de datos
+│   │   │   ├── services/            # Lógica de negocio y conexión con la API
+│   │   ├── support/                 # Módulo de soporte y ayuda
+│   │   │   ├── contact/             # Página de contacto
+│   │   │   ├── tutorials/           # Tutoriales de uso
+│   │   │   ├── incidence/           # Reporte de incidencias
+│   │   │   ├── types/               # Definición de tipos de datos
+│   │   │   ├── services/            # Servicios de soporte
+│   ├── components/                 # Componentes reutilizables
+│   │   ├── ui/                     # Componentes de shadcn
+│   │   ├── shared/                 # Componentes personalizados
+│   ├── hooks/                      # Hooks personalizados
+│   ├── lib/                        # Librerías y utilidades compartidas
+│   ├── styles/                     # Estilos globales y temas
+│   ├── config/                     # Configuración general del proyecto
+│   ├── services/                   # Servicios y lógica de negocio compartida
+│   ├── utils/                      # Funciones de utilidad
+│   ├── middleware/                 # Middlewares de la aplicación
+│   ├── pages/                      # Páginas adicionales fuera del sistema principal
 └── ...
 ```
 
-
-# Trabajar en el repositorio
+# 💻 Trabajar en el repositorio
 
 ## Estilo de Código
 
 - **Convenciones de Nombres**:
-  Utiliza `camelCase` para nombrar variables, funciones y métodos. Utiliza `kebab-case` para el nombre de los archivos de componentes
-
+  - Utiliza `camelCase` para variables, funciones y métodos.
+  - Utiliza `PascalCase` para componentes React.
+  - Utiliza `kebab-case` para nombres de archivos.
 
 ## Gestión de Ramas
 
 - **Desarrollo por Funcionalidades**:
-  Cada funcionalidad o característica nueva debe desarrollarse en una rama separada.
-  Nombra las ramas de manera descriptiva (por ejemplo, `feature/nombre-funcionalidad` o `fix/nombre-correccion`).
+  - Cada nueva funcionalidad debe desarrollarse en una rama separada.
+  - Nombra las ramas de manera descriptiva, por ejemplo:
+    - `feature/nueva-funcionalidad`
+    - `fix/correccion-error`
 
 ## Pruebas y Documentación
 
 - **Pruebas Unitarias**:
-  Asegúrate de incluir pruebas unitarias para cada funcionalidad implementada.
-  Las pruebas deben ser claras y cubrir los casos de uso principales.
+  - Implementa pruebas unitarias para cada funcionalidad.
+  - Asegúrate de cubrir los casos de uso principales.
 
 - **Comentarios Explicativos**:
-  Incluye comentarios en el código para explicar los componentes desarrollados.
+  - Agrega comentarios en el código para facilitar su mantenimiento y comprensión.
+
