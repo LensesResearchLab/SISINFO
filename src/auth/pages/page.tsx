@@ -5,17 +5,25 @@ import Logo from "assets/uniandes_logo.svg";
 import SistemasBanner from "assets/banner_sistemas.png";
 import Footer from 'components/custom/footer';
 
-
-
-export default function LoginPage() {
+/**
+ * Main Login page component
+ * 
+ * Renders the login page with a two-column layout on large screens:
+ * - Left column contains the login form
+ * - Right column contains the SISINFO banner (only visible on lg screens)
+ * Also includes a footer at the bottom
+ * 
+ * @returns {JSX.Element} The login page component
+ */
+export default function Login() {
   return (
     <div className="flex flex-col min-h-screen ">
       <main className="flex flex-grow ">
         <div className="grid lg:grid-cols-2 w-screen">
-          <div className="flex items-center justify-center bg-white">
+          <div className="flex items-center justify-center bg-white py-5">
               <LogInForm/>
           </div>
-          <div className="bg-[#0A626A] justify-center items-center hidden lg:flex">
+          <div className="bg-sky-800 justify-center items-center hidden lg:flex">
             <SisinfoBanner />
           </div>
         </div>
@@ -25,38 +33,62 @@ export default function LoginPage() {
   )
 }
 
+/**
+ * Login form component
+ * 
+ * Renders a form with:
+ * - Systems department banner
+ * - Username input field
+ * - Password input field
+ * - Submit button
+ * 
+ * @returns {JSX.Element} The login form component
+ */
 function LogInForm() {
   const handleSubmit = (e: React.FormEvent) => {
-    alert("Successful");
-    e.preventDefault();
+    e.preventDefault()
+    alert("Successful")
   }
 
   return (
-    <form className="border rounded-xl shadow-lg w-10/12 md:w-8/12 px-6 py-10 h-4/6  flex flex-col justify-center">
-      <img src={SistemasBanner} alt="Sistemas Logo" className="h-24 mx-auto mb-10" />
+    <form onSubmit={handleSubmit} className="border rounded-xl shadow-lg w-full max-w-md p-10 space-y-12">
+      <div className="text-center">
+        <img src={SistemasBanner} alt="Sistemas Logo" className="h-20 mx-auto mb-8" />
+      </div>
       <div className="space-y-8">
-        <div className="space-y-2">
-          <Label htmlFor="user">Usuario uniandes</Label>
-          <Input id="user" type="text" placeholder="Ingresa tu usuario" required />
+        <div className="space-y-4">
+          <Label htmlFor="user" className="text-lg">
+            Usuario uniandes
+          </Label>
+          <Input id="user" type="text" placeholder="Ingresa tu usuario" required className="h-12 text-lg" />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Contraseña</Label>
-          <Input id="password" type="password" placeholder="Ingresa tu contraseña" required />
+        <div className="space-y-4">
+          <Label htmlFor="password" className="text-lg">
+            Contraseña
+          </Label>
+          <Input id="password" type="password" placeholder="Ingresa tu contraseña" required className="h-12 text-lg" />
         </div>
-        <div>
-          <Button type="submit" className="w-full" onClick={handleSubmit}>
-            Iniciar Sesion
-          </Button>
-        </div>
-
+        <Button type="submit" className="w-full h-12 text-lg mt-6">
+          Iniciar Sesion
+        </Button>
       </div>
     </form>
   )
 }
 
+/**
+ * SISINFO Banner component
+ * 
+ * Displays the SISINFO branding on the right side of the login page
+ * Contains:
+ * - Large SISINFO text
+ * - Uniandes logo
+ * 
+ * @returns {JSX.Element} The SISINFO banner component
+ */
 function SisinfoBanner() {
   return (
-    <div className="flex flex-col items-center justify-center p-2 text-white">
+    <div className="flex flex-col items-center justify-center p-8 text-white">
       <h1 className="text-6xl md:text-8xl font-bold mb-8">SISINFO</h1>
       <div>
         <img src={Logo} alt="Uniandes Logo" className="h-96" />

@@ -1,8 +1,11 @@
-/*
-  This component is the footer of the page. It is a simple footer with the information of the university and the department.
-  It is used in both the App.tsx and the auth page.
-*/
-
+/**
+ * Footer Component
+ * 
+ * This component renders the footer section of the application.
+ * It includes the university's name, recognition details, address, phone numbers, and copyright information.
+ * 
+ * @returns {JSX.Element} The footer component
+ */
 export default function footer() {
   return (
     <footer className="bg-stone-900 text-center text-xs p-4">
