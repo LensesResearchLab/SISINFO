@@ -43,7 +43,7 @@ export default function Tutorials() {
   }, []);
 
   return (
-    <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
+    <div className="columns-1 min-h-full min-w-full sm:gap-8 sm:columns-2 p-4 space-y-4">
       {tutorials.map((tutorial, index) => (
         <Card key={index} className="p-4 border-none">
           <CardHeader>

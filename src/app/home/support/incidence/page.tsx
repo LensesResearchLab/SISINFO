@@ -1,14 +1,9 @@
-"use client";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card"
+"use client"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
 /**
  * IncidentReportForm Component
@@ -23,21 +18,19 @@ import {
  * @returns {JSX.Element} A form allowing users to submit incident reports.
  */
 export default function IncidentReportForm() {
-  const [incidentType, setIncidentType] = useState("");
-  const [incidentDescription, setIncidentDescription] = useState("");
+  const [incidentType, setIncidentType] = useState("")
+  const [incidentDescription, setIncidentDescription] = useState("")
 
   const handleSubmit = () => {
-    console.log("Incident Type:", incidentType);
-    console.log("Description:", incidentDescription);
-  };
+    console.log("Incident Type:", incidentType)
+    console.log("Description:", incidentDescription)
+  }
 
   return (
     <div className="flex justify-center items-center min-h-full min-w-full">
       <Card className="p-8 text-lg">
         <CardHeader className="flex items-center">
-          <h2 className="text-2xl font-bold text-blue-800 flex items-center">
-            ⚠️ Reporte de incidentes
-          </h2>
+          <h2 className="text-2xl font-bold text-blue-800 flex items-center">⚠️ Reporte de incidentes</h2>
         </CardHeader>
         <CardContent>
           <p className="text-lg text-gray-600 mt-4">
@@ -49,14 +42,26 @@ export default function IncidentReportForm() {
                 <SelectValue placeholder="Razón de la solicitud" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="error" className="text-lg">Error en el sistema</SelectItem>
-                <SelectItem value="bug" className="text-lg">Falla técnica</SelectItem>
-                <SelectItem value="otro" className="text-lg">Otro</SelectItem>
+                <SelectItem value="error" className="text-lg">
+                  Error en el sistema
+                </SelectItem>
+                <SelectItem value="bug" className="text-lg">
+                  Falla técnica
+                </SelectItem>
+                <SelectItem value="otro" className="text-lg">
+                  Otro
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="mt-6">
-            <Textarea className="w-full p-4 border rounded-md text-lg" placeholder="Describa el problema que presentó..." value={incidentDescription} onChange={(e) => setIncidentDescription(e.target.value)} />
+            <Textarea
+              className="h-32 resize-none"
+              placeholder="Describa el problema que presentó..."
+              value={incidentDescription}
+              onChange={(e) => setIncidentDescription(e.target.value)}
+              wrap="soft"
+            />
           </div>
         </CardContent>
         <CardFooter className="flex justify-center">
@@ -66,5 +71,5 @@ export default function IncidentReportForm() {
         </CardFooter>
       </Card>
     </div>
-  );
+  )
 }
