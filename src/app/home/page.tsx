@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link"
 import { FileText, PenSquare, Calendar, AlertTriangle, BookOpen, Video, LucideIcon } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card";
