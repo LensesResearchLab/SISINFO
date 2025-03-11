@@ -1,5 +1,5 @@
 "use client";
-import {Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Mail, Users, FileText, Briefcase, CheckCircle2, User, Upload, X } from "lucide-react"
 import { Button } from '@/components/ui/button'
 import { use, useEffect, useState } from 'react';
@@ -9,8 +9,31 @@ import { ConfirmationModal } from '@/components/shared/confirmation-modal';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
+import SpinnerPage from "@/components/shared/spinner-page";
 
+const assistance_state: Assistance = {
+  id: 0,
+  name: "",
+  clasification: "",
+  publication_date: new Date(),
+  end_date: new Date(),
+  start_semester: "",
+  description: "",
+  requisites: [""],
+  professor: "",
+  email: ""
+};
 
+interface AssistanceProps {
+  assistance: Assistance;
+  setIsApplying: (value: boolean) => void;
+}
+
+interface InfoItemProps {
+  icon: React.ReactNode;
+  title: string;
+  content: string;
+}
 
 /**
  * AssistanceDetails Component
@@ -20,57 +43,57 @@ import { useRouter } from 'next/navigation';
  * States:
  * - assistance: Object containing all details about the assistance position
  * - isApplying: Boolean to toggle between details view and application form
+ * - isLoading: Boolean to track data fetching state
  * 
  * Features:
  * - Fetches and displays assistance details
  * - Handles navigation and 404 errors
  * - Toggles between information display and application form
+ * - Shows loading state during data fetch
  * 
  * @returns {JSX.Element} A div containing either assistance details or application form
  */
-export default function AssistanceDetails({ params } :{ params: Promise<{ id: string }> }) {
+export default function AssistanceDetails({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { id } = use(params);
-
-  const [assistance, setAssistance] = useState({ 
-    id: 0, 
-    name: "",
-    clasification: "", 
-    publication_date: new Date(),
-    end_date: new Date(),
-    start_semester: "",
-    description: "", 
-    requisites: [""], 
-    professor: "",
-    email: ""});
+  const [isLoading, setIsLoading] = useState(true);
+  const [assistance, setAssistance] = useState(assistance_state);
   const [isApplying, setIsApplying] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!id) return router.push("/404");
-      try { 
+      if (!id) {
+        router.push("/404");
+        return;
+      }
+
+      try {
         const data = await getGraduatedAssistanceById(id);
         setAssistance(data);
       } catch {
         router.push("/404");
+      } finally {
+        setIsLoading(false);
       }
     };
-  
-    fetchData();
-  }, [id]);
 
-  
+    fetchData();
+  }, [id, router]);
+
+  if (isLoading) {
+    return <SpinnerPage />;
+  }
+
   return (
     <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
-      {!isApplying && <AssistanceInscription assistance={assistance} setIsApplying={setIsApplying} />}
-      {isApplying && <AssistanceApplying assistance={assistance} setIsApplying={setIsApplying} />}
+      {!isApplying ? (
+        <AssistanceInscription assistance={assistance} setIsApplying={setIsApplying} />
+      ) : (
+        <AssistanceApplying assistance={assistance} setIsApplying={setIsApplying} />
+      )}
     </div>
-  )
+  );
 }
-
-
-
-
 
 /**
  * AssistanceInscription Component
@@ -90,11 +113,13 @@ export default function AssistanceDetails({ params } :{ params: Promise<{ id: st
  * @param {Object} props Component props
  * @returns {JSX.Element} Card containing assistance position details
  */
-function AssistanceInscription({assistance, setIsApplying}: {assistance: Assistance, setIsApplying: (value: boolean) => void}) {
+function AssistanceInscription({ assistance, setIsApplying }: AssistanceProps) {
   return (
-    <Card className="max-w-3xl  mx-auto shadow-lg">
-      <CardHeader className=" rounded-t-lg">
-        <CardTitle className="text-3xl font-bold text-sky-800">Información de la asistencia</CardTitle>
+    <Card className="max-w-3xl mx-auto shadow-lg">
+      <CardHeader className="rounded-t-lg">
+        <CardTitle className="text-3xl font-bold text-sky-800">
+          Información de la asistencia
+        </CardTitle>
       </CardHeader>
       <CardContent className="pt-3 space-y-6">
         <div className="space-y-11">
@@ -104,15 +129,41 @@ function AssistanceInscription({assistance, setIsApplying}: {assistance: Assista
             <ContactInfo assistance={assistance} />
           </div>
         </div>
-        <Button className="bg-black hover:bg-black/90 w-40 mx-auto block" onClick={() => setIsApplying(true)}>Aplicar</Button>
+        <Button 
+          className="bg-black hover:bg-black/90 w-40 mx-auto block" 
+          onClick={() => setIsApplying(true)}
+        >
+          Aplicar
+        </Button>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-
-
-
+/**
+ * InfoItem Component
+ * 
+ * Reusable component for displaying information with an icon and title.
+ * 
+ * Props:
+ * - icon: React node for the icon element
+ * - title: String for the information title
+ * - content: String content to display
+ * 
+ * @param {InfoItemProps} props Component props
+ * @returns {JSX.Element} Formatted information item
+ */
+function InfoItem({ icon, title, content }: InfoItemProps) {
+  return (
+    <div className="flex items-start gap-3">
+      {icon}
+      <div>
+        <h2 className="font-bold text-xl text-sky-800">{title}:</h2>
+        <p className="text-xl">{content}</p>
+      </div>
+    </div>
+  );
+}
 
 /**
  * MainInformation Component
@@ -131,41 +182,29 @@ function AssistanceInscription({assistance, setIsApplying}: {assistance: Assista
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing main position information
  */
-function MainInformation({assistance}: {assistance: Assistance}) {
-  return  (
+function MainInformation({ assistance }: { assistance: Assistance }) {
+  return (
     <div className="space-y-12">
-        <div className="space-y-6">
-          <div className="flex items-start gap-3">
-            <Briefcase className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />
-            <div>
-              <h2 className="font-bold text-xl text-sky-800">Nombre:</h2>
-              <p className="text-xl">{assistance.name}</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <Users className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />
-            <div>
-              <h2 className="font-bold text-xl text-sky-800">Clasificación:</h2>
-              <p className="text-xl">{assistance.clasification}</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <FileText className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />
-            <div>
-              <h2 className="font-bold text-xl text-sky-800">Descripción:</h2>
-              <p className="text-xl">{assistance.description}</p>
-            </div>
-          </div>
-        </div>
+      <div className="space-y-6">
+        <InfoItem
+          icon={<Briefcase className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />}
+          title="Nombre"
+          content={assistance.name}
+        />
+        <InfoItem
+          icon={<Users className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />}
+          title="Clasificación"
+          content={assistance.clasification}
+        />
+        <InfoItem
+          icon={<FileText className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />}
+          title="Descripción"
+          content={assistance.description}
+        />
       </div>
-  )
+    </div>
+  );
 }
-
-
-
-
 
 /**
  * Requisites Component
@@ -183,24 +222,21 @@ function MainInformation({assistance}: {assistance: Assistance}) {
  * @param {Object} props Component props
  * @returns {JSX.Element} List of position requirements
  */
-function Requisites({requisites}: {requisites: string[]}) {
+function Requisites({ requisites }: { requisites: string[] }) {
   return (
-    <div className='mb-4'>
-    <h3 className="font-semibold text-2xl text-sky-800 mb-3">Requisitos:</h3>
-    <ul className="space-y-1">
-      {requisites.map((requisites) => (
-        <li className="flex items-center gap-3" key = {requisites}>
-        <CheckCircle2 className="w-6 h-6 text-sky-800 flex-shrink-0" />
-        <span className="text-xl">{requisites}</span>
-      </li>
-      ))}
-    </ul>
+    <div className="mb-4">
+      <h3 className="font-semibold text-2xl text-sky-800 mb-3">Requisitos:</h3>
+      <ul className="space-y-1">
+        {requisites.map((requisite) => (
+          <li className="flex items-center gap-3" key={requisite}>
+            <CheckCircle2 className="w-6 h-6 text-sky-800 flex-shrink-0" />
+            <span className="text-xl">{requisite}</span>
+          </li>
+        ))}
+      </ul>
     </div>
-  )
+  );
 }
-
-
-
 
 /**
  * ContactInfo Component
@@ -213,203 +249,204 @@ function Requisites({requisites}: {requisites: string[]}) {
  * 
  * Features:
  * - Icons for each contact method
- * - Clickable email link
  * - Consistent styling
  * 
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing contact information
  */
-function ContactInfo({assistance}: {assistance: Assistance}) {
+function ContactInfo({ assistance }: { assistance: Assistance }) {
   return (
-    <div>
-          <h2 className="text-2xl font-bold text-sky-800 mb-3">Contacto:</h2>
-          <div className="space-y-3 ">
-            <div className="flex items-center gap-3">
-              <User className="w-6 h-6 text-sky-800 flex-shrink-0" />
-              <span className="text-xl">{assistance.professor}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Mail className="w-6 h-6 text-sky-800" />
-              <a href={`mailto:${assistance.email}`} className="text-xl text-sky-800 hover:underline">
-                {assistance.email}
-              </a>
-            </div>
-          </div>
-        </div>
-  )
+    <div className="space-y-4">
+      <h3 className="font-semibold text-2xl text-sky-800">Información de contacto:</h3>
+      <div className="space-y-4">
+        <InfoItem
+          icon={<User className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />}
+          title="Profesor"
+          content={assistance.professor}
+        />
+        <InfoItem
+          icon={<Mail className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />}
+          title="Email"
+          content={assistance.email}
+        />
+      </div>
+    </div>
+  );
 }
 
-
+/**
+ * ButtonBack Component
+ * 
+ * Renders a button to return to the details view from the application form.
+ * 
+ * Props:
+ * - setIsApplying: Function to toggle application state
+ * 
+ * Features:
+ * - Consistent styling with main theme
+ * - Icon integration
+ * - Hover states
+ * 
+ * @param {Object} props Component props
+ * @returns {JSX.Element} Back button
+ */
+function ButtonBack({ setIsApplying }: { setIsApplying: (value: boolean) => void }) {
+  return (
+    <Button
+      variant="outline"
+      onClick={() => setIsApplying(false)}
+      className="mb-4"
+    >
+      <X className="mr-2 h-4 w-4" /> Volver
+    </Button>
+  );
+}
 
 /**
  * AssistanceApplying Component
- *
+ * 
  * Handles the application process for the assistance position.
- *
+ * 
  * Props:
  * - assistance: Assistance object containing position details
  * - setIsApplying: Function to toggle application state
- *
+ * 
  * Features:
  * - File upload for CV
  * - Confirmation modal
  * - Form submission handling
  * - Navigation back to details
- *
+ * 
  * @param {Object} props Component props
  * @returns {JSX.Element} Application form card
  */
-function AssistanceApplying({assistance, setIsApplying}: {assistance: Assistance, setIsApplying: (value: boolean) => void}) {
+function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert("Aplicación enviada con exito");
-  }
+  };
 
   const modalProps = {
-    "title": "¿Estás seguro de aplicar a esta asistencia graduada?",
-    "description": "Recuerda que una vez aplicas no podrás cambiar tu decisión", 
-    "buttonText": "Aplicar",
-    "successTitle": "¡Aplicación enviada!",
-    "successText": "Tu aplicación ha sido enviada con éxito",
-    "url": "/home/graduated-assistance/assistance-applied-list"
-  }
+    title: "¿Estás seguro de aplicar a esta asistencia graduada?",
+    description: "Recuerda que una vez aplicas no podrás cambiar tu decisión",
+    buttonText: "Aplicar",
+    successTitle: "¡Aplicación enviada!",
+    successText: "Tu aplicación ha sido enviada con éxito",
+    url: "/home/graduated-assistance/assistance-applied-list"
+  };
 
   return (
-    <Card className="max-w-3xl  mx-auto shadow-lg">
-      <CardHeader className=" flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <CardTitle className="text-2xl font-bold text-center text-sky-800">{assistance.name}</CardTitle>
-        <ButtonBack setIsApplying={setIsApplying} />
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <UploadCV assistance={assistance} />
-          <div className="flex justify-center pt-3.5">
-            <ConfirmationModal dialogText={modalProps} onConfirm={handleSubmit}/>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
-  )
+    <div className="max-w-3xl mx-auto">
+      <ButtonBack setIsApplying={setIsApplying} />
+      <Card className="shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-3xl font-bold text-sky-800">
+            Aplicar a {assistance.name}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <UploadCV assistance={assistance} />
+            <div className="flex justify-center pt-3.5">
+              <ConfirmationModal dialogText={modalProps} onConfirm={handleSubmit} />
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
-
-
-
-
-
-/**
- * ButtonBack Component
- *
- * Renders a button to return to the details view from the application form.
- *
- * Props:
- * - setIsApplying: Function to toggle application state
- *
- * Features:
- * - Consistent styling with main theme
- * - Icon integration
- * - Hover states
- *
- * @param {Object} props Component props
- * @returns {JSX.Element} Back button
- */
-function ButtonBack({setIsApplying}: {setIsApplying: (value: boolean) => void}) {
-  return  (
-    <Button variant="outline"
-      size="sm"
-      className="text-sky-800 hover:text-sky-900 border-sky-800 hover:border-sky-900 hover:bg-sky-50"
-      onClick={() => setIsApplying(false)}
-    >
-      <FileText className="h-4 w-4 mr-2" />
-      Ver detalles
-    </Button>
-  )
-} 
-
-
-
-
-
 
 /**
  * UploadCV Component
- *
+ * 
  * Handles CV file upload functionality for the application process.
- *
+ * 
  * Props:
  * - assistance: Assistance object containing position details
- *
+ * 
  * States:
  * - uploadedFile: Object containing file name and URL
- *
+ * 
  * Features:
  * - PDF file upload
  * - File preview
  * - Remove file capability
  * - Drag and drop area
- *
+ * 
  * @param {Object} props Component props
  * @returns {JSX.Element} File upload section
  */
-function UploadCV({assistance}: {assistance: Assistance}) {
-  interface UploadedFile {
-    name: string
-    url: string
-  }
-  const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null)
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+function UploadCV({ assistance }: { assistance: Assistance }) {
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; url: string } | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file && file.type === "application/pdf") {
-      const url = URL.createObjectURL(file)
-      setUploadedFile({ name: file.name, url })
+      const url = URL.createObjectURL(file);
+      setUploadedFile({ name: file.name, url });
     }
-  }
+  };
 
-  const handleRemoveFile = () => {
-    if (uploadedFile?.url) {
-      URL.revokeObjectURL(uploadedFile.url)
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file && file.type === "application/pdf") {
+      const url = URL.createObjectURL(file);
+      setUploadedFile({ name: file.name, url });
     }
-    setUploadedFile(null)
-  }
+  };
 
-  // Not working right-now as logic is needed to submit 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log({
-      uploadedFile
-    })
-  }
+  const handleDragOver = (event: React.DragEvent) => {
+    event.preventDefault();
+  };
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-col space-y-1">
-        <Requisites requisites={assistance.requisites} />
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-sky-800">Archivo cargado</h2>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold mb-2">Hoja de vida</h2>
+        <p className="text-gray-500">
+          Adjunta tu hoja de vida en formato PDF para aplicar a esta asistencia
+        </p>
+      </div>
 
-          {uploadedFile ? (
-            <div className="flex items-center gap-2 p-3 bg-gray-100 rounded-lg">
-              <div className="flex items-center gap-2 flex-1">
-                <span className="text-sm font-medium">{uploadedFile.name}</span>
-              </div>
-              <button type="button" onClick={handleRemoveFile} className="p-1 hover:bg-gray-200 rounded-full">
-                <X className="w-5 h-5 cursor-pointer" />
-              </button>
-            </div>
-          ) : null}
-
-          <div className={`border-2 border-dashed rounded-lg p-6 ${uploadedFile ? "hidden" : ""}`}>
-            <div className="flex flex-col items-center gap-2">
-              <Upload className="w-8 h-8 text-gray-600" />
-              <Label htmlFor="file-upload" className="cursor-pointer text-center">
-                <span className="text-lg">Adjuntar documentos</span>
-                <Input id="file-upload" type="file" accept=".pdf" onChange={handleFileUpload} className="hidden" />
-              </Label>
-            </div>
+      <div
+        className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer"
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+      >
+        {!uploadedFile ? (
+          <div>
+            <Upload className="mx-auto h-12 w-12 text-gray-400" />
+            <Label htmlFor="cv" className="mt-4 block text-sm font-medium">
+              <span className="text-sky-800">Click para subir</span> o arrastra y suelta
+            </Label>
+            <Input
+              id="cv"
+              type="file"
+              className="hidden"
+              accept=".pdf"
+              onChange={handleFileChange}
+            />
+            <p className="text-xs text-gray-500 mt-2">Solo archivos PDF</p>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <FileText className="h-6 w-6 text-sky-800 mr-2" />
+              <span>{uploadedFile.name}</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-red-500"
+              onClick={() => setUploadedFile(null)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
-
-
