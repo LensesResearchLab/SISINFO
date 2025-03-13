@@ -22,8 +22,9 @@ export default function IncidentReportForm() {
   const [incidentDescription, setIncidentDescription] = useState("")
 
   const handleSubmit = () => {
-    console.log("Incident Type:", incidentType)
-    console.log("Description:", incidentDescription)
+    alert("Incident report submitted successfully")
+    setIncidentDescription("")
+    setIncidentType("")
   }
 
   return (
