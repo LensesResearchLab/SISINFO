@@ -4,6 +4,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { Separator } from "@/components/ui/separator";
 import Footer from "@/components/shared/footer";
 import BreadCrumbDetail from "@/components/shared/breadcrumb-detail";
+import Provider from "./providers";
 
 export default function Layout({children}: {children: React.ReactNode}) {
   return (
@@ -17,9 +18,12 @@ export default function Layout({children}: {children: React.ReactNode}) {
             <BreadCrumbDetail/>
           </div>
         </header>
-        <main className="flex flex-grow bg-gray-100">
-          {children}
-        </main>
+        <Provider>
+          <main className="flex flex-grow bg-gray-100">
+            {children}
+          </main>
+        </Provider>
+
         <Footer />
       </SidebarInset>
     </SidebarProvider>

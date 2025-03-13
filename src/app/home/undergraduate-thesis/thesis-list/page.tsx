@@ -17,7 +17,7 @@ import {
     TableRow,
   } from "@/components/ui/table"
   import { Search } from "lucide-react";
-  import { useEffect, useState } from "react";
+  import { useEffect } from "react";
   import { useRouter } from 'next/navigation';
   import { getUndergraduateThesis, getUndegraduadeThesisSemesters } from "@/app/home/undergraduate-thesis/services/thesis.service";
   import { Thesis } from "@/app/home/undergraduate-thesis/types/thesis.type";
@@ -33,311 +33,294 @@ import {
   } from "@/components/ui/select"
   import SpinnerPage from "@/components/shared/spinner-page";
   import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
+import { useThesisListStore } from "./store";
   
-  /**
-   * ThesisList Component
-   * 
-   * This component displays a list of undergraduate theses. It allows users to filter the list by professor or area of interest, and sort the list alphabetically.
-   * 
-   * @returns {JSX.Element} The ThesisList component
-   */
-  export default function ThesisList() {
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSearching, setIsSearching] = useState(false);
-    const [thesisList, setThesisList] = useState<{[professor: string]: Thesis[]}>({});
-    const [searchCategory, setSearchCategory] = useState<string>("professor");
-    const [order, setOrder] = useState<string[]>([]);
-    const [semesters, setSemesters] = useState<string[]>([]);
-    const [searchTerm, setSearchTerm] = useState<string>("");
-    const [sortDirection, setSortDirection] = useState<number>(1);
-  
-    const toggleSort = () => setSortDirection(sortDirection * -1);
-  
-    useEffect(() => {
-  
-      Promise.all([
-        getUndergraduateThesis().then((data) => {
-          setThesisList(data);
-          const sortedKeys = Object.keys(data).sort((a, b) => sortDirection * a.localeCompare(b));
-          setOrder(sortedKeys);
-        }),
-        getUndegraduadeThesisSemesters().then((data) => setSemesters(data)),
-      ]).finally(() => setIsLoading(false));
-    }, []);
-  
-    useEffect(() => {
-      setIsSearching(true);
-      getUndergraduateThesis(searchTerm, searchCategory).then((data) => {
-        setThesisList(data);
-        const sortedKeys = Object.keys(data).sort((a, b) => sortDirection * a.localeCompare(b));
-        setOrder(sortedKeys);
-      }).finally(() => setIsSearching(false));
-    }, [searchTerm, searchCategory]);
-  
-    useEffect(() => {
-      const sortedKeys = Object.keys(thesisList).sort((a, b) => sortDirection * a.localeCompare(b));
-      setOrder(sortedKeys);
-  
-      const sortedThesisList: { [professor: string]: Thesis[] } = {};
-      sortedKeys.forEach((key) => {
-        sortedThesisList[key] = thesisList[key];
+/**
+ * ThesisList Component
+ * 
+ * Displays a list of undergraduate theses with filtering and sorting capabilities.
+ * 
+ * Features:
+ * - Filter by professor or area of interest
+ * - Sort alphabetically (A-Z or Z-A)
+ * - Select semester filter
+ * - Loading states with skeletons
+ * - Responsive accordion layout
+ * 
+ * @returns {JSX.Element} The ThesisList component
+ */
+export default function ThesisList() {
+  const searchCategory = useThesisListStore(state => state.searchCategory);
+  const searchTerm = useThesisListStore(state => state.searchTerm);
+  const sortDirection = useThesisListStore(state => state.sortDirection);
+  const setSortDirection = useThesisListStore(state => state.setSortDirection);
+  const setOrder = useThesisListStore(state => state.setOrder);
+
+  const { data: thesisList, isFetching: isFetchingThesis} = useQuery({
+    queryKey: ['student-thesis-projects', searchCategory, searchTerm],
+    queryFn: () => getUndergraduateThesis({category: searchCategory, semester: searchTerm}),
+    staleTime: 1000 * 60 * 5,
+  });
+  const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
+    queryKey: ['student-thesis-semesters'],
+    queryFn: getUndegraduadeThesisSemesters,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  useEffect(() => {
+    if (thesisList) {
+      const sortedOrder = Object.keys(thesisList).sort((a, b) => {
+        return sortDirection * a.localeCompare(b);
       });
-    }, [sortDirection, thesisList]);
-  
-    if (isLoading) return <SpinnerPage />;
-  
-    return (
-      <div className="min-h-full max-w-[900px] container mx-auto p-4 space-y-8">
-          <Accordion type="single" collapsible className="w-full bg-white shadow-lg rounded-xl p-5 h-full">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <SelectSearchCategory setSearchCategory={setSearchCategory} />
-                <SelectSemester setSearchTerm={setSearchTerm} semesters={semesters} />
-              </div>
-  
-              <Button variant="default" className="bg-sky-800 hover:bg-sky-900" onClick={toggleSort}>
-                <ArrowUpDown className="w-4 h-4 mr-2" />
-                {sortDirection === 1 ? "A-Z" : "Z-A"}
-              </Button>
+      setOrder(sortedOrder);
+    }
+  }, [thesisList, sortDirection]);
+
+
+  if (isLoadingSemesters) return <SpinnerPage />;
+
+  return (
+    <div className="min-h-full max-w-[900px] container mx-auto p-4 space-y-8">
+        <Accordion type="single" collapsible className="w-full bg-white shadow-lg rounded-xl p-5 h-full">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <SelectSearchCategory/>
+              <SelectSemester semesters={semesters ?? []} />
             </div>
-            { isSearching ? <SkeletonAccordion /> : <AccordionListSimpleFactory category={searchCategory} thesisList={thesisList} order={order}/>}
-          </Accordion>
-      </div>
-    );
-  }
-  
-  /**
-   * SelectSemester Function
-   * 
-   * This function renders a select component for semester selection.
-   * It updates the searchTerm state with the selected semester.
-   * 
-   * @param {Object} props - Component props
-   * @param {Function} props.setSearchTerm - Function to update the searchTerm state
-   * @param {Array} props.semesters - Array of available semesters
-   * 
-   * @returns {JSX.Element} A select component for semester selection
-   */
-  function SelectSemester({setSearchTerm, semesters}: {setSearchTerm: (category: string) => void, semesters: string[]}) {
-    const handleClick = (category: string) => {setSearchTerm(category);};
-    return (
-      <Select onValueChange={handleClick}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Semester" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Semester</SelectLabel>
-            {
-              semesters.map((semester: string) => (
-                <SelectItem value={semester} key={semester}>{semester}</SelectItem>
-              ))
-            }
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    )
-  }
-  
-  /**
-   * SelectSearchCategory Function
-   * 
-   * This function renders a select component for search category selection.
-   * It updates the searchCategory state with the selected category.
-   * 
-   * @param {Object} props - Component props
-   * @param {Function} props.setSearchCategory - Function to update the searchCategory state
-   * 
-   * @returns {JSX.Element} A select component for search category selection
-   */
-  function SelectSearchCategory({setSearchCategory}: {setSearchCategory: (category: string) => void}) {
-    const handleClick = (category: string) => {setSearchCategory(category);};
-    return (
-      <Select onValueChange={handleClick}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Search Category" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Search Category</SelectLabel>
-            <SelectItem value="professor">Professor</SelectItem>
-            <SelectItem value="areas_of_interest">Area of Interest</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    )
-  }
-  
-  /**
-   * AccordionListSimpleFactory Function
-   * 
-   * This function dynamically renders an accordion list based on the search category.
-   * It returns either ProfessorAccordionList or AreaOfInterestAccordionList.
-   * 
-   * @param {Object} props - Component props
-   * @param {String} props.category - The current search category
-   * @param {[professor: string]: Thesis[]} props.thesisList - The list of theses organized by professor or area of interest
-   * @param {Array} props.order - The sorted order of professors or areas of interest
-   * 
-   * @returns {JSX.Element} An accordion list based on the search category
-   */
-  function AccordionListSimpleFactory({category, thesisList, order}: {category: string, thesisList: {[professor: string]: Thesis[]}, order: string[]}) {
-    if (category === "areas_of_interest") return <AreaOfInterestAccordionList thesisList={thesisList} order={order} />
-    return <ProfessorAccordionList thesisList={thesisList} order={order} />
-  }
-  
-  /**
-   * AreaOfInterestAccordionList Function
-   * 
-   * This function dynamically renders an accordion list based on the area of interest.
-   * It returns an ElementAccordion for each area of interest, with an icon and a table of theses.
-   * 
-   * @param {Object} props - Component props
-   * @param {[field: string]: Thesis[]} props.thesisList - The list of theses organized by area of interest
-   * @param {Array} props.order - The sorted order of areas of interest
-   * 
-   * @returns {JSX.Element} An accordion list based on the area of interest
-   */
-  function AreaOfInterestAccordionList({thesisList, order}: {thesisList: {[field: string]: Thesis[]}, order: string[]}) {
-    return (
-      <>
-        {order.map((field) => (
-          <ElementAccordion element={field} key={field} icon={<File className="mr-2 h-5 w-5 text-sky-900" />}>
-            <ElementThesisTable thesisList={thesisList[field]} />
-          </ElementAccordion>
-        ))}
-      </>
-    )
-  }
-  
-  /**
-   * ProfessorAccordionList Function
-   * 
-   * This function dynamically renders an accordion list based on the professor.
-   * It returns an ElementAccordion for each professor, with an icon and a table of theses.
-   * 
-   * @param {Object} props - Component props
-   * @param {[professor: string]: Thesis[]} props.thesisList - The list of theses organized by professor
-   * @param {Array} props.order - The sorted order of professors
-   * 
-   * @returns {JSX.Element} An accordion list based on the professor
-   */
-  function ProfessorAccordionList({thesisList, order}: {thesisList: {[professor: string]: Thesis[]}, order: string[]}) {
-    return (
-      <>
-        {order.map((professor) => (
-          <ElementAccordion element={professor} key={professor} icon={<User className="mr-2 h-5 w-5 text-sky-900" />}>
-            <ElementThesisTable thesisList={thesisList[professor]} />
-          </ElementAccordion>
-        ))}
-      </>
-    )
-  }
-  
-  /**
-   * ElementAccordion Function
-   * 
-   * This function renders an accordion item with a trigger and content.
-   * It displays an icon and the element's name in the trigger, and the children components in the content.
-   * 
-   * @param {Object} props - Component props
-   * @param {string} props.element - The name of the element to display in the trigger
-   * @param {[React.ReactNode]} props.children - Optional children components to render in the content
-   * @param {[React.ReactNode]} props.icon - Optional icon to display in the trigger
-   * 
-   * @returns {JSX.Element} An accordion item with a trigger and content
-   */
-  function ElementAccordion({element, children, icon}: {element: string, children?: React.ReactNode, icon?: React.ReactNode}) {
-    return (
-      <AccordionItem value={element}>
-        <AccordionTrigger className="hover:bg-sky-100 cursor-pointer">  
-          <div className="flex items-center">
-            {icon}
-            <span>{element}</span>
+            <Button variant="default" className="bg-sky-800 hover:bg-sky-900" onClick={() => setSortDirection(sortDirection * -1)}>
+              <ArrowUpDown className="w-4 h-4 mr-2" />
+              {sortDirection === 1 ? "A-Z" : "Z-A"}
+            </Button>
           </div>
-        </AccordionTrigger>
-        <AccordionContent>  
-          {children}
-        </AccordionContent>
-      </AccordionItem>
-    )
-  }
+          { isFetchingThesis ? <SkeletonAccordion /> : <AccordionListSimpleFactory thesisList={thesisList ?? {}}/>}
+        </Accordion>
+    </div>
+  );
+}
   
-  /**
-   * ProfessorThesisTable Component
-   * 
-   * This component renders a table displaying a professor's thesis projects.
-   * It shows project details and provides navigation to individual thesis pages.
-   * 
-   * @param {Object} props - Component props
-   * @param {Thesis[]} props.thesisList - Array of thesis projects to display
-   * 
-   * Features:
-   * - Displays thesis projects in a table format
-   * - Shows project title, category and number of students
-   * - Includes a view button that navigates to detailed thesis page
-   * - Table headers with sky blue background
-   * - Responsive table layout
-   * 
-   * Layout:
-   * - Table with 4 columns: project name, category, students count, view button
-   * - Each row represents one thesis project
-   * - View button with search icon for navigation
-   * 
-   * @returns {JSX.Element} A table displaying thesis project information
-   */
-  function ElementThesisTable({thesisList}: {thesisList: Thesis[]}) {
-    const router = useRouter();
-    const handleClick = (id: number) => {router.push(`/home/undergraduate-thesis/thesis-list/${id}`)};
-    return (
-      <Table>
-        <TableHeader >
-          <TableRow>
-            <TableHead className="bg-sky-900 text-white text-center">Nombre del proyecto</TableHead>
-            <TableHead className="bg-sky-900 text-white text-center">Categoria</TableHead>
-            <TableHead className="bg-sky-900 text-white text-center">Número de estudiantes</TableHead>
-            <TableHead className="bg-sky-900 text-white text-center">Ver</TableHead>
+/**
+ * SelectSemester Component
+ * 
+ * Renders a dropdown select component for choosing academic semesters.
+ * Updates the global search term state when a semester is selected.
+ * 
+ * @param {Object} props - Component properties
+ * @param {string[]} props.semesters - Array of available semester options
+ * @returns {JSX.Element} Semester selection dropdown
+ */
+function SelectSemester({semesters}: {semesters: string[]}) {
+  const setSearchTerm = useThesisListStore(state => state.setSearchTerm);
+  const handleClick = (category: string) => {setSearchTerm(category);};
+  return (
+    <Select onValueChange={handleClick}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Semester" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Semester</SelectLabel>
+          {
+            semesters.map((semester: string) => (
+              <SelectItem value={semester} key={semester}>{semester}</SelectItem>
+            ))
+          }
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  )
+}
+  
+/**
+ * SelectSearchCategory Component
+ * 
+ * Renders a dropdown select component for choosing search filter category.
+ * Allows filtering thesis list by professor or area of interest.
+ * 
+ * @returns {JSX.Element} Search category selection dropdown
+ */
+function SelectSearchCategory() {
+  const setSearchCategory = useThesisListStore(state => state.setSearchCategory);
+  const handleClick = (category: string) => {setSearchCategory(category);};
+  return (
+    <Select onValueChange={handleClick}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Search Category" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Search Category</SelectLabel>
+          <SelectItem value="professor">Professor</SelectItem>
+          <SelectItem value="areas_of_interest">Area of Interest</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  )
+}
+  
+/**
+ * AccordionListSimpleFactory Component
+ * 
+ * Factory component that renders appropriate accordion list based on selected category.
+ * Switches between professor-based and area-of-interest-based views.
+ * 
+ * @param {Object} props - Component properties
+ * @param {Object} props.thesisList - Grouped thesis data by professor or area
+ * @returns {JSX.Element} Appropriate accordion list component
+ */
+function AccordionListSimpleFactory({thesisList}: {thesisList: {[professor: string]: Thesis[]}}) {
+  const category = useThesisListStore(state => state.searchCategory);
+  const order = useThesisListStore(state => state.order);
+  if (category === "areas_of_interest") return <AreaOfInterestAccordionList thesisList={thesisList} order={order} />
+  return <ProfessorAccordionList thesisList={thesisList} order={order} />
+}
+  
+/**
+ * AreaOfInterestAccordionList Component
+ * 
+ * Renders an accordion list grouped by areas of interest.
+ * Each section displays theses related to a specific field.
+ * 
+ * @param {Object} props - Component properties
+ * @param {Object} props.thesisList - Thesis data grouped by field
+ * @param {string[]} props.order - Sorted order of fields
+ * @returns {JSX.Element} Area of interest based accordion list
+ */
+function AreaOfInterestAccordionList({thesisList, order}: {thesisList: {[field: string]: Thesis[]}, order: string[]}) {
+  return (
+    <>
+      {order.map((field) => (
+        <ElementAccordion element={field} key={field} icon={<File className="mr-2 h-5 w-5 text-sky-900" />}>
+          {
+            field in thesisList ? <ElementThesisTable thesisList={thesisList[field]} /> : <SkeletonAccordion />
+          }
+        </ElementAccordion>
+      ))}
+    </>
+  )
+}
+  
+/**
+ * ProfessorAccordionList Component
+ * 
+ * Renders an accordion list grouped by professors.
+ * Each section displays theses supervised by a specific professor.
+ * 
+ * @param {Object} props - Component properties
+ * @param {Object} props.thesisList - Thesis data grouped by professor
+ * @param {string[]} props.order - Sorted order of professors
+ * @returns {JSX.Element} Professor based accordion list
+ */
+function ProfessorAccordionList({thesisList, order}: {thesisList: {[professor: string]: Thesis[]}, order: string[]}) {
+  console.log(thesisList);
+  console.log(order);
+  return (
+    <>
+      {order.map((professor) => (
+        <ElementAccordion element={professor} key={professor} icon={<User className="mr-2 h-5 w-5 text-sky-900" />}>
+          {
+            professor in thesisList ? <ElementThesisTable thesisList={thesisList[professor]} /> : <SkeletonAccordion />
+          }
+        </ElementAccordion>
+      ))}
+    </>
+  )
+}
+
+/**
+ * ElementAccordion Component
+ * 
+ * Generic accordion item component with customizable trigger and content.
+ * 
+ * @param {Object} props - Component properties
+ * @param {string} props.element - Display text for accordion trigger
+ * @param {React.ReactNode} props.children - Content to display when expanded
+ * @param {React.ReactNode} props.icon - Icon to display in trigger
+ * @returns {JSX.Element} Accordion item component
+ */
+function ElementAccordion({element, children, icon}: {element: string, children?: React.ReactNode, icon?: React.ReactNode}) {
+  return (
+    <AccordionItem value={element}>
+      <AccordionTrigger className="hover:bg-sky-100 cursor-pointer">  
+        <div className="flex items-center">
+          {icon}
+          <span>{element}</span>
+        </div>
+      </AccordionTrigger>
+      <AccordionContent>  
+        {children}
+      </AccordionContent>
+    </AccordionItem>
+  )
+}
+  
+/**
+ * ElementThesisTable Component
+ * 
+ * Displays thesis projects in a tabular format with details and actions.
+ * 
+ * Features:
+ * - Sortable columns
+ * - Project details including title, category, student count
+ * - View action button for each project
+ * - Responsive table layout
+ * 
+ * @param {Object} props - Component properties
+ * @param {Thesis[]} props.thesisList - Array of thesis projects to display
+ * @returns {JSX.Element} Thesis data table
+ */
+function ElementThesisTable({thesisList}: {thesisList: Thesis[]}) {
+  const router = useRouter();
+  const handleClick = (id: number) => {router.push(`/home/undergraduate-thesis/thesis-list/${id}`)};
+  return (
+    <Table>
+      <TableHeader >
+        <TableRow>
+          <TableHead className="bg-sky-900 text-white text-center">Nombre del proyecto</TableHead>
+          <TableHead className="bg-sky-900 text-white text-center">Categoria</TableHead>
+          <TableHead className="bg-sky-900 text-white text-center">Número de estudiantes</TableHead>
+          <TableHead className="bg-sky-900 text-white text-center">Ver</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody className="text-center">
+        {thesisList.map((project, index) => (
+            <TableRow key={index}>
+            <TableCell className="font-medium">{project.title}</TableCell>
+            <TableCell className="font-medium">{project.category}</TableCell>
+            <TableCell className="font-medium">{project.students}</TableCell>
+            <TableCell className="font-medium">
+              <Button variant="ghost" size="icon" onClick={() => handleClick(project.id)} className="cursor-pointer">
+                <Search className="w-4 h-4" />
+              </Button>
+            </TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody className="text-center">
-          {thesisList.map((project, index) => (
-              <TableRow key={index}>
-              <TableCell className="font-medium">{project.title}</TableCell>
-              <TableCell className="font-medium">{project.category}</TableCell>
-              <TableCell className="font-medium">{project.students}</TableCell>
-              <TableCell className="font-medium">
-                <Button variant="ghost" size="icon" onClick={() => handleClick(project.id)} className="cursor-pointer">
-                  <Search className="w-4 h-4" />
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    )
-  }
+        ))}
+      </TableBody>
+    </Table>
+  )
+}
   
-  /**
-   * SkeletonAccordion Component
-   * 
-   * This component displays a loading skeleton for an accordion item.
-   * It generates 8 accordion items with a user icon and a skeleton for the content.
-   * 
-   * @returns {JSX.Element} A JSX element representing the accordion items with loading skeletons
-   */
-  function SkeletonAccordion() {
-    return (
-      <>
-        {Array.from({length: 8}).map((_, index) => (
-          <AccordionItem key={index} value="loading">
-            <AccordionTrigger>  
-              <div className="flex items-center w-full">
-                <User className="mr-2 h-5 w-5 text-sky-900" />
-                <Skeleton className="w-40 h-4" />
-              </div>
-            </AccordionTrigger>
-          </AccordionItem>
-        ))} 
-      </>
-    )
-  }
+/**
+ * SkeletonAccordion Component
+ * 
+ * Renders loading placeholder UI for accordion items.
+ * Displays 8 skeleton items with animated loading effects.
+ * 
+ * @returns {JSX.Element} Loading skeleton UI component
+ */
+function SkeletonAccordion() {
+  return (
+    <>
+      {Array.from({length: 8}).map((_, index) => (
+        <AccordionItem key={index} value="loading">
+          <AccordionTrigger>  
+            <div className="flex items-center w-full">
+              <User className="mr-2 h-5 w-5 text-sky-900" />
+              <Skeleton className="w-40 h-4" />
+            </div>
+          </AccordionTrigger>
+        </AccordionItem>
+      ))} 
+    </>
+  )
+}

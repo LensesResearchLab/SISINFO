@@ -1,4 +1,4 @@
-import { StatusInformation, Thesis } from "@/app/undergraduate-thesis/types/thesis.type";
+import { StatusInformation, Thesis } from "@/app/home/undergraduate-thesis/types/thesis.type";
 
 const thesisList: {[professor: string]: Thesis[]} = {
     "Camilo Escobar": [
@@ -145,7 +145,7 @@ const thesisList: {[professor: string]: Thesis[]} = {
   }
 
 
-export async function getUndergraduateThesis(semester?: string, category?: string) {
+export async function getUndergraduateThesis({semester, category}: {semester?: string, category?: string}) {
   if (category === "areas_of_interest") {
     return getUndergraduateThesisByArea(semester, category);
   } 
@@ -267,5 +267,6 @@ export async function getThesisStatusInformation() {
       grade: "Aprobado",
       lastStep: "Inscrito",
     };
-    return status
+    return status;
 }
+
