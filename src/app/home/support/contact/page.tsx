@@ -67,7 +67,7 @@ export default function AcademicCoordinators() {
         </CardContent>
         <div className="mt-6 flex flex-col items-center">
           <Image 
-            src="https://images.squarespace-cdn.com/content/v1/58e0281dd482e9ebf9713ccb/9f338ffa-6dd9-4b0b-963c-b7a9fbab3e96/Logo+Bookeau.png" 
+            src={"/logo_bookeau.png"} 
             width={256}
             height={64}
             alt="Bookeau" className="w-64 mb-4" />

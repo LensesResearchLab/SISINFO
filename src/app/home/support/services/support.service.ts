@@ -7,7 +7,7 @@ import { Coordinator, Tutorial } from "@/app/home/support/types/support.types";
       office: "ML-70",
       email: "pregisis@uniandes.edu.co",
       extension: "2873",
-      image: "https://sistemasproyectos.uniandes.edu.co/informe-actividades/wp-content/uploads/2015/12/jp.fernandez29.jpg",
+      image: "/juan_fernandez.jpg",
     },
     {
       id: 2,
@@ -15,7 +15,7 @@ import { Coordinator, Tutorial } from "@/app/home/support/types/support.types";
       office: "ML-79",
       email: "magitn@uniandes.edu.co",
       extension: "3745",
-      image: "https://media.licdn.com/dms/image/v2/C4E03AQH8Br6bKD4WPQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1635939192475?e=2147483647&v=beta&t=z9FOb9GK8wF7MUeVcFMiwHTjXhEsYQcPj0fO3vmImsw",
+      image: "/natalia_franco.jpg",
     },
   ];
 
