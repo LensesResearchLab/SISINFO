@@ -44,7 +44,9 @@ import {
             <TabsTrigger value="status" className="cursor-pointer data-[state=active]:bg-sky-900 data-[state=active]:font-semibold data-[state=active]:text-white">Estado inscripción</TabsTrigger>
           </TabsList>
           <TabsContent value="general" >
-            <TabGeneralCard title={general.title} sections={general.sections} children={children} />
+            <TabGeneralCard title={general.title} sections={general.sections}>
+              {children}
+            </TabGeneralCard>
           </TabsContent>
           <TabsContent value="status">
             <TabStatusCard status={status} />

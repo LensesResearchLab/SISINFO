@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCoordinators } from "@/app/home/support/services/support.service";
 import { Coordinator } from "@/app/home/support/types/support.types";
+import Image from "next/image";
 
 /**
  * AcademicCoordinators Component
@@ -40,8 +41,10 @@ export default function AcademicCoordinators() {
         <CardContent className="flex flex-wrap justify-center gap-6">
           {coordinators.map((coordinator, index) => (
             <Card key={index} className="flex items-center p-6 w-96 shadow-lg rounded-lg border-none">
-              <img
+              <Image
                 src={coordinator.image}
+                height={96}
+                width={96}
                 alt={coordinator.name}
                 className="w-24 h-24 rounded-full object-cover mr-6"
               />
@@ -63,7 +66,11 @@ export default function AcademicCoordinators() {
           ))}
         </CardContent>
         <div className="mt-6 flex flex-col items-center">
-          <img src="https://images.squarespace-cdn.com/content/v1/58e0281dd482e9ebf9713ccb/9f338ffa-6dd9-4b0b-963c-b7a9fbab3e96/Logo+Bookeau.png" alt="Bookeau" className="w-64 mb-4" />
+          <Image 
+            src="https://images.squarespace-cdn.com/content/v1/58e0281dd482e9ebf9713ccb/9f338ffa-6dd9-4b0b-963c-b7a9fbab3e96/Logo+Bookeau.png" 
+            width={256}
+            height={64}
+            alt="Bookeau" className="w-64 mb-4" />
           <Button className="bg-black text-white px-6 py-2 rounded-md text-lg">
             Reserva tu cita
           </Button>
