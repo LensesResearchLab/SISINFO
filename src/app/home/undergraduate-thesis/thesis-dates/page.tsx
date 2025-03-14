@@ -29,7 +29,6 @@ export default function ThesisDates() {
   const { data: dates, isFetching, error } = useQuery({
     queryKey: ['student-thesis-dates'],
     queryFn: getUndergraduateThesisDates,
-    staleTime: 1000 * 60 * 5,
   });
 
   if (isFetching) return <SpinnerPage />;
