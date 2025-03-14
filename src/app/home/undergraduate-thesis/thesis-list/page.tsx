@@ -60,12 +60,10 @@ export default function ThesisList() {
   const { data: thesisList, isFetching: isFetchingThesis} = useQuery({
     queryKey: ['student-thesis-projects', searchCategory, searchTerm],
     queryFn: () => getUndergraduateThesis({category: searchCategory, semester: searchTerm}),
-    staleTime: 1000 * 60 * 5,
   });
   const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
     queryKey: ['student-thesis-semesters'],
     queryFn: getUndegraduadeThesisSemesters,
-    staleTime: 1000 * 60 * 5,
   });
 
   useEffect(() => {

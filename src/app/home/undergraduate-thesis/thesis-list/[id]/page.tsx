@@ -36,8 +36,6 @@ export default function ThesisInscription({ params } :{ params: Promise<{ id: st
   const { data: thesis, isFetching, error} = useQuery({
     queryKey: ['student-thesis-application', id],
     queryFn: () => getUndergraduateThesisById(id),
-    staleTime: 1000 * 60 * 5,
-    retry: false,
   });
 
   const isApplying = useThesisInscriptionStore(state => state.isApplying);

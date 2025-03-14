@@ -38,7 +38,6 @@ export default function ThesisStatus() {
   const { data: statusInformation, isFetching, error } = useQuery({
     queryKey: ['student-thesis-status'],
     queryFn: getThesisStatusInformation,
-    staleTime: 1000 * 60 * 5,
   });
 
   if (isFetching) return <SpinnerPage />;
