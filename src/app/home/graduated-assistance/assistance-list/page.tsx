@@ -72,8 +72,8 @@ export const columns: ColumnDef<Assistance>[] = [
         return (
           <Link
             href={`/home/graduated-assistance/assistance-list/${row.original.id}`}
-            className="inline-flex items-center justify-center text-blue-500 hover:underline">
-            <Search className="w-5 h-5" />
+            className="inline-flex items-center justify-cente hover:underline">
+            <Search className="w-5 h-5 text-core" />
           </Link>
         );
       },
@@ -215,7 +215,7 @@ export default function AssistanceList() {
         
       <div className="rounded-md border">
         <Table>
-          <TableHeader className="bg-sky-800">
+          <TableHeader className="bg-core">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

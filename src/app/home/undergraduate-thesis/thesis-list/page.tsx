@@ -86,7 +86,7 @@ export default function ThesisList() {
               <SelectSearchCategory/>
               <SelectSemester semesters={semesters ?? []} />
             </div>
-            <Button variant="default" className="bg-sky-800 hover:bg-sky-900" onClick={() => setSortDirection(sortDirection * -1)}>
+            <Button variant="default" className="bg-core hover:bg-core-highlight" onClick={() => setSortDirection(sortDirection * -1)}>
               <ArrowUpDown className="w-4 h-4 mr-2" />
               {sortDirection === 1 ? "A-Z" : "Z-A"}
             </Button>
@@ -188,7 +188,7 @@ function AreaOfInterestAccordionList({thesisList, order}: {thesisList: {[field: 
   return (
     <>
       {order.map((field) => (
-        <ElementAccordion element={field} key={field} icon={<File className="mr-2 h-5 w-5 text-sky-900" />}>
+        <ElementAccordion element={field} key={field} icon={<File className="mr-2 h-5 w-5 text-core-highlight" />}>
           {
             field in thesisList ? <ElementThesisTable thesisList={thesisList[field]} /> : <SkeletonAccordion />
           }
@@ -215,7 +215,7 @@ function ProfessorAccordionList({thesisList, order}: {thesisList: {[professor: s
   return (
     <>
       {order.map((professor) => (
-        <ElementAccordion element={professor} key={professor} icon={<User className="mr-2 h-5 w-5 text-sky-900" />}>
+        <ElementAccordion element={professor} key={professor} icon={<User className="mr-2 h-5 w-5 text-core-highlight" />}>
           {
             professor in thesisList ? <ElementThesisTable thesisList={thesisList[professor]} /> : <SkeletonAccordion />
           }
@@ -239,7 +239,7 @@ function ProfessorAccordionList({thesisList, order}: {thesisList: {[professor: s
 function ElementAccordion({element, children, icon}: {element: string, children?: React.ReactNode, icon?: React.ReactNode}) {
   return (
     <AccordionItem value={element}>
-      <AccordionTrigger className="hover:bg-sky-100 cursor-pointer">  
+      <AccordionTrigger className="hover:bg-core-soft cursor-pointer">  
         <div className="flex items-center">
           {icon}
           <span>{element}</span>
@@ -274,10 +274,10 @@ function ElementThesisTable({thesisList}: {thesisList: Thesis[]}) {
     <Table>
       <TableHeader >
         <TableRow>
-          <TableHead className="bg-sky-900 text-white text-center">Nombre del proyecto</TableHead>
-          <TableHead className="bg-sky-900 text-white text-center">Categoria</TableHead>
-          <TableHead className="bg-sky-900 text-white text-center">Número de estudiantes</TableHead>
-          <TableHead className="bg-sky-900 text-white text-center">Ver</TableHead>
+          <TableHead className="bg-core-highlight text-white text-center">Nombre del proyecto</TableHead>
+          <TableHead className="bg-core-highlight text-white text-center">Categoria</TableHead>
+          <TableHead className="bg-core-highlight text-white text-center">Número de estudiantes</TableHead>
+          <TableHead className="bg-core-highlight text-white text-center">Ver</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody className="text-center">
@@ -313,7 +313,7 @@ function SkeletonAccordion() {
         <AccordionItem key={index} value="loading">
           <AccordionTrigger>  
             <div className="flex items-center w-full">
-              <User className="mr-2 h-5 w-5 text-sky-900" />
+              <User className="mr-2 h-5 w-5 text-core-highlight" />
               <Skeleton className="w-40 h-4" />
             </div>
           </AccordionTrigger>

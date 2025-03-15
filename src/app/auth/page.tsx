@@ -23,7 +23,7 @@ export default function Login() {
           <div className="flex items-center justify-center bg-white py-5">
               <LogInForm/>
           </div>
-          <div className="bg-sky-800 justify-center items-center hidden lg:flex">
+          <div className="bg-core justify-center items-center hidden lg:flex">
             <SisinfoBanner />
           </div>
         </div>

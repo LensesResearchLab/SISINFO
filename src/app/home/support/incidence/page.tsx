@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { TriangleAlert } from 'lucide-react';
 
 /**
  * IncidentReportForm Component
@@ -31,7 +32,7 @@ export default function IncidentReportForm() {
     <div className="flex justify-center items-center min-h-full min-w-full">
       <Card className="p-8 text-lg">
         <CardHeader className="flex items-center">
-          <h2 className="text-2xl font-bold text-blue-800 flex items-center">⚠️ Reporte de incidentes</h2>
+          <h2 className="text-2xl font-bold text-core-highlight flex items-center"> <TriangleAlert className="text-core"/> Reporte de incidentes</h2>
         </CardHeader>
         <CardContent>
           <p className="text-lg text-gray-600 mt-4">

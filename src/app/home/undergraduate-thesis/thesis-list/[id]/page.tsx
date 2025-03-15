@@ -74,7 +74,7 @@ function ThesisNotFound() {
     <div className="min-h-full max-w-[900px] container mx-auto p-4 space-y-8">
       <Card className="w-full mx-auto shadow-lg border-none">
         <CardHeader>
-          <CardTitle className="text-xl font-bold text-sky-800">Tesis no encontrada</CardTitle>
+          <CardTitle className="text-xl font-bold text-core-highlight">Tesis no encontrada</CardTitle>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
           <p className="text-gray-700">La tesis que buscas no se encuentra en el sistema. Por favor verifica la URL o intenta de nuevo más tarde.</p>
@@ -111,7 +111,7 @@ function ThesisDetails({thesis}: {thesis: Thesis}) {
   return (
     <Card className="w-full  mx-auto shadow-lg border-none">
       <CardHeader>
-        <CardTitle className="text-xl font-bold text-sky-800">Información del proyecto de grado</CardTitle>
+        <CardTitle className="text-xl font-bold text-core-highlight">Información del proyecto de grado</CardTitle>
       </CardHeader>
       <CardContent className="pt-6 space-y-6">
         <div className="space-y-4">
@@ -203,7 +203,7 @@ function CategoryAndSemesterInfo({thesis}: {thesis: Thesis}) {
   return (
     <div className="space-y-6">
       <div className="flex items-start gap-2">
-        <Tag className="h-5 w-5 text-sky-800 mt-1" />
+        <Tag className="h-5 w-5 text-core-highlight mt-1" />
         <div>
           <h3 className="font-semibold">Categoría:</h3>
           <p className="text-gray-700">{thesis.category}</p>
@@ -211,7 +211,7 @@ function CategoryAndSemesterInfo({thesis}: {thesis: Thesis}) {
       </div>
 
       <div className="flex items-start gap-2">
-        <Calendar className="h-5 w-5 text-sky-800 mt-1" />
+        <Calendar className="h-5 w-5 text-core-highlight mt-1" />
         <div>
           <h3 className="font-semibold">Periodo:</h3>
           <p className="text-gray-700">{thesis.semester}</p>
@@ -241,7 +241,7 @@ function StudentsAndContactInfo({thesis}: {thesis: Thesis}) {
   return (
     <div className="space-y-6">
       <div className="flex items-start gap-2">
-        <Users className="h-5 w-5 text-sky-800 mt-1" />
+        <Users className="h-5 w-5 text-core-highlight mt-1" />
         <div>
           <h3 className="font-semibold">Número máximo de estudiantes:</h3>
           <p className="text-gray-700">{thesis.students}</p>
@@ -249,11 +249,11 @@ function StudentsAndContactInfo({thesis}: {thesis: Thesis}) {
       </div>
 
       <div className="flex items-start gap-2">
-        <Mail className="h-5 w-5 text-sky-800 mt-1" />
+        <Mail className="h-5 w-5 text-core-highlight mt-1" />
         <div>
           <h3 className="font-semibold">Contacto:</h3>
           <p className="text-gray-700">{thesis.professor}</p>
-          <a href={`mailto:${thesis.email}`} className="text-sky-800 hover:underline">
+          <a href={`mailto:${thesis.email}`} className="text-core-highlight hover:underline">
             {thesis.email}
           </a>
         </div>
@@ -304,7 +304,7 @@ function ThesisApplying({thesis}: {thesis: Thesis}) {
   return (
     <Card className="max-w-3xl  mx-auto shadow-lg">
       <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <CardTitle className="text-2xl font-medium text-sky-800">{thesis.title}</CardTitle>
+        <CardTitle className="text-2xl font-medium text-core-highlight">{thesis.title}</CardTitle>
         <ButtonBack setIsApplying={setIsApplying} />
       </CardHeader>
       <CardContent>
@@ -342,7 +342,7 @@ function ButtonBack({setIsApplying}: {setIsApplying: (value: boolean) => void}) 
   return  (
     <Button variant="outline"
       size="sm"
-      className="text-sky-800 hover:text-sky-900 border-sky-800 hover:border-sky-900 hover:bg-sky-50"
+      className="text-core-highlight hover:text-core-highlight border-core hover:border-core-highlight hover:bg-sky-50"
       onClick={() => setIsApplying(false)}
     >
       <FileText className="h-4 w-4 mr-2" />
@@ -375,7 +375,7 @@ function ProfessorInformation({thesis}: {thesis: Thesis}) {
         <h2 className="text-lg font-semibold">Profesor: <span className='text-gray-900 font-normal'>{thesis.professor}</span></h2>
         <a
           href={`mailto:${thesis.email}`}
-          className="text-sky-800 hover:underline inline-flex items-center gap-2"
+          className="text-core-highlight hover:underline inline-flex items-center gap-2"
         >
           <Mail className="h-4 w-4" />
           {thesis.email}

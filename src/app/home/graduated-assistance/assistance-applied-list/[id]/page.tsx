@@ -105,12 +105,12 @@ export default function AssistanceStatus({ params } :{ params: Promise<{ id: str
  */
 function getSections(statusInformation: StatusInformation) {
   return [
-    { title: "Semestre de inicio", description: statusInformation.start_semester, icon: <Calendar className="h-5 w-5 text-sky-800 mt-1" /> },
-    { title: "Nombre de la asistencia", description:  statusInformation.name, icon: <FileText className="h-5 w-5 text-sky-800 mt-1" /> },
-    { title: "Profesor", description:  statusInformation.professor, icon: <User className="h-5 w-5 text-sky-800 mt-1" /> },
-    { title: "Estudiante", description:  statusInformation.student, icon: <User className="h-5 w-5 text-sky-800 mt-1" /> },
-    { title: "Correo del estudiante", description:  statusInformation.studentEmail, icon: <Mail className="h-5 w-5 text-sky-800 mt-1" /> },
-    { title: "Archivo adjunto", description:  statusInformation.studentCv, icon: <FileText className="h-5 w-5 text-sky-800 mt-1" /> },
+    { title: "Semestre de inicio", description: statusInformation.start_semester, icon: <Calendar className="h-5 w-5 text-core mt-1" /> },
+    { title: "Nombre de la asistencia", description:  statusInformation.name, icon: <FileText className="h-5 w-5 text-core mt-1" /> },
+    { title: "Profesor", description:  statusInformation.professor, icon: <User className="h-5 w-5 text-core mt-1" /> },
+    { title: "Estudiante", description:  statusInformation.student, icon: <User className="h-5 w-5 text-core mt-1" /> },
+    { title: "Correo del estudiante", description:  statusInformation.studentEmail, icon: <Mail className="h-5 w-5 text-core mt-1" /> },
+    { title: "Archivo adjunto", description:  statusInformation.studentCv, icon: <FileText className="h-5 w-5 text-core mt-1" /> },
   ]
 }
 

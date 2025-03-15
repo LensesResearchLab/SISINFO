@@ -12,14 +12,12 @@ import Image from "next/image";
  */
 export default function SisinfoHeaderLogo() {
   return (
-    <SidebarMenu className="bg-sky-950 py-4">
+    <SidebarMenu className="bg-accent-highlight py-4">
       <SidebarMenuItem>
         <Link href="/home"> 
           <div className="flex items-center justify-center mx-auto">
-            <Image src={"/uniandes_logo.svg"} alt="Uniandes Logo" width={29} height={29} />
-            <span className="truncate font-semibold text-lg ">
-              | SISINFO
-            </span>
+            <Image src={"/uniandes_logo.svg"} alt="Uniandes Logo" width={29} height={29} className="mx-3"/>
+            <span className="truncate font-semibold text-lg"> | SISINFO </span>
           </div>
         </Link>
       </SidebarMenuItem>
