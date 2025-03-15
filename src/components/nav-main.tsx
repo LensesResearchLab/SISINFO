@@ -18,9 +18,11 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import { ROUTES } from "@/app/routes"
 
 export function NavMain({
   items,
+  title
 }: {
   items: {
     title: string
@@ -31,11 +33,12 @@ export function NavMain({
       title: string
       url: string
     }[]
-  }[]
+  }[],
+  title: string
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Pregrado</SidebarGroupLabel>
+      <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -57,7 +60,7 @@ export function NavMain({
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <Link href={`/home/${subItem.url}`}>
+                        <Link href={`${ROUTES.HOME}/${subItem.url}`}>
                           <span>{subItem.title}</span>
                         </Link>
                       </SidebarMenuSubButton>

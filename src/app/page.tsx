@@ -3,8 +3,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, Calendar, User, BookOpen, GraduationCap } from "lucide-react"
+import { FileText, Calendar, User, GraduationCap } from "lucide-react"
 import Footer from "@/components/shared/footer"
+import CoreFeatures from "@/components/shared/core-features"
 
 export default function Home() {
   return (
@@ -244,20 +245,7 @@ function AccessSection(){
               Inicia sesión con tus credenciales institucionales para acceder a todos los servicios de SISINFO
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[800px]">
-            <div className="flex flex-col items-center p-4 text-center">
-              <BookOpen className="h-10 w-10 text-core mb-2" />
-              <span className="font-medium">Gestiona tus proyectos de grado y tesis</span>
-            </div>
-            <div className="flex flex-col items-center p-4 text-center">
-              <GraduationCap className="h-10 w-10 text-core mb-2" />
-              <span className="font-medium">Aplica a asistencias graduadas</span>
-            </div>
-            <div className="flex flex-col items-center p-4 text-center">
-              <Calendar className="h-10 w-10 text-core mb-2" />
-              <span className="font-medium">Consulta fechas importantes</span>
-            </div>
-          </div>
+          <CoreFeatures/>
           <div className="pt-4">
             <Button className="bg-core hover:bg-core-highlight px-8 py-6 text-base">
               <Link href="/auth">
@@ -270,6 +258,8 @@ function AccessSection(){
     </section>
   )
 }
+
+
 
 function Header(){
   return (
