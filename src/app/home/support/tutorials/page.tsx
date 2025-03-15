@@ -47,7 +47,7 @@ export default function Tutorials() {
       {tutorials.map((tutorial, index) => (
         <Card key={index} className="p-4 border-none">
           <CardHeader>
-            <h2 className="text-xl font-bold text-blue-800 mb-4">{tutorial.title}</h2>
+            <h2 className="text-xl font-bold text-core-highlight mb-4">{tutorial.title}</h2>
             <p className="text-lg text-gray-600">{tutorial.description}</p>
           </CardHeader>
           <CardContent>

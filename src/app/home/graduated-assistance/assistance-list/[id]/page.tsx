@@ -94,7 +94,7 @@ function AssistanceInscription({assistance, setIsApplying}: {assistance: Assista
   return (
     <Card className="max-w-3xl  mx-auto shadow-lg">
       <CardHeader className=" rounded-t-lg">
-        <CardTitle className="text-3xl font-bold text-sky-800">Información de la asistencia</CardTitle>
+        <CardTitle className="text-3xl font-bold text-core">Información de la asistencia</CardTitle>
       </CardHeader>
       <CardContent className="pt-3 space-y-6">
         <div className="space-y-11">
@@ -136,25 +136,25 @@ function MainInformation({assistance}: {assistance: Assistance}) {
     <div className="space-y-12">
         <div className="space-y-6">
           <div className="flex items-start gap-3">
-            <Briefcase className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />
+            <Briefcase className="w-6 h-6 text-core flex-shrink-0 mt-1" />
             <div>
-              <h2 className="font-bold text-xl text-sky-800">Nombre:</h2>
+              <h2 className="font-bold text-xl text-core">Nombre:</h2>
               <p className="text-xl">{assistance.name}</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <Users className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />
+            <Users className="w-6 h-6 text-core flex-shrink-0 mt-1" />
             <div>
-              <h2 className="font-bold text-xl text-sky-800">Clasificación:</h2>
+              <h2 className="font-bold text-xl text-core">Clasificación:</h2>
               <p className="text-xl">{assistance.clasification}</p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <FileText className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />
+            <FileText className="w-6 h-6 text-core flex-shrink-0 mt-1" />
             <div>
-              <h2 className="font-bold text-xl text-sky-800">Descripción:</h2>
+              <h2 className="font-bold text-xl text-core">Descripción:</h2>
               <p className="text-xl">{assistance.description}</p>
             </div>
           </div>
@@ -186,11 +186,11 @@ function MainInformation({assistance}: {assistance: Assistance}) {
 function Requisites({requisites}: {requisites: string[]}) {
   return (
     <div className='mb-4'>
-    <h3 className="font-semibold text-2xl text-sky-800 mb-3">Requisitos:</h3>
+    <h3 className="font-semibold text-2xl text-core mb-3">Requisitos:</h3>
     <ul className="space-y-1">
       {requisites.map((requisites) => (
         <li className="flex items-center gap-3" key = {requisites}>
-        <CheckCircle2 className="w-6 h-6 text-sky-800 flex-shrink-0" />
+        <CheckCircle2 className="w-6 h-6 text-core flex-shrink-0" />
         <span className="text-xl">{requisites}</span>
       </li>
       ))}
@@ -222,15 +222,15 @@ function Requisites({requisites}: {requisites: string[]}) {
 function ContactInfo({assistance}: {assistance: Assistance}) {
   return (
     <div>
-          <h2 className="text-2xl font-bold text-sky-800 mb-3">Contacto:</h2>
+          <h2 className="text-2xl font-bold text-core mb-3">Contacto:</h2>
           <div className="space-y-3 ">
             <div className="flex items-center gap-3">
-              <User className="w-6 h-6 text-sky-800 flex-shrink-0" />
+              <User className="w-6 h-6 text-core flex-shrink-0" />
               <span className="text-xl">{assistance.professor}</span>
             </div>
             <div className="flex items-center gap-3">
-              <Mail className="w-6 h-6 text-sky-800" />
-              <a href={`mailto:${assistance.email}`} className="text-xl text-sky-800 hover:underline">
+              <Mail className="w-6 h-6 text-core" />
+              <a href={`mailto:${assistance.email}`} className="text-xl text-core hover:underline">
                 {assistance.email}
               </a>
             </div>
@@ -277,7 +277,7 @@ function AssistanceApplying({assistance, setIsApplying}: {assistance: Assistance
   return (
     <Card className="max-w-3xl  mx-auto shadow-lg">
       <CardHeader className=" flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <CardTitle className="text-2xl font-bold text-center text-sky-800">{assistance.name}</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center text-core">{assistance.name}</CardTitle>
         <ButtonBack setIsApplying={setIsApplying} />
       </CardHeader>
       <CardContent>
@@ -316,7 +316,7 @@ function ButtonBack({setIsApplying}: {setIsApplying: (value: boolean) => void}) 
   return  (
     <Button variant="outline"
       size="sm"
-      className="text-sky-800 hover:text-sky-900 border-sky-800 hover:border-sky-900 hover:bg-sky-50"
+      className="text-core hover:text-core-highlight border-core hover:border-core-highlight hover:bg-sky-50"
       onClick={() => setIsApplying(false)}
     >
       <FileText className="h-4 w-4 mr-2" />
@@ -384,7 +384,7 @@ function UploadCV({assistance}: {assistance: Assistance}) {
       <div className="flex flex-col space-y-1">
         <Requisites requisites={assistance.requisites} />
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-sky-800">Archivo cargado</h2>
+          <h2 className="text-2xl font-bold text-core">Archivo cargado</h2>
 
           {uploadedFile ? (
             <div className="flex items-center gap-2 p-3 bg-gray-100 rounded-lg">

@@ -22,7 +22,7 @@ export default function Home() {
 
 function HeroSection(){
   return (
-    <section className="w-full bg-sky-800 py-12 md:py-24 lg:py-32 flex flex-col items-center justify-center">
+    <section className="w-full bg-core py-12 md:py-24 lg:py-32 flex flex-col items-center justify-center">
       <div className="container px-4 md:px-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12">
           <div className="flex flex-col justify-center space-y-4 text-white">
@@ -36,7 +36,7 @@ function HeroSection(){
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
               <Link
                 href="/auth"
-                className="inline-flex h-10 items-center justify-center rounded-md bg-white px-8 text-sm font-medium text-[#005883] shadow transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex h-10 items-center justify-center rounded-md bg-white px-8 text-sm font-medium text-core shadow transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
               >
                 Iniciar Sesión
               </Link>
@@ -63,7 +63,7 @@ function FeaturesSection(){
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-[#005883]">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-core">
               Servicios Disponibles
             </h2>
             <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
@@ -237,7 +237,7 @@ function AccessSection(){
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-6 text-center">
           <div className="space-y-2 max-w-[800px]">
-            <h2 className="text-3xl font-bold tracking-tighter text-[#005883] sm:text-4xl md:text-5xl">
+            <h2 className="text-3xl font-bold tracking-tighter text-core sm:text-4xl md:text-5xl">
               Accede a SISINFO
             </h2>
             <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
@@ -246,20 +246,20 @@ function AccessSection(){
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[800px]">
             <div className="flex flex-col items-center p-4 text-center">
-              <BookOpen className="h-10 w-10 text-[#005883] mb-2" />
+              <BookOpen className="h-10 w-10 text-core mb-2" />
               <span className="font-medium">Gestiona tus proyectos de grado y tesis</span>
             </div>
             <div className="flex flex-col items-center p-4 text-center">
-              <GraduationCap className="h-10 w-10 text-[#005883] mb-2" />
+              <GraduationCap className="h-10 w-10 text-core mb-2" />
               <span className="font-medium">Aplica a asistencias graduadas</span>
             </div>
             <div className="flex flex-col items-center p-4 text-center">
-              <Calendar className="h-10 w-10 text-[#005883] mb-2" />
+              <Calendar className="h-10 w-10 text-core mb-2" />
               <span className="font-medium">Consulta fechas importantes</span>
             </div>
           </div>
           <div className="pt-4">
-            <Button className="bg-[#005883] hover:bg-[#004670] px-8 py-6 text-base">
+            <Button className="bg-core hover:bg-core-highlight px-8 py-6 text-base">
               <Link href="/auth">
                 Iniciar sesión
               </Link>
@@ -287,7 +287,7 @@ function Header(){
         </span>
         <Link
           href="/auth"
-          className="inline-flex h-12  items-center justify-center rounded-md bg-sky-800 px-5 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-[#004670] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+          className="inline-flex h-12  items-center justify-center rounded-md bg-core px-5 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-core-highlight focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
         >
           Iniciar Sesión
         </Link>

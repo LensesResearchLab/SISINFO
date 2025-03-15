@@ -64,12 +64,12 @@ export default function ThesisDates() {
 function DateTable({title, dates}: {title:string, dates: ThesisDatesInterface[]}) {
   return (
     <div >
-      <h2 className="text-xl font-semibold text-sky-800">{title}</h2>
+      <h2 className="text-xl font-semibold text-core">{title}</h2>
         <Table>
           <TableHeader >
             <TableRow>
-              <TableHead className="bg-sky-900 text-white text-center">Descripción</TableHead>
-              <TableHead className="bg-sky-900 text-white text-center">Fecha</TableHead>
+              <TableHead className="bg-core-highlight text-white text-center">Descripción</TableHead>
+              <TableHead className="bg-core-highlight text-white text-center">Fecha</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

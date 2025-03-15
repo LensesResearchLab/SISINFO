@@ -4,6 +4,7 @@ import {
   ChevronsUpDown,
   LogOut,
   ListTodo,
+  SunMoon,
 } from "lucide-react"
 
 import Link from "next/link"

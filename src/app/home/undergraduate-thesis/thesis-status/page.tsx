@@ -106,12 +106,12 @@ function ThesisNotFound() {
  */
 function getSections(statusInformation: StatusInformation) {
   return [
-    { title: "Semestre de inicio", description: statusInformation.semester, icon: <Calendar className="h-5 w-5 text-sky-800 mt-1" /> },
-    { title: "Tema del proyecto", description:  statusInformation.projectTitle, icon: <FileText className="h-5 w-5 text-sky-800 mt-1" /> },
-    { title: "Asesor", description:  statusInformation.advisor, icon: <User className="h-5 w-5 text-sky-800 mt-1" /> },
-    { title: "Estudiante", description:  statusInformation.student, icon: <User className="h-5 w-5 text-sky-800 mt-1" /> },
-    { title: "Correo del estudiante", description:  statusInformation.studentEmail, icon: <Mail className="h-5 w-5 text-sky-800 mt-1" /> },
-    { title: "Calificación", description:  statusInformation.grade, icon: <Star className="h-5 w-5 text-sky-800 mt-1" /> },
+    { title: "Semestre de inicio", description: statusInformation.semester, icon: <Calendar className="h-5 w-5 text-core mt-1" /> },
+    { title: "Tema del proyecto", description:  statusInformation.projectTitle, icon: <FileText className="h-5 w-5 text-core mt-1" /> },
+    { title: "Asesor", description:  statusInformation.advisor, icon: <User className="h-5 w-5 text-core mt-1" /> },
+    { title: "Estudiante", description:  statusInformation.student, icon: <User className="h-5 w-5 text-core mt-1" /> },
+    { title: "Correo del estudiante", description:  statusInformation.studentEmail, icon: <Mail className="h-5 w-5 text-core mt-1" /> },
+    { title: "Calificación", description:  statusInformation.grade, icon: <Star className="h-5 w-5 text-core mt-1" /> },
   ]
 }
 

@@ -34,7 +34,7 @@ export default function AcademicCoordinators() {
     <div className="flex justify-center items-center min-h-full min-w-full">
       <Card className="flex flex-col items-center bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mx-auto border-none">
         <CardHeader>
-          <h2 className="text-xl font-bold text-center text-blue-800 mb-6">
+          <h2 className="text-xl font-bold text-center text-core-highlight mb-6">
             Tus coordinadores académicos
           </h2>
         </CardHeader>
@@ -49,7 +49,7 @@ export default function AcademicCoordinators() {
                 className="w-24 h-24 rounded-full object-cover mr-6"
               />
               <CardContent className="text-left">
-                <h3 className="text-xl font-semibold text-blue-800 mb-2 p-2">
+                <h3 className="text-xl font-semibold text-core-highlight mb-2 p-2">
                   {coordinator.name}
                 </h3>
                 <p className="text-lg text-gray-600 mb-1">
