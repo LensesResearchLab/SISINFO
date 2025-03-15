@@ -20,8 +20,12 @@ Sisinfo está construido con las siguientes tecnologías:
 - **Tailwind CSS**: Un framework de CSS utilitario que permite diseñar interfaces de manera rápida y eficiente.
 - **Zustand**: Una solución ligera y flexible para el manejo del estado global de la aplicación.
 - **TanStack Query**: Una librería para gestionar, almacenar en caché y sincronizar datos del servidor.
+<<<<<<< HEAD
 - **Nest.js**: Servidor REST.
 - **Turborepo**: Manejador de monorepositorios. 
+=======
+- **Node.js**: Entorno de ejecución para JavaScript en el servidor.
+>>>>>>> bfd9536c3b386f7dee42c7d48e239a990754e215
 - **npm/yarn**: Gestores de paquetes para manejar dependencias del proyecto.
 
 ---
