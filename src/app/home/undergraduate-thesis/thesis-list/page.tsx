@@ -35,6 +35,7 @@ import {
   import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useThesisListStore } from "./store";
+import { cn } from "@/lib/utils";
   
 /**
  * ThesisList Component
@@ -80,22 +81,28 @@ export default function ThesisList() {
 
   return (
     <div className="min-h-full max-w-[900px] container mx-auto p-4 space-y-8">
-        <Accordion type="single" collapsible className="w-full bg-white shadow-lg rounded-xl p-5 h-full">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <SelectSearchCategory/>
-              <SelectSemester semesters={semesters ?? []} />
-            </div>
-            <Button variant="default" className="bg-core hover:bg-core-highlight" onClick={() => setSortDirection(sortDirection * -1)}>
-              <ArrowUpDown className="w-4 h-4 mr-2" />
-              {sortDirection === 1 ? "A-Z" : "Z-A"}
-            </Button>
+      <Accordion type="single" collapsible className="w-full bg-white shadow-lg rounded-xl p-5 h-full">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+            <SelectSearchCategory className="w-full sm:w-auto" />
+            <SelectSemester semesters={semesters ?? []} className="w-full sm:w-auto" />
           </div>
-          { isFetchingThesis ? <SkeletonAccordion /> : <AccordionListSimpleFactory thesisList={thesisList ?? {}}/>}
-        </Accordion>
+          <Button
+            variant="default"
+            className="bg-core hover:bg-core-highlight w-full sm:w-auto"
+            onClick={() => setSortDirection(sortDirection * -1)}
+          >
+            <ArrowUpDown className="w-4 h-4 mr-2" />
+            {sortDirection === 1 ? "A-Z" : "Z-A"}
+          </Button>
+        </div>
+        {isFetchingThesis ? <SkeletonAccordion /> : <AccordionListSimpleFactory thesisList={thesisList ?? {}} />}
+      </Accordion>
     </div>
   );
 }
+
+
   
 /**
  * SelectSemester Component
@@ -107,12 +114,12 @@ export default function ThesisList() {
  * @param {string[]} props.semesters - Array of available semester options
  * @returns {JSX.Element} Semester selection dropdown
  */
-function SelectSemester({semesters}: {semesters: string[]}) {
+function SelectSemester({semesters, className}: {semesters: string[], className?: string}) {
   const setSearchTerm = useThesisListStore(state => state.setSearchTerm);
   const handleClick = (category: string) => {setSearchTerm(category);};
   return (
     <Select onValueChange={handleClick}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className={cn("w-[180px]", className)}>
         <SelectValue placeholder="Semester" />
       </SelectTrigger>
       <SelectContent>
@@ -137,12 +144,12 @@ function SelectSemester({semesters}: {semesters: string[]}) {
  * 
  * @returns {JSX.Element} Search category selection dropdown
  */
-function SelectSearchCategory() {
+function SelectSearchCategory({className}: {className?: string}) {
   const setSearchCategory = useThesisListStore(state => state.setSearchCategory);
   const handleClick = (category: string) => {setSearchCategory(category);};
   return (
     <Select onValueChange={handleClick}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className={cn("w-[180px]", className)}>
         <SelectValue placeholder="Search Category" />
       </SelectTrigger>
       <SelectContent>
