@@ -3,9 +3,14 @@ import { Fragment } from "react";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { usePathname } from 'next/navigation';
 import Link from "next/link";
-import {sidebarData} from "@/components/app-sidebar";
+import {undergraduateData, professorData, coordinatorData, supportData} from "@/components/links-per-group";
 
-const EXCLUDED_ROUTES = sidebarData.navMain.map((item) => item.url).concat(["home"]);
+const EXCLUDED_ROUTES = 
+  undergraduateData.map((item) => item.url)
+  .concat(professorData.map((item) => item.url))
+  .concat(coordinatorData.map((item) => item.url))
+  .concat(supportData.map((item) => item.url))
+  .concat(["inicio", "tesis", "publicar-consultar", "asistencia", "estudiante" ]);
 
 function getBreadcrumbText(pathname: string) {
     const segments = pathname.split("/").filter(Boolean);
@@ -26,7 +31,7 @@ export default function BreadCrumbDetail() {
       <Breadcrumb>
         <BreadcrumbList>
             <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/home">Home</BreadcrumbLink>
+              <BreadcrumbLink href="/inicio">Inicio</BreadcrumbLink>
             </BreadcrumbItem>
             {breadcrumbs.map((breadcrumb, index) => (
               <Fragment key={breadcrumb.path}>

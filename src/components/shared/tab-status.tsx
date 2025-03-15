@@ -41,7 +41,7 @@ import { Check } from "lucide-react";
     return (
       <div className="max-w-3xl mx-auto p-4">
         <Tabs defaultValue="general">
-            <TabsList className="grid w-full grid-cols-2 bg-core text-white">
+          <TabsList className="grid w-full grid-cols-2 bg-core text-white">
             <TabsTrigger value="general" className="cursor-pointer data-[state=active]:bg-core-highlight data-[state=active]:font-semibold data-[state=active]:text-white">Información general</TabsTrigger>
             <TabsTrigger value="status" className="cursor-pointer data-[state=active]:bg-core-highlight data-[state=active]:font-semibold data-[state=active]:text-white">Estado inscripción</TabsTrigger>
           </TabsList>

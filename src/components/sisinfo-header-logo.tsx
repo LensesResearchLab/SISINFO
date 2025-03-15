@@ -14,7 +14,7 @@ export default function SisinfoHeaderLogo() {
   return (
     <SidebarMenu className="bg-accent-highlight py-4">
       <SidebarMenuItem>
-        <Link href="/home"> 
+        <Link href="/inicio"> 
           <div className="flex items-center justify-center mx-auto">
             <Image src={"/uniandes_logo.svg"} alt="Uniandes Logo" width={29} height={29} className="mx-3"/>
             <span className="truncate font-semibold text-lg"> | SISINFO </span>
