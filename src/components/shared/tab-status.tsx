@@ -5,6 +5,8 @@ import {
     TabsTrigger,
   } from "@/components/ui/tabs";
   import { Card, CardContent, CardHeader } from "@/components/ui/card";
+  import { cn } from "@/lib/utils"
+import { Check } from "lucide-react";
   
   interface GeneralProps {
     title: string
@@ -108,64 +110,82 @@ import {
       </div>
     )
   }
-  
-  /**
-   * TabStatusCard Component
-   * 
-   * Renders a card showing the current status and progress through defined steps.
-   * 
-   * @param {Object} props
-   * @param {StatusProps} props.status - Status information including current step and messages
-   * @returns {JSX.Element} A card showing progress steps and status message
-   */
-  export function TabStatusCard({status}: {status: StatusProps}) {
-    let found = false;
-    const stepsStatus = status.steps.map((step) => {
-      if (step === status.currentStatus) {
-        found = true;
-        return {name: step, completed: true}
-      }
-      return {name: step, completed: !found}
-    })
-  
-    return (
-      <Card className="border-none max-w-3xl">
-        <CardContent className="p-0">
-          <div className="space-y-8 p-6">
-            <h2 className="text-2xl font-medium text-core text-center">{status.title}</h2>
-            <div className="relative">
-              <div className="absolute top-5 left-0 w-full h-[2px] bg-gray-200" />
-              <div className="relative flex justify-between">
-                {stepsStatus.map((step) => (
-                  <StepSphere key={step.name} {...step} />
-                ))}
-              </div>
-            </div>
-            <div className="space-y-4 text-center">
-              <h3 className="text-core font-medium">¿Que significa tu estado actual?</h3>
-              <p className="text-gray-600 max-w-2xl mx-auto">{status.statusMessage}</p>
+
+/**
+ * TabStatusCard Component
+ * 
+ * Renders a card showing the current status and progress through defined steps.
+ * 
+ * @param {Object} props
+ * @param {StatusProps} props.status - Status information including current step and messages
+ * @returns {JSX.Element} A card showing progress steps and status message
+ */
+export function TabStatusCard({ status }: { status: StatusProps }) {
+  let found = false
+  const stepsStatus = status.steps.map((step) => {
+    if (step === status.currentStatus) {
+      found = true
+      return { name: step, completed: false, current: true }
+    }
+    return { name: step, completed: !found, current: false }
+  })
+  return (
+    <Card className="border-none max-w-3xl">
+      <CardContent className="p-0">
+        <div className="space-y-8 p-6">
+          <h2 className="text-2xl font-medium text-core text-center">{status.title}</h2>
+          <div className="relative">
+            <div className="absolute top-5 left-0 w-full h-[2px] bg-core-soft md:block hidden" />
+            <div className="absolute top-0 left-5 w-[2px] h-full bg-core-soft md:hidden block" />
+            <div className="relative flex md:flex-row flex-col md:justify-between md:items-center gap-8">
+              {stepsStatus.map(step => (
+                <StepSphere key={step.name} {...step} />
+              ))}
             </div>
           </div>
-        </CardContent>
-      </Card>
-    )
-  }
-  
-  /**
-   * StepSphere Component
-   * 
-   * Renders an individual step indicator as a colored sphere with label.
-   * 
-   * @param {Object} props
-   * @param {string} props.name - Name of the step
-   * @param {boolean} props.completed - Whether the step is completed
-   * @returns {JSX.Element} A sphere indicator with step name
-   */
-  function StepSphere({name, completed}: {name: string, completed: boolean}) {
-    return (
-      <div className="flex flex-col items-center">
-        <div className={`w-10 h-10 rounded-full border-4 ${completed ? "bg-core border-core" : "bg-gray-300 border-gray-300"} z-10`} />
-        <span className="mt-2 text-sm font-medium text-gray-600 text-center">{name}</span>
+          <div className="space-y-4 text-center">
+            <h3 className="text-core font-medium">¿Que significa tu estado actual?</h3>
+            <p className="text-gray-600 max-w-2xl mx-auto">{status.statusMessage}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+interface StepSphereProps {
+  name: string
+  completed: boolean
+  current: boolean
+}
+
+function StepSphere({ name, completed, current }: StepSphereProps) {
+  return (
+    <div className="flex md:flex-col flex-row md:items-center items-start gap-3">
+      <div className="relative">
+        <div
+          className={cn(
+            "w-10 h-10 rounded-full flex items-center justify-center z-10 relative",
+            completed
+              ? "bg-core text-primary-foreground"
+              : current
+                ? "bg-core-soft text-primary border-2 border-core"
+                : "bg-gray-100 text-gray-400",
+          )}
+        >
+          {completed ? (<Check/>) : (<span>{name.charAt(0)}</span>)}
+        </div>
       </div>
-    )
-  }
+      <div className="md:text-center text-left">
+        <p
+          className={cn(
+            "font-medium",
+            current ? "text-primary" : completed ? "text-foreground" : "text-muted-foreground",
+          )}
+        >
+          {name}
+        </p>
+      </div>
+    </div>
+  )
+}
