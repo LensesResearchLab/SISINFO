@@ -1,84 +1,62 @@
-# Turborepo starter
+<p align="center">
+    <img src="readme_banner.png" alt="Sisinfo logo" width="300" height="140">
+</p>
+<h1 align="center">Sisinfo</h1>
 
-This Turborepo starter is maintained by the Turborepo core team.
+<p align="center">
+    Sisinfo es una aplicación web diseñada para gestionar múltiples tareas administrativas, como la aplicación a tesis, asistencias graduadas, publicación de ofertas de salones, entre otros. Desarrollada con <strong>Next.js</strong>, <strong>shadcn</strong>, <strong>Tailwind CSS</strong>, <strong>Zustand</strong> y <strong>TanStack Query</strong>.
+</p>
 
-## Using this example
+> Para obtener documentación más detallada, por favor visita la [Wiki del proyecto](https://github.com/TheSoftwareDesignLab/SISINFO/wiki).
 
-Run the following command:
+---
 
-```sh
-npx create-turbo@latest
-```
+## 🚀 Tecnologías
 
-## What's inside?
+Sisinfo está construido con las siguientes tecnologías:
 
-This Turborepo includes the following packages/apps:
+- **Next.js**: Un framework de React para la construcción de aplicaciones web modernas con renderizado híbrido y optimización automática.
+- **shadcn**: Un conjunto de componentes UI modernos, personalizables y accesibles.
+- **Tailwind CSS**: Un framework de CSS utilitario que permite diseñar interfaces de manera rápida y eficiente.
+- **Zustand**: Una solución ligera y flexible para el manejo del estado global de la aplicación.
+- **TanStack Query**: Una librería para gestionar, almacenar en caché y sincronizar datos del servidor.
+- **Nest.js**: Servidor REST.
+- **Turborepo**: Manejador de monorepositorios. 
+- **npm/yarn**: Gestores de paquetes para manejar dependencias del proyecto.
 
-### Apps and Packages
+---
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## 🔨 Instalación
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+Sigue estos pasos para configurar el proyecto en tu entorno local.
 
-### Utilities
+### Prerrequisitos
 
-This Turborepo has some additional tools already setup for you:
+Asegúrate de tener instalado lo siguiente:
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+- **Node.js** (Versión ≥ 16)
+- **npm** o **yarn** (Gestores de paquetes)
+- **Git** (Opcional, para clonar el repositorio)
 
-### Build
+### Pasos para la instalación
 
-To build all apps and packages, run the following command:
+1. Clona el repositorio (o descarga el código fuente):
+   ```bash
+   git clone https://github.com/TheSoftwareDesignLab/SISINFO
+   ```
+2. Navega al directorio del proyecto:
+    ```bash
+    cd sisinfo
+    ```
 
-```
-cd my-turborepo
-pnpm build
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+3. Instala las dependencias:
+    ```bash
+    npm install
+    # o
+    yarn install
+    ```
+4. Inicia el servidor de desarrollo:
+    ```bash
+    npm run dev
+    ```
+5. Abre tu navegador y visita http://localhost:3000 para ver la aplicación en funcionamiento.
