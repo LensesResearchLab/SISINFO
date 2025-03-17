@@ -26,7 +26,7 @@ const undergraduateThesisFeatures = [
 const postgraduateThesisFeatures = [
     {
       Icon: FileText,
-      title: "Publicar y consultar proyectos de maestria",
+      title: "Publicar y consultar proyectos de maestría",
       description: "Aquí puedes publicar y consultar los proyectos de grado activos.",
       url: ROUTES.PROFESSOR_POSTGRADUATE_THESIS_LIST
     },
@@ -63,7 +63,7 @@ export default function ProfessorFeatures() {
   return (
     <div className='min-h-full min-w-full mx-auto p-4 space-y-8'>
       <InformationSection title="Proyecto de pregrado" features={undergraduateThesisFeatures} background="bg-core-highlight"/>
-      <InformationSection title="Proyecto de maestria" features={postgraduateThesisFeatures} background="bg-core-highlight"/>
+      <InformationSection title="Proyecto de maestría" features={postgraduateThesisFeatures} background="bg-core-highlight"/>
       <InformationSection title="Asistencias graduadas" features={assistanceFeatures} background="bg-core-highlight"/>
     </div>
   )

@@ -29,9 +29,10 @@ export const ROUTES: Record<string, string> = {
 
   /*  Professor  */
 
-  PROFESSOR_UNDERGRADUATE_THESIS_LIST: "/profesor/tesis_pregrado/lista",
-  PROFESSOR_UNDERGRADUATE_THESIS_HISTORY: "/profesor/tesis_pregrado/historico",
-  PROFESSOR_UNDERGRADUATE_THESIS_DATES: "/profesor/tesis_pregrado/fechas",
+  PROFESSOR_UNDERGRADUATE_THESIS_LIST: "/profesor/pregrado/lista",
+  PROFESSOR_UNDERGRADUATE_THESIS_NEW: "/profesor/pregrado/nuevo",
+  PROFESSOR_UNDERGRADUATE_THESIS_HISTORY: "/profesor/pregrado/historico",
+  PROFESSOR_UNDERGRADUATE_THESIS_DATES: "/profesor/pregrado/fechas",
 
   PROFESSOR_POSTGRADUATE_THESIS_LIST: "/profesor/tesis_maestria/lista",
   PROFESSOR_POSTGRADUATE_THESIS_HISTORY: "/profesor/tesis_maestria/historico",
