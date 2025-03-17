@@ -25,6 +25,7 @@ import {
     url: string
   }
   
+
   /**
    * ConfirmationModal Component
    * 
@@ -36,7 +37,12 @@ import {
    * @param {Function} props.onConfirm - Callback function to execute on confirmation
    * @returns {JSX.Element} A confirmation dialog or success modal
    */
-  export function ConfirmationModal({ dialogText, onConfirm}: { dialogText: DialogTextProps, onConfirm: (e: React.MouseEvent<HTMLButtonElement>) => void }) {
+  export function ConfirmationModal({ dialogText, onConfirm, open, setIsOpen}: { 
+    dialogText: DialogTextProps, 
+    onConfirm: (e: React.MouseEvent<HTMLButtonElement>) => void , 
+    open: boolean,
+    setIsOpen: (open: boolean) => void
+  }) {
     const [isConfirmed, setIsConfirmed] = useState(false);
     if (isConfirmed) {
       return <SuccessModal successTitle={dialogText.successTitle} successText={dialogText.successText} url={dialogText.url} />
@@ -45,12 +51,11 @@ import {
       onConfirm(e);
       setIsConfirmed(true);
     }
-  
+
+    
+    
     return (
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button className="bg-black hover:bg-black/90 w-40">{dialogText.buttonText}</Button>
-        </AlertDialogTrigger>
+      <AlertDialog open={open} onOpenChange={setIsOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{dialogText.title}</AlertDialogTitle>
@@ -93,8 +98,8 @@ import {
             <div className="rounded-full bg-core-soft p-3">
               <Check className="h-16 w-16 text-core" />
             </div>
-            <p className="text-center text-gray-600">{successText}</p>
-            <Button className="bg-black hover:bg-black/90 w-32" onClick={() => {router.push(url);}}>
+            <p className="text-center text-core">{successText}</p>
+            <Button className="w-32" onClick={() => {router.push(url);}}>
               Aceptar
             </Button>
           </div>

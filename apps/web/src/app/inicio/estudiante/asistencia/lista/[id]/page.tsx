@@ -1,5 +1,5 @@
 "use client";
-import {Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Mail, Users, FileText, Briefcase, CheckCircle2, User, Upload, X } from "lucide-react"
 import { Button } from '@/components/ui/button'
 import { use, useEffect, useState } from 'react';
@@ -29,38 +29,39 @@ import { ROUTES } from '@/app/routes';
  * 
  * @returns {JSX.Element} A div containing either assistance details or application form
  */
-export default function AssistanceDetails({ params } :{ params: Promise<{ id: string }> }) {
+export default function AssistanceDetails({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { id } = use(params);
 
-  const [assistance, setAssistance] = useState({ 
-    id: 0, 
+  const [assistance, setAssistance] = useState({
+    id: 0,
     name: "",
-    clasification: "", 
+    clasification: "",
     publication_date: new Date(),
     end_date: new Date(),
     start_semester: "",
-    description: "", 
-    requisites: [""], 
+    description: "",
+    requisites: [""],
     professor: "",
-    email: ""});
+    email: ""
+  });
   const [isApplying, setIsApplying] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!id) return router.push("/404");
-      try { 
+      try {
         const data = await getGraduatedAssistanceById(id);
         setAssistance(data);
       } catch {
         router.push("/404");
       }
     };
-  
+
     fetchData();
   }, [id]);
 
-  
+
   return (
     <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
       {!isApplying && <AssistanceInscription assistance={assistance} setIsApplying={setIsApplying} />}
@@ -91,7 +92,7 @@ export default function AssistanceDetails({ params } :{ params: Promise<{ id: st
  * @param {Object} props Component props
  * @returns {JSX.Element} Card containing assistance position details
  */
-function AssistanceInscription({assistance, setIsApplying}: {assistance: Assistance, setIsApplying: (value: boolean) => void}) {
+function AssistanceInscription({ assistance, setIsApplying }: { assistance: Assistance, setIsApplying: (value: boolean) => void }) {
   return (
     <Card className="max-w-3xl  mx-auto shadow-lg">
       <CardHeader className=" rounded-t-lg">
@@ -105,7 +106,7 @@ function AssistanceInscription({assistance, setIsApplying}: {assistance: Assista
             <ContactInfo assistance={assistance} />
           </div>
         </div>
-        <Button className="bg-black hover:bg-black/90 w-40 mx-auto block" onClick={() => setIsApplying(true)}>Aplicar</Button>
+        <Button className="w-40 mx-auto block" onClick={() => setIsApplying(true)}>Aplicar</Button>
       </CardContent>
     </Card>
   )
@@ -132,35 +133,35 @@ function AssistanceInscription({assistance, setIsApplying}: {assistance: Assista
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing main position information
  */
-function MainInformation({assistance}: {assistance: Assistance}) {
-  return  (
+function MainInformation({ assistance }: { assistance: Assistance }) {
+  return (
     <div className="space-y-12">
-        <div className="space-y-6">
-          <div className="flex items-start gap-3">
-            <Briefcase className="w-6 h-6 text-core flex-shrink-0 mt-1" />
-            <div>
-              <h2 className="font-bold text-xl text-core">Nombre:</h2>
-              <p className="text-xl">{assistance.name}</p>
-            </div>
+      <div className="space-y-6">
+        <div className="flex items-start gap-3">
+          <Briefcase className="w-6 h-6 text-core flex-shrink-0 mt-1" />
+          <div>
+            <h2 className="font-bold text-xl text-core">Nombre:</h2>
+            <p className="text-xl">{assistance.name}</p>
           </div>
+        </div>
 
-          <div className="flex items-start gap-3">
-            <Users className="w-6 h-6 text-core flex-shrink-0 mt-1" />
-            <div>
-              <h2 className="font-bold text-xl text-core">Clasificación:</h2>
-              <p className="text-xl">{assistance.clasification}</p>
-            </div>
+        <div className="flex items-start gap-3">
+          <Users className="w-6 h-6 text-core flex-shrink-0 mt-1" />
+          <div>
+            <h2 className="font-bold text-xl text-core">Clasificación:</h2>
+            <p className="text-xl">{assistance.clasification}</p>
           </div>
+        </div>
 
-          <div className="flex items-start gap-3">
-            <FileText className="w-6 h-6 text-core flex-shrink-0 mt-1" />
-            <div>
-              <h2 className="font-bold text-xl text-core">Descripción:</h2>
-              <p className="text-xl">{assistance.description}</p>
-            </div>
+        <div className="flex items-start gap-3">
+          <FileText className="w-6 h-6 text-core flex-shrink-0 mt-1" />
+          <div>
+            <h2 className="font-bold text-xl text-core">Descripción:</h2>
+            <p className="text-xl">{assistance.description}</p>
           </div>
         </div>
       </div>
+    </div>
   )
 }
 
@@ -184,18 +185,18 @@ function MainInformation({assistance}: {assistance: Assistance}) {
  * @param {Object} props Component props
  * @returns {JSX.Element} List of position requirements
  */
-function Requisites({requisites}: {requisites: string[]}) {
+function Requisites({ requisites }: { requisites: string[] }) {
   return (
     <div className='mb-4'>
-    <h3 className="font-semibold text-2xl text-core mb-3">Requisitos:</h3>
-    <ul className="space-y-1">
-      {requisites.map((requisites) => (
-        <li className="flex items-center gap-3" key = {requisites}>
-        <CheckCircle2 className="w-6 h-6 text-core flex-shrink-0" />
-        <span className="text-xl">{requisites}</span>
-      </li>
-      ))}
-    </ul>
+      <h3 className="font-semibold text-2xl text-core mb-3">Requisitos:</h3>
+      <ul className="space-y-1">
+        {requisites.map((requisites) => (
+          <li className="flex items-center gap-3" key={requisites}>
+            <CheckCircle2 className="w-6 h-6 text-core flex-shrink-0" />
+            <span className="text-xl">{requisites}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
@@ -220,23 +221,23 @@ function Requisites({requisites}: {requisites: string[]}) {
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing contact information
  */
-function ContactInfo({assistance}: {assistance: Assistance}) {
+function ContactInfo({ assistance }: { assistance: Assistance }) {
   return (
     <div>
-          <h2 className="text-2xl font-bold text-core mb-3">Contacto:</h2>
-          <div className="space-y-3 ">
-            <div className="flex items-center gap-3">
-              <User className="w-6 h-6 text-core flex-shrink-0" />
-              <span className="text-xl">{assistance.professor}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Mail className="w-6 h-6 text-core" />
-              <a href={`mailto:${assistance.email}`} className="text-xl text-core hover:underline">
-                {assistance.email}
-              </a>
-            </div>
-          </div>
+      <h2 className="text-2xl font-bold text-core mb-3">Contacto:</h2>
+      <div className="space-y-3 ">
+        <div className="flex items-center gap-3">
+          <User className="w-6 h-6 text-core flex-shrink-0" />
+          <span className="text-xl">{assistance.professor}</span>
         </div>
+        <div className="flex items-center gap-3">
+          <Mail className="w-6 h-6 text-core" />
+          <a href={`mailto:${assistance.email}`} className="text-xl text-core hover:underline">
+            {assistance.email}
+          </a>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -260,7 +261,7 @@ function ContactInfo({assistance}: {assistance: Assistance}) {
  * @param {Object} props Component props
  * @returns {JSX.Element} Application form card
  */
-function AssistanceApplying({assistance, setIsApplying}: {assistance: Assistance, setIsApplying: (value: boolean) => void}) {
+function AssistanceApplying({ assistance, setIsApplying }: { assistance: Assistance, setIsApplying: (value: boolean) => void }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert("Aplicación enviada con exito");
@@ -268,12 +269,14 @@ function AssistanceApplying({assistance, setIsApplying}: {assistance: Assistance
 
   const modalProps = {
     "title": "¿Estás seguro de aplicar a esta asistencia graduada?",
-    "description": "Recuerda que una vez aplicas no podrás cambiar tu decisión", 
+    "description": "Recuerda que una vez aplicas no podrás cambiar tu decisión",
     "buttonText": "Aplicar",
     "successTitle": "¡Aplicación enviada!",
     "successText": "Tu aplicación ha sido enviada con éxito",
     "url": `${ROUTES.HOME}/${ROUTES.ASSISTANCE_APPLIED_LIST}`
   }
+
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   return (
     <Card className="max-w-3xl  mx-auto shadow-lg">
@@ -285,7 +288,13 @@ function AssistanceApplying({assistance, setIsApplying}: {assistance: Assistance
         <form onSubmit={handleSubmit} className="space-y-6">
           <UploadCV assistance={assistance} />
           <div className="flex justify-center pt-3.5">
-            <ConfirmationModal dialogText={modalProps} onConfirm={handleSubmit}/>
+            <Button
+              type="button"
+              onClick={() => setIsConfirmed(true)}
+              className="bg-core hover:bg-core-highlight text-white px-10 py-5 rounded-xl text-lg font-semibold transition-colors shadow-lg hover:shadow-core-soft">
+              Aplicar
+            </Button>
+            <ConfirmationModal dialogText={modalProps} onConfirm={handleSubmit} open={isConfirmed} setIsOpen={setIsConfirmed} />
           </div>
         </form>
       </CardContent>
@@ -313,18 +322,18 @@ function AssistanceApplying({assistance, setIsApplying}: {assistance: Assistance
  * @param {Object} props Component props
  * @returns {JSX.Element} Back button
  */
-function ButtonBack({setIsApplying}: {setIsApplying: (value: boolean) => void}) {
-  return  (
+function ButtonBack({ setIsApplying }: { setIsApplying: (value: boolean) => void }) {
+  return (
     <Button variant="outline"
       size="sm"
-      className="text-core hover:text-core-highlight border-core hover:border-core-highlight hover:bg-sky-50"
+      className="text-core hover:text-core-highlight border-core hover:border-core-highlight hover:bg-sky-50 dark:hover:bg-sky-500"
       onClick={() => setIsApplying(false)}
     >
       <FileText className="h-4 w-4 mr-2" />
       Ver detalles
     </Button>
   )
-} 
+}
 
 
 
@@ -351,7 +360,7 @@ function ButtonBack({setIsApplying}: {setIsApplying: (value: boolean) => void}) 
  * @param {Object} props Component props
  * @returns {JSX.Element} File upload section
  */
-function UploadCV({assistance}: {assistance: Assistance}) {
+function UploadCV({ assistance }: { assistance: Assistance }) {
   interface UploadedFile {
     name: string
     url: string

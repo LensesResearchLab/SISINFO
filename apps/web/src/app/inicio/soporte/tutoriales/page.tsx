@@ -17,7 +17,6 @@ function VideoPlayer({ src }: { src: string }) {
       className="w-full h-96"
       src={src}
       title="YouTube video player"
-      frameBorder="0"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowFullScreen
     ></iframe>
@@ -47,7 +46,7 @@ export default function Tutorials() {
         <Card key={index} className="p-4 border-none">
           <CardHeader>
             <h2 className="text-xl font-bold text-core-highlight mb-4">{tutorial.title}</h2>
-            <p className="text-lg text-gray-600">{tutorial.description}</p>
+            <p className="text-lg text-foreground-soft">{tutorial.description}</p>
           </CardHeader>
           <CardContent>
             <VideoPlayer src={tutorial.link} />

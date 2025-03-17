@@ -1,7 +1,7 @@
 "use client";
 import { Calendar, FileText, Mail, Star, User } from "lucide-react"
-import { getThesisStatusInformation } from "@/app/inicio/pregrado/tesis/services/thesis.service"
-import { StatusInformation } from "@/app/inicio/pregrado/tesis/types/thesis.type"
+import { getThesisStatusInformation } from "@/services/thesis.service"
+import { StatusInformation } from "@/types/thesis.type"
 import SpinnerPage from "@/components/shared/spinner-page";
 import TabStatus from "@/components/shared/tab-status";
 import { useQuery } from "@tanstack/react-query";
@@ -74,8 +74,8 @@ function ThesisNotFound() {
   return (
     <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[900px]">
       <div className="w-full bg-white shadow-lg rounded-xl p-5 h-full space-y-4">
-        <h2 className="text-xl font-bold text-gray-800">No se encontró información de inscripción</h2>
-        <p className="text-gray-600">No se pudo encontrar información de inscripción para el proyecto de grado</p>
+        <h2 className="text-xl font-bold ext-foreground-soft">No se encontró información de inscripción</h2>
+        <p className="text-foreground-soft">No se pudo encontrar información de inscripción para el proyecto de grado</p>
       </div>
     </div>
   )

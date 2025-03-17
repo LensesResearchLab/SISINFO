@@ -19,8 +19,8 @@ import {
   import { Search } from "lucide-react";
   import { useEffect } from "react";
   import { useRouter } from 'next/navigation';
-  import { getUndergraduateThesis, getUndegraduadeThesisSemesters } from "@/app/inicio/pregrado/tesis/services/thesis.service"
-  import { Thesis } from "@/app/inicio/pregrado/tesis/types/thesis.type"
+  import { getUndergraduateThesis, getUndegraduadeThesisSemesters } from "@/services/thesis.service"
+  import { Thesis } from "@/types/thesis.type"
   
   import {
     Select,
@@ -37,6 +37,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useThesisListStore } from "./store";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/app/routes";
+import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button"
   
 /**
  * ThesisList Component
@@ -81,21 +82,15 @@ export default function ThesisList() {
   if (isLoadingSemesters) return <SpinnerPage />;
 
   return (
-    <div className="min-h-full max-w-[900px] container mx-auto p-4 space-y-8">
-      <Accordion type="single" collapsible className="w-full bg-white shadow-lg rounded-xl p-5 h-full">
+    <div className="min-h-full mx-auto p-4 container max-w-3xl">
+      <Accordion type="single" collapsible className="w-full bg-card shadow-lg rounded-xl p-5 h-full text-primary ">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
             <SelectSearchCategory className="w-full sm:w-auto" />
             <SelectSemester semesters={semesters ?? []} className="w-full sm:w-auto" />
           </div>
-          <Button
-            variant="default"
-            className="bg-core hover:bg-core-highlight w-full sm:w-auto"
-            onClick={() => setSortDirection(sortDirection * -1)}
-          >
-            <ArrowUpDown className="w-4 h-4 mr-2" />
-            {sortDirection === 1 ? "A-Z" : "Z-A"}
-          </Button>
+
+          <AlphabeticSortButton onclick={() => setSortDirection(sortDirection * -1)} sortDirection={sortDirection} />
         </div>
         {isFetchingThesis ? <SkeletonAccordion /> : <AccordionListSimpleFactory thesisList={thesisList ?? {}} />}
       </Accordion>
@@ -245,8 +240,8 @@ function ProfessorAccordionList({thesisList, order}: {thesisList: {[professor: s
 function ElementAccordion({element, children, icon}: {element: string, children?: React.ReactNode, icon?: React.ReactNode}) {
   return (
     <AccordionItem value={element}>
-      <AccordionTrigger className="hover:bg-core-soft cursor-pointer">  
-        <div className="flex items-center">
+      <AccordionTrigger className="hover:bg-core-soft cursor-pointer dark:hover:bg-core-highlight">  
+        <div className="flex items-cente">
           {icon}
           <span>{element}</span>
         </div>
@@ -291,7 +286,7 @@ function ElementThesisTable({thesisList}: {thesisList: Thesis[]}) {
             <TableRow key={index}>
             <TableCell className="font-medium">{project.title}</TableCell>
             <TableCell className="font-medium">{project.category}</TableCell>
-            <TableCell className="font-medium">{project.students}</TableCell>
+            <TableCell className="font-medium">{project.students.length}</TableCell>
             <TableCell className="font-medium">
               <Button variant="ghost" size="icon" onClick={() => handleClick(project.id)} className="cursor-pointer">
                 <Search className="w-4 h-4" />

@@ -174,7 +174,7 @@ export default function AssistanceAppliedList() {
           </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="ml-auto bg-core text-white">
               Columnas <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
@@ -228,6 +228,7 @@ export default function AssistanceAppliedList() {
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
+                  className="bg-card text-primary"
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -244,9 +245,9 @@ export default function AssistanceAppliedList() {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center bg-card text-primary"
                 >
-                  No results.
+                  Sin resultados.
                 </TableCell>
               </TableRow>
             )}
@@ -258,6 +259,7 @@ export default function AssistanceAppliedList() {
           <Button
             variant="outline"
             size="sm"
+            className="bg-card  text-primary"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
@@ -266,6 +268,7 @@ export default function AssistanceAppliedList() {
           <Button
             variant="outline"
             size="sm"
+            className="bg-card text-primary"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
