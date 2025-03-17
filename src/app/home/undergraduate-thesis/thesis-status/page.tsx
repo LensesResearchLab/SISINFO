@@ -1,10 +1,10 @@
 "use client";
 import { Calendar, FileText, Mail, Star, User } from "lucide-react"
-import { useEffect, useState } from "react"
 import { getThesisStatusInformation } from "@/app/home/undergraduate-thesis/services/thesis.service";
 import { StatusInformation } from "@/app/home/undergraduate-thesis/types/thesis.type"
 import SpinnerPage from "@/components/shared/spinner-page";
 import TabStatus from "@/components/shared/tab-status";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * ThesisStatus Component
@@ -13,11 +13,13 @@ import TabStatus from "@/components/shared/tab-status";
  * It fetches thesis status data and displays it in a tabbed interface.
  * 
  * States:
- * - isLoading: Boolean indicating if data is being fetched
  * - statusInformation: Object containing thesis status details like semester, title, advisor, etc.
+ * - isFetching: Boolean indicating if data is being fetched
+ * - error: Any error that occurred during data fetching
  * 
  * Features:
- * - Shows loading skeleton while data is being fetched
+ * - Uses React Query for data fetching and caching
+ * - Shows loading spinner while data is being fetched
  * - Displays thesis information in two tabs:
  *   1. General information (semester, title, advisor, student details)
  *   2. Status information (current step in thesis process)
@@ -26,59 +28,82 @@ import TabStatus from "@/components/shared/tab-status";
  * 
  * Layout:
  * - Tabbed interface with general info and status tabs
- * - Loading skeleton during data fetch
+ * - Loading spinner during data fetch
+ * - Error state handling
  * - Organized sections of thesis information
  * 
  * @returns {JSX.Element} A tabbed interface showing thesis status and information
  */
 export default function ThesisStatus() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [statusInformation, setStatusInformation] = useState<StatusInformation>({
-    semester: "",
-    projectTitle: "",
-    advisor: "",
-    student: "",
-    studentEmail: "",
-    grade: "",
-    lastStep: "",
-  })
-  useEffect(() => {
-    getThesisStatusInformation().then((data => setStatusInformation(data))).finally(() => setIsLoading(false))
-  }, [])
+  const { data: statusInformation, isFetching, error } = useQuery({
+    queryKey: ['student-thesis-status'],
+    queryFn: getThesisStatusInformation,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  if (isFetching) return <SpinnerPage />;
+  if (error || !statusInformation) return <ThesisNotFound />;
 
   const sections = getSections(statusInformation)
   const steps = ["Postulado", "Aceptado", "Inscrito", "Informe", "Finalizado"]
   const messagePerStep = getMessagesPerStep()
-
   const generalInformationProps = {title: "Información de inscripción proyecto de grado", sections}
   const statusProps = {currentStatus: statusInformation.lastStep, statusMessage: messagePerStep.get(statusInformation.lastStep) || "", steps, title: "Estado inscripción proyecto de grado"}
   
-  if (isLoading) return <SpinnerPage />;
   return <TabStatus general={generalInformationProps} status={statusProps} />
+}
+
+
+/**
+ * ThesisNotFound Component
+ * 
+ * Displays an error message when thesis information cannot be found.
+ * 
+ * Layout:
+ * - Centered container with max width
+ * - White background card with shadow
+ * - Error heading and descriptive message
+ * 
+ * Styling:
+ * - Uses Tailwind classes for spacing, colors and layout
+ * - Responsive container with padding
+ * - Rounded corners and shadow for card
+ * 
+ * @returns {JSX.Element} Error message component
+ */
+function ThesisNotFound() {
+  return (
+    <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[900px]">
+      <div className="w-full bg-white shadow-lg rounded-xl p-5 h-full space-y-4">
+        <h2 className="text-xl font-bold text-gray-800">No se encontró información de inscripción</h2>
+        <p className="text-gray-600">No se pudo encontrar información de inscripción para el proyecto de grado</p>
+      </div>
+    </div>
+  )
 }
 
 /**
  * getSections Function
  * 
- * This function generates an array of section objects containing thesis information
- * to be displayed in the UI. Each section has a title, description and icon.
+ * Creates an array of section objects containing thesis information for display.
+ * Each section represents a piece of thesis information with consistent styling.
  * 
- * @param {StatusInformation} statusInformation - Object containing thesis status details
+ * @param {StatusInformation} statusInformation - Object containing thesis details
  * 
- * @returns {Array} Array of section objects with the following properties:
- * - title: String label for the section
- * - description: Corresponding value from statusInformation
- * - icon: React component for the section icon
+ * @returns {Array} Array of section objects with:
+ * - title: Section label
+ * - description: Value from statusInformation
+ * - icon: React component icon
  * 
- * Sections included:
- * - Semester information with Calendar icon
- * - Project title with FileText icon  
- * - Advisor name with User icon
- * - Student name with User icon
- * - Student email with Mail icon
- * - Grade with Star icon
+ * Section Types:
+ * 1. Starting semester (Calendar icon)
+ * 2. Project title (FileText icon)
+ * 3. Advisor name (User icon)
+ * 4. Student name (User icon)
+ * 5. Student email (Mail icon)
+ * 6. Grade (Star icon)
  * 
- * All icons use consistent styling (sky blue color, small size)
+ * Icons are styled consistently with sky blue color and small size
  */
 function getSections(statusInformation: StatusInformation) {
   return [
@@ -94,18 +119,20 @@ function getSections(statusInformation: StatusInformation) {
 /**
  * getMessagesPerStep Function
  * 
- * This function creates a map of status messages for each step in the thesis process.
- * It maps each step to a corresponding message that explains the status of the thesis.
+ * Creates a mapping between thesis process steps and their corresponding status messages.
+ * Used to display appropriate feedback based on the current thesis stage.
  * 
- * @returns {Map<string, string>} A map of status messages for each step
+ * @returns {Map<string, string>} Map where:
+ * - Key: Step name in Spanish
+ * - Value: Descriptive status message
  * 
- * Messages:
- * - "Postulado": "Tu proyecto ha sido postulado y se encuentra en proceso de revisión"
- * - "Aceptado": "Tu proyecto ha sido aceptado y se encuentra en proceso de revisión"
- * - "Inscrito": "Tu inscripción ha sido aceptada y se encuentra en proceso de revisión"
- * - "Informe": "Tu informe final ha sido entregado y se encuentra en proceso de revisión"
- * - "Finalizado": "Tu proyecto ha sido finalizado y se encuentra en proceso de revisión"
-*/ 
+ * Steps and Messages:
+ * 1. "Postulado" (Submitted) - Project submitted and under review
+ * 2. "Aceptado" (Accepted) - Project accepted and under review
+ * 3. "Inscrito" (Enrolled) - Registration accepted and under review
+ * 4. "Informe" (Report) - Final report submitted and under review
+ * 5. "Finalizado" (Finished) - Project completed and under review
+ */
 function getMessagesPerStep() {
   const messagePerStep = new Map<string, string>()
   messagePerStep.set("Postulado", "Tu proyecto ha sido postulado y se encuentra en proceso de revisión")

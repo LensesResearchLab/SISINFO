@@ -2,6 +2,7 @@
 
 import { getCourses, getStudent } from "@/app/home/professor/publish-consult/services/student-profile.service";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, CircleAlert } from "lucide-react";
@@ -33,7 +34,7 @@ export default function StudentDetail() {
   useEffect(() => {
     getCourses().then(setCourses);
     getStudent().then(setStudent);
-    getStudent().then(data => setOthers(data.others));
+    getStudent().then(data=>setOthers(data.others));
     setisLoading(false);
   }, []);
   if (isLoading) return <SpinnerPage />;

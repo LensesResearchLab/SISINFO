@@ -1,4 +1,4 @@
-import { Course, Student } from "@/app/home/professor/publish-consult/types/student-profile.type";
+import { Student } from "@/app/home/professor/publish-consult/types/student-profile.type";
 
 const student: Student = {
     id: 1,

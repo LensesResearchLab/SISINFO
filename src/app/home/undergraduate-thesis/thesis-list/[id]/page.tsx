@@ -4,93 +4,112 @@ import { Badge } from "@/components/ui/badge"
 import { Mail, Users, Calendar, Tag, FileText } from "lucide-react"
 import { Button } from '@/components/ui/button'
 import { getUndergraduateThesisById } from '@/app/home/undergraduate-thesis/services/thesis.service';
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Thesis } from '@/app/home/undergraduate-thesis/types/thesis.type';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ConfirmationModal } from '@/components/shared/confirmation-modal';
 import { use, useEffect, useState } from 'react';
 import SpinnerPage from '@/components/shared/spinner-page';
+import { useQuery } from '@tanstack/react-query';
+import { useThesisInscriptionStore } from './store';
 
 
 /**
  * ThesisInscription Component
  * 
- * This component handles the display and interaction for a thesis inscription page.
- * It fetches thesis details based on the URL parameter and manages the application state.
+ * Main component for handling thesis inscription functionality.
+ * Displays thesis details and application form based on user interaction.
  * 
- * States:
- * - thesis: Object containing thesis details (id, title, description, etc.)
- * - loading: Boolean to track data fetching state
- * - isApplying: Boolean to control whether application form is shown
+ * Features:
+ * - Fetches thesis details using the provided ID
+ * - Handles loading and error states
+ * - Toggles between details view and application form
+ * - Resets application state when ID changes
  * 
- * Navigation:
- * - Redirects to 404 page if thesis id is invalid or not found
- * 
- * Child Components:
- * - ThesisDetails: Displays thesis information when not applying
- * - ThesisApplying: Shows application form when user is applying
+ * @param {Object} params - URL parameters containing thesis ID
  */
 export default function ThesisInscription({ params } :{ params: Promise<{ id: string }> }) {
-  const router = useRouter();
   const { id } = use(params); 
-  const [thesis, setThesis] = useState({ 
-    id: 0, 
-    title: "",
-    description: "", 
-    email: "", category: "", 
-    semester: "", students: "", 
-    areas_of_interest: [""], 
-    professor: "" });
-  const [loading, setLoading] = useState(true);
-  const [isApplying, setIsApplying] = useState(false);
+  const reset = useThesisInscriptionStore(state => state.reset);
+
+  const { data: thesis, isFetching, error} = useQuery({
+    queryKey: ['student-thesis-application', id],
+    queryFn: () => getUndergraduateThesisById(id),
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  });
+
+  const isApplying = useThesisInscriptionStore(state => state.isApplying);
 
   useEffect(() => {
-    if (!id) {
-      router.push("/404");
-      return;
-    }
-  
-    getUndergraduateThesisById(id)
-      .then((data) => {
-        if (!data || !data.id) {
-          throw new Error("Datos de la tesis no válidos");
-        }
-        setThesis(data);
-      })
-      .catch(() => router.push("/404"))
-      .finally(() => setLoading(false));
+    reset();
   }, [id]);
 
-  if (loading) return <SpinnerPage />;
+  if (isFetching) return <SpinnerPage />;
+  if (error || !thesis) return <ThesisNotFound />;
   return (
     <div className="min-h-full max-w-[900px] container mx-auto p-4 space-y-8">
-      {!isApplying && <ThesisDetails thesis={thesis} setIsApplying={setIsApplying} />}
-      {isApplying && <ThesisApplying thesis={thesis} setIsApplying={setIsApplying} />}
+      {!isApplying && <ThesisDetails thesis={thesis!}/>}
+      {isApplying && <ThesisApplying thesis={thesis!}/>}
     </div>
   )
 }
 
+
+/**
+ * ThesisNotFound Component
+ * 
+ * Displays a message when a thesis is not found in the system.
+ * Provides a button to navigate back to the thesis list page.
+ * 
+ * Features:
+ * - Clear error message
+ * - Navigation button to return to thesis list
+ * - Consistent styling with the main application
+ * 
+ * @returns {JSX.Element} Error card with navigation button
+ */
+function ThesisNotFound() {
+  const router = useRouter();
+  return (
+    <div className="min-h-full max-w-[900px] container mx-auto p-4 space-y-8">
+      <Card className="w-full mx-auto shadow-lg border-none">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold text-sky-800">Tesis no encontrada</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6 space-y-6">
+          <p className="text-gray-700">La tesis que buscas no se encuentra en el sistema. Por favor verifica la URL o intenta de nuevo más tarde.</p>
+          <Button 
+            className="bg-black hover:bg-black/90 w-40 mx-auto block" 
+            onClick={() => router.push("/home/undergraduate-thesis/thesis-list")}
+          >Volver a la lista</Button>
+        </CardContent>
+      </Card>
+    </div>
+  
+  )
+}
+
+
 /**
  * ThesisDetails Component
  * 
- * This component displays detailed information about a thesis project.
- * It shows the thesis title, description, areas of interest, and other data
- * in an organized card layout.
+ * Displays comprehensive information about a thesis project in a structured card layout.
+ * Shows title, description, areas of interest, and other metadata.
  *
+ * Features:
+ * - Organized sections for different types of information
+ * - Responsive layout with appropriate spacing
+ * - Apply button to initiate the application process
+ * 
  * @param {Object} props - Component props
  * @param {Thesis} props.thesis - The thesis object containing all project details
- * @param {Function} props.setIsApplying - Function to toggle application state
  * 
- * Layout:
- * - Card with header showing title
- * - Main content section with:
- *   - Project title and description
- *   - Areas of interest tags
- *   - Two column layout for category/semester and students/contact info
- * - Apply button at bottom
+ * @returns {JSX.Element} Card with formatted thesis information
  */
-function ThesisDetails({thesis, setIsApplying}: {thesis: Thesis, setIsApplying: (value: boolean) => void}) {
+function ThesisDetails({thesis}: {thesis: Thesis}) {
+  const setIsApplying = useThesisInscriptionStore(state => state.setIsApplying);
   return (
     <Card className="w-full  mx-auto shadow-lg border-none">
       <CardHeader>
@@ -114,17 +133,17 @@ function ThesisDetails({thesis, setIsApplying}: {thesis: Thesis, setIsApplying: 
 /**
  * MainInformation Component
  * 
- * This component displays the main information of a thesis project,
- * including its title and description.
+ * Displays the primary information of a thesis project including title and description.
+ * 
+ * Features:
+ * - Clear labeling for project title
+ * - Formatted description with appropriate spacing
+ * - Visual hierarchy through font styling
  * 
  * @param {Object} props - Component props
- * @param {Thesis} props.thesis - The thesis object containing the project details
+ * @param {Thesis} props.thesis - The thesis object containing project details
  * 
- * Layout:
- * - Project title displayed with a label
- * - Project description displayed below
- * 
- * @returns {JSX.Element} A div containing the formatted title and description
+ * @returns {JSX.Element} Section with formatted title and description
  */
 function MainInformation({thesis}: {thesis: Thesis}) {
   return  (
@@ -139,18 +158,17 @@ function MainInformation({thesis}: {thesis: Thesis}) {
 /**
  * AreasOfInterest Component
  * 
- * This component displays a list of areas of interest for a thesis project
- * as badges/tags.
+ * Displays a collection of interest areas related to the thesis as interactive badges.
+ * 
+ * Features:
+ * - Flexible layout that wraps on smaller screens
+ * - Visual representation of areas as badges
+ * - Consistent styling with hover effects
  * 
  * @param {Object} props - Component props
- * @param {string[]} props.areas - Array of area names to display
+ * @param {string[]} props.areas - Array of area names to display as badges
  * 
- * Layout:
- * - Section title "Areas of Interest"
- * - Flex container with wrapped badges
- * - Each area displayed as a gray badge with hover effect
- * 
- * @returns {JSX.Element} A div containing the title and area badges
+ * @returns {JSX.Element} Section with heading and area badges
  */
 function AreasOfInterest({areas}: {areas: string[]}) {
   return (
@@ -170,19 +188,18 @@ function AreasOfInterest({areas}: {areas: string[]}) {
 /**
  * CategoryAndSemesterInfo Component
  * 
- * This component displays the category and semester information for a thesis project.
- * It shows two sections with icons and labels for the category and period.
+ * Displays metadata about the thesis category and academic semester.
+ * Uses icons to enhance visual understanding of the information.
+ * 
+ * Features:
+ * - Icon-paired information for visual clarity
+ * - Consistent layout and spacing
+ * - Semantic grouping of related information
  * 
  * @param {Object} props - Component props
- * @param {Thesis} props.thesis - The thesis object containing category and semester info
+ * @param {Thesis} props.thesis - The thesis object containing category and semester data
  * 
- * Layout:
- * - Container with vertical spacing between items
- * - Category section with Tag icon and category text
- * - Period section with Calendar icon and semester text
- * - Each section uses flex layout with icon aligned to top
- * 
- * @returns {JSX.Element} A div containing the formatted category and semester information
+ * @returns {JSX.Element} Section with formatted category and semester information
  */
 function CategoryAndSemesterInfo({thesis}: {thesis: Thesis}) {
   return (
@@ -209,19 +226,18 @@ function CategoryAndSemesterInfo({thesis}: {thesis: Thesis}) {
 /**
  * StudentsAndContactInfo Component
  * 
- * This component displays information about the maximum number of students allowed
- * and contact details for a thesis project.
+ * Displays information about student capacity and professor contact details.
+ * Includes interactive email link for direct communication.
+ * 
+ * Features:
+ * - Icon-paired information for visual clarity
+ * - Clickable email link with mailto functionality
+ * - Organized layout with consistent spacing
  * 
  * @param {Object} props - Component props
- * @param {Thesis} props.thesis - The thesis object containing students count and contact info
+ * @param {Thesis} props.thesis - The thesis object containing student capacity and contact information
  * 
- * Layout:
- * - Container with vertical spacing between items
- * - Students section with Users icon showing max students allowed
- * - Contact section with Mail icon showing professor name and email
- * - Email is clickable and opens default mail client
- * 
- * @returns {JSX.Element} A div containing the formatted students and contact information
+ * @returns {JSX.Element} Section with formatted student capacity and contact information
  */
 function StudentsAndContactInfo({thesis}: {thesis: Thesis}) {
   return (
@@ -251,28 +267,28 @@ function StudentsAndContactInfo({thesis}: {thesis: Thesis}) {
 /**
  * ThesisApplying Component
  * 
- * This component handles the thesis application form interface.
- * It allows students to submit their motivation and contact status for a thesis project.
+ * Handles the thesis application process with a form interface.
+ * Allows students to submit their motivation and indicate contact status.
+ * 
+ * Features:
+ * - Form with text area for motivation statement
+ * - Contact status checkbox
+ * - Confirmation modal before submission
+ * - Navigation back to thesis details
+ * - Success feedback after submission
  * 
  * @param {Object} props - Component props
  * @param {Thesis} props.thesis - The thesis object containing project details
- * @param {Function} props.setIsApplying - Function to toggle application form visibility
  * 
- * States:
- * - motivation: String containing student's motivation text
- * - contacted: Boolean indicating if student has contacted professor
- * 
- * Features:
- * - Form with motivation text area and contact checkbox
- * - Confirmation modal before submitting
- * - Success message and redirection after submission
- * - Back button to return to thesis details
- * 
- * @returns {JSX.Element} A card containing the thesis application form
+ * @returns {JSX.Element} Card containing the application form interface
  */
-function ThesisApplying({thesis, setIsApplying}: {thesis: Thesis, setIsApplying: (value: boolean) => void}) {
-  const [motivation, setMotivation] = useState("");
-  const [contacted, setContacted] = useState(false);
+function ThesisApplying({thesis}: {thesis: Thesis}) {
+  const setIsApplying = useThesisInscriptionStore(state => state.setIsApplying);
+  const motivation = useThesisInscriptionStore(state => state.motivation);
+  const setMotivation = useThesisInscriptionStore(state => state.setMotivation);
+  const contacted = useThesisInscriptionStore(state => state.contacted);
+  const setContacted = useThesisInscriptionStore(state => state.setContacted);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert("Aplicación enviada con exito, motivación: " + motivation + ", contacto: " + contacted);
@@ -310,20 +326,19 @@ function ThesisApplying({thesis, setIsApplying}: {thesis: Thesis, setIsApplying:
 /**
  * ButtonBack Component
  * 
- * This component renders a "Ver detalles" (View details) button that allows users to go back
- * to the thesis details view from the application form.
+ * Renders a button that allows users to return to the thesis details view.
+ * Provides visual feedback through icon and styling.
+ * 
+ * Features:
+ * - Clear visual indication of purpose with icon
+ * - Consistent styling with the application
+ * - Interactive hover effects
+ * - Compact size for secondary action
  * 
  * @param {Object} props - Component props
- * @param {Function} props.setIsApplying - Function to toggle the application form visibility
- *                                        When clicked, sets isApplying to false to show thesis details
+ * @param {Function} props.setIsApplying - Function to toggle application form visibility
  * 
- * Styling:
- * - Uses outline variant with sky blue colors
- * - Small size button
- * - Includes FileText icon
- * - Hover effects for text, border and background
- * 
- * @returns {JSX.Element} A button that returns to thesis details view
+ * @returns {JSX.Element} Styled button for returning to thesis details
  */
 function ButtonBack({setIsApplying}: {setIsApplying: (value: boolean) => void}) {
   return  (
@@ -341,25 +356,19 @@ function ButtonBack({setIsApplying}: {setIsApplying: (value: boolean) => void}) 
 /**
  * ProfessorInformation Component
  * 
- * This component displays the professor's information for a thesis project,
- * including their name and email contact.
+ * Displays the professor's contact information for the thesis project.
+ * Includes name and interactive email link.
+ * 
+ * Features:
+ * - Clear presentation of professor name
+ * - Interactive email link with icon
+ * - Visual feedback on interaction
+ * - Semantic grouping of related information
  * 
  * @param {Object} props - Component props
  * @param {Thesis} props.thesis - The thesis object containing professor details
- *                               Must include professor name and email
  * 
- * Features:
- * - Displays professor name with semantic heading
- * - Clickable email link with mailto functionality
- * - Mail icon visual indicator for email
- * - Hover underline effect on email
- * 
- * Styling:
- * - Consistent spacing between elements
- * - Professor name has semibold weight with normal weight for the actual name
- * - Email uses sky blue color scheme with hover effects
- * 
- * @returns {JSX.Element} A section showing professor name and contact email
+ * @returns {JSX.Element} Section with formatted professor information
  */
 function ProfessorInformation({thesis}: {thesis: Thesis}) {
   return (
@@ -381,25 +390,20 @@ function ProfessorInformation({thesis}: {thesis: Thesis}) {
 /**
  * MotivationTextArea Component
  * 
- * This component renders a text area for students to input their motivation and relevant experience
- * when applying for a thesis project.
- * 
- * @param {Object} props - Component props
- * @param {string} props.motivation - The current motivation text value
- * @param {function} props.setMotivation - Function to update the motivation text value
+ * Provides a text input area for students to express their motivation and relevant experience.
+ * Includes descriptive label and appropriate styling.
  * 
  * Features:
- * - Descriptive label explaining the purpose of the text area
- * - Controlled textarea component with placeholder text
- * - Fixed minimum height of 200px
- * - Non-resizable text area for consistent UI
+ * - Descriptive label explaining purpose
+ * - Controlled component with state management
+ * - Appropriate sizing for detailed responses
+ * - Placeholder text for guidance
  * 
- * Styling:
- * - Consistent spacing between elements using space-y-2
- * - Gray colored label text for visual hierarchy
- * - Custom styling for the textarea including minimum height
+ * @param {Object} props - Component props
+ * @param {string} props.motivation - Current motivation text value
+ * @param {function} props.setMotivation - Function to update motivation text
  * 
- * @returns {JSX.Element} A labeled textarea for motivation input
+ * @returns {JSX.Element} Labeled textarea for motivation input
  */
 function MotivationTextArea({motivation, setMotivation}: {motivation: string, setMotivation: (value: string) => void}) {
   return (
@@ -420,25 +424,20 @@ function MotivationTextArea({motivation, setMotivation}: {motivation: string, se
 /**
  * ContactedCheckbox Component
  * 
- * This component renders a checkbox that allows students to indicate if they have
- * contacted the professor through other means regarding the thesis project.
- * 
- * @param {Object} props - Component props
- * @param {boolean} props.contacted - The current state of the checkbox
- * @param {function} props.setContacted - Function to update the checkbox state
+ * Provides a checkbox for students to indicate if they have contacted the professor.
+ * Includes accessible label and state management.
  * 
  * Features:
- * - Controlled checkbox component with associated label
- * - Accessible through id/htmlFor connection
- * - Visual feedback for disabled state
+ * - Accessible checkbox with associated label
+ * - Controlled component with state management
+ * - Visual styling consistent with application
+ * - Clear labeling of purpose
  * 
- * Styling:
- * - Flex layout with consistent spacing
- * - Small text size for label
- * - Medium font weight for emphasis
- * - Custom styling for disabled state
+ * @param {Object} props - Component props
+ * @param {boolean} props.contacted - Current checkbox state
+ * @param {function} props.setContacted - Function to update checkbox state
  * 
- * @returns {JSX.Element} A checkbox with label for indicating professor contact
+ * @returns {JSX.Element} Labeled checkbox for indicating professor contact
  */
 function ContactedCheckbox({contacted, setContacted}: {contacted: boolean, setContacted: (value: boolean) => void}) {
   return (
