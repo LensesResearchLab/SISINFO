@@ -98,8 +98,8 @@ import {
             <div className="rounded-full bg-core-soft p-3">
               <Check className="h-16 w-16 text-core" />
             </div>
-            <p className="text-center text-gray-600">{successText}</p>
-            <Button className="bg-black hover:bg-black/90 w-32" onClick={() => {router.push(url);}}>
+            <p className="text-center text-core">{successText}</p>
+            <Button className="w-32" onClick={() => {router.push(url);}}>
               Aceptar
             </Button>
           </div>

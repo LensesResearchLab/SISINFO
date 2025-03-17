@@ -62,7 +62,7 @@ export default function ThesisForm() {
 
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
-      <div className="w-full bg-white shadow-xl rounded-2xl p-8 space-y-2 border border-gray-100">
+      <div className="w-full bg-card shadow-xl rounded-2xl p-8 space-y-2 border border-gray-100">
 
 
         <div className="text-center space-y-2">
@@ -79,12 +79,12 @@ export default function ThesisForm() {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-semibold">Título del Proyecto</FormLabel>
+                      <FormLabel className="text-primary font-semibold">Título del Proyecto</FormLabel>
                       <FormControl>
                         <Input 
                           {...field}
                           placeholder="Ej: Desarrollo de un producto de datos para..."
-                          className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg"
+                          className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg text-primary"
                         />
                       </FormControl>
                       <FormMessage className="text-red-500" />
@@ -100,12 +100,12 @@ export default function ThesisForm() {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700 font-semibold">Descripción Detallada</FormLabel>
+                      <FormLabel className="text-primary font-semibold">Descripción Detallada</FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
                           placeholder="Describe los objetivos, metodología y alcance del proyecto..."
-                          className="min-h-[100px] focus:ring-2 focus:ring-core border-gray-300 rounded-lg"
+                          className="min-h-[100px] focus:ring-2 focus:ring-core border-gray-300 rounded-lg text-primary"
                         />
                       </FormControl>
                       <FormMessage className="text-red-500" />
@@ -119,15 +119,15 @@ export default function ThesisForm() {
                 control={form.control}
                 name="students"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700 font-semibold">Número de Estudiantes</FormLabel>
+                  <FormItem className='text-primary'>
+                    <FormLabel className="font-semibold">Número de Estudiantes</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="number"
                         min="1"
                         onChange={(e) => field.onChange(parseInt(e.target.value))}
-                        className="w-24 focus:ring-2 focus:ring-core border-gray-300 rounded-lg"
+                        className="w-24 focus:ring-2 focus:ring-core border-gray-300 rounded-lg text-primary"
                       />
                     </FormControl>
                     <FormMessage className="text-red-500" />
@@ -140,8 +140,8 @@ export default function ThesisForm() {
                 control={form.control}
                 name="category"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700 font-semibold">Categoría</FormLabel>
+                  <FormItem className='text-primary'>
+                    <FormLabel className="font-semibold">Categoría</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
@@ -165,8 +165,8 @@ export default function ThesisForm() {
                   control={form.control}
                   name="tags"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-700 font-semibold">Etiquetas</FormLabel>
+                    <FormItem className='text-primary'>
+                      <FormLabel className="font-semibold">Etiquetas</FormLabel>
                       <FormControl>
                         <div className="space-y-2">
                           <Select
@@ -218,8 +218,8 @@ export default function ThesisForm() {
                 control={form.control}
                 name="lastPeriod"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700 font-semibold">Último Periodo</FormLabel>
+                  <FormItem className='text-primary'>
+                    <FormLabel className="font-semibold">Último Periodo</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">

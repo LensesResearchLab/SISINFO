@@ -3,7 +3,6 @@
 import {
   ChevronsUpDown,
   LogOut,
-  ListTodo,
   SunMoon,
 } from "lucide-react"
 
@@ -39,6 +38,13 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+
+  const toggleDarkMode = () => {
+    const current = localStorage.getItem("theme")
+    const localStorageTheme = current === "dark" ? "light" : "dark"
+    localStorage.setItem("theme", localStorageTheme)
+    window.location.reload()
+  }
 
   return (
     <SidebarMenu>
@@ -81,11 +87,10 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <ListTodo className="text-white"  />
-                
-                <Link href="/undergraduate-thesis/task">
-                  Tareas de tesis
-                </Link>
+                <SunMoon className="text-white"  />
+                <button onClick={toggleDarkMode}>
+                  Cambiar tema
+                </button>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

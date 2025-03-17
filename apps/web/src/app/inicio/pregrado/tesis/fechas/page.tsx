@@ -35,7 +35,7 @@ export default function ThesisDates() {
   if (error || !dates) return <div>No se pudieron encontrar las fechas </div>;
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
-      <div className="w-full bg-white shadow-lg rounded-xl p-5 h-full space-y-4">
+      <div className="w-full bg-card shadow-lg rounded-xl p-5 h-full space-y-4">
         {
           Object.keys(dates).map((dateName) => <DateTable key={dateName} title={dateName} dates={dates[dateName as keyof typeof dates]} />)
         }
@@ -76,8 +76,8 @@ function DateTable({title, dates}: {title:string, dates: ThesisDatesInterface[]}
             {
               dates.map((date) => (
                 <TableRow key={date.title}>
-                  <TableCell>{date.title}</TableCell>
-                  <TableCell>{date.date}</TableCell>
+                  <TableCell className="text-primary">{date.title}</TableCell>
+                  <TableCell className="text-primary">{date.date}</TableCell>
                 </TableRow>
               ))
             }

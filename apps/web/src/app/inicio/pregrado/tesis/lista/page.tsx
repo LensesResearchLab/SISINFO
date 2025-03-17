@@ -83,7 +83,7 @@ export default function ThesisList() {
 
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
-      <Accordion type="single" collapsible className="w-full bg-white shadow-lg rounded-xl p-5 h-full">
+      <Accordion type="single" collapsible className="w-full bg-card shadow-lg rounded-xl p-5 h-full text-primary ">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
             <SelectSearchCategory className="w-full sm:w-auto" />
@@ -240,8 +240,8 @@ function ProfessorAccordionList({thesisList, order}: {thesisList: {[professor: s
 function ElementAccordion({element, children, icon}: {element: string, children?: React.ReactNode, icon?: React.ReactNode}) {
   return (
     <AccordionItem value={element}>
-      <AccordionTrigger className="hover:bg-core-soft cursor-pointer">  
-        <div className="flex items-center">
+      <AccordionTrigger className="hover:bg-core-soft cursor-pointer dark:hover:bg-core-highlight">  
+        <div className="flex items-cente">
           {icon}
           <span>{element}</span>
         </div>
