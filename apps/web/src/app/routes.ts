@@ -39,8 +39,8 @@ export const ROUTES: Record<string, string> = {
   PROFESSOR_POSTGRADUATE_THESIS_DATES: "/profesor/maestria/fechas",
   PROFESSOR_POSTGRADUATE_THESIS_PUBLISH_CONSULT_STUDENT: "/profesor/maestria/publicar/estudiante",
 
-  PROFESSOR_ASSISTANCE_LIST: "/profesor/asistencias/lista",
-  PROFESSOR_NEW_ASSISTANCE: "/profesor/asistencias/nueva",
+  PROFESSOR_ASSISTANCE_LIST: "/profesor/asistencia/lista",
+  PROFESSOR_NEW_ASSISTANCE: "/profesor/asistencia/crear",
 
   /*  Coordinators  */
 
