@@ -43,7 +43,7 @@ export default function ThesisProjects() {
 
   return (
     <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[1100px]">
-      <div className="w-full bg-white shadow-lg rounded-xl p-5 h-full space-y-4">
+      <div className="w-full bg-card shadow-lg rounded-xl p-5 h-full space-y-4">
         <ProfessorActionButtons />
         <ThesisTable filteredProjects={filteredProjects} />
       </div>
@@ -110,7 +110,7 @@ function TableRow({thesis} : {thesis: Thesis}) {
   const toggleExpandedProject = useProfessorThesisListStore((state) => state.toggleExpandedProject)
   return (
     <div key={thesis.id}>
-      <div className="grid grid-cols-12 p-3 items-center hover:bg-gray-100 border-b bg-gray-50">
+      <div className="grid grid-cols-12 p-3 items-center text-primary border-b ">
         <div className="col-span-1">
             <Checkbox />
         </div>
@@ -137,13 +137,13 @@ function TableRow({thesis} : {thesis: Thesis}) {
 function TableRowDetail({thesis} : {thesis: Thesis}) {
   return (
     <div>
-      <div className="grid grid-cols-12 border-b py-2 px-3 bg-gray-100">
+      <div className="grid grid-cols-12 border-b py-2 px-3 text-primary">
         <div className="col-span-4 font-medium">Nombre del estudiante</div>
         <div className="col-span-4 font-medium">Estado</div>
         <div className="col-span-4 font-medium">Fecha de la solicitud</div>
       </div>
       {thesis.students.map((student) => (
-        <div key={student.id} className="bg-white border-b">
+        <div key={student.id} className="bg-subtable  text-primary border-b">
           <div className="grid grid-cols-12 py-2 px-3">
             <div className="col-span-4">{student.name}</div>
             <div className="col-span-4">{student.status}</div>

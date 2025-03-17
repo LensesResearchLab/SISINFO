@@ -32,7 +32,7 @@ export default function AcademicCoordinators() {
 
   return (
     <div className="flex justify-center items-center min-h-full min-w-full">
-      <Card className="flex flex-col items-center bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mx-auto border-none">
+      <Card className="flex flex-col items-center p-6 rounded-lg shadow-md w-full max-w-4xl mx-auto border-none">
         <CardHeader>
           <h2 className="text-xl font-bold text-center text-core-highlight mb-6">
             Tus coordinadores académicos
@@ -52,13 +52,13 @@ export default function AcademicCoordinators() {
                 <h3 className="text-xl font-semibold text-core-highlight mb-2 p-2">
                   {coordinator.name}
                 </h3>
-                <p className="text-lg text-gray-600 mb-1">
+                <p className="text-lg text-foreground-soft mb-1">
                   Oficina: {coordinator.office}
                 </p>
-                <p className="text-lg text-gray-600 mb-1">
+                <p className="text-lg text-foreground-soft mb-1">
                   Correo: {coordinator.email}
                 </p>
-                <p className="text-lg text-gray-600">
+                <p className="text-lg text-foreground-soft">
                   Extensión: {coordinator.extension}
                 </p>
               </CardContent>
@@ -71,7 +71,7 @@ export default function AcademicCoordinators() {
             width={256}
             height={64}
             alt="Bookeau" className="w-64 mb-4" />
-          <Button className="bg-black text-white px-6 py-2 rounded-md text-lg">
+          <Button className="px-6 py-2 rounded-md text-lg">
             Reserva tu cita
           </Button>
         </div>

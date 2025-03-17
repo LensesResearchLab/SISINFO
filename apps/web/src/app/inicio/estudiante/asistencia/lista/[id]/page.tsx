@@ -106,7 +106,7 @@ function AssistanceInscription({ assistance, setIsApplying }: { assistance: Assi
             <ContactInfo assistance={assistance} />
           </div>
         </div>
-        <Button className="bg-black hover:bg-black/90 w-40 mx-auto block" onClick={() => setIsApplying(true)}>Aplicar</Button>
+        <Button className="w-40 mx-auto block" onClick={() => setIsApplying(true)}>Aplicar</Button>
       </CardContent>
     </Card>
   )
@@ -326,7 +326,7 @@ function ButtonBack({ setIsApplying }: { setIsApplying: (value: boolean) => void
   return (
     <Button variant="outline"
       size="sm"
-      className="text-core hover:text-core-highlight border-core hover:border-core-highlight hover:bg-sky-50"
+      className="text-core hover:text-core-highlight border-core hover:border-core-highlight hover:bg-sky-50 dark:hover:bg-sky-500"
       onClick={() => setIsApplying(false)}
     >
       <FileText className="h-4 w-4 mr-2" />

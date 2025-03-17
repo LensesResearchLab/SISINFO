@@ -35,7 +35,7 @@ export default function IncidentReportForm() {
           <h2 className="text-2xl font-bold text-core-highlight flex items-center"> <TriangleAlert className="text-core"/> Reporte de incidentes</h2>
         </CardHeader>
         <CardContent>
-          <p className="text-lg text-gray-600 mt-4">
+          <p className="text-lg text-primary mt-4">
             Escriba el incidente que presentó, su usuario será visible para los administradores del sistema
           </p>
           <div className="mt-6">
@@ -67,7 +67,7 @@ export default function IncidentReportForm() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-center">
-          <Button className="bg-black text-white px-6 py-3 rounded-md text-lg" onClick={handleSubmit}>
+          <Button className="px-6 py-3 rounded-md text-lg" onClick={handleSubmit}>
             Publicar
           </Button>
         </CardFooter>

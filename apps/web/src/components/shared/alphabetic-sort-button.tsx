@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 
 export default function AlphabeticSortButton({ onclick, sortDirection }: { onclick: () => void, sortDirection: number }) {
   return (
-    <Button variant="default" className="bg-core hover:bg-core-highlight w-full sm:w-auto" onClick={onclick}>
+    <Button  className="w-full sm:w-auto" onClick={onclick}>
       <ArrowUpDown className="w-4 h-4 mr-2" />
       {sortDirection === 1 ? "A-Z" : "Z-A"}
     </Button>

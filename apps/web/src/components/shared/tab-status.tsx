@@ -104,7 +104,7 @@ import { Check } from "lucide-react";
         {icon}
         <div className="w-full">
           <h3 className="font-medium text-core">{title}</h3>
-          <p className="text-gray-700">{description}</p>
+          <p className="text-foreground-soft">{description}</p>
           <hr className="bg-gray-300 h-[1px] w-full my-2 border-0" />
         </div>
       </div>
@@ -145,7 +145,7 @@ export function TabStatusCard({ status }: { status: StatusProps }) {
           </div>
           <div className="space-y-4 text-center">
             <h3 className="text-core font-medium">¿Que significa tu estado actual?</h3>
-            <p className="text-gray-600 max-w-2xl mx-auto">{status.statusMessage}</p>
+            <p className="text-foreground-soft max-w-2xl mx-auto">{status.statusMessage}</p>
           </div>
         </div>
       </CardContent>
@@ -169,8 +169,8 @@ function StepSphere({ name, completed, current }: StepSphereProps) {
             completed
               ? "bg-core text-primary-foreground"
               : current
-                ? "bg-core-soft text-primary border-2 border-core"
-                : "bg-gray-100 text-gray-400",
+                ? "bg-core-soft dark:bg-core text-primary border-2 border-core"
+                : "bg-gray-100 text-gray-400 dark:bg-gray-800",
           )}
         >
           {completed ? (<Check/>) : (<span>{name.charAt(0)}</span>)}
