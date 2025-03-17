@@ -40,7 +40,7 @@ export default function StudentDetail() {
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <Tabs defaultValue="profile" className="w-full">
+      <Tabs defaultValue="profile" className="w-3xl">
         <TabsList className="grid w-full grid-cols-2 bg-sky-800 text-white">
           <TabsTrigger value="profile" className="data-[state=active]:bg-sky-900 data-[state=active]:font-semibold data-[state=active]:text-white">
             Perfil
