@@ -1,7 +1,7 @@
 "use client";
 import { Calendar, FileText, Mail, Star, User } from "lucide-react"
-import { getThesisStatusInformation } from "@/app/inicio/pregrado/tesis/services/thesis.service"
-import { StatusInformation } from "@/app/inicio/pregrado/tesis/types/thesis.type"
+import { getThesisStatusInformation } from "@/services/thesis.service"
+import { StatusInformation } from "@/types/thesis.type"
 import SpinnerPage from "@/components/shared/spinner-page";
 import TabStatus from "@/components/shared/tab-status";
 import { useQuery } from "@tanstack/react-query";

@@ -3,8 +3,8 @@ import {Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from "@/components/ui/badge"
 import { Mail, Users, Calendar, Tag, FileText } from "lucide-react"
 import { Button } from '@/components/ui/button'
-import { getUndergraduateThesisById } from "@/app/inicio/pregrado/tesis/services/thesis.service"
-import { Thesis } from "@/app/inicio/pregrado/tesis/types/thesis.type"
+import { getUndergraduateThesisById } from "@/services/thesis.service"
+import { Thesis } from "@/types/thesis.type"
 import { useRouter } from 'next/navigation'
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -48,7 +48,7 @@ export default function ThesisInscription({ params } :{ params: Promise<{ id: st
   if (isFetching) return <SpinnerPage />;
   if (error || !thesis) return <ThesisNotFound />;
   return (
-    <div className="min-h-full max-w-[900px] container mx-auto p-4 space-y-8">
+    <div className="min-h-full mx-auto p-4 container max-w-3xl">
       {!isApplying && <ThesisDetails thesis={thesis!}/>}
       {isApplying && <ThesisApplying thesis={thesis!}/>}
     </div>
@@ -110,7 +110,7 @@ function ThesisNotFound() {
 function ThesisDetails({thesis}: {thesis: Thesis}) {
   const setIsApplying = useThesisInscriptionStore(state => state.setIsApplying);
   return (
-    <Card className="w-full  mx-auto shadow-lg border-none">
+    <Card className="w-full mx-auto shadow-lg border-none">
       <CardHeader>
         <CardTitle className="text-xl font-bold text-core-highlight">Información del proyecto de grado</CardTitle>
       </CardHeader>
@@ -245,7 +245,7 @@ function StudentsAndContactInfo({thesis}: {thesis: Thesis}) {
         <Users className="h-5 w-5 text-core-highlight mt-1" />
         <div>
           <h3 className="font-semibold">Número máximo de estudiantes:</h3>
-          <p className="text-gray-700">{thesis.students}</p>
+          <p className="text-gray-700">{thesis.students.length}</p>
         </div>
       </div>
 
@@ -288,6 +288,9 @@ function ThesisApplying({thesis}: {thesis: Thesis}) {
   const contacted = useThesisInscriptionStore(state => state.contacted);
   const setContacted = useThesisInscriptionStore(state => state.setContacted);
 
+  const [isConfirmed, setIsConfirmed] = useState(false);
+
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert("Aplicación enviada con exito, motivación: " + motivation + ", contacto: " + contacted);
@@ -302,8 +305,10 @@ function ThesisApplying({thesis}: {thesis: Thesis}) {
     "url": `${ROUTES.HOME}/${ROUTES.UNDERGRADUATE_THESIS_STATUS}`
   }
 
+
+
   return (
-    <Card className="max-w-3xl  mx-auto shadow-lg">
+    <Card className="w-full mx-auto shadow-lg border-none">
       <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <CardTitle className="text-2xl font-medium text-core-highlight">{thesis.title}</CardTitle>
         <ButtonBack setIsApplying={setIsApplying} />
@@ -313,8 +318,17 @@ function ThesisApplying({thesis}: {thesis: Thesis}) {
           <ProfessorInformation thesis={thesis} />
           <MotivationTextArea motivation={motivation} setMotivation={setMotivation} />
           <ContactedCheckbox contacted={contacted} setContacted={setContacted} />
+
+
+
           <div className="flex justify-center pt-3.5">
-            <ConfirmationModal dialogText={modalProps} onConfirm={handleSubmit}/>
+            <Button 
+              type="button"
+              onClick = {() => setIsConfirmed(true)}
+              className="bg-core hover:bg-core-highlight text-white px-10 py-5 rounded-xl text-lg font-semibold transition-colors shadow-lg hover:shadow-core-soft">
+              Aplicar
+            </Button>
+            <ConfirmationModal dialogText={modalProps} onConfirm={handleSubmit} open={isConfirmed} setIsOpen={setIsConfirmed} />
           </div>
         </form>
       </CardContent>

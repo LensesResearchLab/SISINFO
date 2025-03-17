@@ -65,12 +65,12 @@ export const professorData = [
     ],
   },
   {
-    title: "Proyecto de maestria",
+    title: "Proyecto de maestría",
     url: "postgrado",
     icon: School,
     items: [
       {
-        title: "Publicar y consultar proyectos de maestria",
+        title: "Publicar y consultar proyectos de maestría",
         url: ROUTES.PROFESSOR_POSTGRADUATE_THESIS_LIST,
       },
       {
