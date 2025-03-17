@@ -40,91 +40,89 @@ export default function StudentDetail() {
   if (isLoading) return <SpinnerPage />;
 
   return (
-    <div className="flex justify-center items-center min-h-full min-w-full p-6">
-      <Card className="flex flex-col items-center bg-white p-6 rounded-lg shadow-md w-full max-w-6xl mx-auto border-none">
+    <div className="max-w-3xl mx-auto p-4">
+      <Tabs defaultValue="profile" className="w-3xl">
+        <TabsList className="grid w-full grid-cols-2 bg-sky-800 text-white">
+          <TabsTrigger value="profile" className="data-[state=active]:bg-sky-900 data-[state=active]:font-semibold data-[state=active]:text-white">
+            Perfil
+          </TabsTrigger>
+          <TabsTrigger value="detail" className="data-[state=active]:bg-sky-900 data-[state=active]:font-semibold data-[state=active]:text-white">
+            Detalle plan de estudio
+          </TabsTrigger>
+        </TabsList>
 
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="profile" style={{ color: "#075985" }}>
-              Perfil
-            </TabsTrigger>
-            <TabsTrigger value="detail" style={{ color: "#075985" }}>
-              Detalle plan de estudio
-            </TabsTrigger>
-          </TabsList>
+        {/* Student Profile Tab */}
+        <TabsContent value="profile" className="flex justify-center flex-col items-center p-2">
+          <Card className="flex justify-center flex-col items-center border-none w-3xl">
+            <CardHeader style={{ color: "#075985" }}>
+              <CardTitle className="text-2xl">Detalle de inscripción a perfil</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 w-full">
+              <RenderFields label="Estudiante" value={student?.name} />
+              <RenderFields label="Correo estudiante" value={student?.email} />
+              <RenderFields label="Perfil" value={student?.profile} />
+              <RenderFields label="Asesor de tesis" value={student?.advisor} />
+              <RenderFields label="Semestre inicio tesis 1" value={student?.thesis1} />
+              <RenderFields label="Semestre inicio tesis 2" value={student?.thesis2} />
+            </CardContent>
+            <CardFooter className="flex justify-center flex-col space-y-3 ">
+              <CircleAlert style={{ color: "#075985" }} />
+              <Label>Estado: {student?.state}</Label>
+            </CardFooter>
+          </Card>
+        </TabsContent>
 
-          <TabsContent value="profile" className="flex justify-center flex-col items-center p-4">
-            <Card className="w-[400px] flex justify-center flex-col items-center border-none">
-              <CardHeader style={{ color: "#075985" }}>
-                <CardTitle className="text-2xl">Detalle de inscripción a perfil</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 w-full">
-                <ProfileField label="Estudiante" value={student?.name} />
-                <ProfileField label="Correo estudiante" value={student?.email} />
-                <ProfileField label="Perfil" value={student?.profile} />
-                <ProfileField label="Asesor de tesis" value={student?.advisor} />
-                <ProfileField label="Semestre inicio tesis 1" value={student?.thesis1} />
-                <ProfileField label="Semestre inicio tesis 2" value={student?.thesis2} />
-              </CardContent>
-              <CardFooter className="flex justify-center flex-col space-y-3 ">
-                <CircleAlert style={{ color: "#075985" }} />
-                <Label>Estado: {student?.state}</Label>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="detail">
-            <div className="grid grid-cols-2 gap-8 w-full pt-6">
-              <div className="space-y-6 w-full">
-                {courses.map((item, index) => (
-                  <CourseField key={index} label="Curso" value={item.name} />
-                ))}
-                
-              </div>
-              <div className="space-y-6 w-full">
-                {courses.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-4">
-                    <div className="flex flex-col w-full space-y-1">
-                      <Label style={{ color: "#075985" }}>Semestre</Label>
-                      <Input defaultValue={item.period} disabled className="w-full p-3 text-lg" />
+        {/* Study Plan Details Tab */}
+        <TabsContent value="detail" className="flex justify-center flex-col items-center p-2">
+          <Card className="w-3xl border-none">
+            <CardHeader className="text-center" style={{ color: "#075985" }}>
+              <CardTitle className="text-2xl text-center">Detalle plan de estudio</CardTitle>
+            </CardHeader>
+            <CardContent className="w-fullspace-y-6">
+              <div className="grid grid-cols-[2fr_3fr] gap-8 w-full pt-6">
+                <div className="space-y-6 w-full">
+                  {courses.map((item, index) => (
+                    <RenderFields key={index} label="Curso" value={item.name} />
+                  ))}
+                </div>
+                <div className="space-y-6 w-full">
+                  {courses.map((item, index) => (
+                    <div key={index} className="flex w-full columns-2 items-center space-x-4">
+                      <RenderFields key={index} label="Semestre" className="flex-grow" value={item.name}></RenderFields>
+                      <Check className="flex-shrink-0" />
                     </div>
-                    <Check className="flex-shrink-0" />
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-            {/* Others section */}
-            <div className="pt-4">
-              <Label className="text-xl" style={{color:"#075985"}}>Otros</Label>
-            </div>
-            <div className="grid grid-cols-2 gap-8 w-full pt-6">
-              
-              <div className="space-y-6 w-full">
-                {others.map((item, index) => (
-                  <CourseField key={index} label="Curso" value={item.name} />
-                ))}
+              {/* Others section */}
+              <div className="pt-4">
+                <Label className="text-xl" style={{ color: "#075985" }}>Otros</Label>
               </div>
-              <div className="space-y-6 w-full">
-                {others.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-4">
-                    <div className="flex flex-col w-full space-y-1">
-                      <Label style={{ color: "#075985" }}>Semestre</Label>
-                      <Input defaultValue={item.period} disabled className="w-full p-3 text-lg" />
+              <div className="grid grid-cols-[2fr_3fr] gap-8 w-full pt-6">
+                <div className="space-y-6 w-full">
+                  {others.map((item, index) => (
+                    <RenderFields key={index} label="Curso" value={item.name} />
+                  ))}
+                </div>
+                <div className="space-y-6 w-full">
+                  {others.map((item, index) => (
+                    <div key={index} className="flex items-center space-x-4">
+                      <RenderFields key={index} label="Semestre" className="flex-grow" value={item.name}></RenderFields>
+                      <Check className="flex-shrink-0" />
                     </div>
-                    <Check className="flex-shrink-0" />
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
 
 /**
- * ProfileField Component
+ * RenderFields Component
  *
  * A reusable field to display student profile information in a read-only format.
  *
@@ -134,31 +132,14 @@ export default function StudentDetail() {
  *
  * @returns {JSX.Element} A styled input field with a label.
  */
-function ProfileField({ label, value }: { label: string; value?: string }) {
+function RenderFields({ label, value, className }: { label: string; value?: string; className?: string }) {
   return (
-    <div className="space-y-3 flex flex-col items-center">
-      <Label style={{ color: "#075985" }}>{label}</Label>
-      <Input defaultValue={value} disabled />
-    </div>
-  );
-}
-
-/**
- * CourseField Component
- *
- * A reusable field to display course details in a read-only format.
- *
- * @param {Object} props
- * @param {string} props.label - The label for the field.
- * @param {string} [props.value] - The value to be displayed in the field.
- *
- * @returns {JSX.Element} A styled input field with a label.
- */
-function CourseField({ label, value }: { label: string; value?: string }) {
-  return (
-    <div className="flex flex-col space-y-1">
-      <Label style={{ color: "#075985" }}>{label}</Label>
-      <Input defaultValue={value} disabled className="w-full p-3 text-lg" />
+    <div className={`flex gap-3 ${className}`}>
+      <div className="w-full">
+        <h3 className="font-medium text-sky-800">{label}</h3>
+        <p className="text-gray-700">{value}</p>
+        <hr className="bg-gray-300 h-[1px] w-full my-2 border-0" />
+      </div>
     </div>
   );
 }
