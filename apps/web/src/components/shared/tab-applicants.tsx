@@ -157,7 +157,7 @@ function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
             </Button>
           </div>
 
-          <div className="rounded-md border">
+          <div className="overflow-hidden rounded-lg border">
             <Table>
               <TableHeader className="bg-[#00406A]">
                 <TableRow>
