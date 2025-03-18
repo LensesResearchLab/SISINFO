@@ -76,13 +76,13 @@ function FilterBar({
   setSorting,
 }: FilterBarProps) {
   return (
-    <div className="flex flex-wrap gap-4 mb-6 items-center justify-between">
+    <div className="flex flex-wrap gap-4 mb-6 items-center justify-between ">
       <div className="flex flex-wrap gap-4 items-center">
         <Select
           value={selectedSemester}
           onValueChange={setSelectedSemester}
         >
-          <SelectTrigger className="w-[250px]">
+          <SelectTrigger className="w-[250px] text-primary">
             <SelectValue placeholder="Elige un semestre" />
           </SelectTrigger>
           <SelectContent>
@@ -93,10 +93,10 @@ function FilterBar({
         </Select>
 
         <div className="relative w-[300px]">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
+          <Input 
             placeholder="Buscar una asistencia"
-            className="pl-9"
+            className="pl-9 text-primary"
             value={nameFilter}
             onChange={(e) => setNameFilter(e.target.value)}
           />
@@ -114,7 +114,6 @@ function FilterBar({
           </label>
         )}
       </div>
-
       <Button
         onClick={() => setSorting(prev => [{ id: "name", desc: !prev[0].desc }])}
         className="bg-[#075985] text-white hover:bg-[#075985]"
@@ -226,7 +225,7 @@ export default function AssistanceList({
 
   return (
     <div className="min-h-full min-w-full p-20">
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-card rounded-lg shadow-lg p-6">
         <FilterBar
           selectedSemester={selectedSemester}
           setSelectedSemester={setSelectedSemester}
@@ -255,7 +254,7 @@ export default function AssistanceList({
             <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow key={row.id} className="text-primary">
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="py-3">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -265,7 +264,7 @@ export default function AssistanceList({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell colSpan={columns.length} className="h-24 text-center text-primary">
                     No se encontraron resultados.
                   </TableCell>
                 </TableRow>
@@ -276,19 +275,15 @@ export default function AssistanceList({
 
         <div className="flex justify-end gap-2 mt-4">
           <Button
-            variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
-            className="bg-card text-primary"
             disabled={!table.getCanPreviousPage()}
           >
             Anterior
           </Button>
           <Button
-            variant="outline"
             size="sm"
             onClick={() => table.nextPage()}
-            className="bg-card text-primary"
             disabled={!table.getCanNextPage()}
           >
             Siguiente

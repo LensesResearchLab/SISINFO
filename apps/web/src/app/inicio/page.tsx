@@ -13,9 +13,9 @@
 import CoordinatorFeatures from "@/app/inicio/components/coordinator-features"
 import ProfessorFeatures from "@/app/inicio/components/professor-features"
 import StudentFeatures from "@/app/inicio/components/student-features"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
 import { useHomeStore } from "./home.store";
-
+import RoleTab from "@/components/shared/role-tab";
 // Map to associate roles with their corresponding feature components
 const roleMap = new Map<string, React.ReactNode>([
   ["estudiante", <StudentFeatures />],
@@ -28,39 +28,21 @@ export default function Home() {
   if (roles.length === 0) return null;
   if (roles.length === 1) return roleMap.get(roles[0]);
   return (
-    <RoleTab roles={roles} />
+    <RoleTab>
+      <RoleInformation/>
+    </RoleTab>
   );
 }
 
-/**
- * RoleTab Component
- * 
- * Creates a tabbed interface for switching between different role-specific views.
- * Each tab represents a user role and displays the corresponding feature component.
- * 
- * @param {Object} props - Component props
- * @param {string[]} props.roles - Array of role names to display as tabs
- * @returns {JSX.Element} A tabbed interface with role-specific content
- */
-function RoleTab({ roles }: { roles: string[] }) {
+function RoleInformation() {
+  const roles = useHomeStore((state) => state.roles);
   return (
-    <Tabs defaultValue={roles[0]} className="w-full">
-      <TabsList className="bg-core text-white mx-4 mt-4">
-        {roles.map((role) => (
-          <TabsTrigger
-            key={role}
-            value={role}
-            className="cursor-pointer data-[state=active]:bg-core-highlight data-[state=active]:font-semibold data-[state=active]:text-white transition-colors duration-200 hover:bg-core-highlight/30"
-          >
-            {role[0].toUpperCase() + role.slice(1)}
-          </TabsTrigger>
-        ))}
-      </TabsList>
+    <>
       {roles.map((role) => (
         <TabsContent key={role} value={role}>
           {roleMap.get(role)}
         </TabsContent>
       ))}
-    </Tabs>
+    </>
   )
 }

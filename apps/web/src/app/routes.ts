@@ -52,4 +52,8 @@ export const ROUTES: Record<string, string> = {
   DATE_ALERTS: "/coordinador/alertas_fechas",
 
   UPLOAD_TAS: "/coordinador/cargar_monitores",
+
+  /*  General  */
+
+  TASK_LIST: "/tareas",
 };

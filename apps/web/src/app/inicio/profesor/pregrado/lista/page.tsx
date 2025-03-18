@@ -27,7 +27,6 @@ export default function ThesisProjects() {
   const { data: thesisList, isFetching, error } = useQuery({
     queryKey: ['professor-thesis-projects'],
     queryFn: () => getThesisByProfessorId(1),
-    staleTime: 1000 * 60 * 5,
   });
 
     
@@ -92,12 +91,9 @@ function ThesisTable({filteredProjects} : {filteredProjects: Thesis[]}) {
 function TableHeaders() {
   return (
     <div className="bg-core text-white grid grid-cols-12 p-3 items-center">
-      <div className="col-span-1">
-        <Checkbox className="border-white data-[state=checked]:bg-white data-[state=checked]:text-core" />
-      </div>
       <div className="col-span-3 font-medium">Tema del proyecto</div>
       <div className="col-span-3 font-medium">Categoria</div>
-      <div className="col-span-2 font-medium">Número de estudiantes</div>
+      <div className="col-span-3 font-medium">Número de estudiantes</div>
       <div className="col-span-1 font-medium">Ver detalle</div>
       <div className="col-span-1 font-medium">Estado</div>
       <div className="col-span-1 font-medium">Ver estudiantes</div>
@@ -111,12 +107,9 @@ function TableRow({thesis} : {thesis: Thesis}) {
   return (
     <div key={thesis.id}>
       <div className="grid grid-cols-12 p-3 items-center text-primary border-b ">
-        <div className="col-span-1">
-            <Checkbox />
-        </div>
         <div className="col-span-3">{thesis.title}</div>
         <div className="col-span-3">{thesis.category}</div>
-        <div className="col-span-2">{thesis.students?.length}</div>
+        <div className="col-span-3">{thesis.students?.length}</div>
         <div className="col-span-1"><Search/></div>
         <div className="col-span-1"><TriangleAlert /></div>
         <div className="col-span-1 flex justify-center">
