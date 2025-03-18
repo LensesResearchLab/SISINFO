@@ -26,12 +26,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import { getGraduatedAssistance } from "@/app/inicio/estudiante/asistencia/services/assistance.service";
 import { Assistance } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
-import Link from "next/link"
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
+import { useRouter } from "next/navigation";
 
 const semesters = [
   { value: "all", label: "Todos los semestres" },
@@ -53,14 +53,16 @@ interface FilterBarProps {
   setShowOnlyMyAssistance: (value: boolean) => void;
   role: "student" | "professor";
   sorting: { id: string; desc: boolean }[];
-  setSorting: React.Dispatch<React.SetStateAction<{ id: string; desc: boolean }[]>>;
+  setSorting: React.Dispatch<
+    React.SetStateAction<{ id: string; desc: boolean }[]>
+  >;
 }
 
-const formatDate = (date: Date) => date ? date.toLocaleDateString() : "-";
+const formatDate = (date: Date) => (date ? date.toLocaleDateString() : "-");
 
 /**
  * FilterBar Component
- * 
+ *
  * Renders the filtering controls for the assistance list.
  * Includes semester selection, name search, and professor filter.
  */
@@ -78,23 +80,22 @@ function FilterBar({
   return (
     <div className="flex flex-wrap gap-4 mb-6 items-center justify-between ">
       <div className="flex flex-wrap gap-4 items-center">
-        <Select
-          value={selectedSemester}
-          onValueChange={setSelectedSemester}
-        >
+        <Select value={selectedSemester} onValueChange={setSelectedSemester}>
           <SelectTrigger className="w-[250px] text-primary">
             <SelectValue placeholder="Elige un semestre" />
           </SelectTrigger>
           <SelectContent>
             {semesters.map(({ value, label }) => (
-              <SelectItem key={value} value={value}>{label}</SelectItem>
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <div className="relative w-[300px]">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
-          <Input 
+          <Input
             placeholder="Buscar una asistencia"
             className="pl-9 text-primary"
             value={nameFilter}
@@ -110,12 +111,16 @@ function FilterBar({
               onChange={(e) => setShowOnlyMyAssistance(!e.target.checked)}
               className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
             />
-            <span className="text-sm font-medium text-gray-700">Mostrar todas</span>
+            <span className="text-sm font-medium text-gray-700">
+              Mostrar todas
+            </span>
           </label>
         )}
       </div>
       <Button
-        onClick={() => setSorting(prev => [{ id: "name", desc: !prev[0].desc }])}
+        onClick={() =>
+          setSorting((prev) => [{ id: "name", desc: !prev[0].desc }])
+        }
         className="bg-[#075985] text-white hover:bg-[#075985]"
       >
         <span className="mr-1">{sorting[0].desc ? "Z - A" : "A - Z"}</span>
@@ -143,34 +148,48 @@ export default function AssistanceList({
   const [showOnlyMyAssistance, setShowOnlyMyAssistance] = React.useState(false);
   const [nameFilter, setNameFilter] = React.useState("");
   const [sorting, setSorting] = React.useState([{ id: "name", desc: false }]);
+  const router = useRouter();
+  const handleClick = (id: number) => {
+    const path =
+      role === "professor"
+        ? `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`
+        : `${ROUTES.HOME}/${ROUTES.ASSISTANCE_LIST}/${id}`;
+    router.push(path);
+  };
 
-  const columns = React.useMemo<ColumnDef<Assistance>[]>(() => [
-    { accessorKey: "name", header: "Nombre" },
-    { accessorKey: "clasification", header: "Clasificación" },
-    { accessorKey: "professor", header: "Oferente" },
-    {
-      accessorKey: "publication_date",
-      header: "Fecha publicación",
-      cell: ({ getValue }) => formatDate(getValue() as Date),
-    },
-    {
-      accessorKey: "end_date",
-      header: "Fecha fin",
-      cell: ({ getValue }) => formatDate(getValue() as Date),
-    },
-    {
-      id: "ver",
-      header: "Ver",
-      cell: ({ row }) => (
-        <Link
-          href={`/home/graduated-assistance/assistance-list${role === "professor" ? "/manage/" : "/"}${row.original.id}`}
-          className="inline-flex items-center justify-center text-[#075985] hover:text-[#075985]"
-        >
-          <Search className="w-5 h-5" />
-        </Link>
-      ),
-    },
-  ], [role]);
+  const columns = React.useMemo<ColumnDef<Assistance>[]>(
+    () => [
+      { accessorKey: "name", header: "Nombre" },
+      { accessorKey: "clasification", header: "Clasificación" },
+      { accessorKey: "professor", header: "Oferente" },
+      {
+        accessorKey: "publication_date",
+        header: "Fecha publicación",
+        cell: ({ getValue }) => formatDate(getValue() as Date),
+      },
+      {
+        accessorKey: "end_date",
+        header: "Fecha fin",
+        cell: ({ getValue }) => formatDate(getValue() as Date),
+      },
+      {
+        id: "ver",
+        header: "Ver",
+
+        cell: ({ row }) => (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleClick(row.original.id)}
+            className="cursor-pointer"
+          >
+            <Search className="w-4 h-4" />
+          </Button>
+        ),
+      },
+    ],
+    [role]
+  );
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -187,11 +206,19 @@ export default function AssistanceList({
   }, []);
 
   const filteredData = React.useMemo(() => {
-    return data.filter(item => {
-      if (selectedSemester !== "all" && item.start_semester !== selectedSemester) {
+    return data.filter((item) => {
+      if (
+        selectedSemester !== "all" &&
+        item.start_semester !== selectedSemester
+      ) {
         return false;
       }
-      if (role === "professor" && showOnlyMyAssistance && professorName && item.professor !== professorName) {
+      if (
+        role === "professor" &&
+        showOnlyMyAssistance &&
+        professorName &&
+        item.professor !== professorName
+      ) {
         return false;
       }
       if (nameFilter) {
@@ -200,7 +227,14 @@ export default function AssistanceList({
       }
       return true;
     });
-  }, [data, selectedSemester, showOnlyMyAssistance, professorName, nameFilter, role]);
+  }, [
+    data,
+    selectedSemester,
+    showOnlyMyAssistance,
+    professorName,
+    nameFilter,
+    role,
+  ]);
 
   const table = useReactTable({
     data: filteredData,
@@ -244,8 +278,14 @@ export default function AssistanceList({
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="text-white font-bold py-3">
-                      {flexRender(header.column.columnDef.header, header.getContext())}
+                    <TableHead
+                      key={header.id}
+                      className="text-white font-bold py-3"
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -257,14 +297,20 @@ export default function AssistanceList({
                   <TableRow key={row.id} className="text-primary">
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="py-3">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center text-primary">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center text-primary"
+                  >
                     No se encontraron resultados.
                   </TableCell>
                 </TableRow>

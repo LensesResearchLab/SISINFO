@@ -1,10 +1,10 @@
 /**
  * Application Routes
- * 
+ *
  * This constant defines all the routes used in the application, organized by user role.
  * The routes are stored as key-value pairs where the key is a descriptive name
  * and the value is the actual URL path.
- * 
+ *
  * Structure:
  * - Home route
  * - Student routes (thesis management, graduate assistance, support)
@@ -40,6 +40,9 @@ export const ROUTES: Record<string, string> = {
   PROFESSOR_POSTGRADUATE_THESIS_DATES: "/profesor/maestria/fechas",
 
   PROFESSOR_ASSISTANCE_LIST: "/profesor/asistencias/lista",
+  PROFESSOR_ASSISTANCE_LIST_EDIT: "profesor/asistencias/lista/manejar",
+  PROFESSOR_ASSISTANCE_LIST_EDIT_ID:
+    "profesor/asistencias/lista/manejar/editar",
   PROFESSOR_NEW_ASSISTANCE: "/profesor/asistencias/nueva",
 
   /*  Coordinators  */
@@ -47,7 +50,7 @@ export const ROUTES: Record<string, string> = {
   COURSE_PROGRAMS: "/coordinador/programas_clases",
   GRADE_LOAD: "/coordinador/carga_notas",
   BULLETIN_BOARD: "/coordinador/cartelera",
-  
+
   REPORTS: "/coordinador/reportes",
   DATE_ALERTS: "/coordinador/alertas_fechas",
 

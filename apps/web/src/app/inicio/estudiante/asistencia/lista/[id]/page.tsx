@@ -1,15 +1,24 @@
 "use client";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Mail, Users, FileText, Briefcase, CheckCircle2, User, Upload, X } from "lucide-react"
-import { Button } from '@/components/ui/button'
-import { use, useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Mail,
+  Users,
+  FileText,
+  Briefcase,
+  CheckCircle2,
+  User,
+  Upload,
+  X,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { use, useEffect, useState } from "react";
 import { getGraduatedAssistanceById } from "@/app/inicio/estudiante/asistencia/services/assistance.service";
 import { Assistance } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
-import { ConfirmationModal } from '@/components/shared/confirmation-modal';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { useRouter } from 'next/navigation';
-import { ROUTES } from '@/app/routes';
+import { ConfirmationModal } from "@/components/shared/confirmation-modal";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
 
 const assistance_state: Assistance = {
@@ -22,7 +31,7 @@ const assistance_state: Assistance = {
   description: "",
   requisites: [""],
   professor: "",
-  email: ""
+  email: "",
 };
 
 interface AssistanceProps {
@@ -38,23 +47,27 @@ interface InfoItemProps {
 
 /**
  * AssistanceDetails Component
- * 
+ *
  * Main component for displaying and managing graduate assistance position details and application process.
- * 
+ *
  * States:
  * - assistance: Object containing all details about the assistance position
  * - isApplying: Boolean to toggle between details view and application form
  * - isLoading: Boolean to track data fetching state
- * 
+ *
  * Features:
  * - Fetches and displays assistance details
  * - Handles navigation and 404 errors
  * - Toggles between information display and application form
  * - Shows loading state during data fetch
- * 
+ *
  * @returns {JSX.Element} A div containing either assistance details or application form
  */
-export default function AssistanceDetails({ params }: { params: Promise<{ id: string }> }) {
+export default function AssistanceDetails({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const router = useRouter();
   const { id } = use(params);
 
@@ -69,7 +82,7 @@ export default function AssistanceDetails({ params }: { params: Promise<{ id: st
     description: "",
     requisites: [""],
     professor: "",
-    email: ""
+    email: "",
   });
   const [isApplying, setIsApplying] = useState(false);
 
@@ -89,13 +102,22 @@ export default function AssistanceDetails({ params }: { params: Promise<{ id: st
     fetchData();
   }, [id]);
 
+  if (isLoading) {
+    return <SpinnerPage />;
+  }
 
   return (
     <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
       {!isApplying ? (
-        <AssistanceInscription assistance={assistance} setIsApplying={setIsApplying} />
+        <AssistanceInscription
+          assistance={assistance}
+          setIsApplying={setIsApplying}
+        />
       ) : (
-        <AssistanceApplying assistance={assistance} setIsApplying={setIsApplying} />
+        <AssistanceApplying
+          assistance={assistance}
+          setIsApplying={setIsApplying}
+        />
       )}
     </div>
   );
@@ -103,27 +125,35 @@ export default function AssistanceDetails({ params }: { params: Promise<{ id: st
 
 /**
  * AssistanceInscription Component
- * 
+ *
  * Displays detailed information about the assistance position including main info,
  * requirements, and contact details.
- * 
+ *
  * Props:
  * - assistance: Assistance object containing position details
  * - setIsApplying: Function to toggle application state
- * 
+ *
  * Layout:
  * - Card container with header and content sections
  * - Organized sections for different types of information
  * - Apply button at the bottom
- * 
+ *
  * @param {Object} props Component props
  * @returns {JSX.Element} Card containing assistance position details
  */
-function AssistanceInscription({ assistance, setIsApplying }: { assistance: Assistance, setIsApplying: (value: boolean) => void }) {
+function AssistanceInscription({
+  assistance,
+  setIsApplying,
+}: {
+  assistance: Assistance;
+  setIsApplying: (value: boolean) => void;
+}) {
   return (
     <Card className="max-w-3xl  mx-auto shadow-lg">
       <CardHeader className=" rounded-t-lg">
-        <CardTitle className="text-3xl font-bold text-core">Información de la asistencia</CardTitle>
+        <CardTitle className="text-3xl font-bold text-core">
+          Información de la asistencia
+        </CardTitle>
       </CardHeader>
       <CardContent className="pt-3 space-y-6">
         <div className="space-y-11">
@@ -133,7 +163,12 @@ function AssistanceInscription({ assistance, setIsApplying }: { assistance: Assi
             <ContactInfo assistance={assistance} />
           </div>
         </div>
-        <Button className="w-40 mx-auto block" onClick={() => setIsApplying(true)}>Aplicar</Button>
+        <Button
+          className="w-40 mx-auto block"
+          onClick={() => setIsApplying(true)}
+        >
+          Aplicar
+        </Button>
       </CardContent>
     </Card>
   );
@@ -141,14 +176,14 @@ function AssistanceInscription({ assistance, setIsApplying }: { assistance: Assi
 
 /**
  * InfoItem Component
- * 
+ *
  * Reusable component for displaying information with an icon and title.
- * 
+ *
  * Props:
  * - icon: React node for the icon element
  * - title: String for the information title
  * - content: String content to display
- * 
+ *
  * @param {InfoItemProps} props Component props
  * @returns {JSX.Element} Formatted information item
  */
@@ -166,18 +201,18 @@ function InfoItem({ icon, title, content }: InfoItemProps) {
 
 /**
  * MainInformation Component
- * 
+ *
  * Displays the primary information about the assistance position including
  * name, classification, and description.
- * 
+ *
  * Props:
  * - assistance: Assistance object containing position details
- * 
+ *
  * Features:
  * - Icons for each information type
  * - Consistent styling and spacing
  * - Responsive layout
- * 
+ *
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing main position information
  */
@@ -186,7 +221,9 @@ function MainInformation({ assistance }: { assistance: Assistance }) {
     <div className="space-y-12">
       <div className="space-y-6">
         <InfoItem
-          icon={<Briefcase className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />}
+          icon={
+            <Briefcase className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />
+          }
           title="Nombre"
           content={assistance.name}
         />
@@ -196,7 +233,9 @@ function MainInformation({ assistance }: { assistance: Assistance }) {
           content={assistance.clasification}
         />
         <InfoItem
-          icon={<FileText className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />}
+          icon={
+            <FileText className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />
+          }
           title="Descripción"
           content={assistance.description}
         />
@@ -207,17 +246,17 @@ function MainInformation({ assistance }: { assistance: Assistance }) {
 
 /**
  * Requisites Component
- * 
+ *
  * Displays a list of requirements for the assistance position.
- * 
+ *
  * Props:
  * - requisites: Array of strings containing requirement descriptions
- * 
+ *
  * Features:
  * - Checkmark icons for each requirement
  * - Consistent spacing and alignment
  * - Maps through requirements array
- * 
+ *
  * @param {Object} props Component props
  * @returns {JSX.Element} List of position requirements
  */
@@ -239,24 +278,26 @@ function Requisites({ requisites }: { requisites: string[] }) {
 
 /**
  * ContactInfo Component
- * 
+ *
  * Displays contact information for the assistance position including
  * professor name and email.
- * 
+ *
  * Props:
  * - assistance: Assistance object containing contact details
- * 
+ *
  * Features:
  * - Icons for each contact method
  * - Consistent styling
- * 
+ *
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing contact information
  */
 function ContactInfo({ assistance }: { assistance: Assistance }) {
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-2xl text-sky-800">Información de contacto:</h3>
+      <h3 className="font-semibold text-2xl text-sky-800">
+        Información de contacto:
+      </h3>
       <div className="space-y-4">
         <InfoItem
           icon={<User className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />}
@@ -275,66 +316,71 @@ function ContactInfo({ assistance }: { assistance: Assistance }) {
 
 /**
  * AssistanceApplying Component
- * 
+ *
  * Handles the application process for the assistance position.
- * 
+ *
  * Props:
  * - assistance: Assistance object containing position details
  * - setIsApplying: Function to toggle application state
- * 
+ *
  * Features:
  * - File upload for CV
  * - Confirmation modal
  * - Form submission handling
  * - Navigation back to details
- * 
+ *
  * @param {Object} props Component props
  * @returns {JSX.Element} Application form card
  */
 function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Aplicación enviada con exito");
   };
 
   const modalProps = {
-    "title": "¿Estás seguro de aplicar a esta asistencia graduada?",
-    "description": "Recuerda que una vez aplicas no podrás cambiar tu decisión",
-    "buttonText": "Aplicar",
-    "successTitle": "¡Aplicación enviada!",
-    "successText": "Tu aplicación ha sido enviada con éxito",
-    "url": `${ROUTES.HOME}/${ROUTES.ASSISTANCE_APPLIED_LIST}`
-  }
+    title: "¿Estás seguro de aplicar a esta asistencia graduada?",
+    description: "Recuerda que una vez aplicas no podrás cambiar tu decisión",
+    buttonText: "Aplicar",
+    successTitle: "¡Aplicación enviada!",
+    successText: "Tu aplicación ha sido enviada con éxito",
+    url: `${ROUTES.HOME}/${ROUTES.ASSISTANCE_APPLIED_LIST}`,
+  };
 
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   return (
     <Card className="max-w-3xl  mx-auto shadow-lg">
       <CardHeader className=" flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <CardTitle className="text-2xl font-bold text-center text-core">{assistance.name}</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center text-core">
+          {assistance.name}
+        </CardTitle>
         <ButtonBack setIsApplying={setIsApplying} />
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form
+          /* onSubmit={TODO: APLICAR EFECTOS EN BACKEND} */ className="space-y-6"
+        >
           <UploadCV assistance={assistance} />
           <div className="flex justify-center pt-3.5">
             <Button
               type="button"
               onClick={() => setIsConfirmed(true)}
-              className="bg-core hover:bg-core-highlight text-white px-10 py-5 rounded-xl text-lg font-semibold transition-colors shadow-lg hover:shadow-core-soft">
+              className="bg-core hover:bg-core-highlight text-white px-10 py-5 rounded-xl text-lg font-semibold transition-colors shadow-lg hover:shadow-core-soft"
+            >
               Aplicar
             </Button>
-            <ConfirmationModal dialogText={modalProps} onConfirm={handleSubmit} open={isConfirmed} setIsOpen={setIsConfirmed} />
+            <ConfirmationModal
+              dialogText={modalProps}
+              onConfirm={handleSubmit}
+              open={isConfirmed}
+              setIsOpen={setIsConfirmed}
+            />
           </div>
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }
-
-
-
-
 
 /**
  * ButtonBack Component
@@ -352,9 +398,14 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
  * @param {Object} props Component props
  * @returns {JSX.Element} Back button
  */
-function ButtonBack({ setIsApplying }: { setIsApplying: (value: boolean) => void }) {
+function ButtonBack({
+  setIsApplying,
+}: {
+  setIsApplying: (value: boolean) => void;
+}) {
   return (
-    <Button variant="outline"
+    <Button
+      variant="outline"
       size="sm"
       className="text-core hover:text-core-highlight border-core hover:border-core-highlight hover:bg-sky-50 dark:hover:bg-sky-500"
       onClick={() => setIsApplying(false)}
@@ -362,36 +413,34 @@ function ButtonBack({ setIsApplying }: { setIsApplying: (value: boolean) => void
       <FileText className="h-4 w-4 mr-2" />
       Ver detalles
     </Button>
-  )
+  );
 }
-
-
-
-
-
 
 /**
  * UploadCV Component
- * 
+ *
  * Handles CV file upload functionality for the application process.
- * 
+ *
  * Props:
  * - assistance: Assistance object containing position details
- * 
+ *
  * States:
  * - uploadedFile: Object containing file name and URL
- * 
+ *
  * Features:
  * - PDF file upload
  * - File preview
  * - Remove file capability
  * - Drag and drop area
- * 
+ *
  * @param {Object} props Component props
  * @returns {JSX.Element} File upload section
  */
 function UploadCV({ assistance }: { assistance: Assistance }) {
-  const [uploadedFile, setUploadedFile] = useState<{ name: string; url: string } | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<{
+    name: string;
+    url: string;
+  } | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -432,7 +481,8 @@ function UploadCV({ assistance }: { assistance: Assistance }) {
           <div>
             <Upload className="mx-auto h-12 w-12 text-gray-400" />
             <Label htmlFor="cv" className="mt-4 block text-sm font-medium">
-              <span className="text-sky-800">Click para subir</span> o arrastra y suelta
+              <span className="text-sky-800">Click para subir</span> o arrastra
+              y suelta
             </Label>
             <Input
               id="cv"
