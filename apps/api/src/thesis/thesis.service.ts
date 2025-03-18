@@ -1,0 +1,34 @@
+import { Injectable } from '@nestjs/common';
+import { CreateThesisDto } from './dto/create-thesis.dto';
+import { UpdateThesisDto } from './dto/update-thesis.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Thesis } from './entities/thesis.entity';
+
+@Injectable()
+export class ThesisService {
+  constructor(
+    @InjectRepository(Thesis) private thesisRepository: Repository<Thesis>
+  ){}
+  async create(createThesisDto: CreateThesisDto) {
+    const thesis = this.thesisRepository.create(createThesisDto);
+    await this.thesisRepository.save(thesis);
+    return thesis
+  }
+
+  findAll() {
+    return `This action returns all thesis`;
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} thesis`;
+  }
+
+  update(id: number, updateThesisDto: UpdateThesisDto) {
+    return `This action updates a #${id} thesis`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} thesis`;
+  }
+}
