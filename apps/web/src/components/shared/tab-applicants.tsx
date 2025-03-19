@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, MoreVertical, Search } from "lucide-react";
 import { useState } from "react";
+import { ConfirmationModal } from "./confirmation-modal";
+import { ROUTES } from "@/app/routes";
 
 interface Section {
   title: string;
@@ -47,6 +49,16 @@ interface TabStatusProps {
   children?: React.ReactNode;
 }
 
+const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST}`;
+const dialogTextAccepted = {
+  title: "Confirmar Accion",
+  description: "¿Estás seguro de que quieres proceder?",
+  buttonText: "Aceptar",
+  successTitle: "Exitoso.",
+  successText: "Accion realizada correctamente.",
+  url: path,
+};
+
 export default function TabStatus({
   general,
   status,
@@ -55,12 +67,12 @@ export default function TabStatus({
   return (
     <div className="max-w-4xl mx-auto p-4">
       <Tabs defaultValue="general">
-        <TabsList className="grid w-full grid-cols-2 bg-sky-800 text-white rounded-t-xl h-16">
+        <TabsList className="grid w-full grid-cols-2 rounded-t-xl h-16 bg-core color-card">
           {["general", "status"].map((tab, index) => (
             <TabsTrigger
               key={tab}
               value={tab}
-              className="rounded-none data-[state=active]:bg-[#00406A] data-[state=active]:rounded data-[state=active]:text-white text-lg h-12 text-white flex items-center justify-center cursor-pointer"
+              className="rounded-none data-[state=active]:bg-core-highlight data-[state=active]:rounded-t-xl data-[state=active]:text-card text-lg h-12 text-card flex items-center justify-center cursor-pointer"
             >
               {index === 0 ? "Información general" : "Aplicantes"}
             </TabsTrigger>
@@ -68,9 +80,9 @@ export default function TabStatus({
         </TabsList>
 
         <TabsContent value="general">
-          <Card className="max-w-4xl border border-gray-200 shadow-md rounded-b-xl bg-white">
+          <Card className="max-w-4xl border border-ring shadow-md rounded-b-xl bg-card">
             <CardHeader>
-              <h1 className="text-2xl font-medium text-[#00406A]">
+              <h1 className="text-2xl font-medium text-core-highlight">
                 {general.title}
               </h1>
             </CardHeader>
@@ -80,13 +92,13 @@ export default function TabStatus({
                   <div key={section.title} className="flex gap-3">
                     {section.icon}
                     <div className="w-full">
-                      <h1 className="font-medium text-sky-800">
+                      <h1 className="font-medium text-core-highlight">
                         {section.title}
                       </h1>
-                      <p className="text-gray-700 break-words">
+                      <p className="text-primary break-words">
                         {section.description}
                       </p>
-                      <hr className="bg-gray-300 h-[1px] w-full my-2 border-0" />
+                      <hr className="bg-ring h-[1px] w-full my-2 border-0" />
                     </div>
                   </div>
                 ))}
@@ -107,6 +119,12 @@ export default function TabStatus({
 function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortAscending, setSortAscending] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleConfirmAccepted = () => {
+    console.log("Confirmed!");
+  };
 
   const filteredApplicants = applicants.filter(
     (applicant) =>
@@ -126,6 +144,12 @@ function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
     );
   };
 
+  const sortedApplicants = [...filteredApplicants].sort((a, b) => {
+    return sortAscending
+      ? a.name.localeCompare(b.name)
+      : b.name.localeCompare(a.name);
+  });
+
   return (
     <Card className="border-none max-w-4xl">
       <CardContent className="p-6">
@@ -143,15 +167,19 @@ function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
             <Button
               variant="outline"
               size="sm"
-              className="h-9 px-3 bg-[#00406A] text-white hover:bg-[#00406A]"
+              className="h-9 px-3 bg-core text-card hover:bg-core-highlight"
+              onClick={() => setSortAscending(!sortAscending)}
             >
               <span className="mr-1">A - Z</span>
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown
+                className={`h-4 w-4 transform ${sortAscending ? "" : "rotate-180"}`}
+              />
             </Button>
             <Button
               variant="default"
-              className="bg-[#00406A] hover:bg-[#00406A]"
+              className="bg-core hover:bg-core-highlight"
               disabled={selectedApplicants.length === 0}
+              onClick={() => setIsModalOpen(true)} // TODO: Implement backend logic
             >
               Aceptar seleccionados
             </Button>
@@ -159,25 +187,27 @@ function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
 
           <div className="overflow-hidden rounded-lg border">
             <Table>
-              <TableHeader className="bg-[#00406A]">
+              <TableHeader className="bg-core">
                 <TableRow>
-                  <TableHead className="w-12 text-white">
+                  <TableHead className="w-12 text-card">
                     <Checkbox
                       onCheckedChange={(checked: boolean) =>
                         handleSelectAll(checked)
                       }
-                      className="border-white data-[state=checked]:bg-white data-[state=checked]:text-[#00406A]"
+                      className="border-card data-[state=checked]:bg-card data-[state=checked]:text-core"
                     />
                   </TableHead>
-                  <TableHead className="text-white">Nombre</TableHead>
-                  <TableHead className="text-white">Correo</TableHead>
-                  <TableHead className="text-white">Estado</TableHead>
-                  <TableHead className="text-white w-12">Acciones</TableHead>
+                  <TableHead className="text-card">Nombre</TableHead>
+                  <TableHead className="text-card">Correo</TableHead>
+                  <TableHead className="text-card">Estado</TableHead>
+                  <TableHead className="text-card w-12 px-5">
+                    Acciones
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredApplicants.length > 0 ? (
-                  filteredApplicants.map((applicant) => (
+                {sortedApplicants.length > 0 ? (
+                  sortedApplicants.map((applicant) => (
                     <TableRow key={applicant.id}>
                       <TableCell>
                         <Checkbox
@@ -200,12 +230,25 @@ function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem>Ver detalles</DropdownMenuItem>
-                            <DropdownMenuItem>Aceptar</DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">
+                            <DropdownMenuItem
+                              onClick={() => setIsModalOpen(true)}
+                            >
+                              Aceptar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setIsModalOpen(true)}
+                            >
                               Rechazar
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
+
+                        <ConfirmationModal
+                          dialogText={dialogTextAccepted}
+                          onConfirm={handleConfirmAccepted}
+                          open={isModalOpen}
+                          setIsOpen={setIsModalOpen}
+                        />
                       </TableCell>
                     </TableRow>
                   ))

@@ -192,7 +192,7 @@ function InfoItem({ icon, title, content }: InfoItemProps) {
     <div className="flex items-start gap-3">
       {icon}
       <div>
-        <h2 className="font-bold text-xl text-sky-800">{title}:</h2>
+        <h2 className="font-bold text-xl text-core-highlight">{title}:</h2>
         <p className="text-xl">{content}</p>
       </div>
     </div>
@@ -222,19 +222,21 @@ function MainInformation({ assistance }: { assistance: Assistance }) {
       <div className="space-y-6">
         <InfoItem
           icon={
-            <Briefcase className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />
+            <Briefcase className="w-10 h-10 text-core-highlight flex-shrink-0 mt-1" />
           }
           title="Nombre"
           content={assistance.name}
         />
         <InfoItem
-          icon={<Users className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />}
+          icon={
+            <Users className="w-10 h-10 text-core-highlight flex-shrink-0 mt-1" />
+          }
           title="Clasificación"
           content={assistance.clasification}
         />
         <InfoItem
           icon={
-            <FileText className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />
+            <FileText className="w-10 h-10 text-core-highlight flex-shrink-0 mt-1" />
           }
           title="Descripción"
           content={assistance.description}
@@ -263,11 +265,13 @@ function MainInformation({ assistance }: { assistance: Assistance }) {
 function Requisites({ requisites }: { requisites: string[] }) {
   return (
     <div className="mb-4">
-      <h3 className="font-semibold text-2xl text-sky-800 mb-3">Requisitos:</h3>
+      <h3 className="font-semibold text-2xl text-core-highlight mb-3">
+        Requisitos:
+      </h3>
       <ul className="space-y-1">
         {requisites.map((requisite) => (
           <li className="flex items-center gap-3" key={requisite}>
-            <CheckCircle2 className="w-6 h-6 text-sky-800 flex-shrink-0" />
+            <CheckCircle2 className="w-6 h-6 text-core-highlight flex-shrink-0" />
             <span className="text-xl">{requisite}</span>
           </li>
         ))}
@@ -295,17 +299,21 @@ function Requisites({ requisites }: { requisites: string[] }) {
 function ContactInfo({ assistance }: { assistance: Assistance }) {
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-2xl text-sky-800">
+      <h3 className="font-semibold text-2xl text-core-highlight">
         Información de contacto:
       </h3>
       <div className="space-y-4">
         <InfoItem
-          icon={<User className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />}
+          icon={
+            <User className="w-8 h-8 text-core-highlight flex-shrink-0 mt-1" />
+          }
           title="Profesor"
           content={assistance.professor}
         />
         <InfoItem
-          icon={<Mail className="w-6 h-6 text-sky-800 flex-shrink-0 mt-1" />}
+          icon={
+            <Mail className="w-8 h-8 text-core-highlight flex-shrink-0 mt-1" />
+          }
           title="Email"
           content={assistance.email}
         />
@@ -365,7 +373,7 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
             <Button
               type="button"
               onClick={() => setIsConfirmed(true)}
-              className="bg-core hover:bg-core-highlight text-white px-10 py-5 rounded-xl text-lg font-semibold transition-colors shadow-lg hover:shadow-core-soft"
+              className="bg-core hover:bg-core-highlight text-card px-10 py-5 rounded-xl text-lg font-semibold transition-colors shadow-lg hover:shadow-core-soft"
             >
               Aplicar
             </Button>
@@ -407,7 +415,7 @@ function ButtonBack({
     <Button
       variant="outline"
       size="sm"
-      className="text-core hover:text-core-highlight border-core hover:border-core-highlight hover:bg-sky-50 dark:hover:bg-sky-500"
+      className="text-core hover:text-core-highlight border-core hover:border-core-highlight hover:bg-core-soft dark:hover:bg-core"
       onClick={() => setIsApplying(false)}
     >
       <FileText className="h-4 w-4 mr-2" />
@@ -467,7 +475,7 @@ function UploadCV({ assistance }: { assistance: Assistance }) {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold mb-2">Hoja de vida</h2>
-        <p className="text-gray-500">
+        <p className="text-ring">
           Adjunta tu hoja de vida en formato PDF para aplicar a esta asistencia
         </p>
       </div>
@@ -479,10 +487,10 @@ function UploadCV({ assistance }: { assistance: Assistance }) {
       >
         {!uploadedFile ? (
           <div>
-            <Upload className="mx-auto h-12 w-12 text-gray-400" />
+            <Upload className="mx-auto h-12 w-12 text-ring" />
             <Label htmlFor="cv" className="mt-4 block text-sm font-medium">
-              <span className="text-sky-800">Click para subir</span> o arrastra
-              y suelta
+              <span className="text-core-highlight">Click para subir</span> o
+              arrastra y suelta
             </Label>
             <Input
               id="cv"
@@ -491,18 +499,18 @@ function UploadCV({ assistance }: { assistance: Assistance }) {
               accept=".pdf"
               onChange={handleFileChange}
             />
-            <p className="text-xs text-gray-500 mt-2">Solo archivos PDF</p>
+            <p className="text-xs text-ring mt-2">Solo archivos PDF</p>
           </div>
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <FileText className="h-6 w-6 text-sky-800 mr-2" />
+              <FileText className="h-6 w-6 text-core-highlight mr-2" />
               <span>{uploadedFile.name}</span>
             </div>
             <Button
               variant="ghost"
               size="sm"
-              className="text-red-500"
+              className="text-destructive"
               onClick={() => setUploadedFile(null)}
             >
               <X className="h-4 w-4" />

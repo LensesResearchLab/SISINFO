@@ -145,13 +145,15 @@ export default function EditAssistancePage() {
   return (
     <div className="container mx-auto py-6 px-4">
       <Card className="p-6">
-        <h1 className="text-2xl font-bold text-sky-800 mb-6">
+        <h1 className="text-2xl font-bold mb-6 text-core">
           Editar Asistencia Graduada
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name">Nombre</Label>
+              <Label htmlFor="name" className="py-2">
+                Nombre
+              </Label>
               <Input
                 id="name"
                 name="name"
@@ -162,7 +164,9 @@ export default function EditAssistancePage() {
             </div>
 
             <div>
-              <Label htmlFor="classification">Clasificación</Label>
+              <Label htmlFor="classification" className="py-2">
+                Clasificación
+              </Label>
               <Select
                 value={formData.classification}
                 onValueChange={handleClassificationChange}
@@ -179,7 +183,9 @@ export default function EditAssistancePage() {
             </div>
 
             <div>
-              <Label htmlFor="description">Descripción</Label>
+              <Label htmlFor="description" className="py-2">
+                Descripción
+              </Label>
               <Textarea
                 id="description"
                 name="description"
@@ -191,7 +197,7 @@ export default function EditAssistancePage() {
             </div>
 
             <div>
-              <Label>Requisitos</Label>
+              <Label className="py-2">Requisitos</Label>
               <div className="space-y-2">
                 {formData.requirements.map((req, index) => (
                   <div key={index} className="flex gap-2">
@@ -237,11 +243,7 @@ export default function EditAssistancePage() {
             >
               Cancelar
             </Button>
-            <Button
-              type="submit"
-              className="bg-sky-800 text-white hover:bg-sky-700 w-32"
-              disabled={isSaving}
-            >
+            <Button type="submit" className="w-32" disabled={isSaving}>
               {isSaving ? "Guardando..." : "Guardar"}
             </Button>
           </div>

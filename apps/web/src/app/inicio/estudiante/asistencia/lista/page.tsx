@@ -274,13 +274,13 @@ export default function AssistanceList({
 
         <div className="rounded-md border overflow-hidden">
           <Table>
-            <TableHeader className="bg-[#075985]">
+            <TableHeader className="bg-[var(--core)]">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="text-white font-bold py-3"
+                      className="text-[var(--card)] font-bold py-3"
                     >
                       {flexRender(
                         header.column.columnDef.header,
