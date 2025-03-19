@@ -1,8 +1,7 @@
 "use client";
 
-import { getCourses, getStudent } from "@/app/inicio/profesor/publicar-consultar/services/student-profile.service";
+import { getCourses, getStudent } from "@/app/inicio/profesor/maestria/publicar/services/student-profile.service";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, CircleAlert } from "lucide-react";

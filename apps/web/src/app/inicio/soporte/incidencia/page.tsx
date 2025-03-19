@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { TriangleAlert } from 'lucide-react';
+import SelectList from "@/components/shared/select-list"
 
 /**
  * IncidentReportForm Component
@@ -28,6 +29,8 @@ export default function IncidentReportForm() {
     setIncidentType("")
   }
 
+  const errores= ["error en el sistema", "falla técnica", "otro"]
+
   return (
     <div className="flex justify-center items-center min-h-full min-w-full">
       <Card className="p-8 text-lg">
@@ -39,22 +42,7 @@ export default function IncidentReportForm() {
             Escriba el incidente que presentó, su usuario será visible para los administradores del sistema
           </p>
           <div className="mt-6">
-            <Select value={incidentType} onValueChange={setIncidentType}>
-              <SelectTrigger className="w-full text-lg p-3">
-                <SelectValue placeholder="Razón de la solicitud" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="error" className="text-lg">
-                  Error en el sistema
-                </SelectItem>
-                <SelectItem value="bug" className="text-lg">
-                  Falla técnica
-                </SelectItem>
-                <SelectItem value="otro" className="text-lg">
-                  Otro
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <SelectList list={errores} placeholder="Razón de la solicitud"></SelectList>
           </div>
           <div className="mt-6">
             <Textarea
