@@ -8,16 +8,17 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class ProfessorService {
   constructor(
-    @InjectRepository(Professor) private professorRepository: Repository<Professor>
-  ){}
+    @InjectRepository(Professor)
+    private professorRepository: Repository<Professor>,
+  ) {}
   async create(createProfessorDto: CreateProfessorDto) {
     const professor = this.professorRepository.create(createProfessorDto);
     await this.professorRepository.save(professor);
-    return professor
+    return professor;
   }
 
-  findAll() {
-    return `This action returns all professor`;
+  async findAll(): Promise<Professor[]> {
+    return this.professorRepository.find();
   }
 
   findOne(id: number) {

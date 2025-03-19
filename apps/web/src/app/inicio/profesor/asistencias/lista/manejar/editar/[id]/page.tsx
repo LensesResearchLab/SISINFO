@@ -16,18 +16,12 @@ import {
 } from "@/components/ui/select";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { ROUTES } from "@/app/routes";
-
-interface AssistanceDetail {
-  id: number;
-  name: string;
-  classification: string;
-  description: string;
-  requirements: string[];
-  professor: string;
-  start_semester: string;
-  publication_date: Date;
-  end_date: Date;
-}
+import {
+  getGraduatedAssistanceById,
+  updateGraduatedAssistance,
+  updateRequirement,
+} from "@/app/inicio/estudiante/asistencia/services/assistance.service";
+import { Assistance } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
 
 export default function EditAssistancePage() {
   const params = useParams();
@@ -35,48 +29,31 @@ export default function EditAssistancePage() {
   const id = params.id as string;
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [formData, setFormData] = useState<AssistanceDetail>({
-    id: 0,
-    name: "",
-    classification: "",
-    description: "",
-    requirements: [""],
-    professor: "",
-    start_semester: "",
+  const [formData, setFormData] = useState<Assistance>({
+    id: "",
+    title: "",
+    clasification: "",
     publication_date: new Date(),
     end_date: new Date(),
+    start_semester: "",
+    description: "",
+    requirements: [{ id: "", description: "", name: "" }],
+    professor: { name: "", email: "" },
   });
 
   useEffect(() => {
-    const fetchAssistanceDetails = async () => {
+    const fetchData = async () => {
       try {
-        // TODO: Replace with actual API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setFormData({
-          id: parseInt(id),
-          name: "Asistente graduado ISIS2203",
-          classification: "Docencia",
-          description:
-            "Se requiere un estudiante de maestría para que dicté la clase de los laboratorios del curso ISIS2203",
-          requirements: [
-            "Informar el promedio de pregrado",
-            "Informar el promedio de la materia (debe ser mayor a 4.5)",
-            "Adjuntar hoja de vida",
-          ],
-          professor: "Camilo Andrés Escobar",
-          start_semester: "2025-01",
-          publication_date: new Date("2025-12-12"),
-          end_date: new Date("2025-12-12"),
-        });
-        setIsLoading(false);
+        const assistanceData = await getGraduatedAssistanceById(id);
+        setFormData(assistanceData);
       } catch (error) {
-        console.error("Error fetching assistance details:", error);
-        router.push("/404");
+        console.error("Error fetching assistance data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
-
-    fetchAssistanceDetails();
-  }, [id, router]);
+    fetchData();
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -91,13 +68,13 @@ export default function EditAssistancePage() {
   const handleClassificationChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
-      classification: value,
+      clasification: value,
     }));
   };
 
   const handleRequirementChange = (index: number, value: string) => {
     const newRequirements = [...formData.requirements];
-    newRequirements[index] = value;
+    newRequirements[index] = { ...newRequirements[index], description: value };
     setFormData((prev) => ({
       ...prev,
       requirements: newRequirements,
@@ -107,7 +84,10 @@ export default function EditAssistancePage() {
   const addRequirement = () => {
     setFormData((prev) => ({
       ...prev,
-      requirements: [...prev.requirements, ""],
+      requirements: [
+        ...prev.requirements,
+        { id: "", name: "", description: "" },
+      ],
     }));
   };
 
@@ -128,7 +108,19 @@ export default function EditAssistancePage() {
     setIsSaving(true);
 
     try {
-      // TODO: Replace with actual API call
+      // API CALL
+      await updateGraduatedAssistance(id as string, formData);
+
+      // TODO: when multiple requirements not working!
+      const updateRequirementsPromises = formData.requirements.map(
+        (requirement) => {
+          return updateRequirement(requirement.id, requirement);
+        }
+      );
+
+      // Wait for all requirements to be updated
+      await Promise.all(updateRequirementsPromises);
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
       const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`;
       router.push(path);
@@ -151,13 +143,13 @@ export default function EditAssistancePage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name" className="py-2">
+              <Label htmlFor="title" className="py-2">
                 Nombre
               </Label>
               <Input
-                id="name"
-                name="name"
-                value={formData.name}
+                id="title"
+                name="title"
+                value={formData?.title}
                 onChange={handleInputChange}
                 required
               />
@@ -168,7 +160,7 @@ export default function EditAssistancePage() {
                 Clasificación
               </Label>
               <Select
-                value={formData.classification}
+                value={formData?.clasification}
                 onValueChange={handleClassificationChange}
               >
                 <SelectTrigger>
@@ -189,7 +181,7 @@ export default function EditAssistancePage() {
               <Textarea
                 id="description"
                 name="description"
-                value={formData.description}
+                value={formData?.description}
                 onChange={handleInputChange}
                 required
                 className="min-h-[100px]"
@@ -199,10 +191,12 @@ export default function EditAssistancePage() {
             <div>
               <Label className="py-2">Requisitos</Label>
               <div className="space-y-2">
-                {formData.requirements.map((req, index) => (
+                {formData?.requirements.map((req, index) => (
                   <div key={index} className="flex gap-2">
                     <Input
-                      value={req}
+                      id={`requirement-${index}`}
+                      name={`requirement-${index}`}
+                      value={req.description}
                       onChange={(e) =>
                         handleRequirementChange(index, e.target.value)
                       }

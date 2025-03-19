@@ -1,9 +1,7 @@
 export class CreateGraduatedAssistanceDto {
+  title: string;
 
-    title: string;
+  clasification: string;
 
-
-    clasification: string;
-
-    description: string;
+  description: string;
 }

@@ -8,16 +8,16 @@ import { Period } from './entities/period.entity';
 @Injectable()
 export class PeriodService {
   constructor(
-    @InjectRepository(Period) private periodRepository: Repository<Period>
-  ){}
+    @InjectRepository(Period) private periodRepository: Repository<Period>,
+  ) {}
   async create(createPeriodDto: CreatePeriodDto) {
     const period = this.periodRepository.create(createPeriodDto);
     await this.periodRepository.save(period);
-    return period
+    return period;
   }
 
-  findAll() {
-    return `This action returns all period`;
+  async findAll(): Promise<Period[]> {
+    return this.periodRepository.find();
   }
 
   findOne(id: number) {

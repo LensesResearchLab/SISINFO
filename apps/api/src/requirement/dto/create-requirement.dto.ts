@@ -1,7 +1,5 @@
 export class CreateRequirementDto {
+  name: string;
 
-    name: string;
-
-
-    description: string;
+  description: string;
 }
