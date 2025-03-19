@@ -132,7 +132,7 @@ export default function AssistanceManagePage() {
                   <li key={index} className="flex items-start gap-3">
                     <CircleCheck className="w-10 h-7 mb-0.1 text-core-highlight" />
                     <div>
-                      <p style={{ color: "var(--primary)" }}>{req}</p>
+                      <p className="text-primary">{req}</p>
                       <hr className="h-[1px] w-[750px] my-2 border-0 bg-ring" />
                     </div>
                   </li>
