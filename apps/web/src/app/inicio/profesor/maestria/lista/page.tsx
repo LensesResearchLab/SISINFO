@@ -133,6 +133,11 @@ function TableRow({thesis} : {thesis: Thesis}) {
 }
 
 function TableRowDetail({thesis} : {thesis: Thesis}) {
+  const router = useRouter();
+  const handleClickEye = () => {
+    router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_STUDENT}`)
+    
+  }
   return (
     <div>
       <div className="grid grid-cols-12 border-b py-2 px-3 text-primary">
@@ -147,7 +152,7 @@ function TableRowDetail({thesis} : {thesis: Thesis}) {
             <div className="col-span-3">{student.name}</div>
             <div className="col-span-3">{student.status}</div>
             <div className="col-span-3">{student.date}</div>
-            <Eye className="col-span-3"></Eye>
+            <Eye className="col-span-3 cursor-pointer" onClick={handleClickEye}></Eye>
             
           </div>
         </div>
