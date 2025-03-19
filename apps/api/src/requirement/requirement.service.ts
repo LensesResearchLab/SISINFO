@@ -8,17 +8,18 @@ import { Requirement } from './entities/requirement.entity';
 @Injectable()
 export class RequirementService {
   constructor(
-    @InjectRepository(Requirement) private requirementRepository: Repository<Requirement>
-  ){}
-  
+    @InjectRepository(Requirement)
+    private requirementRepository: Repository<Requirement>,
+  ) {}
+
   async create(createRequirementDto: CreateRequirementDto) {
     const requirement = this.requirementRepository.create(createRequirementDto);
     await this.requirementRepository.save(requirement);
-    return requirement
+    return requirement;
   }
 
-  findAll() {
-    return `This action returns all requirement`;
+  async findAll(): Promise<Requirement[]> {
+    return this.requirementRepository.find();
   }
 
   findOne(id: number) {

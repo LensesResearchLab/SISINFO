@@ -149,7 +149,7 @@ export default function AssistanceList({
   const [nameFilter, setNameFilter] = React.useState("");
   const [sorting, setSorting] = React.useState([{ id: "name", desc: false }]);
   const router = useRouter();
-  const handleClick = (id: number) => {
+  const handleClick = (id: string) => {
     const path =
       role === "professor"
         ? `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`
@@ -161,7 +161,7 @@ export default function AssistanceList({
     () => [
       { accessorKey: "name", header: "Nombre" },
       { accessorKey: "clasification", header: "Clasificación" },
-      { accessorKey: "professor", header: "Oferente" },
+      { accessorKey: "professor.name", header: "Oferente" },
       {
         accessorKey: "publication_date",
         header: "Fecha publicación",
@@ -217,13 +217,13 @@ export default function AssistanceList({
         role === "professor" &&
         showOnlyMyAssistance &&
         professorName &&
-        item.professor !== professorName
+        item.professor.name !== professorName
       ) {
         return false;
       }
       if (nameFilter) {
         const searchTerm = nameFilter.toLowerCase();
-        return item.name.toLowerCase().includes(searchTerm);
+        return item.title.toLowerCase().includes(searchTerm);
       }
       return true;
     });

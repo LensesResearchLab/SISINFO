@@ -8,17 +8,17 @@ import { Student } from './entities/student.entity';
 @Injectable()
 export class StudentService {
   constructor(
-    @InjectRepository(Student) private studentRepository: Repository<Student>
+    @InjectRepository(Student) private studentRepository: Repository<Student>,
   ) {}
 
   async create(createStudentDto: CreateStudentDto) {
     const student = this.studentRepository.create(createStudentDto);
     await this.studentRepository.save(student);
-    return student
+    return student;
   }
 
-  findAll() {
-    return `This action returns all student`;
+  async findAll(): Promise<Student[]> {
+    return this.studentRepository.find();
   }
 
   findOne(id: number) {

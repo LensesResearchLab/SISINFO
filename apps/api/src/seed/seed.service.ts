@@ -54,10 +54,8 @@ import { Period } from 'src/period/entities/period.entity';
 import { Billboard } from 'src/billboard/entities/billboard.entity';
 import { CreateBillboardDto } from 'src/billboard/dto/create-billboard.dto';
 
-
 @Injectable()
 export class SeedService {
-
   constructor(
     private readonly billboardService: BillboardService,
     private readonly periodService: PeriodService,
@@ -79,30 +77,27 @@ export class SeedService {
   ) {}
 
   async seedBillboard() {
-    const billboards: CreateBillboardDto[] = Array.from({ length: 10 }).map(() =>
-      ({
+    const billboards: CreateBillboardDto[] = Array.from({ length: 10 }).map(
+      () => ({
         publicated: faker.datatype.boolean(),
-      })
+      }),
     );
     const insertPromises: Promise<Billboard>[] = [];
-    billboards.forEach(billboard => {
+    billboards.forEach((billboard) => {
       insertPromises.push(this.billboardService.create(billboard));
     });
     await Promise.all(insertPromises);
     return true;
-  
   }
 
   async seedPeriod() {
-    const periods: CreatePeriodDto[] = Array.from({ length: 10 }).map(() =>
-      ({
-        period: faker.lorem.word(),
-        year: faker.number.int({ min: 2000, max: 2022 }),
-        semester: faker.number.int({ min: 1, max: 8 }),
-      })
-    );
+    const periods: CreatePeriodDto[] = Array.from({ length: 10 }).map(() => ({
+      period: faker.lorem.word(),
+      year: faker.number.int({ min: 2000, max: 2022 }),
+      semester: faker.number.int({ min: 1, max: 8 }),
+    }));
     const insertPromises: Promise<Period>[] = [];
-    periods.forEach(period => {
+    periods.forEach((period) => {
       insertPromises.push(this.periodService.create(period));
     });
     await Promise.all(insertPromises);
@@ -110,38 +105,38 @@ export class SeedService {
   }
 
   async seedTeachingAssistance() {
-    const teachingAssistances: CreateTeachingAssistanceDto[] = Array.from({ length: 10 }).map(() =>
-      ({
-        title: faker.lorem.word(),
-        clasification: faker.lorem.word(),
-        description: faker.lorem.sentence(),
-        name: faker.person.fullName(),
-        status: faker.lorem.word(),
-        task: faker.lorem.word(),
-        period_type_description: faker.lorem.sentence(),
-        grade: faker.number.int({ min: 1, max: 10 }),
-        initial_date: faker.date.recent(),
-        final_date: faker.date.recent(),
-        weekly_hours: faker.number.int({ min: 1, max: 12 }),
-      })
-    );
+    const teachingAssistances: CreateTeachingAssistanceDto[] = Array.from({
+      length: 10,
+    }).map(() => ({
+      title: faker.lorem.word(),
+      clasification: faker.lorem.word(),
+      description: faker.lorem.sentence(),
+      name: faker.person.fullName(),
+      status: faker.lorem.word(),
+      task: faker.lorem.word(),
+      period_type_description: faker.lorem.sentence(),
+      grade: faker.number.int({ min: 1, max: 10 }),
+      initial_date: faker.date.recent(),
+      final_date: faker.date.recent(),
+      weekly_hours: faker.number.int({ min: 1, max: 12 }),
+    }));
     const insertPromises: Promise<TeachingAssistance>[] = [];
-    teachingAssistances.forEach(teachingAssistance => {
-      insertPromises.push(this.teachingAssistanceService.create(teachingAssistance));
+    teachingAssistances.forEach((teachingAssistance) => {
+      insertPromises.push(
+        this.teachingAssistanceService.create(teachingAssistance),
+      );
     });
     await Promise.all(insertPromises);
     return true;
   }
 
   async seedSection() {
-    const sections: CreateSectionDto[] = Array.from({ length: 10 }).map(() =>
-      ({
-        NRC: faker.number.int({ min: 10000, max: 99999 }),
-        section: faker.number.int({ min: 1, max: 100 }),
-      })
-    );
+    const sections: CreateSectionDto[] = Array.from({ length: 10 }).map(() => ({
+      NRC: faker.number.int({ min: 10000, max: 99999 }),
+      section: faker.number.int({ min: 1, max: 100 }),
+    }));
     const insertPromises: Promise<Section>[] = [];
-    sections.forEach(section => {
+    sections.forEach((section) => {
       insertPromises.push(this.sectionService.create(section));
     });
     await Promise.all(insertPromises);
@@ -149,15 +144,15 @@ export class SeedService {
   }
 
   async seedProfessor() {
-    const professors: CreateProfessorDto[] = Array.from({ length: 10 }).map(() =>
-      ({
+    const professors: CreateProfessorDto[] = Array.from({ length: 10 }).map(
+      () => ({
         document: faker.string.uuid(),
         name: faker.person.fullName(),
         email: faker.internet.email(),
-      })
+      }),
     );
     const insertPromises: Promise<Professor>[] = [];
-    professors.forEach(professor => {
+    professors.forEach((professor) => {
       insertPromises.push(this.professorService.create(professor));
     });
     await Promise.all(insertPromises);
@@ -165,19 +160,17 @@ export class SeedService {
   }
 
   async seedCourse() {
-    const courses: CreateCourseDto[] = Array.from({ length: 10 }).map(() =>
-      ({
-        name: faker.lorem.word(),
-        description: faker.lorem.sentence(),
-        code: faker.lorem.word(),
-        credits: faker.number.int({ min: 1, max: 10 }),
-        hours: faker.number.int({ min: 1, max: 10 }),
-        semester: faker.number.int({ min: 1, max: 8 }),
-        departament: faker.lorem.word(),
-      })
-    );
+    const courses: CreateCourseDto[] = Array.from({ length: 10 }).map(() => ({
+      name: faker.lorem.word(),
+      description: faker.lorem.sentence(),
+      code: faker.lorem.word(),
+      credits: faker.number.int({ min: 1, max: 10 }),
+      hours: faker.number.int({ min: 1, max: 10 }),
+      semester: faker.number.int({ min: 1, max: 8 }),
+      departament: faker.lorem.word(),
+    }));
     const insertPromises: Promise<Course>[] = [];
-    courses.forEach(course => {
+    courses.forEach((course) => {
       insertPromises.push(this.courseService.create(course));
     });
     await Promise.all(insertPromises);
@@ -185,14 +178,12 @@ export class SeedService {
   }
 
   async seedTag() {
-    const tags: CreateTagDto[] = Array.from({ length: 10 }).map(() =>
-      ({
-        name: faker.lorem.word(),
-        description: faker.lorem.sentence(),
-      })
-    );
+    const tags: CreateTagDto[] = Array.from({ length: 10 }).map(() => ({
+      name: faker.lorem.word(),
+      description: faker.lorem.sentence(),
+    }));
     const insertPromises: Promise<Tag>[] = [];
-    tags.forEach(tag => {
+    tags.forEach((tag) => {
       insertPromises.push(this.tagService.create(tag));
     });
     await Promise.all(insertPromises);
@@ -200,17 +191,15 @@ export class SeedService {
   }
 
   async seedThesis() {
-    const theses: CreateThesisDto[] = Array.from({ length: 10 }).map(() =>
-      ({
-        title: faker.lorem.word(),
-        description: faker.lorem.sentence(),
-        status: faker.lorem.word(),
-        category: faker.lorem.word(),
-        investigation_subarea: faker.lorem.word(),
-      })
-    );
+    const theses: CreateThesisDto[] = Array.from({ length: 10 }).map(() => ({
+      title: faker.lorem.word(),
+      description: faker.lorem.sentence(),
+      status: faker.lorem.word(),
+      category: faker.lorem.word(),
+      investigation_subarea: faker.lorem.word(),
+    }));
     const insertPromises: Promise<Thesis>[] = [];
-    theses.forEach(thesis => {
+    theses.forEach((thesis) => {
       insertPromises.push(this.thesisService.create(thesis));
     });
     await Promise.all(insertPromises);
@@ -218,33 +207,37 @@ export class SeedService {
   }
 
   async seedProject() {
-    const projects: CreateProjectDto[] = Array.from({ length: 10 }).map(() =>
-      ({
-        title: faker.lorem.word(),
-        description: faker.lorem.sentence(),
-        status: faker.lorem.word(),
-        category: faker.lorem.word(),
-        max_students: faker.number.int({ min: 1, max: 10 }),
-      })
-    );
+    const projects: CreateProjectDto[] = Array.from({ length: 10 }).map(() => ({
+      title: faker.lorem.word(),
+      description: faker.lorem.sentence(),
+      status: faker.lorem.word(),
+      category: faker.lorem.word(),
+      max_students: faker.number.int({ min: 1, max: 10 }),
+    }));
     const insertPromises: Promise<Project>[] = [];
-    projects.forEach(project => {
+    projects.forEach((project) => {
       insertPromises.push(this.projectService.create(project));
     });
     await Promise.all(insertPromises);
     return true;
-  
   }
 
   async seedRequirement() {
-    const requirements: CreateRequirementDto[] = Array.from({ length: 10 }).map(() =>
-      ({
+    const graduated_assistances =
+      await this.graduatedAssistanceService.findAll();
+    const grad_assistance =
+      graduated_assistances[
+        Math.floor(Math.random() * graduated_assistances.length)
+      ];
+    const requirements: CreateRequirementDto[] = Array.from({ length: 10 }).map(
+      () => ({
         name: faker.lorem.word(),
         description: faker.lorem.sentence(),
-      })
+        assistance: grad_assistance,
+      }),
     );
     const insertPromises: Promise<Requirement>[] = [];
-    requirements.forEach(requirement => {
+    requirements.forEach((requirement) => {
       insertPromises.push(this.requirementService.create(requirement));
     });
     await Promise.all(insertPromises);
@@ -252,31 +245,49 @@ export class SeedService {
   }
 
   async seedGraduatedAssistance() {
-    const graduatedAssistances: CreateGraduatedAssistanceDto[] = Array.from({ length: 10 }).map(() =>
-      ({
+    const professors = await this.professorService.findAll();
+    const students = await this.studentService.findAll();
+    const periods = await this.periodService.findAll();
+
+    const graduatedAssistances: Partial<GraduatedAssistance>[] = Array.from({
+      length: 10,
+    }).map(() => {
+      const professor =
+        professors[Math.floor(Math.random() * professors.length)];
+      const student = students[Math.floor(Math.random() * students.length)];
+      const period = periods[Math.floor(Math.random() * periods.length)];
+      return {
         title: faker.lorem.word(),
         clasification: faker.lorem.word(),
         description: faker.lorem.sentence(),
-      })
-    );
+        assistant: student,
+        professor: professor,
+        period: period,
+      };
+    });
+
     const insertPromises: Promise<GraduatedAssistance>[] = [];
-    graduatedAssistances.forEach(graduatedAssistance => {
-      insertPromises.push(this.graduatedAssistanceService.create(graduatedAssistance));
+    graduatedAssistances.forEach((graduatedAssistance) => {
+      insertPromises.push(
+        this.graduatedAssistanceService.create(
+          graduatedAssistance as CreateGraduatedAssistanceDto,
+        ),
+      );
     });
     await Promise.all(insertPromises);
     return true;
   }
 
   async seedCoordinator() {
-    const coordinators: CreateCoordinatorDto[] = Array.from({ length: 10 }).map(() =>
-      ({
+    const coordinators: CreateCoordinatorDto[] = Array.from({ length: 10 }).map(
+      () => ({
         name: faker.person.fullName(),
         email: faker.internet.email(),
         document: faker.string.uuid(),
-      })
+      }),
     );
     const insertPromises: Promise<Coordinator>[] = [];
-    coordinators.forEach(coordinator => {
+    coordinators.forEach((coordinator) => {
       insertPromises.push(this.coordinatorService.create(coordinator));
     });
     await Promise.all(insertPromises);
@@ -284,13 +295,11 @@ export class SeedService {
   }
 
   async seedTask() {
-    const taskList: CreateTaskDto[] = Array.from({ length: 10 }).map(() =>
-      ({
-
-      })
+    const taskList: CreateTaskDto[] = Array.from({ length: 10 }).map(
+      () => ({}),
     );
     const insertPromises: Promise<Task>[] = [];
-    taskList.forEach(task => {
+    taskList.forEach((task) => {
       insertPromises.push(this.taskService.create(task));
     });
     await Promise.all(insertPromises);
@@ -298,28 +307,23 @@ export class SeedService {
   }
 
   async seedAlertProject() {
-    const projectAlerts: CreateAlertProjectDto[] = Array.from({ length: 10 }).map(() =>
-      ({
-        
-      })
-    );
+    const projectAlerts: CreateAlertProjectDto[] = Array.from({
+      length: 10,
+    }).map(() => ({}));
     const insertPromises: Promise<AlertProject>[] = [];
-    projectAlerts.forEach(alert => {
+    projectAlerts.forEach((alert) => {
       insertPromises.push(this.alertProjectService.create(alert));
     });
     await Promise.all(insertPromises);
     return true;
-
   }
 
   async seedAlertProfessor() {
-    const professorAlerts: CreateAlertProfessorDto[] = Array.from({ length: 10 }).map(() =>
-      ({
-        
-      })
-    );
+    const professorAlerts: CreateAlertProfessorDto[] = Array.from({
+      length: 10,
+    }).map(() => ({}));
     const insertPromises: Promise<AlertProfessor>[] = [];
-    professorAlerts.forEach(alert => {
+    professorAlerts.forEach((alert) => {
       insertPromises.push(this.alertProfessorService.create(alert));
     });
     await Promise.all(insertPromises);
@@ -327,14 +331,14 @@ export class SeedService {
   }
 
   async seedAreasOfInterest() {
-    const areasOfInterest: CreateAreasOfInterestDto[] = Array.from({ length: 10 }).map(() =>
-      ({
-        name: faker.lorem.word(),
-        description: faker.lorem.sentence(),
-      })
-    );
+    const areasOfInterest: CreateAreasOfInterestDto[] = Array.from({
+      length: 10,
+    }).map(() => ({
+      name: faker.lorem.word(),
+      description: faker.lorem.sentence(),
+    }));
     const insertPromises: Promise<AreasOfInterest>[] = [];
-    areasOfInterest.forEach(areasOfInterest => {
+    areasOfInterest.forEach((areasOfInterest) => {
       insertPromises.push(this.areasOfInterestService.create(areasOfInterest));
     });
     await Promise.all(insertPromises);
@@ -342,21 +346,18 @@ export class SeedService {
   }
 
   async seedStudent() {
-    const students: CreateStudentDto[] = Array.from({ length: 10 }).map(() => 
-      ({
-        name: faker.person.fullName(),
-        email: faker.internet.email(),
-        code: faker.string.uuid(),
-        password: faker.internet.password(),
-        document: faker.string.uuid(),
-        semester: faker.number.int({ min: 1, max: 8 }),
-        isUndergraduate: faker.datatype.boolean(),
-        isTeachingAssistant: faker.datatype.boolean(),
-    
-      })
-    );
+    const students: CreateStudentDto[] = Array.from({ length: 10 }).map(() => ({
+      name: faker.person.fullName(),
+      email: faker.internet.email(),
+      code: faker.string.uuid(),
+      password: faker.internet.password(),
+      document: faker.string.uuid(),
+      semester: faker.number.int({ min: 1, max: 8 }),
+      isUndergraduate: faker.datatype.boolean(),
+      isTeachingAssistant: faker.datatype.boolean(),
+    }));
     const insertPromises: Promise<Student>[] = [];
-    students.forEach(student => {
+    students.forEach((student) => {
       insertPromises.push(this.studentService.create(student));
     });
     await Promise.all(insertPromises);
@@ -373,8 +374,8 @@ export class SeedService {
     await this.seedTag();
     await this.seedThesis();
     await this.seedProject();
-    await this.seedRequirement();
     await this.seedGraduatedAssistance();
+    await this.seedRequirement();
     await this.seedCoordinator();
     await this.seedTask();
     await this.seedAlertProject();

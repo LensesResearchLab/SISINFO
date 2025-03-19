@@ -1,34 +1,37 @@
-export interface Assistance{
-    id: number;
-    name: string;
-    clasification: string;
-    publication_date: Date;
-    end_date: Date;
-    start_semester: string;
+export interface Professor {
+  name: string;
+  email: string;
+}
 
-    // For detailed info:
-    description:string;
-    requisites: string[];
-    professor: string;
-    email: string;
+export interface Requirement {
+  name: string;
+  description: string;
+}
 
-  }
+export interface Assistance {
+  id: string;
+  title: string;
+  clasification: string;
+  publication_date: Date;
+  end_date: Date;
+  start_semester: string;
+
+  description: string;
+  requirements: Requirement[];
+  professor: Professor;
+}
 
 export interface StatusInformation {
-  id: number;
+  id: string;
   assistance_id: number;
   start_semester: string;
-  name: string;
+  title: string;
   professor: string;
   student: string;
   studentEmail: string;
   studentCv: string;
   lastStep: string;
 
-  // For all applied list
   inscription_date: Date;
   clasification: string;
 }
-
-
-

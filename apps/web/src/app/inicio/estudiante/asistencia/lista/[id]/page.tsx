@@ -11,28 +11,19 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getGraduatedAssistanceById } from "@/app/inicio/estudiante/asistencia/services/assistance.service";
-import { Assistance } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
+import {
+  Assistance,
+  Requirement,
+} from "@/app/inicio/estudiante/asistencia/types/assistance.type";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
-
-const assistance_state: Assistance = {
-  id: 0,
-  name: "",
-  clasification: "",
-  publication_date: new Date(),
-  end_date: new Date(),
-  start_semester: "",
-  description: "",
-  requisites: [""],
-  professor: "",
-  email: "",
-};
 
 interface AssistanceProps {
   assistance: Assistance;
@@ -63,34 +54,34 @@ interface InfoItemProps {
  *
  * @returns {JSX.Element} A div containing either assistance details or application form
  */
-export default function AssistanceDetails({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function AssistanceDetails() {
   const router = useRouter();
-  const { id } = use(params);
+  const { id } = useParams();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [assistance, setAssistance] = useState({
-    id: 0,
-    name: "",
+  const [assistance, setAssistance] = useState<Assistance>({
+    id: "",
+    title: "",
     clasification: "",
     publication_date: new Date(),
     end_date: new Date(),
     start_semester: "",
     description: "",
-    requisites: [""],
-    professor: "",
-    email: "",
+    requirements: [],
+    professor: {
+      name: "",
+      email: "",
+    },
   });
+
   const [isApplying, setIsApplying] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!id) return router.push("/404");
       try {
-        const data = await getGraduatedAssistanceById(id);
+        const data = await getGraduatedAssistanceById(id as string);
+        console.log(data);
         setAssistance(data);
       } catch {
         router.push("/404");
@@ -158,7 +149,7 @@ function AssistanceInscription({
       <CardContent className="pt-3 space-y-6">
         <div className="space-y-11">
           <MainInformation assistance={assistance} />
-          <Requisites requisites={assistance.requisites} />
+          <Requisites requisites={assistance.requirements} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ContactInfo assistance={assistance} />
           </div>
@@ -225,7 +216,7 @@ function MainInformation({ assistance }: { assistance: Assistance }) {
             <Briefcase className="w-10 h-10 text-core-highlight flex-shrink-0 mt-1" />
           }
           title="Nombre"
-          content={assistance.name}
+          content={assistance.title}
         />
         <InfoItem
           icon={
@@ -262,7 +253,11 @@ function MainInformation({ assistance }: { assistance: Assistance }) {
  * @param {Object} props Component props
  * @returns {JSX.Element} List of position requirements
  */
-function Requisites({ requisites }: { requisites: string[] }) {
+function Requisites({ requisites }: { requisites?: Requirement[] }) {
+  if (!requisites || requisites.length === 0) {
+    return <p className="text-gray-500">No hay requisitos disponibles.</p>;
+  }
+
   return (
     <div className="mb-4">
       <h3 className="font-semibold text-2xl text-core-highlight mb-3">
@@ -270,9 +265,9 @@ function Requisites({ requisites }: { requisites: string[] }) {
       </h3>
       <ul className="space-y-1">
         {requisites.map((requisite) => (
-          <li className="flex items-center gap-3" key={requisite}>
+          <li className="flex items-center gap-3" key={requisite.name}>
             <CheckCircle2 className="w-6 h-6 text-core-highlight flex-shrink-0" />
-            <span className="text-xl">{requisite}</span>
+            <span className="text-xl">{requisite.description}</span>
           </li>
         ))}
       </ul>
@@ -308,14 +303,14 @@ function ContactInfo({ assistance }: { assistance: Assistance }) {
             <User className="w-8 h-8 text-core-highlight flex-shrink-0 mt-1" />
           }
           title="Profesor"
-          content={assistance.professor}
+          content={assistance.professor.name}
         />
         <InfoItem
           icon={
             <Mail className="w-8 h-8 text-core-highlight flex-shrink-0 mt-1" />
           }
           title="Email"
-          content={assistance.email}
+          content={assistance.professor.email}
         />
       </div>
     </div>
@@ -360,7 +355,7 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
     <Card className="max-w-3xl  mx-auto shadow-lg">
       <CardHeader className=" flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <CardTitle className="text-2xl font-bold text-center text-core">
-          {assistance.name}
+          {assistance.title}
         </CardTitle>
         <ButtonBack setIsApplying={setIsApplying} />
       </CardHeader>

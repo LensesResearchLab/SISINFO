@@ -40,10 +40,10 @@ export default function AssistanceStatus({
   const { id } = use(params);
   const [statusInformation, setStatusInformation] = useState<StatusInformation>(
     {
-      id: 0,
+      id: "0",
       assistance_id: 0,
       start_semester: "",
-      name: "",
+      title: "",
       professor: "",
       student: "",
       studentEmail: "",
@@ -127,7 +127,7 @@ function getSections(statusInformation: StatusInformation) {
     },
     {
       title: "Nombre de la asistencia",
-      description: statusInformation.name,
+      description: statusInformation.title,
       icon: <FileText className="h-5 w-5 text-core mt-1" />,
     },
     {
