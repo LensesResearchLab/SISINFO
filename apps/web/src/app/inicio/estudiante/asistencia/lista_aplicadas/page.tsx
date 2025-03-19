@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -11,17 +11,23 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import {ChevronDown, Search } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
+} from "@tanstack/react-table";
+import { ChevronDown, Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -29,13 +35,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import { getAssistanceStatus } from "@/app/inicio/estudiante/asistencia/services/assistance.service";
 import { StatusInformation } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
-import Link from "next/link"
+import Link from "next/link";
 import { ROUTES } from "@/app/routes";
-
-
+import SpinnerPage from "@/components/shared/spinner-page";
 
 /**
  * Column definitions for the AssistanceAppliedList table
@@ -46,50 +51,47 @@ import { ROUTES } from "@/app/routes";
  * @type {ColumnDef<StatusInformation>[]}
  */
 export const columns: ColumnDef<StatusInformation>[] = [
-    {
-      accessorKey: "name",
-      header: "Nombre",
+  {
+    accessorKey: "name",
+    header: "Nombre",
+  },
+  {
+    accessorKey: "clasification",
+    header: "Clasificacion",
+  },
+  {
+    accessorKey: "professor",
+    header: "Oferente",
+  },
+  {
+    accessorKey: "inscription_date",
+    header: "Fecha de Inscripcion",
+    cell: ({ getValue }) => {
+      const date = getValue() as Date;
+      return date ? date.toLocaleDateString() : "-";
     },
-    {
-      accessorKey: "clasification",
-      header: "Clasificacion",
+  },
+  {
+    accessorKey: "lastStep",
+    header: "Estado",
+  },
+  {
+    id: "ver",
+    header: "Ver",
+    cell: ({ row }) => {
+      return (
+        <Link
+          href={`${ROUTES.HOME}/${ROUTES.ASSISTANCE_APPLIED_LIST}/${row.original.id}`}
+          className="inline-flex items-center justify-cente hover:underline"
+        >
+          <Search className="w-5 h-5 text-core" />
+        </Link>
+      );
     },
-    {
-      accessorKey: "professor",
-      header: "Oferente",
-    },
-    {
-      accessorKey: "inscription_date",
-      header: "Fecha de Inscripcion",
-      cell: ({ getValue }) => {
-        const date = getValue() as Date; 
-        return date ? date.toLocaleDateString() : "-"; 
-      }
-    },
-    {
-      accessorKey: "lastStep",
-      header: "Estado",
-    },
-    {
-      id: "ver",
-      header: "Ver",
-      cell: ({ row }) => {
-        return (
-          <Link
-            href={`${ROUTES.HOME}/${ROUTES.ASSISTANCE_APPLIED_LIST}/${row.original.id}`} 
-            className="inline-flex items-center justify-cente hover:underline">
-            <Search className="w-5 h-5 text-core" />
-          </Link>
-        );
-      },
-    }
-  ];
+  },
+];
 
-
-
-
-
-  /**
+/**
  * AssistanceAppliedList Component
  *
  * Displays a table of applied graduate assistances with filtering, sorting, and pagination capabilities.
@@ -104,17 +106,27 @@ export const columns: ColumnDef<StatusInformation>[] = [
  * @returns {JSX.Element} A div containing the assistance applied list table and its controls
  */
 export default function AssistanceAppliedList() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = React.useState<StatusInformation[]>([]);
-  const [selectedSemester, setSelectedSemester] = React.useState<string>("")
+  const [selectedSemester, setSelectedSemester] = React.useState<string>("");
 
   React.useEffect(() => {
     const fetchData = async () => {
-      const assistanceData = await getAssistanceStatus();
-      setData(assistanceData);
+      try {
+        const assistanceData = await getAssistanceStatus();
+        setData(assistanceData);
+      } catch (error) {
+        console.error("Error fetching assistance data:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchData();
   }, []);
@@ -124,12 +136,9 @@ export default function AssistanceAppliedList() {
       ? data.filter((item) => item.start_semester === selectedSemester)
       : data;
   }, [selectedSemester, data]);
-  
-  
-  
 
   const table = useReactTable({
-    data: filteredData,  
+    data: filteredData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -147,20 +156,23 @@ export default function AssistanceAppliedList() {
     },
   });
 
+  if (isLoading) {
+    return <SpinnerPage />;
+  }
+
   return (
     <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
       <div className="flex items-center justify-between py-4">
         <div className="flex items-center gap-4">
-        <Select value={selectedSemester} onValueChange={setSelectedSemester}>
-        <SelectTrigger className="w-[200px]">
-          <SelectValue placeholder="Elige un semestre" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="2025-01">2025-01</SelectItem>
-          <SelectItem value="2025-02">2025-02</SelectItem>
-        </SelectContent>
-      </Select>
-
+          <Select value={selectedSemester} onValueChange={setSelectedSemester}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Elige un semestre" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="2025-01">2025-01</SelectItem>
+              <SelectItem value="2025-02">2025-02</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex items-left gap-4">
           <div className="relative">
@@ -168,41 +180,45 @@ export default function AssistanceAppliedList() {
             <Input
               placeholder="Buscar una asistencia"
               className="pl-8 w-[300px]"
-              value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+              value={
+                (table.getColumn("name")?.getFilterValue() as string) ?? ""
+              }
+              onChange={(event) =>
+                table.getColumn("name")?.setFilterValue(event.target.value)
+              }
             />
           </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto bg-core text-white">
-              Columnas <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {typeof column.columnDef.header === "string" ? column.columnDef.header: "Unnamed Column"}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto bg-core text-white">
+                Columnas <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {typeof column.columnDef.header === "string"
+                        ? column.columnDef.header
+                        : "Unnamed Column"}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
-      </div>
-      
-        
       <div className="rounded-md border">
         <Table>
           <TableHeader className="bg-core">
@@ -218,7 +234,7 @@ export default function AssistanceAppliedList() {
                             header.getContext()
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -277,5 +293,5 @@ export default function AssistanceAppliedList() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,10 +1,10 @@
 /**
  * Application Routes
- * 
+ *
  * This constant defines all the routes used in the application, organized by user role.
  * The routes are stored as key-value pairs where the key is a descriptive name
  * and the value is the actual URL path.
- * 
+ *
  * Structure:
  * - Home route
  * - Student routes (thesis management, graduate assistance, support)
@@ -35,21 +35,28 @@ export const ROUTES: Record<string, string> = {
   PROFESSOR_UNDERGRADUATE_THESIS_DATES: "/profesor/pregrado/fechas",
 
   PROFESSOR_POSTGRADUATE_THESIS_LIST: "/profesor/maestria/lista",
+  PROFESSOR_POSTGRADUATE_THESIS_NEW: "/profesor/maestria/nuevo",
   PROFESSOR_POSTGRADUATE_THESIS_HISTORY: "/profesor/maestria/historico",
   PROFESSOR_POSTGRADUATE_THESIS_DATES: "/profesor/maestria/fechas",
-  PROFESSOR_POSTGRADUATE_THESIS_PUBLISH_CONSULT_STUDENT: "/profesor/maestria/publicar/estudiante",
 
-  PROFESSOR_ASSISTANCE_LIST: "/profesor/asistencia/lista",
-  PROFESSOR_NEW_ASSISTANCE: "/profesor/asistencia/crear",
+  PROFESSOR_ASSISTANCE_LIST: "/profesor/asistencias/lista",
+  PROFESSOR_ASSISTANCE_LIST_EDIT: "profesor/asistencias/lista/manejar",
+  PROFESSOR_ASSISTANCE_LIST_EDIT_ID:
+    "profesor/asistencias/lista/manejar/editar",
+  PROFESSOR_NEW_ASSISTANCE: "/profesor/asistencias/nueva",
 
   /*  Coordinators  */
 
   COURSE_PROGRAMS: "/coordinador/programas_clases",
   GRADE_LOAD: "/coordinador/carga_notas",
   BULLETIN_BOARD: "/coordinador/cartelera",
-  
+
   REPORTS: "/coordinador/reportes",
   DATE_ALERTS: "/coordinador/alertas_fechas",
 
   UPLOAD_TAS: "/coordinador/cargar_monitores",
+
+  /*  General  */
+
+  TASK_LIST: "/tareas",
 };
