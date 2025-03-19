@@ -4,21 +4,55 @@ import { UpdateGraduatedAssistanceDto } from './dto/update-graduated_assistance.
 import { GraduatedAssistance } from './entities/graduated_assistance.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PeriodService } from '../period/period.service';
+import { RequirementService } from '../requirement/requirement.service';
+import { Requirement } from '../requirement/entities/requirement.entity';
 
 @Injectable()
 export class GraduatedAssistanceService {
   constructor(
     @InjectRepository(GraduatedAssistance)
     private graduatedAssistanceRepository: Repository<GraduatedAssistance>,
-  ) {}
+    private periodService: PeriodService,
+    private requirementsService: RequirementService
+  ) { }
 
   async create(createGraduatedAssistanceDto: CreateGraduatedAssistanceDto) {
-    const graduatedAssistance = this.graduatedAssistanceRepository.create(
-      createGraduatedAssistanceDto,
-    );
-    await this.graduatedAssistanceRepository.save(graduatedAssistance);
-    return graduatedAssistance;
-  }
+    var requirements: Requirement[] = [];
+
+    // Buscar el periodo
+    const period = await this.periodService.findOne(createGraduatedAssistanceDto.periodId);
+    if (!period) {
+        throw new NotFoundException(
+            `Period with ID ${createGraduatedAssistanceDto.periodId} not found`
+        );
+    }
+
+    // Buscar los requisitos y validarlos
+    for (const reqId of createGraduatedAssistanceDto.requirementsId) {
+        const requirement = await this.requirementsService.findOne(reqId);
+        if (!requirement) {
+            throw new NotFoundException(`Requirement with ID ${reqId} not found`);
+        }
+        requirements.push(requirement);
+    }
+
+    // Crear la asistencia graduada
+    const graduatedAssistance = this.graduatedAssistanceRepository.create(createGraduatedAssistanceDto);
+    graduatedAssistance.period = period;
+
+    // Guardar la asistencia en la base de datos
+    const savedAssistance = await this.graduatedAssistanceRepository.save(graduatedAssistance);
+
+    // 🔄 Actualizar cada requirement con el ID de la asistencia creada
+    for (const requirement of requirements) {
+        requirement.assistance = savedAssistance;
+        await this.requirementsService.update(requirement.id, requirement);
+    }
+
+    return savedAssistance;
+}
+
 
   async findAll(): Promise<any[]> {
     const assistances = await this.graduatedAssistanceRepository.find({
@@ -28,27 +62,27 @@ export class GraduatedAssistanceService {
     return assistances.map((assist) => ({
       id: assist.id,
       name: assist.title,
-      clasification: assist.clasification,
+      category: assist.category,
       description: assist.description,
       assistant: assist.assistant
         ? {
-            name: assist.assistant.code,
-            semester: assist.assistant.semester,
-            isUndergraduate: assist.assistant.isUndergraduate,
-          }
+          name: assist.assistant.code,
+          semester: assist.assistant.semester,
+          isUndergraduate: assist.assistant.isUndergraduate,
+        }
         : null,
       professor: assist.professor
         ? {
-            name: assist.professor.name,
-            email: assist.professor.email,
-          }
+          name: assist.professor.name,
+          email: assist.professor.email,
+        }
         : null,
       period: assist.period
         ? {
-            start_semester: assist.period.semester,
-          }
+          start_semester: assist.period.semester,
+        }
         : null,
-      requirements: assist.requirements.map((req) => req.description),
+      requirements: assist.requirements.map((req) => req.name),
     }));
   }
 
