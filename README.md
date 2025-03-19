@@ -22,9 +22,8 @@ Sisinfo está construido con las siguientes tecnologías:
 - **TanStack Query**: Una librería para gestionar, almacenar en caché y sincronizar datos del servidor.
 - **Docker**: Usado para desplegar la base de datos en un contenedor.
 - **Nest.js**: Servidor REST.
-- **Turborepo**: Manejador de monorepositorios.
+- **Turborepo**: Manejador de monorepositorios. 
 - **npm/yarn**: Gestores de paquetes para manejar dependencias del proyecto.
-- **pgAdmin**: Herramienta de administración para PostgreSQL.
 
 ---
 
@@ -40,7 +39,6 @@ Asegúrate de tener instalado lo siguiente:
 - **npm** o **yarn** (Gestores de paquetes)
 - **Git** (Opcional, para clonar el repositorio)
 - **Docker** (Para desplegar la base de datos)
-- **pgAdmin** (Para administrar PostgreSQL)
 
 ### Pasos para la instalación
 
@@ -65,26 +63,21 @@ Asegúrate de tener instalado lo siguiente:
     ```
 5. Ingresa el archivo `.env` basado en el archivo `.env.template` y configura las variables de entorno necesarias.
 
-6. Crea una base de datos local en **pgAdmin**:
-    - Abre **pgAdmin** y conéctate al servidor PostgreSQL.
-    - Crea una nueva base de datos con el nombre especificado en el archivo `.env`.
-    - Asegúrate de que los parámetros de conexión coincidan con los valores definidos en el archivo `.env`.
-
-7. Despliega la base de datos en un contenedor de Docker:
+6. Despliega la base de datos en un contenedor de Docker:
     ```bash
     docker-compose up -d
     ```
-8. Navega a la carpeta principal:
+7. Navega a la carpeta principal:
     ```bash
     cd ..
     ```
 
-9. Inicia el servidor de desarrollo:
+
+8. Inicia el servidor de desarrollo:
     ```bash
     npm run dev
     ```
-10. Abre tu navegador y visita http://localhost:8000/api/SEED para cargar los datos de prueba (generados de forma aleatoria).
-11. Visita http://localhost:3000 para ver la aplicación en funcionamiento.
+9. Abre tu navegador y visita http://localhost:8000/api/SEED para cargar los datos de prueba (generados de forma aleatoria).
+10. Visita http://localhost:3000 para ver la aplicación en funcionamiento.
 
-> Si deseas liberar los puertos 3000 y 8000, puedes usar el comando `npm run kill`. 
-
+> Si deseas liberar los puertos 3000 y 8000, puedes usar el comando `npm run kill`.
