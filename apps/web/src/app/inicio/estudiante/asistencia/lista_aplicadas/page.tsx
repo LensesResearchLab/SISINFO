@@ -226,7 +226,7 @@ export default function AssistanceAppliedList() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead className="text-white font-bold" key={header.id}>
+                    <TableHead className="text-card font-bold" key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
