@@ -7,18 +7,9 @@ import { useEffect, useState } from "react";
 import TabApplicants from "@/components/shared/tab-applicants";
 import { ROUTES } from "@/app/routes";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
-
-interface AssistanceDetail {
-  id: number;
-  name: string;
-  classification: string;
-  description: string;
-  requirements: string[];
-  professor: string;
-  start_semester: string;
-  publication_date: Date;
-  end_date: Date;
-}
+import React from "react";
+import { getGraduatedAssistanceById } from "@/app/inicio/estudiante/asistencia/services/assistance.service";
+import { Assistance } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
 
 export default function AssistanceManagePage() {
   const params = useParams();
@@ -26,22 +17,9 @@ export default function AssistanceManagePage() {
   const id = params.id as string;
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [assistanceDetail, setAssistanceDetail] = useState<AssistanceDetail>({
-    id: 0,
-    name: "Asistente graduado ISIS2203",
-    classification: "Docencia",
-    description:
-      "Se requiere un estudiante de maestría para que dicté la clase de los laboratorios del curso ISIS2203",
-    requirements: [
-      "Informar el promedio de pregrado",
-      "Informar el promedio de la materia (debe ser mayor a 4.5)",
-      "Adjuntar hoja de vida",
-    ],
-    professor: "Camilo Andrés Escobar",
-    start_semester: "2025-01",
-    publication_date: new Date("2025-12-12"),
-    end_date: new Date("2025-12-12"),
-  });
+  const [assistance, setAssistanceDetail] = React.useState<Assistance | null>(
+    null
+  );
 
   // Datos temporales TODO
   const mockApplicants = [
@@ -59,9 +37,19 @@ export default function AssistanceManagePage() {
     },
   ];
 
-  useEffect(() => {
-    setIsLoading(false);
-  });
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const assistanceData = await getGraduatedAssistanceById(id);
+        setAssistanceDetail(assistanceData);
+      } catch (error) {
+        console.error("Error fetching assistance data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST}`;
   const dialogTextAccepted = {
@@ -77,17 +65,17 @@ export default function AssistanceManagePage() {
   const sections = [
     {
       title: "Nombre",
-      description: assistanceDetail.name,
+      description: assistance?.title || "No title available",
       icon: <FileText className="h-8 w-8 text-core-highlight" />,
     },
     {
       title: "Clasificación",
-      description: assistanceDetail.classification,
+      description: assistance?.clasification || "No title available",
       icon: <User2 className="h-8 w-8 text-core-highlight" />,
     },
     {
       title: "Descripción",
-      description: assistanceDetail.description,
+      description: assistance?.description || "No title available",
       icon: <ClipboardList className="h-8 w-8 text-core-highlight" />,
     },
   ];
@@ -102,7 +90,7 @@ export default function AssistanceManagePage() {
     applicants: mockApplicants,
   };
 
-  const handleEditClick = (id: number) => {
+  const handleEditClick = (id: string) => {
     const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT_ID}/${id}`;
     router.push(path);
   };
@@ -128,11 +116,11 @@ export default function AssistanceManagePage() {
                 Requisitos
               </h3>
               <ul className="space-y-3 p-4">
-                {assistanceDetail.requirements.map((req, index) => (
+                {assistance?.requirements?.map((req, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <CircleCheck className="w-10 h-7 mb-0.1 text-core-highlight" />
                     <div>
-                      <p className="text-primary">{req}</p>
+                      <p className="text-primary">{req.description}</p>
                       <hr className="h-[1px] w-[750px] my-2 border-0 bg-ring" />
                     </div>
                   </li>
@@ -142,7 +130,11 @@ export default function AssistanceManagePage() {
               <div className="flex gap-4 mt-8 justify-center justify-items-center">
                 <Button
                   className="px-8 w-32"
-                  onClick={() => handleEditClick(assistanceDetail.id)}
+                  onClick={() => {
+                    if (assistance) {
+                      handleEditClick(assistance.id);
+                    }
+                  }}
                 >
                   Editar
                 </Button>

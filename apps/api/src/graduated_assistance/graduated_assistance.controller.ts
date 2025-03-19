@@ -38,7 +38,7 @@ export class GraduatedAssistanceController {
     @Body() updateGraduatedAssistanceDto: UpdateGraduatedAssistanceDto,
   ) {
     return this.graduatedAssistanceService.update(
-      +id,
+      id,
       updateGraduatedAssistanceDto,
     );
   }

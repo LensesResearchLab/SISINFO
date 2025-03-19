@@ -4,6 +4,7 @@ export interface Professor {
 }
 
 export interface Requirement {
+  id: string;
   name: string;
   description: string;
 }

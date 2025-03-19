@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RequirementService } from './requirement.service';
 import { CreateRequirementDto } from './dto/create-requirement.dto';
 import { UpdateRequirementDto } from './dto/update-requirement.dto';
@@ -23,8 +31,11 @@ export class RequirementController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRequirementDto: UpdateRequirementDto) {
-    return this.requirementService.update(+id, updateRequirementDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateRequirementDto: UpdateRequirementDto,
+  ) {
+    return this.requirementService.update(id, updateRequirementDto);
   }
 
   @Delete(':id')

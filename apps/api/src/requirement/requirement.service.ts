@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRequirementDto } from './dto/create-requirement.dto';
 import { UpdateRequirementDto } from './dto/update-requirement.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -25,9 +25,17 @@ export class RequirementService {
   findOne(id: number) {
     return `This action returns a #${id} requirement`;
   }
+  async update(id: string, updateRequirementDto: UpdateRequirementDto) {
+    const req = await this.requirementRepository.findOneBy({
+      id,
+    });
 
-  update(id: number, updateRequirementDto: UpdateRequirementDto) {
-    return `This action updates a #${id} requirement`;
+    if (!req) {
+      throw new Error(`Requirement with ID ${id} not found`);
+    }
+
+    Object.assign(req, updateRequirementDto);
+    return this.requirementRepository.save(req);
   }
 
   remove(id: number) {

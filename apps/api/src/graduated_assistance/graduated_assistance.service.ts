@@ -67,11 +67,22 @@ export class GraduatedAssistanceService {
     return assistance;
   }
 
-  update(
-    id: number,
+  async update(
+    id: string,
     updateGraduatedAssistanceDto: UpdateGraduatedAssistanceDto,
   ) {
-    return `This action updates a #${id} graduatedAssistance`;
+    const assistance = await this.graduatedAssistanceRepository.findOneBy({
+      id,
+    });
+
+    if (!assistance) {
+      throw new NotFoundException(
+        `Graduated assistance with ID ${id} not found`,
+      );
+    }
+
+    Object.assign(assistance, updateGraduatedAssistanceDto);
+    return this.graduatedAssistanceRepository.save(assistance);
   }
 
   remove(id: number) {
