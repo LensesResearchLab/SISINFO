@@ -1,12 +1,12 @@
 "use client";
 
-import { getCourses, getStudent } from "@/app/inicio/profesor/maestria/publicar/services/student-profile.service";
+import { getCourses, getStudent } from "@/app/inicio/profesor/maestria/estudiante/services/student-profile.service";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, CircleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { Course, Student } from "../types/student-profile.type";
+import type { Course, Student } from "../estudiante/types/student-profile.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 
 /**
