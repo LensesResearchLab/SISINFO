@@ -118,7 +118,7 @@ export default function GraduateAssistanceForm() {
                                     <FormItem>
                                         <FormLabel>Descripción</FormLabel>
                                         <FormControl>
-                                            <Textarea className="h-32 resize-none" placeholder="Describe el problema..." {...field} />
+                                            <Textarea className="h-32 resize-none" placeholder="Describe la asistencia" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
