@@ -10,7 +10,6 @@ export class Requirement extends Base {
   @Column('text')
   description: string;
 
-  // 🔗 Relation with Graduated Assistance (Many requirements belong to one assistance)
   @ManyToOne(() => GraduatedAssistance, (assistance) => assistance.requirements)
   @JoinColumn({ name: 'assistance_id' })
   assistance: GraduatedAssistance;

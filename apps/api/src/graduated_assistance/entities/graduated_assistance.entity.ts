@@ -16,21 +16,17 @@ export class GraduatedAssistance extends Base {
   @Column('text')
   description: string;
 
-  // 🔗 Relation with Requirements (1 assistance -> many requirements)
   @OneToMany(() => Requirement, (requirement) => requirement.assistance)
   requirements: Requirement[];
 
-  // 🔗 Relation with Student (One student can be an assistant)
   @ManyToOne(() => Student, (student) => student.assistances)
   @JoinColumn({ name: 'assistant_id' })
   assistant: Student;
 
-  // Relación muchos a uno con Professor
   @ManyToOne(() => Professor, (professor) => professor.assistances)
-  @JoinColumn({ name: 'professor_id' }) // Nombre de la columna en la base de datos
+  @JoinColumn({ name: 'professor_id' })
   professor: Professor;
 
-  // 🔗 Relation with Period (Each assistance belongs to a period)
   @ManyToOne(() => Period, (period) => period.assistances)
   @JoinColumn({ name: 'period_id' })
   period: Period;

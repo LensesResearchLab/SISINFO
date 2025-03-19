@@ -13,7 +13,6 @@ export class Period extends Base {
   @Column('numeric')
   semester: number;
 
-  // 🔗 Relation with Graduated Assistance (One period -> Many assistances)
   @OneToMany(() => GraduatedAssistance, (assistance) => assistance.period)
   assistances: GraduatedAssistance[];
 }

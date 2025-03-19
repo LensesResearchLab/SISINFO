@@ -17,7 +17,6 @@ export class Student extends User {
   @Column('text')
   code: string;
 
-  // 🔗 Relation with Graduated Assistance (One student can assist multiple)
   @OneToMany(() => GraduatedAssistance, (assistance) => assistance.assistant)
   assistances: GraduatedAssistance[];
 }
