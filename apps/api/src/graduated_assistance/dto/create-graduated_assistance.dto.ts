@@ -1,7 +1,14 @@
 export class CreateGraduatedAssistanceDto {
   title: string;
 
-  clasification: string;
+  category: string;
 
   description: string;
+
+  requirementsId: string[];
+
+  periodId: string;
+
+  //professorId: string; 
+
 }

@@ -27,7 +27,7 @@ export class RequirementController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.requirementService.findOne(+id);
+    return this.requirementService.findOne(id);
   }
 
   @Patch(':id')

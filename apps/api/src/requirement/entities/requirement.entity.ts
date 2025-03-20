@@ -7,9 +7,6 @@ export class Requirement extends Base {
   @Column('text')
   name: string;
 
-  @Column('text')
-  description: string;
-
   @ManyToOne(() => GraduatedAssistance, (assistance) => assistance.requirements)
   @JoinColumn({ name: 'assistance_id' })
   assistance: GraduatedAssistance;

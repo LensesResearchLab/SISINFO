@@ -20,8 +20,12 @@ export class PeriodService {
     return this.periodRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} period`;
+  findOne(id: string) {
+    return this.periodRepository.findOne({where: {id}});
+  }
+
+  findOneByPeriodAndYear(period: string, year: number) {
+    return this.periodRepository.findOne({ where: { period, year } });
   }
 
   update(id: number, updatePeriodDto: UpdatePeriodDto) {

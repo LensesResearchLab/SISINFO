@@ -92,10 +92,11 @@ export class SeedService {
 
   async seedPeriod() {
     const periods: CreatePeriodDto[] = Array.from({ length: 10 }).map(() => ({
-      period: faker.lorem.word(),
-      year: faker.number.int({ min: 2000, max: 2022 }),
-      semester: faker.number.int({ min: 1, max: 8 }),
+      period: faker.number.int({ min: 10, max: 20 }).toString(),
+      year: faker.number.int({ min: 2022, max: 2026 }),
+      semester: faker.number.int({ min: 1, max: 2 }),
     }));
+    periods.push({ period: '10', year: 2025, semester: 1 });
     const insertPromises: Promise<Period>[] = [];
     periods.forEach((period) => {
       insertPromises.push(this.periodService.create(period));
@@ -166,7 +167,7 @@ export class SeedService {
       code: faker.lorem.word(),
       credits: faker.number.int({ min: 1, max: 10 }),
       hours: faker.number.int({ min: 1, max: 10 }),
-      semester: faker.number.int({ min: 1, max: 8 }),
+      semester: faker.number.int({ min: 1, max: 2 }),
       departament: faker.lorem.word(),
     }));
     const insertPromises: Promise<Course>[] = [];
@@ -248,35 +249,38 @@ export class SeedService {
     const professors = await this.professorService.findAll();
     const students = await this.studentService.findAll();
     const periods = await this.periodService.findAll();
+    const requirements = await this.requirementService.findAll(); // Obtener todos los requirements
 
-    const graduatedAssistances: Partial<GraduatedAssistance>[] = Array.from({
-      length: 10,
-    }).map(() => {
-      const professor =
-        professors[Math.floor(Math.random() * professors.length)];
+    const graduatedAssistances: Partial<CreateGraduatedAssistanceDto>[] = Array.from({ length: 10 }).map(() => {
+      const professor = professors[Math.floor(Math.random() * professors.length)];
       const student = students[Math.floor(Math.random() * students.length)];
       const period = periods[Math.floor(Math.random() * periods.length)];
+
+      // Obtener IDs aleatorios de requirements
+      const selectedRequirements = requirements
+        .sort(() => 0.5 - Math.random()) // Mezclar aleatoriamente
+        .slice(0, Math.floor(Math.random() * 3) + 1) // Tomar entre 1 y 3 elementos
+        .map((req) => req.id); // Extraer solo los IDs
+
       return {
         title: faker.lorem.word(),
-        clasification: faker.lorem.word(),
+        category: faker.lorem.word(),
         description: faker.lorem.sentence(),
-        assistant: student,
-        professor: professor,
-        period: period,
+        assistantId: student.document, // Pasar ID en lugar del objeto
+        professorId: professor.document, // Pasar ID en lugar del objeto
+        periodId: period.id, // Pasar ID en lugar del objeto
+        requirementsId: selectedRequirements, // Pasar IDs de requirements
       };
     });
 
-    const insertPromises: Promise<GraduatedAssistance>[] = [];
-    graduatedAssistances.forEach((graduatedAssistance) => {
-      insertPromises.push(
-        this.graduatedAssistanceService.create(
-          graduatedAssistance as CreateGraduatedAssistanceDto,
-        ),
-      );
-    });
+    const insertPromises = graduatedAssistances.map((graduatedAssistance) =>
+      this.graduatedAssistanceService.create(graduatedAssistance as CreateGraduatedAssistanceDto)
+    );
+
     await Promise.all(insertPromises);
     return true;
-  }
+}
+
 
   async seedCoordinator() {
     const coordinators: CreateCoordinatorDto[] = Array.from({ length: 10 }).map(
@@ -352,7 +356,7 @@ export class SeedService {
       code: faker.string.uuid(),
       password: faker.internet.password(),
       document: faker.string.uuid(),
-      semester: faker.number.int({ min: 1, max: 8 }),
+      semester: faker.number.int({ min: 1, max: 2 }),
       isUndergraduate: faker.datatype.boolean(),
       isTeachingAssistant: faker.datatype.boolean(),
     }));

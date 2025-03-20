@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
-import { useForm } from "react-hook-form"
+import { set, useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -18,8 +18,11 @@ import { Badge } from "@/components/ui/badge"
 import { X } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { ConfirmationModal } from "@/components/shared/confirmation-modal"
 import { ROUTES } from "@/app/routes"
+import { createGraduatedAssistance } from "../services/assistance.service"
+import { createRequirement } from "../services/assistance.service" // Nueva función para crear requisitos
 
 // Esquema de validación con Zod
 const thesisSchema = z.object({
@@ -27,7 +30,7 @@ const thesisSchema = z.object({
     description: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
     category: z.string().min(1, "Debe seleccionar una categoría"),
     period: z.string().min(1, "Debe seleccionar un período"),
-    requirements: z.array(z.string()).min(1, "Debe agregar al menos un requisito"),
+    requirements: z.array(z.object({ id: z.string(), name: z.string() })).min(1, "Debe agregar al menos un requisito"),
 })
 
 export default function GraduateAssistanceForm() {
@@ -41,6 +44,7 @@ export default function GraduateAssistanceForm() {
             requirements: [],
         },
     })
+
     const dialogText = {
         title: "Publicar Proyecto",
         description: "¿Estás seguro de que deseas publicar este proyecto?",
@@ -49,10 +53,37 @@ export default function GraduateAssistanceForm() {
         successText: "Tu proyecto ha sido publicado exitosamente",
         url: `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST}`
     }
+
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [newRequirement, setNewRequirement] = useState("")
+
+    // Función para agregar un nuevo requisito
+    const handleAddRequirement = async () => {
+        if (!newRequirement.trim()) return
+
+        try {
+            const createdRequirement = await createRequirement(newRequirement)
+            if (createdRequirement) {
+                form.setValue("requirements", [...form.getValues("requirements"), createdRequirement])
+            }
+            setNewRequirement("")
+        } catch (error) {
+            console.error("Error al crear el requisito:", error)
+        }
+    }
+
     // Manejo de envío del formulario
-    const onSubmit = (data: z.infer<typeof thesisSchema>) => {
-        console.log("Formulario enviado con datos:", data)
+    const onSubmit = async (data: z.infer<typeof thesisSchema>) => {
+        const year = Number(data.period.split("-")[0])
+        const period = data.period.split("-")[1]
+        const requirementsIds = data.requirements.map(req => req.id) // Solo enviar los IDs
+        createGraduatedAssistance({ ...data, requirementsId: requirementsIds }, period, year).then(() => {
+            setIsModalOpen(false)
+            console.log("Assistance created")
+        }).catch((error) => {
+            setIsModalOpen(false)
+            console.log(error)
+        })
     }
 
     return (
@@ -87,7 +118,7 @@ export default function GraduateAssistanceForm() {
                                     <FormItem>
                                         <FormLabel>Descripción</FormLabel>
                                         <FormControl>
-                                            <Textarea className="h-32 resize-none" placeholder="Describe el problema..." {...field} />
+                                            <Textarea className="h-32 resize-none" placeholder="Describe la asistencia" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -148,71 +179,47 @@ export default function GraduateAssistanceForm() {
                                 control={form.control}
                                 name="requirements"
                                 render={({ field }) => (
-                                    <FormItem className="text-primary">
+                                    <FormItem>
                                         <FormLabel>Requisitos</FormLabel>
-                                        <FormControl>
-                                            <div className="space-y-2">
-                                                <Select
-                                                    value=""
-                                                    onValueChange={(value) => {
-                                                        if (value && !field.value.includes(value)) {
-                                                            field.onChange([...field.value, value])
-                                                        }
-                                                    }}
-                                                >
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Agregar requisito..." />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="Experiencia en Python">Experiencia en Python</SelectItem>
-                                                        <SelectItem value="Conocimientos en IA">Conocimientos en IA</SelectItem>
-                                                        <SelectItem value="Desarrollo Frontend">Desarrollo Frontend</SelectItem>
-                                                        <SelectItem value="Bases de Datos Avanzadas">Bases de Datos Avanzadas</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                value={newRequirement}
+                                                onChange={(e) => setNewRequirement(e.target.value)}
+                                                placeholder="Escribe un requisito..."
+                                            />
+                                            <Button type="button" onClick={handleAddRequirement}>
+                                                Agregar
+                                            </Button>
+                                        </div>
 
-                                                {/* Mostrar requisitos seleccionados */}
-                                                <div className="flex flex-wrap gap-2 mt-3">
-                                                    {field.value.map((tag) => (
-                                                        <Badge
-                                                            key={tag}
-                                                            variant="secondary"
-                                                            className="bg-core-soft text-core hover:text-white hover:bg-core px-3 py-1 rounded-full transition-colors"
-                                                        >
-                                                            {tag}
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => field.onChange(field.value.filter((t) => t !== tag))}
-                                                                className="ml-1 hover:text-core-highlight"
-                                                            >
-                                                                <X size={14} className="inline-block" />
-                                                            </button>
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </FormControl>
+                                        {/* Mostrar requisitos seleccionados */}
+                                        <div className="flex flex-wrap gap-2 mt-3">
+                                            {field.value.map((tag, index) => (
+                                                <Badge
+                                                    key={`${tag}-${index}`}
+                                                    variant="secondary"
+                                                    className="bg-blue-200 text-blue-800 hover:bg-blue-300 px-3 py-1 rounded-full transition-colors"
+                                                >
+                                                    {tag.name}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => field.onChange(field.value.filter((t) => t !== tag))}
+                                                        className="ml-1 hover:text-blue-600"
+                                                    >
+                                                        <X size={14} className="inline-block" />
+                                                    </button>
+                                                </Badge>
+                                            ))}
+                                        </div>
+
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
 
                             {/* Botón de envío */}
-                            <div className="flex justify-center mt-5">
-                                <Button
-                                    type="button"
-                                    onClick={async () => {
-                                        const isValid = await form.trigger()
-                                        if (isValid) {
-                                            setIsModalOpen(true)
-                                        }
-                                    }}
-                                    className="bg-core text-white hover:bg-core-dark"
-                                >
-                                    Publicar asistencia
-                                </Button>
-                                <ConfirmationModal dialogText={dialogText} onConfirm={form.handleSubmit(onSubmit)} open={isModalOpen} setIsOpen={setIsModalOpen} />
-                            </div>
+                            <Button type="button" onClick={() => setIsModalOpen(true)}>Publicar asistencia</Button>
+                            <ConfirmationModal dialogText={dialogText} onConfirm={form.handleSubmit(onSubmit)} open={isModalOpen} setIsOpen={setIsModalOpen} />
                         </form>
                     </Form>
                 </CardContent>

@@ -3,7 +3,7 @@ import { Period } from 'src/period/entities/period.entity';
 import { Professor } from 'src/professor/entities/professor.entity';
 import { Requirement } from 'src/requirement/entities/requirement.entity';
 import { Student } from 'src/student/entities/student.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany} from 'typeorm';
 
 @Entity()
 export class GraduatedAssistance extends Base {
@@ -11,7 +11,7 @@ export class GraduatedAssistance extends Base {
   title: string;
 
   @Column('text')
-  clasification: string;
+  category: string;
 
   @Column('text')
   description: string;

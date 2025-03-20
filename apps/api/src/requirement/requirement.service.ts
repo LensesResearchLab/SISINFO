@@ -22,8 +22,9 @@ export class RequirementService {
     return this.requirementRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} requirement`;
+  findOne(id: string) {
+    return this.requirementRepository.findOneBy({
+      id})
   }
   async update(id: string, updateRequirementDto: UpdateRequirementDto) {
     const req = await this.requirementRepository.findOneBy({

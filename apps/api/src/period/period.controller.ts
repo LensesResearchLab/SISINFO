@@ -19,7 +19,11 @@ export class PeriodController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.periodService.findOne(+id);
+    return this.periodService.findOne(id);
+  }
+  @Get(':period/:year')
+  findOneByPeriodAndYear(@Param('period') period: string, @Param('year') year: number) {
+    return this.periodService.findOneByPeriodAndYear(period, year);
   }
 
   @Patch(':id')
