@@ -7,12 +7,7 @@ import { AreasOfInterest } from './entities/areas_of_interest.entity';
 @Module({
   controllers: [AreasOfInterestController],
   providers: [AreasOfInterestService],
-  imports: [
-    TypeOrmModule.forFeature([AreasOfInterest]),
-  ],
-  exports: [
-    TypeOrmModule,
-    AreasOfInterestService
-  ]
+  imports: [TypeOrmModule.forFeature([AreasOfInterest])],
+  exports: [TypeOrmModule, AreasOfInterestService],
 })
 export class AreasOfInterestModule {}

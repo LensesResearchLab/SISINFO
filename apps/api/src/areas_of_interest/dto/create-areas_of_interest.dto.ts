@@ -1,4 +1,4 @@
 export class CreateAreasOfInterestDto {
-    name: string;
-    description: string;
+  name: string;
+  description: string;
 }

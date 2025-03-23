@@ -1,21 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AlertProfessorModule } from '../alert-professor/alert-professor.module';
-import { AlertProjectModule } from '../alert-project/alert-project.module';
+import { AlertsProfessorModule } from '../alerts-professor/alerts-professor.module';
+import { AlertsProjectModule } from '../alerts-project/alerts-project.module';
 import { AreasOfInterestModule } from '../areas_of_interest/areas_of_interest.module';
-import { BillboardModule } from '../billboard/billboard.module';
-import { CoordinatorModule } from '../coordinator/coordinator.module';
-import { CourseModule } from '../course/course.module';
-import { GraduatedAssistanceModule } from '../graduated_assistance/graduated_assistance.module';
-import { PeriodModule } from '../period/period.module';
-import { ProfessorModule } from '../professor/professor.module';
-import { ProjectModule } from '../project/project.module';
-import { RequirementModule } from '../requirement/requirement.module';
-import { SectionModule } from '../section/section.module';
-import { StudentModule } from '../student/student.module';
-import { TagModule } from '../tag/tag.module';
-import { TaskModule } from '../task/task.module';
-import { TeachingAssistanceModule } from '../teaching_assistance/teaching_assistance.module';
-import { ThesisModule } from '../thesis/thesis.module';
+import { BillboardsModule } from '../billboards/billboards.module';
+import { CoordinatorsModule } from '../coordinators/coordinators.module';
+import { CoursesModule } from '../courses/courses.module';
+import { GraduatedAssistancesModule } from '../graduated_assistances/graduated_assistances.module';
+import { PeriodsModule } from '../periods/periods.module';
+import { ProfessorsModule } from '../professors/professors.module';
+import { ProjectsModule } from '../projects/projects.module';
+import { RequirementsModule } from '../requirements/requirements.module';
+import { SectionsModule } from '../sections/sections.module';
+import { TagsModule } from '../tags/tags.module';
+import { TasksModule } from '../tasks/tasks.module';
+import { TeachingAssistancesModule } from '../teaching_assistances/teaching_assistances.module';
+import { ThesesModule } from '../theses/theses.module';
+import { StudentsModule } from '../students/students.module';
 import { SeedController } from './seed.controller';
 import { SeedService } from './seed.service';
 
@@ -23,23 +23,23 @@ import { SeedService } from './seed.service';
   controllers: [SeedController],
   providers: [SeedService],
   imports: [
-    AlertProfessorModule,
-    AlertProjectModule,
+    AlertsProfessorModule,
+    AlertsProjectModule,
     AreasOfInterestModule,
-    BillboardModule,
-    CoordinatorModule,
-    CourseModule,
-    GraduatedAssistanceModule,
-    PeriodModule,
-    ProfessorModule,
-    ProjectModule,
-    RequirementModule,
-    SectionModule,
-    StudentModule,
-    TagModule,
-    TaskModule,
-    TeachingAssistanceModule,
-    ThesisModule,
+    BillboardsModule,
+    CoordinatorsModule,
+    CoursesModule,
+    GraduatedAssistancesModule,
+    PeriodsModule,
+    ProfessorsModule,
+    ProjectsModule,
+    RequirementsModule,
+    SectionsModule,
+    TagsModule,
+    TasksModule,
+    TeachingAssistancesModule,
+    ThesesModule,
+    StudentsModule,
   ],
 })
 export class SeedModule {}

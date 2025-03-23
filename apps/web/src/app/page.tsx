@@ -7,7 +7,7 @@ import { FileText, Calendar, User, GraduationCap } from "lucide-react"
 import Footer from "@/components/shared/footer"
 import CoreFeatures from "@/components/shared/core-features"
 
-export default function Home() {
+export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header/>
@@ -30,8 +30,7 @@ function HeroSection(){
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">SISINFO</h1>
               <p className="max-w-[600px] text-white/90 md:text-xl">
-                Sistema de Información para la gestión de tesis y asistencias graduadas del Departamento de
-                Ingeniería de Sistemas y Computación
+                Sistema de Información para la gestión de tesis y asistencias graduadas del Departamento de Ingeniería de Sistemas y Computación
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">

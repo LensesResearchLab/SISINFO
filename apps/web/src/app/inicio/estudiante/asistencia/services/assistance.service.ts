@@ -1,5 +1,5 @@
-const API_URL = "http://localhost:8000/api/graduated-assistance";
-const API_URL_REQUIREMENT = "http://localhost:8000/api/requirement";
+const API_URL = "http://localhost:8000/api/graduated-assistances";
+const API_URL_REQUIREMENT = "http://localhost:8000/api/requirements";
 
 export async function getGraduatedAssistance() {
   const response = await fetch(`${API_URL}`);

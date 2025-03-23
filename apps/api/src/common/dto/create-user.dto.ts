@@ -1,10 +1,7 @@
 export abstract class CreateUserDto {
+  document: string;
 
+  name: string;
 
-    document: string
-
-
-    name: string
-
-    email: string
+  email: string;
 }

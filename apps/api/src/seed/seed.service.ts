@@ -1,79 +1,61 @@
 import { Injectable } from '@nestjs/common';
-
-import { AlertProfessorService } from 'src/alert-professor/alert-professor.service';
-import { AlertProjectService } from 'src/alert-project/alert-project.service';
-import { AreasOfInterestService } from 'src/areas_of_interest/areas_of_interest.service';
-import { BillboardService } from 'src/billboard/billboard.service';
-import { CoordinatorService } from 'src/coordinator/coordinator.service';
-import { CourseService } from 'src/course/course.service';
-import { GraduatedAssistanceService } from 'src/graduated_assistance/graduated_assistance.service';
-import { PeriodService } from 'src/period/period.service';
-import { ProfessorService } from 'src/professor/professor.service';
-import { ProjectService } from 'src/project/project.service';
-import { RequirementService } from 'src/requirement/requirement.service';
-import { SectionService } from 'src/section/section.service';
-import { TagService } from 'src/tag/tag.service';
-import { TaskService } from 'src/task/task.service';
-import { TeachingAssistanceService } from 'src/teaching_assistance/teaching_assistance.service';
-import { ThesisService } from 'src/thesis/thesis.service';
-import { StudentService } from 'src/student/student.service';
 import { faker } from '@faker-js/faker';
 
-import { CreateStudentDto } from 'src/student/dto/create-student.dto';
-import { Student } from 'src/student/entities/student.entity';
-import { AreasOfInterest } from 'src/areas_of_interest/entities/areas_of_interest.entity';
+import { BillboardsService } from 'src/billboards/billboards.service';
+import { CreateBillboardDto } from 'src/billboards/dto/create-billboard.dto';
+import { PeriodsService } from 'src/periods/periods.service';
+import { CreatePeriodDto } from 'src/periods/dto/create-period.dto';
+import { TeachingAssistancesService } from 'src/teaching_assistances/teaching_assistances.service';
+import { CreateTeachingAssistanceDto } from 'src/teaching_assistances/dto/create-teaching_assistance.dto';
+import { SectionsService } from 'src/sections/sections.service';
+import { CreateSectionDto } from 'src/sections/dto/create-section.dto';
+import { ProfessorsService } from 'src/professors/professors.service';
+import { CreateProfessorDto } from 'src/professors/dto/create-professor.dto';
+import { CoursesService } from 'src/courses/courses.service';
+import { CreateCourseDto } from 'src/courses/dto/create-course.dto';
+import { TagsService } from 'src/tags/tags.service';
+import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
+import { ThesesService } from 'src/theses/theses.service';
+import { CreateThesisDto } from 'src/theses/dto/create-thesis.dto';
+import { ProjectsService } from 'src/projects/projects.service';
+import { CreateProjectDto } from 'src/projects/dto/create-project.dto';
+import { RequirementsService } from 'src/requirements/requirements.service';
+import { CreateRequirementDto } from 'src/requirements/dto/create-requirement.dto';
+import { GraduatedAssistancesService } from 'src/graduated_assistances/graduated_assistances.service';
+import { CreateGraduatedAssistanceDto } from 'src/graduated_assistances/dto/create-graduated_assistance.dto';
+import { CoordinatorsService } from 'src/coordinators/coordinators.service';
+import { CreateCoordinatorDto } from 'src/coordinators/dto/create-coordinator.dto';
+import { TasksService } from 'src/tasks/tasks.service';
+import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
+import { AlertsProjectService } from 'src/alerts-project/alerts-project.service';
+import { CreateAlertProjectDto } from 'src/alerts-project/dto/create-alert-project.dto';
+import { AlertsProfessorService } from 'src/alerts-professor/alerts-professor.service';
+import { CreateAlertProfessorDto } from 'src/alerts-professor/dto/create-alert-professor.dto';
+import { AreasOfInterestService } from 'src/areas_of_interest/areas_of_interest.service';
 import { CreateAreasOfInterestDto } from 'src/areas_of_interest/dto/create-areas_of_interest.dto';
-import { CreateAlertProfessorDto } from 'src/alert-professor/dto/create-alert-professor.dto';
-import { AlertProfessor } from 'src/alert-professor/entities/alert-professor.entity';
-import { CreateAlertProjectDto } from 'src/alert-project/dto/create-alert-project.dto';
-import { AlertProject } from 'src/alert-project/entities/alert-project.entity';
-import { Task } from 'src/task/entities/task.entity';
-import { CreateTaskDto } from 'src/task/dto/create-task.dto';
-import { Coordinator } from 'src/coordinator/entities/coordinator.entity';
-import { CreateCoordinatorDto } from 'src/coordinator/dto/create-coordinator.dto';
-import { CreateGraduatedAssistanceDto } from 'src/graduated_assistance/dto/create-graduated_assistance.dto';
-import { GraduatedAssistance } from 'src/graduated_assistance/entities/graduated_assistance.entity';
-import { CreateRequirementDto } from 'src/requirement/dto/create-requirement.dto';
-import { Requirement } from 'src/requirement/entities/requirement.entity';
-import { CreateProjectDto } from 'src/project/dto/create-project.dto';
-import { Project } from 'src/project/entities/project.entity';
-import { Thesis } from 'src/thesis/entities/thesis.entity';
-import { CreateThesisDto } from 'src/thesis/dto/create-thesis.dto';
-import { CreateTagDto } from 'src/tag/dto/create-tag.dto';
-import { Tag } from 'src/tag/entities/tag.entity';
-import { CreateCourseDto } from 'src/course/dto/create-course.dto';
-import { Course } from 'src/course/entities/course.entity';
-import { CreateProfessorDto } from 'src/professor/dto/create-professor.dto';
-import { Professor } from 'src/professor/entities/professor.entity';
-import { Section } from 'src/section/entities/section.entity';
-import { CreateSectionDto } from 'src/section/dto/create-section.dto';
-import { CreateTeachingAssistanceDto } from 'src/teaching_assistance/dto/create-teaching_assistance.dto';
-import { TeachingAssistance } from 'src/teaching_assistance/entities/teaching_assistance.entity';
-import { CreatePeriodDto } from 'src/period/dto/create-period.dto';
-import { Period } from 'src/period/entities/period.entity';
-import { Billboard } from 'src/billboard/entities/billboard.entity';
-import { CreateBillboardDto } from 'src/billboard/dto/create-billboard.dto';
+import { StudentsService } from 'src/students/students.service';
+import { CreateStudentDto } from 'src/students/dto/create-student.dto';
 
 @Injectable()
 export class SeedService {
   constructor(
-    private readonly billboardService: BillboardService,
-    private readonly periodService: PeriodService,
-    private readonly teachingAssistanceService: TeachingAssistanceService,
-    private readonly sectionService: SectionService,
-    private readonly professorService: ProfessorService,
-    private readonly courseService: CourseService,
-    private readonly tagService: TagService,
-    private readonly thesisService: ThesisService,
-    private readonly projectService: ProjectService,
-    private readonly requirementService: RequirementService,
-    private readonly graduatedAssistanceService: GraduatedAssistanceService,
-    private readonly coordinatorService: CoordinatorService,
-    private readonly taskService: TaskService,
-    private readonly alertProjectService: AlertProjectService,
-    private readonly alertProfessorService: AlertProfessorService,
+    private readonly billboardService: BillboardsService,
+    private readonly periodService: PeriodsService,
+    private readonly teachingAssistanceService: TeachingAssistancesService,
+    private readonly sectionService: SectionsService,
+    private readonly professorService: ProfessorsService,
+    private readonly courseService: CoursesService,
+    private readonly tagService: TagsService,
+    private readonly thesisService: ThesesService,
+    private readonly projectService: ProjectsService,
+    private readonly requirementService: RequirementsService,
+    private readonly graduatedAssistanceService: GraduatedAssistancesService,
+    private readonly coordinatorService: CoordinatorsService,
+    private readonly taskService: TasksService,
+    private readonly alertProjectService: AlertsProjectService,
+    private readonly alertProfessorService: AlertsProfessorService,
     private readonly areasOfInterestService: AreasOfInterestService,
-    private readonly studentService: StudentService,
+    private readonly studentService: StudentsService,
   ) {}
 
   async seedBillboard() {
@@ -82,7 +64,7 @@ export class SeedService {
         publicated: faker.datatype.boolean(),
       }),
     );
-    const insertPromises: Promise<Billboard>[] = [];
+    const insertPromises: Promise<CreateBillboardDto>[] = [];
     billboards.forEach((billboard) => {
       insertPromises.push(this.billboardService.create(billboard));
     });
@@ -97,7 +79,7 @@ export class SeedService {
       semester: faker.number.int({ min: 1, max: 2 }),
     }));
     periods.push({ period: '10', year: 2025, semester: 1 });
-    const insertPromises: Promise<Period>[] = [];
+    const insertPromises: Promise<CreatePeriodDto>[] = [];
     periods.forEach((period) => {
       insertPromises.push(this.periodService.create(period));
     });
@@ -121,7 +103,7 @@ export class SeedService {
       final_date: faker.date.recent(),
       weekly_hours: faker.number.int({ min: 1, max: 12 }),
     }));
-    const insertPromises: Promise<TeachingAssistance>[] = [];
+    const insertPromises: Promise<CreateTeachingAssistanceDto>[] = [];
     teachingAssistances.forEach((teachingAssistance) => {
       insertPromises.push(
         this.teachingAssistanceService.create(teachingAssistance),
@@ -136,7 +118,7 @@ export class SeedService {
       NRC: faker.number.int({ min: 10000, max: 99999 }),
       section: faker.number.int({ min: 1, max: 100 }),
     }));
-    const insertPromises: Promise<Section>[] = [];
+    const insertPromises: Promise<CreateSectionDto>[] = [];
     sections.forEach((section) => {
       insertPromises.push(this.sectionService.create(section));
     });
@@ -152,7 +134,7 @@ export class SeedService {
         email: faker.internet.email(),
       }),
     );
-    const insertPromises: Promise<Professor>[] = [];
+    const insertPromises: Promise<CreateProfessorDto>[] = [];
     professors.forEach((professor) => {
       insertPromises.push(this.professorService.create(professor));
     });
@@ -170,7 +152,7 @@ export class SeedService {
       semester: faker.number.int({ min: 1, max: 2 }),
       departament: faker.lorem.word(),
     }));
-    const insertPromises: Promise<Course>[] = [];
+    const insertPromises: Promise<CreateCourseDto>[] = [];
     courses.forEach((course) => {
       insertPromises.push(this.courseService.create(course));
     });
@@ -183,7 +165,7 @@ export class SeedService {
       name: faker.lorem.word(),
       description: faker.lorem.sentence(),
     }));
-    const insertPromises: Promise<Tag>[] = [];
+    const insertPromises: Promise<CreateTagDto>[] = [];
     tags.forEach((tag) => {
       insertPromises.push(this.tagService.create(tag));
     });
@@ -199,7 +181,7 @@ export class SeedService {
       category: faker.lorem.word(),
       investigation_subarea: faker.lorem.word(),
     }));
-    const insertPromises: Promise<Thesis>[] = [];
+    const insertPromises: Promise<CreateThesisDto>[] = [];
     theses.forEach((thesis) => {
       insertPromises.push(this.thesisService.create(thesis));
     });
@@ -215,7 +197,7 @@ export class SeedService {
       category: faker.lorem.word(),
       max_students: faker.number.int({ min: 1, max: 10 }),
     }));
-    const insertPromises: Promise<Project>[] = [];
+    const insertPromises: Promise<CreateProjectDto>[] = [];
     projects.forEach((project) => {
       insertPromises.push(this.projectService.create(project));
     });
@@ -237,7 +219,7 @@ export class SeedService {
         assistance: grad_assistance,
       }),
     );
-    const insertPromises: Promise<Requirement>[] = [];
+    const insertPromises: Promise<CreateRequirementDto>[] = [];
     requirements.forEach((requirement) => {
       insertPromises.push(this.requirementService.create(requirement));
     });
@@ -248,39 +230,41 @@ export class SeedService {
   async seedGraduatedAssistance() {
     const professors = await this.professorService.findAll();
     const students = await this.studentService.findAll();
-    const periods = await this.periodService.findAll();
-    const requirements = await this.requirementService.findAll(); // Obtener todos los requirements
 
-    const graduatedAssistances: Partial<CreateGraduatedAssistanceDto>[] = Array.from({ length: 10 }).map(() => {
-      const professor = professors[Math.floor(Math.random() * professors.length)];
+    const periods = await this.periodService.findAll();
+    const requirements = await this.requirementService.findAll();
+
+    const graduatedAssistances: CreateGraduatedAssistanceDto[] = Array.from({
+      length: 10,
+    }).map(() => {
+      const professor =
+        professors[Math.floor(Math.random() * professors.length)];
       const student = students[Math.floor(Math.random() * students.length)];
       const period = periods[Math.floor(Math.random() * periods.length)];
 
-      // Obtener IDs aleatorios de requirements
       const selectedRequirements = requirements
-        .sort(() => 0.5 - Math.random()) // Mezclar aleatoriamente
-        .slice(0, Math.floor(Math.random() * 3) + 1) // Tomar entre 1 y 3 elementos
-        .map((req) => req.id); // Extraer solo los IDs
+        .sort(() => 0.5 - Math.random())
+        .slice(0, Math.floor(Math.random() * 3) + 1)
+        .map((req) => req.id);
 
       return {
         title: faker.lorem.word(),
         category: faker.lorem.word(),
         description: faker.lorem.sentence(),
-        assistantId: student.document, // Pasar ID en lugar del objeto
-        professorId: professor.document, // Pasar ID en lugar del objeto
-        periodId: period.id, // Pasar ID en lugar del objeto
-        requirementsId: selectedRequirements, // Pasar IDs de requirements
+        assistantId: student.document,
+        professorId: professor.document,
+        periodId: period.id,
+        requirementsId: selectedRequirements,
       };
     });
 
     const insertPromises = graduatedAssistances.map((graduatedAssistance) =>
-      this.graduatedAssistanceService.create(graduatedAssistance as CreateGraduatedAssistanceDto)
+      this.graduatedAssistanceService.create(graduatedAssistance),
     );
 
     await Promise.all(insertPromises);
     return true;
-}
-
+  }
 
   async seedCoordinator() {
     const coordinators: CreateCoordinatorDto[] = Array.from({ length: 10 }).map(
@@ -290,7 +274,7 @@ export class SeedService {
         document: faker.string.uuid(),
       }),
     );
-    const insertPromises: Promise<Coordinator>[] = [];
+    const insertPromises: Promise<CreateCoordinatorDto>[] = [];
     coordinators.forEach((coordinator) => {
       insertPromises.push(this.coordinatorService.create(coordinator));
     });
@@ -302,7 +286,7 @@ export class SeedService {
     const taskList: CreateTaskDto[] = Array.from({ length: 10 }).map(
       () => ({}),
     );
-    const insertPromises: Promise<Task>[] = [];
+    const insertPromises: Promise<CreateTaskDto>[] = [];
     taskList.forEach((task) => {
       insertPromises.push(this.taskService.create(task));
     });
@@ -314,7 +298,7 @@ export class SeedService {
     const projectAlerts: CreateAlertProjectDto[] = Array.from({
       length: 10,
     }).map(() => ({}));
-    const insertPromises: Promise<AlertProject>[] = [];
+    const insertPromises: Promise<CreateAlertProjectDto>[] = [];
     projectAlerts.forEach((alert) => {
       insertPromises.push(this.alertProjectService.create(alert));
     });
@@ -326,7 +310,7 @@ export class SeedService {
     const professorAlerts: CreateAlertProfessorDto[] = Array.from({
       length: 10,
     }).map(() => ({}));
-    const insertPromises: Promise<AlertProfessor>[] = [];
+    const insertPromises: Promise<CreateAlertProfessorDto>[] = [];
     professorAlerts.forEach((alert) => {
       insertPromises.push(this.alertProfessorService.create(alert));
     });
@@ -341,7 +325,7 @@ export class SeedService {
       name: faker.lorem.word(),
       description: faker.lorem.sentence(),
     }));
-    const insertPromises: Promise<AreasOfInterest>[] = [];
+    const insertPromises: Promise<CreateAreasOfInterestDto>[] = [];
     areasOfInterest.forEach((areasOfInterest) => {
       insertPromises.push(this.areasOfInterestService.create(areasOfInterest));
     });
@@ -360,7 +344,7 @@ export class SeedService {
       isUndergraduate: faker.datatype.boolean(),
       isTeachingAssistant: faker.datatype.boolean(),
     }));
-    const insertPromises: Promise<Student>[] = [];
+    const insertPromises: Promise<CreateStudentDto>[] = [];
     students.forEach((student) => {
       insertPromises.push(this.studentService.create(student));
     });
@@ -369,6 +353,7 @@ export class SeedService {
   }
 
   async executeSeed() {
+    await this.seedStudent();
     await this.seedBillboard();
     await this.seedPeriod();
     await this.seedTeachingAssistance();
@@ -378,14 +363,13 @@ export class SeedService {
     await this.seedTag();
     await this.seedThesis();
     await this.seedProject();
-    await this.seedGraduatedAssistance();
     await this.seedRequirement();
     await this.seedCoordinator();
     await this.seedTask();
     await this.seedAlertProject();
     await this.seedAlertProfessor();
     await this.seedAreasOfInterest();
-    await this.seedStudent();
+    await this.seedGraduatedAssistance();
     return 'SEED_EXECUTED';
   }
 }

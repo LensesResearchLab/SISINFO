@@ -11,7 +11,9 @@ describe('AreasOfInterestController', () => {
       providers: [AreasOfInterestService],
     }).compile();
 
-    controller = module.get<AreasOfInterestController>(AreasOfInterestController);
+    controller = module.get<AreasOfInterestController>(
+      AreasOfInterestController,
+    );
   });
 
   it('should be defined', () => {

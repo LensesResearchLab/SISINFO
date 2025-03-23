@@ -32,6 +32,7 @@ import { Assistance } from "@/app/inicio/estudiante/asistencia/types/assistance.
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const semesters = [
   { value: "all", label: "Todos los semestres" },
@@ -191,11 +192,12 @@ export default function AssistanceList({
     [role]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const assistanceData = await getGraduatedAssistance();
         setData(assistanceData);
+        console.log(assistanceData);
       } catch (error) {
         console.error("Error fetching assistance data:", error);
       } finally {

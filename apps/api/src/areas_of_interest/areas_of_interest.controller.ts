@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { AreasOfInterestService } from './areas_of_interest.service';
 import { CreateAreasOfInterestDto } from './dto/create-areas_of_interest.dto';
 import { UpdateAreasOfInterestDto } from './dto/update-areas_of_interest.dto';
 
 @Controller('areas-of-interest')
 export class AreasOfInterestController {
-  constructor(private readonly areasOfInterestService: AreasOfInterestService) {}
+  constructor(
+    private readonly areasOfInterestService: AreasOfInterestService,
+  ) {}
 
   @Post()
   create(@Body() createAreasOfInterestDto: CreateAreasOfInterestDto) {
@@ -23,7 +33,10 @@ export class AreasOfInterestController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAreasOfInterestDto: UpdateAreasOfInterestDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateAreasOfInterestDto: UpdateAreasOfInterestDto,
+  ) {
     return this.areasOfInterestService.update(+id, updateAreasOfInterestDto);
   }
 

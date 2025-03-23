@@ -8,14 +8,16 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class AreasOfInterestService {
   constructor(
-    @InjectRepository(AreasOfInterest) private areasOfInterestRepository: Repository<AreasOfInterest>
-  ){}
-
+    @InjectRepository(AreasOfInterest)
+    private areasOfInterestRepository: Repository<AreasOfInterest>,
+  ) {}
 
   async create(createAreasOfInterestDto: CreateAreasOfInterestDto) {
-    const area = this.areasOfInterestRepository.create(createAreasOfInterestDto);
+    const area = this.areasOfInterestRepository.create(
+      createAreasOfInterestDto,
+    );
     await this.areasOfInterestRepository.save(area);
-    return area
+    return area;
   }
 
   findAll() {
