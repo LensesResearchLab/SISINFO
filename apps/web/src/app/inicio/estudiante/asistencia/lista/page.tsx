@@ -208,10 +208,7 @@ export default function AssistanceList({
 
   const filteredData = React.useMemo(() => {
     return data.filter((item) => {
-      if (
-        selectedSemester !== "all" &&
-        item.start_semester !== selectedSemester
-      ) {
+      if (selectedSemester !== "all" && item.start_date !== selectedSemester) {
         return false;
       }
       if (

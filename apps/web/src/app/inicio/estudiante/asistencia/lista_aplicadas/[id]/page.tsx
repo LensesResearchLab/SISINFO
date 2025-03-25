@@ -42,7 +42,7 @@ export default function AssistanceStatus({
     {
       id: "0",
       assistance_id: 0,
-      start_semester: "",
+      start_date: "",
       title: "",
       professor: "",
       student: "",
@@ -122,7 +122,7 @@ function getSections(statusInformation: StatusInformation) {
   return [
     {
       title: "Semestre de inicio",
-      description: statusInformation.start_semester,
+      description: statusInformation.start_date,
       icon: <Calendar className="h-5 w-5 text-core mt-1" />,
     },
     {

@@ -6,26 +6,25 @@ export interface Professor {
 export interface Requirement {
   id: string;
   name: string;
-  description: string;
 }
 
 export interface Assistance {
   id: string;
   title: string;
-  clasification: string;
-  publication_date: Date;
-  end_date: Date;
-  start_semester: string;
-
   description: string;
+  category: string;
+  start_date: String; //TODO: check this from backend
+  end_date: String;
+
   requirements: Requirement[];
   professor: Professor;
 }
 
+// TODO: Where this comes from?
 export interface StatusInformation {
   id: string;
   assistance_id: number;
-  start_semester: string;
+  start_date: string;
   title: string;
   professor: string;
   student: string;
