@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsDate,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -19,6 +20,12 @@ export class CreateGraduatedAssistanceDto {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @IsDate()
+  startDate: string;
+
+  @IsDate()
+  endDate: string;
 
   @IsString()
   @IsNotEmpty()

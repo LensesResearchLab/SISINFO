@@ -245,6 +245,8 @@ export class SeedService {
         title: faker.lorem.word(),
         category: faker.lorem.word(),
         description: faker.lorem.sentence(),
+        startDate: faker.date.recent().toISOString(),
+        endDate: faker.date.recent().toISOString(),
         assistantId: student.document,
         professorId: professor.document,
         periodId: period.id,

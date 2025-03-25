@@ -1,7 +1,7 @@
+import { ThesisApplication } from '../../thesis-applications/entities/thesis-application.entity';
 import { Base } from '../../common/entities/base.entity';
 import { Period } from '../../periods/entities/period.entity';
 import { Professor } from '../../professors/entities/professor.entity';
-import { Student } from '../../students/entities/student.entity';
 import { Tag } from '../../tags/entities/tag.entity';
 import {
   Column,
@@ -10,8 +10,10 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
+import { Student } from '../../students/entities/student.entity';
 
 @Entity()
 export class Thesis extends Base {
@@ -29,9 +31,19 @@ export class Thesis extends Base {
 
   @OneToOne(() => Student, (student) => student.thesis, {
     nullable: true,
-    eager: true,
   })
+  @JoinColumn()
   student: Student;
+
+  @OneToMany(
+    () => ThesisApplication,
+    (thesisApplication) => thesisApplication.thesis,
+    {
+      nullable: true,
+      eager: true,
+    },
+  )
+  thesisApplications: ThesisApplication[];
 
   @ManyToOne(() => Period, (period) => period.theses, {
     eager: true,

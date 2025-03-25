@@ -22,27 +22,35 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ImportantDatesModule } from './important_dates/important_dates.module';
 import { ProgramsModule } from './programs/programs.module';
 import { DocumentsModule } from './documents/documents.module';
+import { IncidencesModule } from './incidences/incidences.module';
+import { AssistanceApplicationsModule } from './assistance-applications/assistance-applications.module';
+import { ThesisApplicationsModule } from './thesis-applications/thesis-applications.module';
+import { ProjectApplicationsModule } from './project-applications/project-applications.module';
 
 @Module({
   imports: [
     SeedModule,
     AreasOfInterestModule,
+    AssistanceApplicationsModule,
     BillboardsModule,
     CoordinatorsModule,
     CoursesModule,
     DocumentsModule,
     GraduatedAssistancesModule,
     ImportantDatesModule,
+    IncidencesModule,
     PeriodsModule,
     ProfessorsModule,
     ProgramsModule,
     ProjectsModule,
+    ProjectApplicationsModule,
     RequirementsModule,
     SectionsModule,
     TagsModule,
     TasksModule,
     TeachingAssistancesModule,
     ThesesModule,
+    ThesisApplicationsModule,
     StudentsModule,
     ConfigModule.forRoot({
       envFilePath: path.resolve(__dirname, '../../../config/.env'),
@@ -60,6 +68,10 @@ import { DocumentsModule } from './documents/documents.module';
     ImportantDatesModule,
     ProgramsModule,
     DocumentsModule,
+    IncidencesModule,
+    AssistanceApplicationsModule,
+    ThesisApplicationsModule,
+    ProjectApplicationsModule,
   ],
   controllers: [],
   providers: [],

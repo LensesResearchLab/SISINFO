@@ -1,3 +1,4 @@
+import { AssistanceApplication } from '../../assistance-applications/entities/assistance-application.entity';
 import { Base } from '../../common/entities/base.entity';
 import { Period } from '../../periods/entities/period.entity';
 import { Professor } from '../../professors/entities/professor.entity';
@@ -11,6 +12,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
 
@@ -24,6 +26,12 @@ export class GraduatedAssistance extends Base {
 
   @Column('text')
   description: string;
+
+  @Column({ type: 'date', nullable: true })
+  startDate: string;
+
+  @Column({ type: 'date', nullable: true })
+  endDate: string;
 
   @ManyToMany(() => Requirement, (requirement) => requirement.assistances, {
     eager: true,
@@ -44,4 +52,10 @@ export class GraduatedAssistance extends Base {
   @ManyToOne(() => Period, (period) => period.assistances)
   @JoinColumn()
   period: Period;
+
+  @OneToMany(
+    () => AssistanceApplication,
+    (assistanceApplication) => assistanceApplication.graduatedAssistance,
+  )
+  assistanceApplications: AssistanceApplication[];
 }

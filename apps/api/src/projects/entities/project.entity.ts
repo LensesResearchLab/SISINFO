@@ -1,3 +1,4 @@
+import { ProjectApplication } from '../../project-applications/entities/project-application.entity';
 import { AreasOfInterest } from '../../areas_of_interest/entities/areas_of_interest.entity';
 import { Base } from '../../common/entities/base.entity';
 import { Period } from '../../periods/entities/period.entity';
@@ -28,6 +29,12 @@ export class Project extends Base {
 
   @Column('boolean', { default: false })
   isEnded: boolean;
+
+  @OneToMany(
+    () => ProjectApplication,
+    (projectApplication) => projectApplication.project,
+  )
+  projectApplications: ProjectApplication[];
 
   @ManyToMany(
     () => AreasOfInterest,
