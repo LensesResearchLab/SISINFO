@@ -8,8 +8,8 @@ import TabApplicants from "@/components/shared/tab-applicants";
 import { ROUTES } from "@/app/routes";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import React from "react";
-import { getGraduatedAssistanceById } from "@/app/inicio/estudiante/asistencia/services/assistance.service";
-import { Assistance } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
+import { Assistance } from "@/app/types/assistance.type";
+import { getGraduatedAssistanceById } from "@/app/services/assistance.service";
 
 export default function AssistanceManagePage() {
   const params = useParams();

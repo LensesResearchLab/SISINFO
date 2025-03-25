@@ -1,11 +1,11 @@
 "use client";
 import { Calendar, FileText, Mail, User } from "lucide-react";
 import { use, useEffect, useState } from "react";
-import { getAssistanceStatusById } from "@/app/inicio/estudiante/asistencia/services/assistance.service";
-import { StatusInformation } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
+import { StatusInformation } from "@/app/types/assistance.type";
 import TabStatus from "@/components/shared/tab-status";
 import { useRouter } from "next/navigation";
 import SpinnerPage from "@/components/shared/spinner-page";
+import { getAssistanceStatusById } from "@/app/services/assistance.service";
 
 /**
  * AssistanceStatus Component

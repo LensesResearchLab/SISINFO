@@ -1,45 +1,62 @@
-"use client"
+"use client";
 
-import { TriangleAlert , Search, ChevronDown, ChevronUp, ArrowUpDown, Upload, Download, Calendar, Circle, Eye } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useQuery } from "@tanstack/react-query"
-import { getThesisByProfessorId } from "@/services/thesis.service"
-import { useProfessorThesisListStore } from "./store"
-import { Thesis } from "@/types/thesis.type"
-import SpinnerPage from "@/components/shared/spinner-page"
-import { useEffect } from "react"
-import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button"
-import { useRouter } from 'next/navigation';
-import { ROUTES } from "@/app/routes"
-
+import {
+  TriangleAlert,
+  Search,
+  ChevronDown,
+  ChevronUp,
+  ArrowUpDown,
+  Upload,
+  Download,
+  Calendar,
+  Circle,
+  Eye,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useQuery } from "@tanstack/react-query";
+import { getThesisByProfessorId } from "@/app/services/thesis.service";
+import { useProfessorThesisListStore } from "./store";
+import { Thesis } from "@/app/types/thesis.type";
+import SpinnerPage from "@/components/shared/spinner-page";
+import { useEffect } from "react";
+import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/app/routes";
 
 export default function ThesisProjects() {
   const reset = useProfessorThesisListStore((state) => state.reset);
-  const sortDirection = useProfessorThesisListStore((state) => state.sortDirection);
+  const sortDirection = useProfessorThesisListStore(
+    (state) => state.sortDirection
+  );
   useEffect(() => {
-    return reset
-  }, [])
-  const searchQuery = useProfessorThesisListStore((state) => state.searchQuery)
+    return reset;
+  }, []);
+  const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
 
-
-  const { data: thesisList, isFetching, error } = useQuery({
-    queryKey: ['professor-thesis-projects'],
+  const {
+    data: thesisList,
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: ["professor-thesis-projects"],
     queryFn: () => getThesisByProfessorId(1),
     staleTime: 1000 * 60 * 5,
   });
 
-    
-  
   if (isFetching) return <SpinnerPage />;
   if (error || !thesisList) return <ThesisListNotFound />;
 
-  const sortedThesisList = thesisList.sort((a, b) => a.title.localeCompare(b.title) * sortDirection)
+  const sortedThesisList = thesisList.sort(
+    (a, b) => a.title.localeCompare(b.title) * sortDirection
+  );
 
-  const filteredProjects = (searchQuery
-    ? sortedThesisList.filter((thesis) => thesis.title.toLowerCase().includes(searchQuery.toLowerCase()))
-    : sortedThesisList)
+  const filteredProjects = searchQuery
+    ? sortedThesisList.filter((thesis) =>
+        thesis.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : sortedThesisList;
 
   return (
     <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[1100px]">
@@ -48,21 +65,33 @@ export default function ThesisProjects() {
         <ThesisTable filteredProjects={filteredProjects} />
       </div>
     </div>
-
-  )
+  );
 }
 
 function ProfessorActionButtons() {
-  const searchQuery = useProfessorThesisListStore((state) => state.searchQuery) 
-  const setSearchQuery = useProfessorThesisListStore((state) => state.setSearchQuery)
-  const sortDirection = useProfessorThesisListStore((state) => state.sortDirection)
-  const toggleSortDirection = useProfessorThesisListStore((state) => state.toggleSortDirection)
-  const router = useRouter()
+  const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
+  const setSearchQuery = useProfessorThesisListStore(
+    (state) => state.setSearchQuery
+  );
+  const sortDirection = useProfessorThesisListStore(
+    (state) => state.sortDirection
+  );
+  const toggleSortDirection = useProfessorThesisListStore(
+    (state) => state.toggleSortDirection
+  );
+  const router = useRouter();
   return (
     <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
-      <Button className="bg-core hover:bg-core-highlight text-white"
-        onClick={() => router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_NEW}`)}
-      >Crear tema</Button>
+      <Button
+        className="bg-core hover:bg-core-highlight text-white"
+        onClick={() =>
+          router.push(
+            `${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_NEW}`
+          )
+        }
+      >
+        Crear tema
+      </Button>
 
       <div className="relative w-full md:w-64">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -73,12 +102,15 @@ function ProfessorActionButtons() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
-      <AlphabeticSortButton onclick={toggleSortDirection} sortDirection={sortDirection} />
+      <AlphabeticSortButton
+        onclick={toggleSortDirection}
+        sortDirection={sortDirection}
+      />
     </div>
-  )
+  );
 }
 
-function ThesisTable({filteredProjects} : {filteredProjects: Thesis[]}) {
+function ThesisTable({ filteredProjects }: { filteredProjects: Thesis[] }) {
   return (
     <div className="border rounded-md overflow-hidden">
       <TableHeaders />
@@ -86,7 +118,7 @@ function ThesisTable({filteredProjects} : {filteredProjects: Thesis[]}) {
         <TableRow key={thesis.id} thesis={thesis} />
       ))}
     </div>
-  )
+  );
 }
 
 function TableHeaders() {
@@ -101,27 +133,35 @@ function TableHeaders() {
       <div className="col-span-2 font-medium">Periodo</div>
       <div className="col-span-1 font-medium">Ver estudiantes</div>
     </div>
-  )
+  );
 }
 
-function TableRow({thesis} : {thesis: Thesis}) {
-  const expandedProject = useProfessorThesisListStore((state) => state.expandedProject)
-  const toggleExpandedProject = useProfessorThesisListStore((state) => state.toggleExpandedProject)
+function TableRow({ thesis }: { thesis: Thesis }) {
+  const expandedProject = useProfessorThesisListStore(
+    (state) => state.expandedProject
+  );
+  const toggleExpandedProject = useProfessorThesisListStore(
+    (state) => state.toggleExpandedProject
+  );
   return (
     <div key={thesis.id}>
       <div className="grid grid-cols-12 p-3 items-center text-primary border-b ">
         <div className="col-span-1">
-            <Checkbox />
+          <Checkbox />
         </div>
         <div className="col-span-3">{thesis.title}</div>
         <div className="col-span-3">{thesis.category}</div>
         <div className="col-span-2">{thesis.professor}</div>
-        <div className="col-span-2">{2025-10}</div>
+        <div className="col-span-2">{2025 - 10}</div>
         <div className="col-span-1 flex justify-center">
-          <Button variant="ghost" size="icon" onClick={() => toggleExpandedProject(thesis.id)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => toggleExpandedProject(thesis.id)}
+          >
             {expandedProject === thesis.id ? (
               <ChevronUp className="h-5 w-5" />
-              ) : (
+            ) : (
               <ChevronDown className="h-5 w-5" />
             )}
           </Button>
@@ -129,15 +169,16 @@ function TableRow({thesis} : {thesis: Thesis}) {
       </div>
       {expandedProject === thesis.id && <TableRowDetail thesis={thesis} />}
     </div>
-  )
+  );
 }
 
-function TableRowDetail({thesis} : {thesis: Thesis}) {
+function TableRowDetail({ thesis }: { thesis: Thesis }) {
   const router = useRouter();
   const handleClickEye = () => {
-    router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_STUDENT}`)
-    
-  }
+    router.push(
+      `${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_STUDENT}`
+    );
+  };
   return (
     <div>
       <div className="grid grid-cols-12 border-b py-2 px-3 text-primary">
@@ -152,23 +193,28 @@ function TableRowDetail({thesis} : {thesis: Thesis}) {
             <div className="col-span-3">{student.name}</div>
             <div className="col-span-3">{student.status}</div>
             <div className="col-span-3">{student.date}</div>
-            <Eye className="col-span-3 cursor-pointer" onClick={handleClickEye}></Eye>
-            
+            <Eye
+              className="col-span-3 cursor-pointer"
+              onClick={handleClickEye}
+            ></Eye>
           </div>
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 function ThesisListNotFound() {
   return (
     <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[900px]">
       <div className="w-full bg-white shadow-lg rounded-xl p-5 h-full space-y-4">
-        <h2 className="text-xl font-bold text-gray-800">No se encontraron proyectos de tesis</h2>
-        <p className="text-gray-600">No se pudieron encontrar proyectos de tesis para el profesor</p>
+        <h2 className="text-xl font-bold text-gray-800">
+          No se encontraron proyectos de tesis
+        </h2>
+        <p className="text-gray-600">
+          No se pudieron encontrar proyectos de tesis para el profesor
+        </p>
       </div>
     </div>
-  )
+  );
 }
-

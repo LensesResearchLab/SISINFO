@@ -16,12 +16,13 @@ import {
 } from "@/components/ui/select";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { ROUTES } from "@/app/routes";
+
+import { Assistance } from "@/app/types/assistance.type";
 import {
   getGraduatedAssistanceById,
   updateGraduatedAssistance,
   updateRequirement,
-} from "@/app/inicio/estudiante/asistencia/services/assistance.service";
-import { Assistance } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
+} from "@/app/services/assistance.service";
 
 export default function EditAssistancePage() {
   const params = useParams();
