@@ -1,28 +1,47 @@
+import { Type } from 'class-transformer';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
+
 export class CreateTeachingAssistanceDto {
+  @IsString()
+  @IsNotEmpty()
+  task: string;
 
-    name: string;
+  @IsString()
+  @IsNotEmpty()
+  status: string;
 
+  @IsString()
+  @IsNotEmpty()
+  period_type_description: string;
 
-    task: string;
+  @IsDate()
+  @Type(() => Date)
+  final_date: Date;
 
+  @IsDate()
+  @Type(() => Date)
+  initial_date: Date;
 
-    status: string;
+  @IsNumber()
+  @Type(() => Number)
+  @Min(0)
+  @Max(12)
+  weekly_hours: number;
 
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 
-    period_type_description: string;
-
-
-    final_date: Date;
-
-
-    initial_date: Date;
-
-
-    weekly_hours: number;
-
-
-    description: string;
-
-
-    grade: number;
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Type(() => Number)
+  @Min(0)
+  @Max(5)
+  grade: number;
 }

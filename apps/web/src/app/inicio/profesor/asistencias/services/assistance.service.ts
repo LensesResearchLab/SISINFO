@@ -16,7 +16,6 @@ export async function createGraduatedAssistance(
 
     const idPeriod = await consultPeriod.json();
     data = {...data, periodId: idPeriod.id};
-    console.log(data);
 
     const response = await fetch(`${API_URL}`, {
         method: "POST",

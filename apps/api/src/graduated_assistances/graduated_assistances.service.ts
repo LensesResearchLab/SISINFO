@@ -31,10 +31,10 @@ export class GraduatedAssistancesService {
     }
 
     // Find and validate the requirements
-    for (const reqId of createGraduatedAssistanceDto.requirementsId) {
-      const requirement = await this.requirementsService.findOne(reqId);
+    for (const req_id of createGraduatedAssistanceDto.requirementsId ?? []) {
+      const requirement = await this.requirementsService.findOne(req_id);
       if (!requirement) {
-        throw new NotFoundException(`Requirement with ID ${reqId} not found`);
+        throw new NotFoundException(`Requirement with ID ${req_id} not found`);
       }
       requirements.push(requirement);
     }
@@ -51,7 +51,8 @@ export class GraduatedAssistancesService {
 
     // Update each requirement with the ID of the created assistance
     for (const requirement of requirements) {
-      requirement.assistance = savedAssistance;
+      requirement.assistances = requirement.assistances ?? [];
+      requirement.assistances.push(savedAssistance);
       await this.requirementsService.update(requirement.id, requirement);
     }
 

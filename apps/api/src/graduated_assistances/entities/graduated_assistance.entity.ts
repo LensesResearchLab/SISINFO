@@ -8,8 +8,9 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
-  OneToMany,
   OneToOne,
 } from 'typeorm';
 
@@ -24,20 +25,23 @@ export class GraduatedAssistance extends Base {
   @Column('text')
   description: string;
 
-  @OneToMany(() => Requirement, (requirement) => requirement.assistance)
+  @ManyToMany(() => Requirement, (requirement) => requirement.assistances, {
+    eager: true,
+  })
+  @JoinTable({ name: 'graduated_assistance_requirements' })
   requirements: Requirement[];
 
   @OneToOne(() => Student, (student) => student.assistance, {
     nullable: true,
   })
-  @JoinColumn({ name: 'student_id' })
+  @JoinColumn()
   assistant: Student;
 
   @ManyToOne(() => Professor, (professor) => professor.assistances)
-  @JoinColumn({ name: 'professor_id' })
+  @JoinColumn()
   professor: Professor;
 
   @ManyToOne(() => Period, (period) => period.assistances)
-  @JoinColumn({ name: 'period_id' })
+  @JoinColumn()
   period: Period;
 }

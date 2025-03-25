@@ -1,12 +1,19 @@
-import { CreateUserDto } from "src/common/dto/create-user.dto";
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsString,
+  Length,
+  Matches,
+} from 'class-validator';
+import { CreateUserDto } from 'src/common/dto/create-user.dto';
 
-export class CreateStudentDto extends CreateUserDto{
+export class CreateStudentDto extends CreateUserDto {
+  @IsBoolean()
+  isUndergraduate: boolean;
 
-    semester: number;
-
-    isUndergraduate: boolean;
-
-    isTeachingAssistant: boolean;
-
-    code: string;
+  @IsString()
+  @IsNotEmpty()
+  @Length(9, 9)
+  @Matches(/^[0-9]{4}$/)
+  code: string;
 }

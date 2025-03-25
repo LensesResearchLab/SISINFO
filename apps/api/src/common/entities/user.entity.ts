@@ -1,6 +1,5 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, PrimaryColumn } from 'typeorm';
 
-@Entity()
 export class User {
   @PrimaryColumn('text')
   document: string;

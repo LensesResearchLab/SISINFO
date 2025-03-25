@@ -197,7 +197,6 @@ export default function AssistanceList({
       try {
         const assistanceData = await getGraduatedAssistance();
         setData(assistanceData);
-        console.log(assistanceData);
       } catch (error) {
         console.error("Error fetching assistance data:", error);
       } finally {

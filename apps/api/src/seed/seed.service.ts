@@ -283,9 +283,9 @@ export class SeedService {
   }
 
   async seedTask() {
-    const taskList: CreateTaskDto[] = Array.from({ length: 10 }).map(
-      () => ({}),
-    );
+    const taskList: CreateTaskDto[] = Array.from({ length: 10 }).map(() => ({
+      completed: faker.datatype.boolean(),
+    }));
     const insertPromises: Promise<CreateTaskDto>[] = [];
     taskList.forEach((task) => {
       insertPromises.push(this.taskService.create(task));

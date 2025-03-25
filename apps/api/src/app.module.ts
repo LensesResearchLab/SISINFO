@@ -21,6 +21,9 @@ import { TeachingAssistancesModule } from './teaching_assistances/teaching_assis
 import { ThesesModule } from './theses/theses.module';
 import { StudentsModule } from './students/students.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ImportantDatesModule } from './important_dates/important_dates.module';
+import { ProgramsModule } from './programs/programs.module';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
   imports: [
@@ -31,9 +34,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     BillboardsModule,
     CoordinatorsModule,
     CoursesModule,
+    DocumentsModule,
     GraduatedAssistancesModule,
+    ImportantDatesModule,
     PeriodsModule,
     ProfessorsModule,
+    ProgramsModule,
     ProjectsModule,
     RequirementsModule,
     SectionsModule,
@@ -55,6 +61,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    ImportantDatesModule,
+    ProgramsModule,
+    DocumentsModule,
   ],
   controllers: [],
   providers: [],
