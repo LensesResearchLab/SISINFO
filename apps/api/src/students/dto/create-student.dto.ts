@@ -5,7 +5,7 @@ import {
   Length,
   Matches,
 } from 'class-validator';
-import { CreateUserDto } from 'src/common/dto/create-user.dto';
+import { CreateUserDto } from '../../common/dto/create-user.dto';
 
 export class CreateStudentDto extends CreateUserDto {
   @IsBoolean()

@@ -1,9 +1,9 @@
-import { Billboard } from 'src/billboards/entities/billboard.entity';
-import { Base } from 'src/common/entities/base.entity';
-import { Course } from 'src/courses/entities/course.entity';
-import { Period } from 'src/periods/entities/period.entity';
-import { Professor } from 'src/professors/entities/professor.entity';
-import { TeachingAssistance } from 'src/teaching_assistances/entities/teaching_assistance.entity';
+import { Billboard } from '../../billboards/entities/billboard.entity';
+import { Base } from '../../common/entities/base.entity';
+import { Course } from '../../courses/entities/course.entity';
+import { Period } from '../../periods/entities/period.entity';
+import { Professor } from '../../professors/entities/professor.entity';
+import { TeachingAssistance } from '../../teaching_assistances/entities/teaching_assistance.entity';
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()

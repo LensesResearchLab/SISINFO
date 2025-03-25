@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AlertsProfessorModule } from '../alerts-professor/alerts-professor.module';
-import { AlertsProjectModule } from '../alerts-project/alerts-project.module';
 import { AreasOfInterestModule } from '../areas_of_interest/areas_of_interest.module';
 import { BillboardsModule } from '../billboards/billboards.module';
 import { CoordinatorsModule } from '../coordinators/coordinators.module';
@@ -23,8 +21,6 @@ import { SeedService } from './seed.service';
   controllers: [SeedController],
   providers: [SeedService],
   imports: [
-    AlertsProfessorModule,
-    AlertsProjectModule,
     AreasOfInterestModule,
     BillboardsModule,
     CoordinatorsModule,

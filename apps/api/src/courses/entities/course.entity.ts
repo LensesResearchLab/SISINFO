@@ -1,8 +1,8 @@
-import { Base } from 'src/common/entities/base.entity';
-import { Professor } from 'src/professors/entities/professor.entity';
-import { Program } from 'src/programs/entities/program.entity';
-import { Section } from 'src/sections/entities/section.entity';
-import { Student } from 'src/students/entities/student.entity';
+import { Base } from '../../common/entities/base.entity';
+import { Professor } from '../../professors/entities/professor.entity';
+import { Program } from '../../programs/entities/program.entity';
+import { Section } from '../../sections/entities/section.entity';
+import { Student } from '../../students/entities/student.entity';
 import {
   Column,
   Entity,

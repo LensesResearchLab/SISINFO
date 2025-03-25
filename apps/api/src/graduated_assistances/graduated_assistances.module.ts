@@ -4,7 +4,7 @@ import { GraduatedAssistancesController } from './graduated_assistances.controll
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraduatedAssistance } from './entities/graduated_assistance.entity';
 import { PeriodsModule } from '../periods/periods.module';
-import { RequirementsModule } from 'src/requirements/requirements.module';
+import { RequirementsModule } from '../requirements/requirements.module';
 
 @Module({
   controllers: [GraduatedAssistancesController],

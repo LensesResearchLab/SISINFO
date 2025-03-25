@@ -4,14 +4,24 @@ import { TasksService } from './tasks.service';
 
 describe('TaskController', () => {
   let controller: TasksController;
+  let mockService: jest.Mocked<TasksService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TasksController],
-      providers: [TasksService],
+      providers: [
+        {
+          provide: TasksService,
+          useValue: {
+            findAll: jest.fn(),
+            create: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<TasksController>(TasksController);
+    mockService = module.get(TasksService);
   });
 
   it('should be defined', () => {

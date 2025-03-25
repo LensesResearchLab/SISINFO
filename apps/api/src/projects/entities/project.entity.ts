@@ -1,8 +1,8 @@
-import { AreasOfInterest } from 'src/areas_of_interest/entities/areas_of_interest.entity';
-import { Base } from 'src/common/entities/base.entity';
-import { Period } from 'src/periods/entities/period.entity';
-import { Professor } from 'src/professors/entities/professor.entity';
-import { Student } from 'src/students/entities/student.entity';
+import { AreasOfInterest } from '../../areas_of_interest/entities/areas_of_interest.entity';
+import { Base } from '../../common/entities/base.entity';
+import { Period } from '../../periods/entities/period.entity';
+import { Professor } from '../../professors/entities/professor.entity';
+import { Student } from '../../students/entities/student.entity';
 import {
   Column,
   Entity,

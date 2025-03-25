@@ -21,6 +21,10 @@
     "test:watch": {
       "cache": false,
       "persistent": true
+    },
+    "test:cov": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

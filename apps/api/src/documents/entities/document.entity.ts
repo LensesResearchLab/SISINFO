@@ -1,6 +1,6 @@
 import { Entity, JoinColumn, OneToOne } from 'typeorm';
-import { Base } from 'src/common/entities/base.entity';
-import { Task } from 'src/tasks/entities/task.entity';
+import { Base } from '../../common/entities/base.entity';
+import { Task } from '../../tasks/entities/task.entity';
 
 @Entity()
 export class Document extends Base {

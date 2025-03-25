@@ -1,8 +1,8 @@
-import { Base } from 'src/common/entities/base.entity';
-import { Period } from 'src/periods/entities/period.entity';
-import { Professor } from 'src/professors/entities/professor.entity';
-import { Student } from 'src/students/entities/student.entity';
-import { Tag } from 'src/tags/entities/tag.entity';
+import { Base } from '../../common/entities/base.entity';
+import { Period } from '../../periods/entities/period.entity';
+import { Professor } from '../../professors/entities/professor.entity';
+import { Student } from '../../students/entities/student.entity';
+import { Tag } from '../../tags/entities/tag.entity';
 import {
   Column,
   Entity,

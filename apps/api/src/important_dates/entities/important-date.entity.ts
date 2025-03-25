@@ -1,6 +1,6 @@
-import { Base } from 'src/common/entities/base.entity';
-import { Period } from 'src/periods/entities/period.entity';
-import { Task } from 'src/tasks/entities/task.entity';
+import { Base } from '../../common/entities/base.entity';
+import { Period } from '../../periods/entities/period.entity';
+import { Task } from '../../tasks/entities/task.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()

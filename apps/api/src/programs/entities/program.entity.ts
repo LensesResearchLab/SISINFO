@@ -1,6 +1,6 @@
 import { Entity } from 'typeorm';
-import { Course } from 'src/courses/entities/course.entity';
-import { Base } from 'src/common/entities/base.entity';
+import { Course } from '../../courses/entities/course.entity';
+import { Base } from '../../common/entities/base.entity';
 import { OneToOne } from 'typeorm';
 
 @Entity()

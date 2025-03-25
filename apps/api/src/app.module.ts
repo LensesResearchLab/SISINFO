@@ -3,8 +3,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as path from 'path';
 import { SeedModule } from './seed/seed.module';
-import { AlertsProfessorModule } from './alerts-professor/alerts-professor.module';
-import { AlertsProjectModule } from './alerts-project/alerts-project.module';
 import { AreasOfInterestModule } from './areas_of_interest/areas_of_interest.module';
 import { BillboardsModule } from './billboards/billboards.module';
 import { CoordinatorsModule } from './coordinators/coordinators.module';
@@ -28,8 +26,6 @@ import { DocumentsModule } from './documents/documents.module';
 @Module({
   imports: [
     SeedModule,
-    AlertsProfessorModule,
-    AlertsProjectModule,
     AreasOfInterestModule,
     BillboardsModule,
     CoordinatorsModule,

@@ -3,14 +3,24 @@ import { ImportantDatesController } from './important_dates.controller';
 import { ImportantDatesService } from './important_dates.service';
 describe('ImportantDatesController', () => {
   let controller: ImportantDatesController;
+  let mockService: jest.Mocked<ImportantDatesService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ImportantDatesController],
-      providers: [ImportantDatesService],
+      providers: [
+        {
+          provide: ImportantDatesService,
+          useValue: {
+            findAll: jest.fn(),
+            create: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<ImportantDatesController>(ImportantDatesController);
+    mockService = module.get(ImportantDatesService);
   });
 
   it('should be defined', () => {

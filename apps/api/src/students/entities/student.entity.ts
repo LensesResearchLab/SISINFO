@@ -1,10 +1,10 @@
-import { User } from 'src/common/entities/user.entity';
-import { Course } from 'src/courses/entities/course.entity';
-import { GraduatedAssistance } from 'src/graduated_assistances/entities/graduated_assistance.entity';
-import { Project } from 'src/projects/entities/project.entity';
-import { Task } from 'src/tasks/entities/task.entity';
-import { TeachingAssistance } from 'src/teaching_assistances/entities/teaching_assistance.entity';
-import { Thesis } from 'src/theses/entities/thesis.entity';
+import { User } from '../../common/entities/user.entity';
+import { Course } from '../../courses/entities/course.entity';
+import { GraduatedAssistance } from '../../graduated_assistances/entities/graduated_assistance.entity';
+import { Project } from '../../projects/entities/project.entity';
+import { Task } from '../../tasks/entities/task.entity';
+import { TeachingAssistance } from '../../teaching_assistances/entities/teaching_assistance.entity';
+import { Thesis } from '../../theses/entities/thesis.entity';
 import {
   Column,
   Entity,

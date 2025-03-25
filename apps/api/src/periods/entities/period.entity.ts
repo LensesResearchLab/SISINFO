@@ -1,10 +1,10 @@
-import { Billboard } from 'src/billboards/entities/billboard.entity';
-import { Base } from 'src/common/entities/base.entity';
-import { GraduatedAssistance } from 'src/graduated_assistances/entities/graduated_assistance.entity';
-import { ImportantDate } from 'src/important_dates/entities/important-date.entity';
-import { Project } from 'src/projects/entities/project.entity';
-import { Section } from 'src/sections/entities/section.entity';
-import { Thesis } from 'src/theses/entities/thesis.entity';
+import { Billboard } from '../../billboards/entities/billboard.entity';
+import { Base } from '../../common/entities/base.entity';
+import { GraduatedAssistance } from '../../graduated_assistances/entities/graduated_assistance.entity';
+import { ImportantDate } from '../../important_dates/entities/important-date.entity';
+import { Project } from '../../projects/entities/project.entity';
+import { Section } from '../../sections/entities/section.entity';
+import { Thesis } from '../../theses/entities/thesis.entity';
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 
 @Entity()

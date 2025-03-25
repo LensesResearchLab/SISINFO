@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToMany } from 'typeorm';
 import { Base } from '../../common/entities/base.entity';
-import { Project } from 'src/projects/entities/project.entity';
+import { Project } from '../../projects/entities/project.entity';
 
 @Entity()
 export class AreasOfInterest extends Base {

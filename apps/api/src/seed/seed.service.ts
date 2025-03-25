@@ -1,40 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 
-import { BillboardsService } from 'src/billboards/billboards.service';
-import { CreateBillboardDto } from 'src/billboards/dto/create-billboard.dto';
-import { PeriodsService } from 'src/periods/periods.service';
-import { CreatePeriodDto } from 'src/periods/dto/create-period.dto';
-import { TeachingAssistancesService } from 'src/teaching_assistances/teaching_assistances.service';
-import { CreateTeachingAssistanceDto } from 'src/teaching_assistances/dto/create-teaching_assistance.dto';
-import { SectionsService } from 'src/sections/sections.service';
-import { CreateSectionDto } from 'src/sections/dto/create-section.dto';
-import { ProfessorsService } from 'src/professors/professors.service';
-import { CreateProfessorDto } from 'src/professors/dto/create-professor.dto';
-import { CoursesService } from 'src/courses/courses.service';
-import { CreateCourseDto } from 'src/courses/dto/create-course.dto';
-import { TagsService } from 'src/tags/tags.service';
-import { CreateTagDto } from 'src/tags/dto/create-tag.dto';
-import { ThesesService } from 'src/theses/theses.service';
-import { CreateThesisDto } from 'src/theses/dto/create-thesis.dto';
-import { ProjectsService } from 'src/projects/projects.service';
-import { CreateProjectDto } from 'src/projects/dto/create-project.dto';
-import { RequirementsService } from 'src/requirements/requirements.service';
-import { CreateRequirementDto } from 'src/requirements/dto/create-requirement.dto';
-import { GraduatedAssistancesService } from 'src/graduated_assistances/graduated_assistances.service';
-import { CreateGraduatedAssistanceDto } from 'src/graduated_assistances/dto/create-graduated_assistance.dto';
-import { CoordinatorsService } from 'src/coordinators/coordinators.service';
-import { CreateCoordinatorDto } from 'src/coordinators/dto/create-coordinator.dto';
-import { TasksService } from 'src/tasks/tasks.service';
-import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
-import { AlertsProjectService } from 'src/alerts-project/alerts-project.service';
-import { CreateAlertProjectDto } from 'src/alerts-project/dto/create-alert-project.dto';
-import { AlertsProfessorService } from 'src/alerts-professor/alerts-professor.service';
-import { CreateAlertProfessorDto } from 'src/alerts-professor/dto/create-alert-professor.dto';
-import { AreasOfInterestService } from 'src/areas_of_interest/areas_of_interest.service';
-import { CreateAreasOfInterestDto } from 'src/areas_of_interest/dto/create-areas_of_interest.dto';
-import { StudentsService } from 'src/students/students.service';
-import { CreateStudentDto } from 'src/students/dto/create-student.dto';
+import { BillboardsService } from '../billboards/billboards.service';
+import { CreateBillboardDto } from '../billboards/dto/create-billboard.dto';
+import { PeriodsService } from '../periods/periods.service';
+import { CreatePeriodDto } from '../periods/dto/create-period.dto';
+import { TeachingAssistancesService } from '../teaching_assistances/teaching_assistances.service';
+import { CreateTeachingAssistanceDto } from '../teaching_assistances/dto/create-teaching_assistance.dto';
+import { SectionsService } from '../sections/sections.service';
+import { CreateSectionDto } from '../sections/dto/create-section.dto';
+import { ProfessorsService } from '../professors/professors.service';
+import { CreateProfessorDto } from '../professors/dto/create-professor.dto';
+import { CoursesService } from '../courses/courses.service';
+import { CreateCourseDto } from '../courses/dto/create-course.dto';
+import { TagsService } from '../tags/tags.service';
+import { CreateTagDto } from '../tags/dto/create-tag.dto';
+import { ThesesService } from '../theses/theses.service';
+import { CreateThesisDto } from '../theses/dto/create-thesis.dto';
+import { ProjectsService } from '../projects/projects.service';
+import { CreateProjectDto } from '../projects/dto/create-project.dto';
+import { RequirementsService } from '../requirements/requirements.service';
+import { CreateRequirementDto } from '../requirements/dto/create-requirement.dto';
+import { GraduatedAssistancesService } from '../graduated_assistances/graduated_assistances.service';
+import { CreateGraduatedAssistanceDto } from '../graduated_assistances/dto/create-graduated_assistance.dto';
+import { CoordinatorsService } from '../coordinators/coordinators.service';
+import { CreateCoordinatorDto } from '../coordinators/dto/create-coordinator.dto';
+import { TasksService } from '../tasks/tasks.service';
+import { CreateTaskDto } from '../tasks/dto/create-task.dto';
+import { AreasOfInterestService } from '../areas_of_interest/areas_of_interest.service';
+import { CreateAreasOfInterestDto } from '../areas_of_interest/dto/create-areas_of_interest.dto';
+import { StudentsService } from '../students/students.service';
+import { CreateStudentDto } from '../students/dto/create-student.dto';
 
 @Injectable()
 export class SeedService {
@@ -52,8 +48,6 @@ export class SeedService {
     private readonly graduatedAssistanceService: GraduatedAssistancesService,
     private readonly coordinatorService: CoordinatorsService,
     private readonly taskService: TasksService,
-    private readonly alertProjectService: AlertsProjectService,
-    private readonly alertProfessorService: AlertsProfessorService,
     private readonly areasOfInterestService: AreasOfInterestService,
     private readonly studentService: StudentsService,
   ) {}
@@ -294,30 +288,6 @@ export class SeedService {
     return true;
   }
 
-  async seedAlertProject() {
-    const projectAlerts: CreateAlertProjectDto[] = Array.from({
-      length: 10,
-    }).map(() => ({}));
-    const insertPromises: Promise<CreateAlertProjectDto>[] = [];
-    projectAlerts.forEach((alert) => {
-      insertPromises.push(this.alertProjectService.create(alert));
-    });
-    await Promise.all(insertPromises);
-    return true;
-  }
-
-  async seedAlertProfessor() {
-    const professorAlerts: CreateAlertProfessorDto[] = Array.from({
-      length: 10,
-    }).map(() => ({}));
-    const insertPromises: Promise<CreateAlertProfessorDto>[] = [];
-    professorAlerts.forEach((alert) => {
-      insertPromises.push(this.alertProfessorService.create(alert));
-    });
-    await Promise.all(insertPromises);
-    return true;
-  }
-
   async seedAreasOfInterest() {
     const areasOfInterest: CreateAreasOfInterestDto[] = Array.from({
       length: 10,
@@ -366,8 +336,6 @@ export class SeedService {
     await this.seedRequirement();
     await this.seedCoordinator();
     await this.seedTask();
-    await this.seedAlertProject();
-    await this.seedAlertProfessor();
     await this.seedAreasOfInterest();
     await this.seedGraduatedAssistance();
     return 'SEED_EXECUTED';

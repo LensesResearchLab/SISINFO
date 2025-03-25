@@ -1,11 +1,11 @@
-import { Base } from 'src/common/entities/base.entity';
-import { ImportantDate } from 'src/important_dates/entities/important-date.entity';
-import { Document } from 'src/documents/entities/document.entity';
+import { Base } from '../../common/entities/base.entity';
+import { ImportantDate } from '../../important_dates/entities/important-date.entity';
+import { Document } from '../../documents/entities/document.entity';
 
 import { Column, Entity, ManyToOne, OneToOne } from 'typeorm';
-import { Professor } from 'src/professors/entities/professor.entity';
-import { Coordinator } from 'src/coordinators/entities/coordinator.entity';
-import { Student } from 'src/students/entities/student.entity';
+import { Professor } from '../../professors/entities/professor.entity';
+import { Coordinator } from '../../coordinators/entities/coordinator.entity';
+import { Student } from '../../students/entities/student.entity';
 
 @Entity()
 export class Task extends Base {

@@ -1,6 +1,6 @@
-import { Base } from 'src/common/entities/base.entity';
-import { Section } from 'src/sections/entities/section.entity';
-import { Student } from 'src/students/entities/student.entity';
+import { Base } from '../../common/entities/base.entity';
+import { Section } from '../../sections/entities/section.entity';
+import { Student } from '../../students/entities/student.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()

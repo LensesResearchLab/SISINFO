@@ -81,3 +81,21 @@ Asegúrate de tener instalado lo siguiente:
 10. Visita http://localhost:3000 para ver la aplicación en funcionamiento.
 
 > Si deseas liberar los puertos 3000 y 8000, puedes usar el comando `npm run kill`.
+
+### Pruebas
+
+Antes de realizar cualquier commit, asegúrate de ejecutar las pruebas unitarias y de extremo a extremo. Para ello, ejecuta el siguiente comando en la raíz del proyecto:
+
+  ```bash
+    npm run test    
+  ```
+Este comando ejecutará todas las pruebas definidas en el proyecto. Verifica que todas las pruebas se ejecuten correctamente antes de realizar cualquier cambio significativo en el código.
+
+### Pruebas con cobertura
+También puedes ejecutar las pruebas con cobertura para asegurarte de que tu código esté bien cubierto por pruebas. Para ello, usa el siguiente comando:
+
+  ```bash
+    npm run test:cov   
+  ```
+
+Este comando generará un informe de cobertura que indicará qué partes del código están cubiertas por pruebas y cuáles no, permitiéndote mejorar la calidad del código en cada aplicación.
