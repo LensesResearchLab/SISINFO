@@ -1,11 +1,11 @@
 "use client";
 import { Calendar, FileText, Mail, User } from "lucide-react";
 import { use, useEffect, useState } from "react";
-import { getAssistanceStatusById } from "@/app/inicio/estudiante/asistencia/services/assistance.service";
-import { StatusInformation } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
+import { StatusInformation } from "@/app/types/assistance.type";
 import TabStatus from "@/components/shared/tab-status";
 import { useRouter } from "next/navigation";
 import SpinnerPage from "@/components/shared/spinner-page";
+import { getAssistanceStatusById } from "@/app/services/assistance.service";
 
 /**
  * AssistanceStatus Component
@@ -42,7 +42,7 @@ export default function AssistanceStatus({
     {
       id: "0",
       assistance_id: 0,
-      start_semester: "",
+      start_date: "",
       title: "",
       professor: "",
       student: "",
@@ -122,7 +122,7 @@ function getSections(statusInformation: StatusInformation) {
   return [
     {
       title: "Semestre de inicio",
-      description: statusInformation.start_semester,
+      description: statusInformation.start_date,
       icon: <Calendar className="h-5 w-5 text-core mt-1" />,
     },
     {

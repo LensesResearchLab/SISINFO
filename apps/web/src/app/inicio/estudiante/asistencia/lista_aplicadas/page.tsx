@@ -36,11 +36,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAssistanceStatus } from "@/app/inicio/estudiante/asistencia/services/assistance.service";
-import { StatusInformation } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
+import { StatusInformation } from "@/app/types/assistance.type";
 import Link from "next/link";
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
+import { getAssistanceStatus } from "@/app/services/assistance.service";
 
 /**
  * Column definitions for the AssistanceAppliedList table

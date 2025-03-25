@@ -12,11 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { getGraduatedAssistanceById } from "@/app/inicio/estudiante/asistencia/services/assistance.service";
-import {
-  Assistance,
-  Requirement,
-} from "@/app/inicio/estudiante/asistencia/types/assistance.type";
+import { Assistance, Requirement } from "@/app/types/assistance.type";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -24,6 +20,7 @@ import { useParams, useRouter } from "next/navigation";
 
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
+import { getGraduatedAssistanceById } from "@/app/services/assistance.service";
 
 interface AssistanceProps {
   assistance: Assistance;

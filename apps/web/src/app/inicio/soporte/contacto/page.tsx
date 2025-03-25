@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getCoordinators } from "@/app/inicio/soporte/services/support.service";
-import { Coordinator } from "@/app/inicio/soporte/types/support.types";
+import { getCoordinators } from "@/app/services/support.service";
+import { Coordinator } from "@/app/types/support.types";
 import Image from "next/image";
 
 /**
@@ -15,7 +15,7 @@ import Image from "next/image";
  * - Fetches and displays the coordinators' data
  * - Displays each coordinator's image, name, office, email, and extension
  * - Includes a button to schedule a meeting with Bookeau
- * 
+ *
  * @returns {JSX.Element} A div containing the list of academic coordinators and a "Reserva tu cita" button.
  */
 export default function AcademicCoordinators() {
@@ -26,7 +26,7 @@ export default function AcademicCoordinators() {
    */
   useEffect(() => {
     getCoordinators().then((data) => {
-      setCoordinators(data); 
+      setCoordinators(data);
     });
   }, []);
 
@@ -40,7 +40,10 @@ export default function AcademicCoordinators() {
         </CardHeader>
         <CardContent className="flex flex-wrap justify-center gap-6">
           {coordinators.map((coordinator, index) => (
-            <Card key={index} className="flex items-center p-6 w-96 shadow-lg rounded-lg border-none">
+            <Card
+              key={index}
+              className="flex items-center p-6 w-96 shadow-lg rounded-lg border-none"
+            >
               <Image
                 src={coordinator.image}
                 height={96}
@@ -66,11 +69,13 @@ export default function AcademicCoordinators() {
           ))}
         </CardContent>
         <div className="mt-6 flex flex-col items-center">
-          <Image 
-            src={"/logo_bookeau.png"} 
+          <Image
+            src={"/logo_bookeau.png"}
             width={256}
             height={64}
-            alt="Bookeau" className="w-64 mb-4" />
+            alt="Bookeau"
+            className="w-64 mb-4"
+          />
           <Button className="px-6 py-2 rounded-md text-lg">
             Reserva tu cita
           </Button>

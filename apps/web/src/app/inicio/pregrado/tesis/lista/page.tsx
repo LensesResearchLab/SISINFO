@@ -22,8 +22,8 @@ import { useRouter } from "next/navigation";
 import {
   getUndergraduateThesis,
   getUndegraduadeThesisSemesters,
-} from "@/services/thesis.service";
-import { Thesis } from "@/types/thesis.type";
+} from "@/app/services/thesis.service";
+import { Thesis } from "@/app/types/thesis.type";
 
 import {
   Select,

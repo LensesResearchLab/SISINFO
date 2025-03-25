@@ -27,12 +27,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getGraduatedAssistance } from "@/app/inicio/estudiante/asistencia/services/assistance.service";
-import { Assistance } from "@/app/inicio/estudiante/asistencia/types/assistance.type";
+import { Assistance } from "@/app/types/assistance.type";
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { getGraduatedAssistance } from "@/app/services/assistance.service";
 
 const semesters = [
   { value: "all", label: "Todos los semestres" },
@@ -120,7 +120,7 @@ function FilterBar({
       </div>
       <Button
         onClick={() =>
-          setSorting((prev) => [{ id: "name", desc: !prev[0].desc }])
+          setSorting((prev) => [{ id: "title", desc: !prev[0].desc }])
         }
         className="bg-[#075985] text-white hover:bg-[#075985]"
       >
@@ -148,7 +148,7 @@ export default function AssistanceList({
   const [selectedSemester, setSelectedSemester] = React.useState("all");
   const [showOnlyMyAssistance, setShowOnlyMyAssistance] = React.useState(false);
   const [nameFilter, setNameFilter] = React.useState("");
-  const [sorting, setSorting] = React.useState([{ id: "name", desc: false }]);
+  const [sorting, setSorting] = React.useState([{ id: "title", desc: false }]);
   const router = useRouter();
   const handleClick = (id: string) => {
     const path =
@@ -160,8 +160,8 @@ export default function AssistanceList({
 
   const columns = React.useMemo<ColumnDef<Assistance>[]>(
     () => [
-      { accessorKey: "name", header: "Nombre" },
-      { accessorKey: "clasification", header: "Clasificación" },
+      { accessorKey: "title", header: "Nombre" },
+      { accessorKey: "category", header: "Clasificación" },
       { accessorKey: "professor.name", header: "Oferente" },
       {
         accessorKey: "publication_date",
@@ -208,10 +208,7 @@ export default function AssistanceList({
 
   const filteredData = React.useMemo(() => {
     return data.filter((item) => {
-      if (
-        selectedSemester !== "all" &&
-        item.start_semester !== selectedSemester
-      ) {
+      if (selectedSemester !== "all" && item.start_date !== selectedSemester) {
         return false;
       }
       if (
