@@ -47,16 +47,16 @@ export default function StudentDetail() {
   return (
     <div className="max-w-3xl mx-auto p-4">
       <Tabs defaultValue="profile" className="w-3xl">
-        <TabsList className="grid w-full grid-cols-2 bg-sky-800 text-white">
+        <TabsList className="grid w-full grid-cols-2 bg-core text-white">
           <TabsTrigger
             value="profile"
-            className="data-[state=active]:bg-sky-900 data-[state=active]:font-semibold data-[state=active]:text-white"
+            className="data-[state=active]:bg-core-highlight data-[state=active]:font-semibold data-[state=active]:text-white"
           >
             Perfil
           </TabsTrigger>
           <TabsTrigger
             value="detail"
-            className="data-[state=active]:bg-sky-900 data-[state=active]:font-semibold data-[state=active]:text-white"
+            className="data-[state=active]:bg-core-highlight data-[state=active]:font-semibold data-[state=active]:text-white"
           >
             Detalle plan de estudio
           </TabsTrigger>
@@ -186,8 +186,8 @@ function RenderFields({
   return (
     <div className={`flex gap-3 ${className}`}>
       <div className="w-full">
-        <h3 className="font-medium text-sky-800">{label}</h3>
-        <p className="text-gray-700">{value}</p>
+        <h3 className="font-medium text-core-highlight">{label}</h3>
+        <p className="text-core-soft">{value}</p>
         <hr className="bg-gray-300 h-[1px] w-full my-2 border-0" />
       </div>
     </div>

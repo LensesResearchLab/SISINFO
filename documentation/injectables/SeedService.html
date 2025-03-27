@@ -1,0 +1,2211 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>sisinfo documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">sisinfo documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >SeedService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/api/src/seed/seed.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER" >GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER</a>
+                            </li>
+                            <li>
+                                <a href="#MAX_PROJECTS_PER_PROFESSOR" >MAX_PROJECTS_PER_PROFESSOR</a>
+                            </li>
+                            <li>
+                                <a href="#MAX_THESIS_PER_PROFESSOR" >MAX_THESIS_PER_PROFESSOR</a>
+                            </li>
+                            <li>
+                                <a href="#PROFESSORS_NUMBER" >PROFESSORS_NUMBER</a>
+                            </li>
+                            <li>
+                                <a href="#STUDENTS_NUMBER" >STUDENTS_NUMBER</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#executeSeedCourses" >executeSeedCourses</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#executeSeedGraduatedAssistance" >executeSeedGraduatedAssistance</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#executeSeedProjects" >executeSeedProjects</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#executeSeedStatic" >executeSeedStatic</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#executeSeedThesis" >executeSeedThesis</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#executeSeedUsers" >executeSeedUsers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#executeTaskAndTas" >executeTaskAndTas</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedAreasOfInterest" >seedAreasOfInterest</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedBillboard" >seedBillboard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedCoordinator" >seedCoordinator</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedCourse" >seedCourse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedGraduatedAssistanceApplications" >seedGraduatedAssistanceApplications</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedGraduatedAssistances" >seedGraduatedAssistances</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedPeriods" >seedPeriods</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedProfessors" >seedProfessors</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedProjectApplications" >seedProjectApplications</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedProjects" >seedProjects</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedRequirements" >seedRequirements</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedSection" >seedSection</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedStudents" >seedStudents</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedTags" >seedTags</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedTask" >seedTask</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedTeachingAssistance" >seedTeachingAssistance</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedTheses" >seedTheses</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#seedThesisApplications" >seedThesisApplications</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(billboardsService: <a href="../injectables/BillboardsService.html" target="_self">BillboardsService</a>, periodsService: <a href="../injectables/PeriodsService.html" target="_self">PeriodsService</a>, teachingAssistancesService: <a href="../injectables/TeachingAssistancesService.html" target="_self">TeachingAssistancesService</a>, sectionsService: <a href="../injectables/SectionsService.html" target="_self">SectionsService</a>, professorsService: <a href="../injectables/ProfessorsService.html" target="_self">ProfessorsService</a>, coursesService: <a href="../injectables/CoursesService.html" target="_self">CoursesService</a>, tagsService: <a href="../injectables/TagsService.html" target="_self">TagsService</a>, thesesService: <a href="../injectables/ThesesService.html" target="_self">ThesesService</a>, projectApplicationsService: <a href="../injectables/ProjectApplicationsService.html" target="_self">ProjectApplicationsService</a>, projectsService: <a href="../injectables/ProjectsService.html" target="_self">ProjectsService</a>, thesisApplicationsService: <a href="../injectables/ThesisApplicationsService.html" target="_self">ThesisApplicationsService</a>, requirementsService: <a href="../injectables/RequirementsService.html" target="_self">RequirementsService</a>, graduatedAssistancesService: <a href="../injectables/GraduatedAssistancesService.html" target="_self">GraduatedAssistancesService</a>, graduatedAssistanceApplicationsService: <a href="../injectables/AssistanceApplicationsService.html" target="_self">AssistanceApplicationsService</a>, coordinatorsService: <a href="../injectables/CoordinatorsService.html" target="_self">CoordinatorsService</a>, tasksService: <a href="../injectables/TasksService.html" target="_self">TasksService</a>, areasOfInterestService: <a href="../injectables/AreasOfInterestService.html" target="_self">AreasOfInterestService</a>, studentsService: <a href="../injectables/StudentsService.html" target="_self">StudentsService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/api/src/seed/seed.service.ts:44</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>billboardsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BillboardsService.html" target="_self" >BillboardsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>periodsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/PeriodsService.html" target="_self" >PeriodsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>teachingAssistancesService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/TeachingAssistancesService.html" target="_self" >TeachingAssistancesService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>sectionsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SectionsService.html" target="_self" >SectionsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>professorsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ProfessorsService.html" target="_self" >ProfessorsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>coursesService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CoursesService.html" target="_self" >CoursesService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>tagsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/TagsService.html" target="_self" >TagsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>thesesService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ThesesService.html" target="_self" >ThesesService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>projectApplicationsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ProjectApplicationsService.html" target="_self" >ProjectApplicationsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>projectsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ProjectsService.html" target="_self" >ProjectsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>thesisApplicationsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ThesisApplicationsService.html" target="_self" >ThesisApplicationsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>requirementsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/RequirementsService.html" target="_self" >RequirementsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>graduatedAssistancesService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/GraduatedAssistancesService.html" target="_self" >GraduatedAssistancesService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>graduatedAssistanceApplicationsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AssistanceApplicationsService.html" target="_self" >AssistanceApplicationsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>coordinatorsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CoordinatorsService.html" target="_self" >CoordinatorsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>tasksService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/TasksService.html" target="_self" >TasksService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>areasOfInterestService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AreasOfInterestService.html" target="_self" >AreasOfInterestService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>studentsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/StudentsService.html" target="_self" >StudentsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="executeSeedCourses"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>executeSeedCourses</b></span>
+                        <a href="#executeSeedCourses"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>executeSeedCourses()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="436"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:436</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="executeSeedGraduatedAssistance"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>executeSeedGraduatedAssistance</b></span>
+                        <a href="#executeSeedGraduatedAssistance"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>executeSeedGraduatedAssistance()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="418"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:418</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="executeSeedProjects"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>executeSeedProjects</b></span>
+                        <a href="#executeSeedProjects"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>executeSeedProjects()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="424"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:424</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="executeSeedStatic"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>executeSeedStatic</b></span>
+                        <a href="#executeSeedStatic"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>executeSeedStatic()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="403"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:403</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="executeSeedThesis"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>executeSeedThesis</b></span>
+                        <a href="#executeSeedThesis"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>executeSeedThesis()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="430"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:430</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="executeSeedUsers"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>executeSeedUsers</b></span>
+                        <a href="#executeSeedUsers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>executeSeedUsers()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="411"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:411</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="executeTaskAndTas"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>executeTaskAndTas</b></span>
+                        <a href="#executeTaskAndTas"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>executeTaskAndTas()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="443"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:443</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedAreasOfInterest"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedAreasOfInterest</b></span>
+                        <a href="#seedAreasOfInterest"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedAreasOfInterest()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="371"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:371</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedBillboard"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedBillboard</b></span>
+                        <a href="#seedBillboard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedBillboard()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:72</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedCoordinator"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedCoordinator</b></span>
+                        <a href="#seedCoordinator"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedCoordinator()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="343"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:343</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedCourse"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedCourse</b></span>
+                        <a href="#seedCourse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedCourse()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="150"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:150</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedGraduatedAssistanceApplications"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedGraduatedAssistanceApplications</b></span>
+                        <a href="#seedGraduatedAssistanceApplications"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedGraduatedAssistanceApplications()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="322"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:322</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedGraduatedAssistances"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedGraduatedAssistances</b></span>
+                        <a href="#seedGraduatedAssistances"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedGraduatedAssistances()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="287"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:287</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedPeriods"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedPeriods</b></span>
+                        <a href="#seedPeriods"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedPeriods()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:86</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedProfessors"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedProfessors</b></span>
+                        <a href="#seedProfessors"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedProfessors()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="134"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:134</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedProjectApplications"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedProjectApplications</b></span>
+                        <a href="#seedProjectApplications"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedProjectApplications()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="203"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:203</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedProjects"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedProjects</b></span>
+                        <a href="#seedProjects"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedProjects()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="225"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:225</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedRequirements"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedRequirements</b></span>
+                        <a href="#seedRequirements"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedRequirements()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="277"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:277</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedSection"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedSection</b></span>
+                        <a href="#seedSection"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedSection()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="121"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:121</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedStudents"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedStudents</b></span>
+                        <a href="#seedStudents"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedStudents()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="381"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:381</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedTags"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedTags</b></span>
+                        <a href="#seedTags"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedTags()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="168"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:168</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedTask"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedTask</b></span>
+                        <a href="#seedTask"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedTask()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="359"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:359</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedTeachingAssistance"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedTeachingAssistance</b></span>
+                        <a href="#seedTeachingAssistance"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedTeachingAssistance()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:96</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedTheses"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedTheses</b></span>
+                        <a href="#seedTheses"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedTheses()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="178"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:178</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="seedThesisApplications"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>seedThesisApplications</b></span>
+                        <a href="#seedThesisApplications"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>seedThesisApplications()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="256"
+                                    class="link-to-prism">apps/api/src/seed/seed.service.ts:256</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER"></a>
+                    <span class="name">
+                        <span ><b>GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER</b></span>
+                        <a href="#GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>30</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="70" class="link-to-prism">apps/api/src/seed/seed.service.ts:70</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_PROJECTS_PER_PROFESSOR"></a>
+                    <span class="name">
+                        <span ><b>MAX_PROJECTS_PER_PROFESSOR</b></span>
+                        <a href="#MAX_PROJECTS_PER_PROFESSOR"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>3</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">apps/api/src/seed/seed.service.ts:69</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MAX_THESIS_PER_PROFESSOR"></a>
+                    <span class="name">
+                        <span ><b>MAX_THESIS_PER_PROFESSOR</b></span>
+                        <a href="#MAX_THESIS_PER_PROFESSOR"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>3</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">apps/api/src/seed/seed.service.ts:68</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="PROFESSORS_NUMBER"></a>
+                    <span class="name">
+                        <span ><b>PROFESSORS_NUMBER</b></span>
+                        <a href="#PROFESSORS_NUMBER"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>20</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="67" class="link-to-prism">apps/api/src/seed/seed.service.ts:67</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="STUDENTS_NUMBER"></a>
+                    <span class="name">
+                        <span ><b>STUDENTS_NUMBER</b></span>
+                        <a href="#STUDENTS_NUMBER"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>20</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">apps/api/src/seed/seed.service.ts:66</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { faker } from &#x27;@faker-js/faker&#x27;;
+
+import { BillboardsService } from &#x27;../billboards/billboards.service&#x27;;
+import { CreateBillboardDto } from &#x27;../billboards/dto/create-billboard.dto&#x27;;
+import { PeriodsService } from &#x27;../periods/periods.service&#x27;;
+import { CreatePeriodDto } from &#x27;../periods/dto/create-period.dto&#x27;;
+import { TeachingAssistancesService } from &#x27;../teaching-assistances/teaching-assistances.service&#x27;;
+import { CreateTeachingAssistanceDto } from &#x27;../teaching-assistances/dto/create-teaching_assistance.dto&#x27;;
+import { SectionsService } from &#x27;../sections/sections.service&#x27;;
+import { CreateSectionDto } from &#x27;../sections/dto/create-section.dto&#x27;;
+import { ProfessorsService } from &#x27;../professors/professors.service&#x27;;
+import { CreateProfessorDto } from &#x27;../professors/dto/create-professor.dto&#x27;;
+import { CoursesService } from &#x27;../courses/courses.service&#x27;;
+import { CreateCourseDto } from &#x27;../courses/dto/create-course.dto&#x27;;
+import { TagsService } from &#x27;../tags/tags.service&#x27;;
+import { CreateTagDto } from &#x27;../tags/dto/create-tag.dto&#x27;;
+import { ThesesService } from &#x27;../theses/theses.service&#x27;;
+import { ProjectsService } from &#x27;../projects/projects.service&#x27;;
+import { RequirementsService } from &#x27;../requirements/requirements.service&#x27;;
+import { CreateRequirementDto } from &#x27;../requirements/dto/create-requirement.dto&#x27;;
+import { GraduatedAssistancesService } from &#x27;../graduated-assistances/graduated-assistances.service&#x27;;
+import { CreateGraduatedAssistanceDto } from &#x27;../graduated-assistances/dto/create-graduated_assistance.dto&#x27;;
+import { CoordinatorsService } from &#x27;../coordinators/coordinators.service&#x27;;
+import { CreateCoordinatorDto } from &#x27;../coordinators/dto/create-coordinator.dto&#x27;;
+import { TasksService } from &#x27;../tasks/tasks.service&#x27;;
+import { CreateTaskDto } from &#x27;../tasks/dto/create-task.dto&#x27;;
+import { AreasOfInterestService } from &#x27;../areas-of-interest/areas-of-interest.service&#x27;;
+import { CreateAreasOfInterestDto } from &#x27;../areas-of-interest/dto/create-areas-of-interest.dto&#x27;;
+import { StudentsService } from &#x27;../students/students.service&#x27;;
+import { CreateStudentDto } from &#x27;../students/dto/create-student.dto&#x27;;
+import { samplePeriods } from &#x27;./sample-data/periods.sample&#x27;;
+import { Thesis } from &#x27;../theses/entities/thesis.entity&#x27;;
+import { Project } from &#x27;../projects/entities/project.entity&#x27;;
+import { sampleRequirements } from &#x27;./sample-data/requirements.sample&#x27;;
+import { sampleTags } from &#x27;./sample-data/tags.sample&#x27;;
+import { sampleAreasOfInterest } from &#x27;./sample-data/areas-of-interest.sample&#x27;;
+import { ProjectApplication } from &#x27;../project-applications/entities/project-application.entity&#x27;;
+import { ProjectApplicationsService } from &#x27;../project-applications/project-applications.service&#x27;;
+import { ThesisApplicationsService } from &#x27;../thesis-applications/thesis-applications.service&#x27;;
+import { AssistanceApplicationsService } from &#x27;../assistance-applications/assistance-applications.service&#x27;;
+
+@Injectable()
+export class SeedService {
+  constructor(
+    private readonly billboardsService: BillboardsService,
+    private readonly periodsService: PeriodsService,
+    private readonly teachingAssistancesService: TeachingAssistancesService,
+    private readonly sectionsService: SectionsService,
+    private readonly professorsService: ProfessorsService,
+    private readonly coursesService: CoursesService,
+    private readonly tagsService: TagsService,
+    private readonly thesesService: ThesesService,
+    private readonly projectApplicationsService: ProjectApplicationsService,
+    private readonly projectsService: ProjectsService,
+    private readonly thesisApplicationsService: ThesisApplicationsService,
+    private readonly requirementsService: RequirementsService,
+    private readonly graduatedAssistancesService: GraduatedAssistancesService,
+    private readonly graduatedAssistanceApplicationsService: AssistanceApplicationsService,
+    private readonly coordinatorsService: CoordinatorsService,
+    private readonly tasksService: TasksService,
+    private readonly areasOfInterestService: AreasOfInterestService,
+    private readonly studentsService: StudentsService,
+  ) {}
+
+  STUDENTS_NUMBER &#x3D; 20;
+  PROFESSORS_NUMBER &#x3D; 20;
+  MAX_THESIS_PER_PROFESSOR &#x3D; 3;
+  MAX_PROJECTS_PER_PROFESSOR &#x3D; 3;
+  GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER &#x3D; 30;
+
+  async seedBillboard() {
+    const billboards: CreateBillboardDto[] &#x3D; Array.from({ length: 10 }).map(
+      () &#x3D;&gt; ({
+        publicated: faker.datatype.boolean(),
+      }),
+    );
+    const insertPromises: Promise&lt;CreateBillboardDto&gt;[] &#x3D; [];
+    billboards.forEach((billboard) &#x3D;&gt; {
+      insertPromises.push(this.billboardsService.create(billboard));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedPeriods() {
+    const periods: CreatePeriodDto[] &#x3D; samplePeriods;
+    const insertPromises: Promise&lt;CreatePeriodDto&gt;[] &#x3D; [];
+    periods.forEach((period) &#x3D;&gt; {
+      insertPromises.push(this.periodsService.create(period));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedTeachingAssistance() {
+    const teachingAssistances: CreateTeachingAssistanceDto[] &#x3D; Array.from({
+      length: 10,
+    }).map(() &#x3D;&gt; ({
+      title: faker.lorem.word(),
+      clasification: faker.lorem.word(),
+      description: faker.lorem.sentence(),
+      status: faker.lorem.word(),
+      task: faker.lorem.word(),
+      periodTypeDescription: faker.lorem.sentence(),
+      grade: faker.number.int({ min: 1, max: 10 }),
+      initialDate: faker.date.recent(),
+      finalDate: faker.date.recent(),
+      weeklyHours: faker.number.int({ min: 1, max: 12 }),
+    }));
+    const insertPromises: Promise&lt;CreateTeachingAssistanceDto&gt;[] &#x3D; [];
+    teachingAssistances.forEach((teachingAssistance) &#x3D;&gt; {
+      insertPromises.push(
+        this.teachingAssistancesService.create(teachingAssistance),
+      );
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedSection() {
+    const sections: CreateSectionDto[] &#x3D; Array.from({ length: 10 }).map(() &#x3D;&gt; ({
+      NRC: faker.number.int({ min: 10000, max: 99999 }),
+      section: faker.number.int({ min: 1, max: 100 }),
+    }));
+    const insertPromises: Promise&lt;CreateSectionDto&gt;[] &#x3D; [];
+    sections.forEach((section) &#x3D;&gt; {
+      insertPromises.push(this.sectionsService.create(section));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedProfessors() {
+    const professors: CreateProfessorDto[] &#x3D; Array(this.PROFESSORS_NUMBER)
+      .fill(null)
+      .map((_, idx) &#x3D;&gt; ({
+        document: &#x60;Document ${idx}&#x60;,
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+      }));
+    const insertPromises: Promise&lt;CreateProfessorDto&gt;[] &#x3D; [];
+    professors.forEach((professor) &#x3D;&gt; {
+      insertPromises.push(this.professorsService.create(professor));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedCourse() {
+    const courses: CreateCourseDto[] &#x3D; Array.from({ length: 10 }).map(() &#x3D;&gt; ({
+      name: faker.lorem.word(),
+      description: faker.lorem.sentence(),
+      code: faker.lorem.word(),
+      credits: faker.number.int({ min: 1, max: 10 }),
+      hours: faker.number.int({ min: 1, max: 10 }),
+      semester: faker.number.int({ min: 1, max: 2 }),
+      departament: faker.lorem.word(),
+    }));
+    const insertPromises: Promise&lt;CreateCourseDto&gt;[] &#x3D; [];
+    courses.forEach((course) &#x3D;&gt; {
+      insertPromises.push(this.coursesService.create(course));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedTags() {
+    const tags: CreateTagDto[] &#x3D; sampleTags;
+    const insertPromises: Promise&lt;CreateTagDto&gt;[] &#x3D; [];
+    tags.forEach((tag) &#x3D;&gt; {
+      insertPromises.push(this.tagsService.create(tag));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedTheses() {
+    const insertPromises: Promise&lt;Thesis&gt;[] &#x3D; [];
+    for (let i &#x3D; 0; i &lt; this.PROFESSORS_NUMBER; i++) {
+      for (
+        let cnt &#x3D; 0;
+        cnt &lt; this.PROFESSORS_NUMBER % (this.MAX_THESIS_PER_PROFESSOR + 1);
+        cnt++
+      ) {
+        insertPromises.push(
+          this.thesesService.create(
+            {
+              title: faker.lorem.word(),
+              description: faker.lorem.sentence(),
+              isEnded: faker.datatype.boolean(),
+              investigationSubarea: faker.lorem.word(),
+            },
+            &#x60;Document ${i}&#x60;,
+          ),
+        );
+      }
+    }
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedProjectApplications() {
+    const students &#x3D; await this.studentsService.findAll();
+    const projects &#x3D; await this.projectsService.findAll();
+    const insertPromises: Promise&lt;ProjectApplication&gt;[] &#x3D; [];
+    for (const student of students) {
+      const randomProject &#x3D;
+        projects[Math.floor(Math.random() * projects.length)];
+      insertPromises.push(
+        this.projectApplicationsService.create(
+          {
+            motivation: faker.lorem.sentence(),
+            wasContacted: faker.datatype.boolean(),
+          },
+          randomProject.id,
+          student.document,
+        ),
+      );
+    }
+
+    return true;
+  }
+
+  async seedProjects() {
+    const categories &#x3D; [&#x27;Investigación&#x27;, &#x27;Proyecto aplicado a empresas&#x27;];
+    const insertPromises: Promise&lt;Project&gt;[] &#x3D; [];
+    for (let i &#x3D; 0; i &lt; this.PROFESSORS_NUMBER; i++) {
+      for (
+        let cnt &#x3D; 0;
+        cnt &lt;
+        this.MAX_PROJECTS_PER_PROFESSOR -
+          (i % this.MAX_PROJECTS_PER_PROFESSOR) +
+          1;
+        cnt++
+      ) {
+        insertPromises.push(
+          this.projectsService.create(
+            {
+              title: faker.lorem.word(),
+              description: faker.lorem.sentence(),
+              isEnded: faker.datatype.boolean(),
+              maxStudents: faker.number.int({ min: 1, max: 10 }),
+              category:
+                categories[Math.floor(Math.random() * categories.length)],
+            },
+            &#x60;Document ${i}&#x60;,
+          ),
+        );
+      }
+    }
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedThesisApplications() {
+    const students &#x3D; await this.studentsService.findAll();
+    const theses &#x3D; await this.thesesService.findAll();
+    const insertPromises: Promise&lt;ProjectApplication&gt;[] &#x3D; [];
+    for (const student of students) {
+      const randomThesis &#x3D; theses[Math.floor(Math.random() * theses.length)];
+      insertPromises.push(
+        this.projectApplicationsService.create(
+          {
+            motivation: faker.lorem.sentence(),
+            wasContacted: faker.datatype.boolean(),
+          },
+          randomThesis.id,
+          student.document,
+        ),
+      );
+    }
+
+    return true;
+  }
+
+  async seedRequirements() {
+    const requirements: CreateRequirementDto[] &#x3D; sampleRequirements;
+    const insertPromises: Promise&lt;CreateRequirementDto&gt;[] &#x3D; [];
+    requirements.forEach((requirement) &#x3D;&gt; {
+      insertPromises.push(this.requirementsService.create(requirement));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedGraduatedAssistances() {
+    const professors &#x3D; await this.professorsService.findAll();
+    const periods &#x3D; await this.periodsService.findAll();
+    const requirements &#x3D; await this.requirementsService.findAll();
+    const graduatedAssistances: CreateGraduatedAssistanceDto[] &#x3D; Array.from({
+      length: 10,
+    }).map(() &#x3D;&gt; {
+      return {
+        title: faker.lorem.word(),
+        category: faker.lorem.word(),
+        description: faker.lorem.sentence(),
+        startDate: faker.date.recent().toISOString(),
+        endDate: faker.date.recent().toISOString(),
+      };
+    });
+    const insertPromises &#x3D; graduatedAssistances.map((graduatedAssistance) &#x3D;&gt; {
+      const randomProfessor &#x3D;
+        professors[Math.floor(Math.random() * professors.length)];
+      const randomPeriod &#x3D; periods[Math.floor(Math.random() * periods.length)];
+      const randomRequirements &#x3D; requirements
+        .sort(() &#x3D;&gt; 0.5 - Math.random())
+        .slice(0, Math.floor(Math.random() * 3) + 1)
+        .map((req) &#x3D;&gt; req.id);
+      return this.graduatedAssistancesService.create(
+        graduatedAssistance,
+        randomPeriod.id,
+        randomRequirements,
+        randomProfessor.document,
+      );
+    });
+
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedGraduatedAssistanceApplications() {
+    const students &#x3D; await this.studentsService.findAll();
+    const graduatedAssistances &#x3D;
+      await this.graduatedAssistancesService.findAll();
+    for (let i &#x3D; 0; i &lt; this.GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER; i++) {
+      const randomStudent &#x3D;
+        students[Math.floor(Math.random() * students.length)];
+
+      const randomGraduatedAssistance &#x3D;
+        graduatedAssistances[
+          Math.floor(Math.random() * graduatedAssistances.length)
+        ];
+      await this.graduatedAssistanceApplicationsService.create(
+        {},
+        randomStudent.document,
+        randomGraduatedAssistance.id,
+      );
+    }
+    return true;
+  }
+
+  async seedCoordinator() {
+    const coordinators: CreateCoordinatorDto[] &#x3D; Array.from({ length: 10 }).map(
+      () &#x3D;&gt; ({
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        document: faker.string.uuid(),
+      }),
+    );
+    const insertPromises: Promise&lt;CreateCoordinatorDto&gt;[] &#x3D; [];
+    coordinators.forEach((coordinator) &#x3D;&gt; {
+      insertPromises.push(this.coordinatorsService.create(coordinator));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedTask() {
+    const taskList: CreateTaskDto[] &#x3D; Array.from({ length: 10 }).map(() &#x3D;&gt; ({
+      completed: faker.datatype.boolean(),
+    }));
+    const insertPromises: Promise&lt;CreateTaskDto&gt;[] &#x3D; [];
+    taskList.forEach((task) &#x3D;&gt; {
+      insertPromises.push(this.tasksService.create(task));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedAreasOfInterest() {
+    const areasOfInterest: CreateAreasOfInterestDto[] &#x3D; sampleAreasOfInterest;
+    const insertPromises: Promise&lt;CreateAreasOfInterestDto&gt;[] &#x3D; [];
+    areasOfInterest.forEach((areasOfInterest) &#x3D;&gt; {
+      insertPromises.push(this.areasOfInterestService.create(areasOfInterest));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedStudents() {
+    const students: CreateStudentDto[] &#x3D; Array(this.STUDENTS_NUMBER)
+      .fill(null)
+      .map((_, idx) &#x3D;&gt; ({
+        document: &#x60;Document ${idx}&#x60;,
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        code: faker.string.uuid(),
+        password: faker.internet.password(),
+        semester: faker.number.int({ min: 1, max: 2 }),
+        isUndergraduate: faker.datatype.boolean(),
+        isTeachingAssistant: faker.datatype.boolean(),
+      }));
+
+    const insertPromises: Promise&lt;CreateStudentDto&gt;[] &#x3D; [];
+    students.forEach((student) &#x3D;&gt; {
+      insertPromises.push(this.studentsService.create(student));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async executeSeedStatic() {
+    await this.seedPeriods();
+    await this.seedRequirements();
+    await this.seedTags();
+    await this.seedAreasOfInterest();
+    return &#x27;SEED_EXECUTED&#x27;;
+  }
+
+  async executeSeedUsers() {
+    await this.seedProfessors();
+    await this.seedStudents();
+    await this.seedCoordinator();
+    return &#x27;SEED_EXECUTED&#x27;;
+  }
+
+  async executeSeedGraduatedAssistance() {
+    await this.seedGraduatedAssistances();
+    await this.seedGraduatedAssistanceApplications();
+    return &#x27;SEED_EXECUTED&#x27;;
+  }
+
+  async executeSeedProjects() {
+    await this.seedProjects();
+    await this.seedProjectApplications();
+    return &#x27;SEED_EXECUTED&#x27;;
+  }
+
+  async executeSeedThesis() {
+    await this.seedTheses();
+    //await this.seedThesisApplications();
+    return &#x27;SEED_EXECUTED&#x27;;
+  }
+
+  async executeSeedCourses() {
+    await this.seedCourse();
+    await this.seedBillboard();
+    await this.seedSection();
+    return &#x27;SEED_EXECUTED&#x27;;
+  }
+
+  async executeTaskAndTas() {
+    await this.seedTeachingAssistance();
+    await this.seedTask();
+    return &#x27;SEED_EXECUTED&#x27;;
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'SeedService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

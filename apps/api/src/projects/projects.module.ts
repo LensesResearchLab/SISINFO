@@ -4,11 +4,16 @@ import { ProjectController } from './projects.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
 import { ProfessorsModule } from '../professors/professors.module';
+import { PeriodsModule } from 'src/periods/periods.module';
 
 @Module({
   controllers: [ProjectController],
   providers: [ProjectsService],
-  imports: [ProfessorsModule, TypeOrmModule.forFeature([Project])],
+  imports: [
+    PeriodsModule,
+    ProfessorsModule,
+    TypeOrmModule.forFeature([Project]),
+  ],
   exports: [TypeOrmModule, ProjectsService],
 })
 export class ProjectsModule {}

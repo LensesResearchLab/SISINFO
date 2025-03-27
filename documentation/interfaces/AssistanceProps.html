@@ -1,0 +1,833 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>sisinfo documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">sisinfo documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  AssistanceProps</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/web/src/app/inicio/estudiante/asistencia/lista/[id]/page.tsx</code>
+        </p>
+
+
+
+
+        <section data-compodoc="block-index">
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Properties</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                        <a href="#assistance" 
+>
+                                            assistance
+                                        </a>
+                                </li>
+                                <li>
+                                        <a href="#setIsApplying" 
+>
+                                            setIsApplying
+                                        </a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+
+
+            <section data-compodoc="block-properties">
+                <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="assistance"></a>
+                                        <span class="name "><b>assistance</b>
+                                            <a href="#assistance">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>assistance:         <code><a href="../interfaces/Assistance.html" target="_self" >Assistance</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="../interfaces/Assistance.html" target="_self" >Assistance</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="setIsApplying"></a>
+                                        <span class="name "><b>setIsApplying</b>
+                                            <a href="#setIsApplying">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>setIsApplying:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function" target="_blank" >function</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+            </section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">&quot;use client&quot;;
+import { Card, CardContent, CardHeader, CardTitle } from &quot;@/components/ui/card&quot;;
+import {
+  Mail,
+  Users,
+  FileText,
+  Briefcase,
+  CheckCircle2,
+  User,
+  Upload,
+  X,
+} from &quot;lucide-react&quot;;
+import { Button } from &quot;@/components/ui/button&quot;;
+import { useEffect, useState } from &quot;react&quot;;
+import { Assistance, Requirement } from &quot;@/app/types/assistance.type&quot;;
+import { ConfirmationModal } from &quot;@/components/shared/confirmation-modal&quot;;
+import { Label } from &quot;@/components/ui/label&quot;;
+import { Input } from &quot;@/components/ui/input&quot;;
+import { useParams, useRouter } from &quot;next/navigation&quot;;
+
+import { ROUTES } from &quot;@/app/routes&quot;;
+import SpinnerPage from &quot;@/components/shared/spinner-page&quot;;
+import { getGraduatedAssistanceById } from &quot;@/app/services/assistance.service&quot;;
+
+interface AssistanceProps {
+  assistance: Assistance;
+  setIsApplying: (value: boolean) &#x3D;&gt; void;
+}
+
+interface InfoItemProps {
+  icon: React.ReactNode;
+  title: string;
+  content: string;
+}
+
+/**
+ * AssistanceDetails Component
+ *
+ * Main component for displaying and managing graduate assistance position details and application process.
+ *
+ * States:
+ * - assistance: Object containing all details about the assistance position
+ * - isApplying: Boolean to toggle between details view and application form
+ * - isLoading: Boolean to track data fetching state
+ *
+ * Features:
+ * - Fetches and displays assistance details
+ * - Handles navigation and 404 errors
+ * - Toggles between information display and application form
+ * - Shows loading state during data fetch
+ *
+ * @returns {JSX.Element} A div containing either assistance details or application form
+ */
+export default function AssistanceDetails() {
+  const router &#x3D; useRouter();
+  const { id } &#x3D; useParams();
+
+  const [isLoading, setIsLoading] &#x3D; useState(true);
+  const [assistance, setAssistance] &#x3D; useState&lt;Assistance&gt;({
+    id: &quot;&quot;,
+    title: &quot;&quot;,
+    clasification: &quot;&quot;,
+    publication_date: new Date(),
+    end_date: new Date(),
+    start_semester: &quot;&quot;,
+    description: &quot;&quot;,
+    requirements: [],
+    professor: {
+      name: &quot;&quot;,
+      email: &quot;&quot;,
+    },
+  });
+
+  const [isApplying, setIsApplying] &#x3D; useState(false);
+
+  useEffect(() &#x3D;&gt; {
+    const fetchData &#x3D; async () &#x3D;&gt; {
+      if (!id) return router.push(&quot;/404&quot;);
+      try {
+        const data &#x3D; await getGraduatedAssistanceById(id as string);
+        console.log(data);
+        setAssistance(data);
+      } catch {
+        router.push(&quot;/404&quot;);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  if (isLoading) {
+    return &lt;SpinnerPage /&gt;;
+  }
+
+  return (
+    &lt;div className&#x3D;&quot;min-h-full min-w-full mx-auto p-4 space-y-8&quot;&gt;
+      {!isApplying ? (
+        &lt;AssistanceInscription
+          assistance&#x3D;{assistance}
+          setIsApplying&#x3D;{setIsApplying}
+        /&gt;
+      ) : (
+        &lt;AssistanceApplying
+          assistance&#x3D;{assistance}
+          setIsApplying&#x3D;{setIsApplying}
+        /&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+
+/**
+ * AssistanceInscription Component
+ *
+ * Displays detailed information about the assistance position including main info,
+ * requirements, and contact details.
+ *
+ * Props:
+ * - assistance: Assistance object containing position details
+ * - setIsApplying: Function to toggle application state
+ *
+ * Layout:
+ * - Card container with header and content sections
+ * - Organized sections for different types of information
+ * - Apply button at the bottom
+ *
+ * @param {Object} props Component props
+ * @returns {JSX.Element} Card containing assistance position details
+ */
+function AssistanceInscription({
+  assistance,
+  setIsApplying,
+}: {
+  assistance: Assistance;
+  setIsApplying: (value: boolean) &#x3D;&gt; void;
+}) {
+  return (
+    &lt;Card className&#x3D;&quot;max-w-3xl  mx-auto shadow-lg&quot;&gt;
+      &lt;CardHeader className&#x3D;&quot; rounded-t-lg&quot;&gt;
+        &lt;CardTitle className&#x3D;&quot;text-3xl font-bold text-core&quot;&gt;
+          Información de la asistencia
+        &lt;/CardTitle&gt;
+      &lt;/CardHeader&gt;
+      &lt;CardContent className&#x3D;&quot;pt-3 space-y-6&quot;&gt;
+        &lt;div className&#x3D;&quot;space-y-11&quot;&gt;
+          &lt;MainInformation assistance&#x3D;{assistance} /&gt;
+          &lt;Requisites requisites&#x3D;{assistance.requirements} /&gt;
+          &lt;div className&#x3D;&quot;grid grid-cols-1 md:grid-cols-2 gap-6&quot;&gt;
+            &lt;ContactInfo assistance&#x3D;{assistance} /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;Button
+          className&#x3D;&quot;w-40 mx-auto block&quot;
+          onClick&#x3D;{() &#x3D;&gt; setIsApplying(true)}
+        &gt;
+          Aplicar
+        &lt;/Button&gt;
+      &lt;/CardContent&gt;
+    &lt;/Card&gt;
+  );
+}
+
+/**
+ * InfoItem Component
+ *
+ * Reusable component for displaying information with an icon and title.
+ *
+ * Props:
+ * - icon: React node for the icon element
+ * - title: String for the information title
+ * - content: String content to display
+ *
+ * @param {InfoItemProps} props Component props
+ * @returns {JSX.Element} Formatted information item
+ */
+function InfoItem({ icon, title, content }: InfoItemProps) {
+  return (
+    &lt;div className&#x3D;&quot;flex items-start gap-3&quot;&gt;
+      {icon}
+      &lt;div&gt;
+        &lt;h2 className&#x3D;&quot;font-bold text-xl text-core-highlight&quot;&gt;{title}:&lt;/h2&gt;
+        &lt;p className&#x3D;&quot;text-xl&quot;&gt;{content}&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+/**
+ * MainInformation Component
+ *
+ * Displays the primary information about the assistance position including
+ * name, classification, and description.
+ *
+ * Props:
+ * - assistance: Assistance object containing position details
+ *
+ * Features:
+ * - Icons for each information type
+ * - Consistent styling and spacing
+ * - Responsive layout
+ *
+ * @param {Object} props Component props
+ * @returns {JSX.Element} Section containing main position information
+ */
+function MainInformation({ assistance }: { assistance: Assistance }) {
+  return (
+    &lt;div className&#x3D;&quot;space-y-12&quot;&gt;
+      &lt;div className&#x3D;&quot;space-y-6&quot;&gt;
+        &lt;InfoItem
+          icon&#x3D;{
+            &lt;Briefcase className&#x3D;&quot;w-10 h-10 text-core-highlight flex-shrink-0 mt-1&quot; /&gt;
+          }
+          title&#x3D;&quot;Nombre&quot;
+          content&#x3D;{assistance.title}
+        /&gt;
+        &lt;InfoItem
+          icon&#x3D;{
+            &lt;Users className&#x3D;&quot;w-10 h-10 text-core-highlight flex-shrink-0 mt-1&quot; /&gt;
+          }
+          title&#x3D;&quot;Clasificación&quot;
+          content&#x3D;{assistance.clasification}
+        /&gt;
+        &lt;InfoItem
+          icon&#x3D;{
+            &lt;FileText className&#x3D;&quot;w-10 h-10 text-core-highlight flex-shrink-0 mt-1&quot; /&gt;
+          }
+          title&#x3D;&quot;Descripción&quot;
+          content&#x3D;{assistance.description}
+        /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+/**
+ * Requisites Component
+ *
+ * Displays a list of requirements for the assistance position.
+ *
+ * Props:
+ * - requisites: Array of strings containing requirement descriptions
+ *
+ * Features:
+ * - Checkmark icons for each requirement
+ * - Consistent spacing and alignment
+ * - Maps through requirements array
+ *
+ * @param {Object} props Component props
+ * @returns {JSX.Element} List of position requirements
+ */
+function Requisites({ requisites }: { requisites?: Requirement[] }) {
+  if (!requisites || requisites.length &#x3D;&#x3D;&#x3D; 0) {
+    return &lt;p className&#x3D;&quot;text-gray-500&quot;&gt;No hay requisitos disponibles.&lt;/p&gt;;
+  }
+
+  return (
+    &lt;div className&#x3D;&quot;mb-4&quot;&gt;
+      &lt;h3 className&#x3D;&quot;font-semibold text-2xl text-core-highlight mb-3&quot;&gt;
+        Requisitos:
+      &lt;/h3&gt;
+      &lt;ul className&#x3D;&quot;space-y-1&quot;&gt;
+        {requisites.map((requisite) &#x3D;&gt; (
+          &lt;li className&#x3D;&quot;flex items-center gap-3&quot; key&#x3D;{requisite.name}&gt;
+            &lt;CheckCircle2 className&#x3D;&quot;w-6 h-6 text-core-highlight flex-shrink-0&quot; /&gt;
+            &lt;span className&#x3D;&quot;text-xl&quot;&gt;{requisite.description}&lt;/span&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}
+
+/**
+ * ContactInfo Component
+ *
+ * Displays contact information for the assistance position including
+ * professor name and email.
+ *
+ * Props:
+ * - assistance: Assistance object containing contact details
+ *
+ * Features:
+ * - Icons for each contact method
+ * - Consistent styling
+ *
+ * @param {Object} props Component props
+ * @returns {JSX.Element} Section containing contact information
+ */
+function ContactInfo({ assistance }: { assistance: Assistance }) {
+  return (
+    &lt;div className&#x3D;&quot;space-y-4&quot;&gt;
+      &lt;h3 className&#x3D;&quot;font-semibold text-2xl text-core-highlight&quot;&gt;
+        Información de contacto:
+      &lt;/h3&gt;
+      &lt;div className&#x3D;&quot;space-y-4&quot;&gt;
+        &lt;InfoItem
+          icon&#x3D;{
+            &lt;User className&#x3D;&quot;w-8 h-8 text-core-highlight flex-shrink-0 mt-1&quot; /&gt;
+          }
+          title&#x3D;&quot;Profesor&quot;
+          content&#x3D;{assistance.professor.name}
+        /&gt;
+        &lt;InfoItem
+          icon&#x3D;{
+            &lt;Mail className&#x3D;&quot;w-8 h-8 text-core-highlight flex-shrink-0 mt-1&quot; /&gt;
+          }
+          title&#x3D;&quot;Email&quot;
+          content&#x3D;{assistance.professor.email}
+        /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+/**
+ * AssistanceApplying Component
+ *
+ * Handles the application process for the assistance position.
+ *
+ * Props:
+ * - assistance: Assistance object containing position details
+ * - setIsApplying: Function to toggle application state
+ *
+ * Features:
+ * - File upload for CV
+ * - Confirmation modal
+ * - Form submission handling
+ * - Navigation back to details
+ *
+ * @param {Object} props Component props
+ * @returns {JSX.Element} Application form card
+ */
+function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
+  const handleSubmit &#x3D; (e: React.FormEvent) &#x3D;&gt; {
+    e.preventDefault();
+  };
+
+  const modalProps &#x3D; {
+    title: &quot;¿Estás seguro de aplicar a esta asistencia graduada?&quot;,
+    description: &quot;Recuerda que una vez aplicas no podrás cambiar tu decisión&quot;,
+    buttonText: &quot;Aplicar&quot;,
+    successTitle: &quot;¡Aplicación enviada!&quot;,
+    successText: &quot;Tu aplicación ha sido enviada con éxito&quot;,
+    url: &#x60;${ROUTES.HOME}/${ROUTES.ASSISTANCE_APPLIED_LIST}&#x60;,
+  };
+
+  const [isConfirmed, setIsConfirmed] &#x3D; useState(false);
+
+  return (
+    &lt;Card className&#x3D;&quot;max-w-3xl  mx-auto shadow-lg&quot;&gt;
+      &lt;CardHeader className&#x3D;&quot; flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0&quot;&gt;
+        &lt;CardTitle className&#x3D;&quot;text-2xl font-bold text-center text-core&quot;&gt;
+          {assistance.title}
+        &lt;/CardTitle&gt;
+        &lt;ButtonBack setIsApplying&#x3D;{setIsApplying} /&gt;
+      &lt;/CardHeader&gt;
+      &lt;CardContent&gt;
+        &lt;form
+          /* onSubmit&#x3D;{TODO: APLICAR EFECTOS EN BACKEND} */ className&#x3D;&quot;space-y-6&quot;
+        &gt;
+          &lt;UploadCV assistance&#x3D;{assistance} /&gt;
+          &lt;div className&#x3D;&quot;flex justify-center pt-3.5&quot;&gt;
+            &lt;Button
+              type&#x3D;&quot;button&quot;
+              onClick&#x3D;{() &#x3D;&gt; setIsConfirmed(true)}
+              className&#x3D;&quot;bg-core hover:bg-core-highlight text-card px-10 py-5 rounded-xl text-lg font-semibold transition-colors shadow-lg hover:shadow-core-soft&quot;
+            &gt;
+              Aplicar
+            &lt;/Button&gt;
+            &lt;ConfirmationModal
+              dialogText&#x3D;{modalProps}
+              onConfirm&#x3D;{handleSubmit}
+              open&#x3D;{isConfirmed}
+              setIsOpen&#x3D;{setIsConfirmed}
+            /&gt;
+          &lt;/div&gt;
+        &lt;/form&gt;
+      &lt;/CardContent&gt;
+    &lt;/Card&gt;
+  );
+}
+
+/**
+ * ButtonBack Component
+ *
+ * Renders a button to return to the details view from the application form.
+ *
+ * Props:
+ * - setIsApplying: Function to toggle application state
+ *
+ * Features:
+ * - Consistent styling with main theme
+ * - Icon integration
+ * - Hover states
+ *
+ * @param {Object} props Component props
+ * @returns {JSX.Element} Back button
+ */
+function ButtonBack({
+  setIsApplying,
+}: {
+  setIsApplying: (value: boolean) &#x3D;&gt; void;
+}) {
+  return (
+    &lt;Button
+      variant&#x3D;&quot;outline&quot;
+      size&#x3D;&quot;sm&quot;
+      className&#x3D;&quot;text-core hover:text-core-highlight border-core hover:border-core-highlight hover:bg-core-soft dark:hover:bg-core&quot;
+      onClick&#x3D;{() &#x3D;&gt; setIsApplying(false)}
+    &gt;
+      &lt;FileText className&#x3D;&quot;h-4 w-4 mr-2&quot; /&gt;
+      Ver detalles
+    &lt;/Button&gt;
+  );
+}
+
+/**
+ * UploadCV Component
+ *
+ * Handles CV file upload functionality for the application process.
+ *
+ * Props:
+ * - assistance: Assistance object containing position details
+ *
+ * States:
+ * - uploadedFile: Object containing file name and URL
+ *
+ * Features:
+ * - PDF file upload
+ * - File preview
+ * - Remove file capability
+ * - Drag and drop area
+ *
+ * @param {Object} props Component props
+ * @returns {JSX.Element} File upload section
+ */
+function UploadCV({ assistance }: { assistance: Assistance }) {
+  const [uploadedFile, setUploadedFile] &#x3D; useState&lt;{
+    name: string;
+    url: string;
+  } | null&gt;(null);
+
+  const handleFileChange &#x3D; (event: React.ChangeEvent&lt;HTMLInputElement&gt;) &#x3D;&gt; {
+    const file &#x3D; event.target.files?.[0];
+    if (file &amp;&amp; file.type &#x3D;&#x3D;&#x3D; &quot;application/pdf&quot;) {
+      const url &#x3D; URL.createObjectURL(file);
+      setUploadedFile({ name: file.name, url });
+    }
+  };
+
+  const handleDrop &#x3D; (event: React.DragEvent) &#x3D;&gt; {
+    event.preventDefault();
+    const file &#x3D; event.dataTransfer.files[0];
+    if (file &amp;&amp; file.type &#x3D;&#x3D;&#x3D; &quot;application/pdf&quot;) {
+      const url &#x3D; URL.createObjectURL(file);
+      setUploadedFile({ name: file.name, url });
+    }
+  };
+
+  const handleDragOver &#x3D; (event: React.DragEvent) &#x3D;&gt; {
+    event.preventDefault();
+  };
+
+  return (
+    &lt;div className&#x3D;&quot;space-y-6&quot;&gt;
+      &lt;div&gt;
+        &lt;h2 className&#x3D;&quot;text-xl font-semibold mb-2&quot;&gt;Hoja de vida&lt;/h2&gt;
+        &lt;p className&#x3D;&quot;text-ring&quot;&gt;
+          Adjunta tu hoja de vida en formato PDF para aplicar a esta asistencia
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;div
+        className&#x3D;&quot;border-2 border-dashed rounded-lg p-6 text-center cursor-pointer&quot;
+        onDrop&#x3D;{handleDrop}
+        onDragOver&#x3D;{handleDragOver}
+      &gt;
+        {!uploadedFile ? (
+          &lt;div&gt;
+            &lt;Upload className&#x3D;&quot;mx-auto h-12 w-12 text-ring&quot; /&gt;
+            &lt;Label htmlFor&#x3D;&quot;cv&quot; className&#x3D;&quot;mt-4 block text-sm font-medium&quot;&gt;
+              &lt;span className&#x3D;&quot;text-core-highlight&quot;&gt;Click para subir&lt;/span&gt; o
+              arrastra y suelta
+            &lt;/Label&gt;
+            &lt;Input
+              id&#x3D;&quot;cv&quot;
+              type&#x3D;&quot;file&quot;
+              className&#x3D;&quot;hidden&quot;
+              accept&#x3D;&quot;.pdf&quot;
+              onChange&#x3D;{handleFileChange}
+            /&gt;
+            &lt;p className&#x3D;&quot;text-xs text-ring mt-2&quot;&gt;Solo archivos PDF&lt;/p&gt;
+          &lt;/div&gt;
+        ) : (
+          &lt;div className&#x3D;&quot;flex items-center justify-between&quot;&gt;
+            &lt;div className&#x3D;&quot;flex items-center&quot;&gt;
+              &lt;FileText className&#x3D;&quot;h-6 w-6 text-core-highlight mr-2&quot; /&gt;
+              &lt;span&gt;{uploadedFile.name}&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;Button
+              variant&#x3D;&quot;ghost&quot;
+              size&#x3D;&quot;sm&quot;
+              className&#x3D;&quot;text-destructive&quot;
+              onClick&#x3D;{() &#x3D;&gt; setUploadedFile(null)}
+            &gt;
+              &lt;X className&#x3D;&quot;h-4 w-4&quot; /&gt;
+            &lt;/Button&gt;
+          &lt;/div&gt;
+        )}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'AssistanceProps.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

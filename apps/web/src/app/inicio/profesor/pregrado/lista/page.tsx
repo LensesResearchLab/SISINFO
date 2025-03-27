@@ -5,7 +5,6 @@ import {
   Search,
   ChevronDown,
   ChevronUp,
-  ArrowUpDown,
   Upload,
   Download,
   Calendar,
@@ -13,7 +12,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery } from "@tanstack/react-query";
 import { getThesisByProfessorId } from "@/app/services/thesis.service";
 import { useProfessorThesisListStore } from "./store";
@@ -133,12 +131,18 @@ function TableHeaders() {
 }
 
 function TableRow({ thesis }: { thesis: Thesis }) {
+  const router = useRouter();
   const expandedProject = useProfessorThesisListStore(
     (state) => state.expandedProject
   );
   const toggleExpandedProject = useProfessorThesisListStore(
     (state) => state.toggleExpandedProject
   );
+  const handleClick = () => {
+    router.push(
+      `${ROUTES.HOME}/${ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST}/${thesis.id}`
+    );
+  }
   return (
     <div key={thesis.id}>
       <div className="grid grid-cols-12 p-3 items-center text-primary border-b ">
@@ -146,7 +150,13 @@ function TableRow({ thesis }: { thesis: Thesis }) {
         <div className="col-span-3">{thesis.category}</div>
         <div className="col-span-3">{thesis.students?.length}</div>
         <div className="col-span-1">
-          <Search />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleClick()}
+          >
+            <Search className="w-4 h-4" />
+          </Button>
         </div>
         <div className="col-span-1">
           <TriangleAlert />
@@ -270,3 +280,6 @@ function StudentActionButtons() {
     </div>
   );
 }
+
+
+
