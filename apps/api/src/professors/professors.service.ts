@@ -21,15 +21,15 @@ export class ProfessorsService {
     return this.professorRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} professor`;
+  findOne(document: string) {
+    return this.professorRepository.findOneBy({ document: document });
   }
 
-  update(id: number, updateProfessorDto: UpdateProfessorDto) {
-    return `This action updates a #${id} professor`;
+  update(document: string, updateProfessorDto: UpdateProfessorDto) {
+    return `This action updates a #${document} professor`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} professor`;
+  remove(document: string) {
+    return `This action removes a #${document} professor`;
   }
 }

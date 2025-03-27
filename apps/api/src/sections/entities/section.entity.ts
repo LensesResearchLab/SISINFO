@@ -3,7 +3,7 @@ import { Base } from '../../common/entities/base.entity';
 import { Course } from '../../courses/entities/course.entity';
 import { Period } from '../../periods/entities/period.entity';
 import { Professor } from '../../professors/entities/professor.entity';
-import { TeachingAssistance } from '../../teaching_assistances/entities/teaching_assistance.entity';
+import { TeachingAssistance } from '../../teaching-assistances/entities/teaching-assistance.entity';
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()

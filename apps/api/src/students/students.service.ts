@@ -21,15 +21,17 @@ export class StudentsService {
     return this.studentRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} student`;
+  async findOne(document: string) {
+    return this.studentRepository.findOne({
+      where: { document },
+    });
   }
 
-  update(id: number, updateStudentDto: UpdateStudentDto) {
+  update(id: string, updateStudentDto: UpdateStudentDto) {
     return `This action updates a #${id} student`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} student`;
   }
 }

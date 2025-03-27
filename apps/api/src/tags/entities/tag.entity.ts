@@ -5,9 +5,6 @@ import { Column, Entity, ManyToMany } from 'typeorm';
 @Entity()
 export class Tag extends Base {
   @Column('text')
-  name: string;
-
-  @Column('text')
   description: string;
 
   @ManyToMany(() => Thesis, (thesis) => thesis.tags)

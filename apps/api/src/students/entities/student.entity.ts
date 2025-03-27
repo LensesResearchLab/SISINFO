@@ -1,10 +1,10 @@
 import { ThesisApplication } from '../../thesis-applications/entities/thesis-application.entity';
 import { User } from '../../common/entities/user.entity';
 import { Course } from '../../courses/entities/course.entity';
-import { GraduatedAssistance } from '../../graduated_assistances/entities/graduated_assistance.entity';
+import { GraduatedAssistance } from '../../graduated-assistances/entities/graduated-assistance.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Task } from '../../tasks/entities/task.entity';
-import { TeachingAssistance } from '../../teaching_assistances/entities/teaching_assistance.entity';
+import { TeachingAssistance } from '../../teaching-assistances/entities/teaching-assistance.entity';
 
 import {
   Column,

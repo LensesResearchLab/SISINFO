@@ -1,6 +1,6 @@
 import { Billboard } from '../../billboards/entities/billboard.entity';
 import { Base } from '../../common/entities/base.entity';
-import { GraduatedAssistance } from '../../graduated_assistances/entities/graduated_assistance.entity';
+import { GraduatedAssistance } from '../../graduated-assistances/entities/graduated-assistance.entity';
 import { ImportantDate } from '../../important_dates/entities/important-date.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Section } from '../../sections/entities/section.entity';

@@ -3,11 +3,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as path from 'path';
 import { SeedModule } from './seed/seed.module';
-import { AreasOfInterestModule } from './areas_of_interest/areas_of_interest.module';
+import { AreasOfInterestModule } from './areas-of-interest/areas-of-interest.module';
 import { BillboardsModule } from './billboards/billboards.module';
 import { CoordinatorsModule } from './coordinators/coordinators.module';
 import { CoursesModule } from './courses/courses.module';
-import { GraduatedAssistancesModule } from './graduated_assistances/graduated_assistances.module';
+import { GraduatedAssistancesModule } from './graduated-assistances/graduated-assistances.module';
 import { PeriodsModule } from './periods/periods.module';
 import { ProfessorsModule } from './professors/professors.module';
 import { ProjectsModule } from './projects/projects.module';
@@ -15,7 +15,7 @@ import { RequirementsModule } from './requirements/requirements.module';
 import { SectionsModule } from './sections/sections.module';
 import { TagsModule } from './tags/tags.module';
 import { TasksModule } from './tasks/tasks.module';
-import { TeachingAssistancesModule } from './teaching_assistances/teaching_assistances.module';
+import { TeachingAssistancesModule } from './teaching-assistances/teaching-assistances.module';
 import { ThesesModule } from './theses/theses.module';
 import { StudentsModule } from './students/students.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -65,13 +65,6 @@ import { ProjectApplicationsModule } from './project-applications/project-applic
       autoLoadEntities: true,
       synchronize: true,
     }),
-    ImportantDatesModule,
-    ProgramsModule,
-    DocumentsModule,
-    IncidencesModule,
-    AssistanceApplicationsModule,
-    ThesisApplicationsModule,
-    ProjectApplicationsModule,
   ],
   controllers: [],
   providers: [],

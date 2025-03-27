@@ -1,6 +1,6 @@
 import { User } from '../../common/entities/user.entity';
 import { Course } from '../../courses/entities/course.entity';
-import { GraduatedAssistance } from '../../graduated_assistances/entities/graduated_assistance.entity';
+import { GraduatedAssistance } from '../../graduated-assistances/entities/graduated-assistance.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Section } from '../../sections/entities/section.entity';
 import { Task } from '../../tasks/entities/task.entity';

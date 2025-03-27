@@ -1,15 +1,34 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ProjectApplicationsService } from './project-applications.service';
 import { CreateProjectApplicationDto } from './dto/create-project-application.dto';
 import { UpdateProjectApplicationDto } from './dto/update-project-application.dto';
 
 @Controller('project-applications')
 export class ProjectApplicationsController {
-  constructor(private readonly projectApplicationsService: ProjectApplicationsService) {}
+  constructor(
+    private readonly projectApplicationsService: ProjectApplicationsService,
+  ) {}
 
   @Post()
-  create(@Body() createProjectApplicationDto: CreateProjectApplicationDto) {
-    return this.projectApplicationsService.create(createProjectApplicationDto);
+  create(
+    @Body() createProjectApplicationDto: CreateProjectApplicationDto,
+    @Query('projectId') projectId: string,
+    @Query('studentDocument') studentDocument: string,
+  ) {
+    return this.projectApplicationsService.create(
+      createProjectApplicationDto,
+      projectId,
+      studentDocument,
+    );
   }
 
   @Get()
@@ -23,8 +42,14 @@ export class ProjectApplicationsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProjectApplicationDto: UpdateProjectApplicationDto) {
-    return this.projectApplicationsService.update(+id, updateProjectApplicationDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateProjectApplicationDto: UpdateProjectApplicationDto,
+  ) {
+    return this.projectApplicationsService.update(
+      +id,
+      updateProjectApplicationDto,
+    );
   }
 
   @Delete(':id')

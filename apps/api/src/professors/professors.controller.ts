@@ -25,21 +25,21 @@ export class ProfessorsController {
     return this.professorsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.professorsService.findOne(+id);
+  @Get(':document')
+  findOne(@Param('document') document: string) {
+    return this.professorsService.findOne(document);
   }
 
-  @Patch(':id')
+  @Patch(':document')
   update(
-    @Param('id') id: string,
+    @Param('document') document: string,
     @Body() updateProfessorDto: UpdateProfessorDto,
   ) {
-    return this.professorsService.update(+id, updateProfessorDto);
+    return this.professorsService.update(document, updateProfessorDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.professorsService.remove(+id);
+  @Delete(':document')
+  remove(@Param('document') document: string) {
+    return this.professorsService.remove(document);
   }
 }

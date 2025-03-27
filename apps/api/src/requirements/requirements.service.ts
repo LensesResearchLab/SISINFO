@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateRequirementDto } from './dto/create-requirement.dto';
 import { UpdateRequirementDto } from './dto/update-requirement.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Requirement } from './entities/requirement.entity';
 
 @Injectable()
@@ -27,6 +27,16 @@ export class RequirementsService {
       id,
     });
   }
+
+  async findByIds(ids: string[]): Promise<Requirement[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    return await this.requirementRepository.find({
+      where: { id: In(ids) },
+    });
+  }
+
   async update(id: string, updateRequirementDto: UpdateRequirementDto) {
     const req = await this.requirementRepository.findOneBy({
       id,

@@ -77,7 +77,14 @@ Asegúrate de tener instalado lo siguiente:
     ```bash
     npm run dev
     ```
-9. Abre tu navegador y visita http://localhost:8000/api/SEED para cargar los datos de prueba (generados de forma aleatoria).
+9. Abre tu navegador y visita los enlaces a continuación para cargar los datos de prueba (generados de forma aleatoria).
+- http://localhost:8000/api/seed/static
+- http://localhost:8000/api/seed/users
+- http://localhost:8000/api/seed/projects
+- http://localhost:8000/api/seed/graduated-assistances
+- http://localhost:8000/api/seed/theses
+- http://localhost:8000/api/seed/courses
+- http://localhost:8000/api/seed/other
 10. Visita http://localhost:3000 para ver la aplicación en funcionamiento.
 
 > Si deseas liberar los puertos 3000 y 8000, puedes usar el comando `npm run kill`.

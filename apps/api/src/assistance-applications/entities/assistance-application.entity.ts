@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { Base } from '../../common/entities/base.entity';
 import { AssistanceStatusEnum } from '../enums/assistance_status.enum';
 import { Student } from '../../students/entities/student.entity';
-import { GraduatedAssistance } from '../../graduated_assistances/entities/graduated_assistance.entity';
+import { GraduatedAssistance } from '../../graduated-assistances/entities/graduated-assistance.entity';
 import { Document } from '../../documents/entities/document.entity';
 
 @Entity()

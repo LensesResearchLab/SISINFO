@@ -1,5 +1,5 @@
 import { ProjectApplication } from '../../project-applications/entities/project-application.entity';
-import { AreasOfInterest } from '../../areas_of_interest/entities/areas_of_interest.entity';
+import { AreasOfInterest } from '../../areas-of-interest/entities/areas-of-interest.entity';
 import { Base } from '../../common/entities/base.entity';
 import { Period } from '../../periods/entities/period.entity';
 import { Professor } from '../../professors/entities/professor.entity';
@@ -25,7 +25,7 @@ export class Project extends Base {
   category: string;
 
   @Column('numeric')
-  max_students: number;
+  maxStudents: number;
 
   @Column('boolean', { default: false })
   isEnded: boolean;

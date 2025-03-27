@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, File, User } from "lucide-react";
+import { File, User } from "lucide-react";
 
 import {
   Table,
@@ -21,7 +21,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   getUndergraduateThesis,
-  getUndegraduadeThesisSemesters,
 } from "@/app/services/thesis.service";
 import { Thesis } from "@/app/types/thesis.type";
 
@@ -41,6 +40,7 @@ import { useThesisListStore } from "./store";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/app/routes";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
+import { getPeriods } from "@/app/services/period.service";
 
 /**
  * ThesisList Component
@@ -74,8 +74,8 @@ export default function ThesisList() {
       }),
   });
   const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
-    queryKey: ["student-thesis-semesters"],
-    queryFn: getUndegraduadeThesisSemesters,
+    queryKey: ["undergraduate-semesters"],
+    queryFn: getPeriods,
   });
 
   useEffect(() => {
@@ -207,12 +207,11 @@ function AccordionListSimpleFactory({
   thesisList: { [professor: string]: Thesis[] };
 }) {
   const category = useThesisListStore((state) => state.searchCategory);
-  const order = useThesisListStore((state) => state.order);
   if (category === "areas_of_interest")
     return (
-      <AreaOfInterestAccordionList thesisList={thesisList} order={order} />
+      <AreaOfInterestAccordionList thesisList={thesisList}/>
     );
-  return <ProfessorAccordionList thesisList={thesisList} order={order} />;
+  return <ProfessorAccordionList thesisList={thesisList}/>;
 }
 
 /**
@@ -228,11 +227,10 @@ function AccordionListSimpleFactory({
  */
 function AreaOfInterestAccordionList({
   thesisList,
-  order,
 }: {
   thesisList: { [field: string]: Thesis[] };
-  order: string[];
 }) {
+  const order = useThesisListStore((state) => state.order);
   return (
     <>
       {order.map((field) => (
@@ -265,11 +263,10 @@ function AreaOfInterestAccordionList({
  */
 function ProfessorAccordionList({
   thesisList,
-  order,
 }: {
   thesisList: { [professor: string]: Thesis[] };
-  order: string[];
 }) {
+  const order = useThesisListStore((state) => state.order);
   return (
     <>
       {order.map((professor) => (

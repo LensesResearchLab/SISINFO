@@ -1,10 +1,11 @@
-import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ProjecStatusEnum } from '../enums/project_status.enum';
 
 export class CreateProjectApplicationDto {
   @IsString()
   @IsNotEmpty()
-  status: ProjecStatusEnum;
+  @IsOptional()
+  status?: ProjecStatusEnum;
 
   @IsString()
   @IsNotEmpty()

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { AssistanceApplicationsService } from './assistance-applications.service';
 import { CreateAssistanceApplicationDto } from './dto/create-assistance-application.dto';
@@ -18,17 +19,28 @@ export class AssistanceApplicationsController {
   ) {}
 
   @Post()
-  create(
+  async create(
     @Body() createAssistanceApplicationDto: CreateAssistanceApplicationDto,
+    @Query('studentDocument') studentDocument: string,
+    @Query('graduatedAssistanceId') graduatedAssistanceId: string,
   ) {
     return this.assistanceApplicationsService.create(
       createAssistanceApplicationDto,
+      studentDocument,
+      graduatedAssistanceId,
     );
   }
 
   @Get()
   findAll() {
     return this.assistanceApplicationsService.findAll();
+  }
+
+  @Get('student/:document')
+  findAllByStudentDocument(@Param('document') document: string) {
+    return this.assistanceApplicationsService.findAllByStudentDocument(
+      document,
+    );
   }
 
   @Get(':id')

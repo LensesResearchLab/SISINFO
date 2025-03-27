@@ -10,7 +10,7 @@ interface InformationCardProps {
   url: string
 }
 
-interface InformationSectionProps {
+export interface InformationSectionProps {
   title: string
   features: InformationCardProps[]
   background?: string

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ThesesService } from './theses.service';
 import { CreateThesisDto } from './dto/create-thesis.dto';
@@ -16,8 +17,11 @@ export class ThesesController {
   constructor(private readonly thesesService: ThesesService) {}
 
   @Post()
-  create(@Body() createThesisDto: CreateThesisDto) {
-    return this.thesesService.create(createThesisDto);
+  create(
+    @Body() createThesisDto: CreateThesisDto,
+    @Query('studentDocument') studentDocument: string,
+  ) {
+    return this.thesesService.create(createThesisDto, studentDocument);
   }
 
   @Get()

@@ -42,9 +42,10 @@ export const ROUTES: Record<string, string> = {
 
   PROFESSOR_ASSISTANCE_LIST: "/profesor/asistencias/lista",
   PROFESSOR_ASSISTANCE_LIST_EDIT: "profesor/asistencias/lista/manejar",
-  PROFESSOR_ASSISTANCE_LIST_EDIT_ID:
-    "profesor/asistencias/lista/manejar/editar",
+  PROFESSOR_ASSISTANCE_LIST_EDIT_ID: "profesor/asistencias/lista/manejar/editar",
   PROFESSOR_NEW_ASSISTANCE: "/profesor/asistencias/nueva",
+
+  PROFESSOR_TEACHING_ASSISTANCE_LIST: "/profesor/monitorias/",
 
   /*  Coordinators  */
 
@@ -60,4 +61,9 @@ export const ROUTES: Record<string, string> = {
   /*  General  */
 
   TASK_LIST: "/tareas",
+};
+
+export const API_ROUTES: Record<string, string> = {
+  BASE : "http://localhost:8000/api",
+  PERIODS: "periods",
 };

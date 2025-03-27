@@ -15,5 +15,5 @@ export class CreateThesisDto {
 
   @IsString()
   @IsNotEmpty()
-  investigation_subarea: string;
+  investigationSubarea: string;
 }

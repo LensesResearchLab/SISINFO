@@ -3,7 +3,7 @@
  * Each data structure defines the menu items, their icons, routes and nested sub-items.
  */
 
-import { FileText, School, Settings2 } from "lucide-react";
+import { AlertTriangle, BookOpen, Calendar, FileText, PenSquare, School, Settings2, Video } from "lucide-react";
 import { ROUTES } from "@/app/routes";
 
 export const undergraduateData = [
@@ -14,16 +14,22 @@ export const undergraduateData = [
     isActive: false,
     items: [
       {
+        Icon: FileText,
         title: "Consultar temas",
-        url: ROUTES.UNDERGRADUATE_THESIS_LIST,
+        description: "Aquí puedes ver los proyectos disponibles y aplicar al que te interese.",
+        url: ROUTES.UNDERGRADUATE_THESIS_LIST
       },
       {
-        title: "Consultar inscripcion",
-        url: ROUTES.UNDERGRADUATE_THESIS_STATUS,
+        Icon: PenSquare,
+        title: "Ver estado de aplicación",
+        description: "Aquí puedes ver los detalles de tu inscripción al proyecto de grado.",
+        url: ROUTES.UNDERGRADUATE_THESIS_STATUS
       },
       {
+        Icon: Calendar,
         title: "Consultar fechas",
-        url: ROUTES.UNDERGRADUATE_THESIS_DATES,
+        description: "Aquí puedes consultar las fechas importantes del proceso.",
+        url: ROUTES.UNDERGRADUATE_THESIS_DATES
       },
     ],
   },
@@ -33,12 +39,16 @@ export const undergraduateData = [
     icon: School,
     items: [
       {
+        Icon: BookOpen,
         title: "Ver asistencias disponibles",
-        url: ROUTES.ASSISTANCE_LIST,
+        description: "Aquí puedes ver las asistencias disponibles y aplicar a estas.",
+        url: ROUTES.ASSISTANCE_LIST
       },
       {
+        Icon: PenSquare,
         title: "Ver estado de inscripción",
-        url: ROUTES.ASSISTANCE_APPLIED_LIST,
+        description: "Consulta como se encuentra tu proceso de asistencia graduada.",
+        url: ROUTES.ASSISTANCE_APPLIED_LIST
       },
     ],
   },
@@ -51,16 +61,22 @@ export const professorData = [
     icon: FileText,
     items: [
       {
+        Icon: FileText,
         title: "Publicar y consultar proyectos de pregrado",
-        url: ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST,
+        description: "Aquí puedes publicar y consultar los proyectos de grado activos.",
+        url: ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST
       },
       {
+        Icon: PenSquare,
         title: "Consultar histórico proyectos de grado",
-        url: ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_HISTORY,
+        description: "Aqui puedes ver los proyectos de grado que han existido.",
+        url: ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_HISTORY
       },
       {
+        Icon: Calendar,
         title: "Consultar fechas",
-        url: ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_DATES,
+        description: "Aquí puedes consultar las fechas importantes del proceso.",
+        url: ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_DATES
       },
     ],
   },
@@ -70,16 +86,22 @@ export const professorData = [
     icon: School,
     items: [
       {
+        Icon: FileText,
         title: "Publicar y consultar proyectos de maestría",
-        url: ROUTES.PROFESSOR_POSTGRADUATE_THESIS_LIST,
+        description: "Aquí puedes publicar y consultar los proyectos de grado activos.",
+        url: ROUTES.PROFESSOR_POSTGRADUATE_THESIS_LIST
       },
       {
+        Icon: PenSquare,
         title: "Consultar histórico proyectos de grado",
-        url: ROUTES.PROFESSOR_POSTGRADUATE_THESIS_HISTORY,
+        description: "Aqui puedes ver los proyectos de grado que han existido.",
+        url: ROUTES.PROFESSOR_POSTGRADUATE_THESIS_HISTORY
       },
       {
+        Icon: Calendar,
         title: "Consultar fechas",
-        url: ROUTES.PROFESSOR_POSTGRADUATE_THESIS_DATES,
+        description: "Aquí puedes consultar las fechas importantes del proceso.",
+        url: ROUTES.PROFESSOR_POSTGRADUATE_THESIS_DATES
       },
     ],
   },
@@ -89,15 +111,32 @@ export const professorData = [
     icon: Settings2,
     items: [
       {
+        Icon: BookOpen,
         title: "Ver asistencias publicadas",
-        url: ROUTES.PROFESSOR_ASSISTANCE_LIST,
+        description: "Aqui puedes ver las asistencias publicadas y sus aplicantes.",
+        url: ROUTES.PROFESSOR_ASSISTANCE_LIST
       },
       {
+        Icon: PenSquare,
         title: "Crear oferta",
-        url: ROUTES.PROFESSOR_NEW_ASSISTANCE,
+        description: "Crea oferta de asistencia graduada",
+        url: ROUTES.PROFESSOR_NEW_ASSISTANCE
       },
     ],
   },
+  {
+    title: "Monitores",
+    url: "monitores",
+    icon: FileText,
+    items: [
+      {
+        Icon: FileText,
+        title: "Consultar monitores",
+        description: "Aquí puedes consultar los monitores de los distintos cursos.",
+        url: ROUTES.PROFESSOR_TEACHING_ASSISTANCE_LIST,
+      },
+    ],
+  }
 ]
 
 export const coordinatorData = [
@@ -107,15 +146,21 @@ export const coordinatorData = [
     icon: FileText,
     items: [
       {
+        Icon: FileText,
         title: "Consultar programas de clases",
+        description: "Aquí puedes ver los programas de clases por periodo.",
         url: ROUTES.COURSE_PROGRAMS
       },
       {
+        Icon: PenSquare,
         title: "Consultar cargas de notas",
+        description: "Aquí puedes ver la carga de notas de los distintos cursos.",
         url: ROUTES.GRADE_LOAD
       },
       {
+        Icon: Calendar,
         title: "Administrar cartelera",
+        description: "Aquí puedes administrar la cartelera de los distintos periodos.",
         url: ROUTES.BULLETIN_BOARD
       },
     ],
@@ -126,11 +171,15 @@ export const coordinatorData = [
     icon: FileText,
     items: [
       {
+        Icon: BookOpen,
         title: "Generar reportes",
+        description: "Aquí puedes generar reportes de las distintas actividades.",
         url: ROUTES.REPORTS
       },
       {
+        Icon: PenSquare,
         title: "Alerta de fechas",
+        description: "Aqui puedes generar alertas de fechas importantes.",
         url: ROUTES.DATE_ALERTS
       },
     ],
@@ -141,7 +190,9 @@ export const coordinatorData = [
     icon: FileText,
     items: [
       {
+        Icon: AlertTriangle,
         title: "Cargar archivo",
+        description: "Carga un archivo con los monitores de los distintos cursos.",
         url: ROUTES.UPLOAD_TAS
       },
     ],
@@ -155,16 +206,22 @@ export const supportData = [
     icon: FileText,
     items: [ 
       {
+        Icon: AlertTriangle,
         title: "Reporte de incidencias",
-        url: ROUTES.SUPPORT_INCIDENCE,
+        description: "Reporta cualquier problema que tengas con la plataforma.",
+        url: ROUTES.SUPPORT_INCIDENCE
       },
       {
+        Icon: Video,
         title: "Tutoriales",
-        url: ROUTES.SUPPORT_TUTORIALS,
+        description: "Aquí puedes ver tutoriales para aprender a usar la plataforma.",
+        url: ROUTES.SUPPORT_TUTORIALS
       },
       {
+        Icon: BookOpen,
         title: "Contactar a coordinadores",
-        url: ROUTES.SUPPORT_CONTACT,
+        description: "Aquí puedes contactar a los coordinadores de la plataforma.",
+        url: ROUTES.SUPPORT_CONTACT
       },
     ],
   },

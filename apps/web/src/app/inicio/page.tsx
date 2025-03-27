@@ -16,11 +16,13 @@ import StudentFeatures from "@/app/inicio/components/student-features"
 import { TabsContent } from "@/components/ui/tabs";
 import { useHomeStore } from "./home.store";
 import RoleTab from "@/components/shared/role-tab";
+import SupportFeatures from "./components/support-features";
+
 // Map to associate roles with their corresponding feature components
 const roleMap = new Map<string, React.ReactNode>([
-  ["estudiante", <StudentFeatures />],
-  ["profesor", <ProfessorFeatures />],
-  ["coordinador", <CoordinatorFeatures />]
+  ["estudiante", <StudentFeatures key={"estudiante"}> <SupportFeatures/> </StudentFeatures> ],
+  ["profesor", <ProfessorFeatures  key={"profesor"}/>],
+  ["coordinador", <CoordinatorFeatures  key={"coordinador"}/>]
 ]);
 
 export default function Home() {

@@ -24,7 +24,7 @@ export class CreateProjectDto {
   @IsNumber()
   @Type(() => Number)
   @IsPositive()
-  max_students: number;
+  maxStudents: number;
 
   @IsBoolean()
   @IsOptional()
