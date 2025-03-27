@@ -8,8 +8,11 @@ import TabApplicants from "@/components/shared/tab-applicants";
 import { ROUTES } from "@/app/routes";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import React from "react";
-import { Assistance } from "@/app/types/assistance.type";
-import { getGraduatedAssistanceById } from "@/app/services/assistance.service";
+import { getAssistanceStatusById, getGraduatedAssistanceById } from "@/app/services/assistance.service";
+import { GraduatedAssistance } from "@/app/types/graduated-assistance.type";
+import { mapGraduatedAssistanceApplicationsToRowValues } from "@/app/mappers/graduated-assistance-application.mapper";
+import { GraduatedAssistanceApplication } from "@/app/types/graduated-assistance-application.type";
+
 
 export default function AssistanceManagePage() {
   const params = useParams();
@@ -17,25 +20,10 @@ export default function AssistanceManagePage() {
   const id = params.id as string;
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [assistance, setAssistanceDetail] = React.useState<Assistance | null>(
+  const [assistance, setAssistanceDetail] = React.useState<GraduatedAssistance | null>(
     null
   );
 
-  // Datos temporales TODO
-  const mockApplicants = [
-    {
-      id: "1",
-      name: "Alfredo Torres",
-      email: "a.torres@uniandes.edu.co",
-      status: "Aceptado" as const,
-    },
-    {
-      id: "2",
-      name: "Nicolás Camargo",
-      email: "n.camargop@uniandes.edu.co",
-      status: "En revisión" as const,
-    },
-  ];
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -70,7 +58,7 @@ export default function AssistanceManagePage() {
     },
     {
       title: "Clasificación",
-      description: assistance?.clasification || "No title available",
+      description: assistance?.category || "No title available",
       icon: <User2 className="h-8 w-8 text-core-highlight" />,
     },
     {
@@ -87,9 +75,10 @@ export default function AssistanceManagePage() {
 
   const statusProps = {
     title: "Aplicantes",
-    applicants: mockApplicants,
+    applicants: assistance?.assistanceApplications || [],
   };
-
+  
+  
   const handleEditClick = (id: string) => {
     const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT_ID}/${id}`;
     router.push(path);
@@ -98,6 +87,8 @@ export default function AssistanceManagePage() {
   const handleConfirmDeletion = () => {
     console.log("Confirmed!");
   };
+
+  console.log("Assistance Requirements:", assistance?.requirements);
 
   return (
     <div className="container mx-auto py-6 px-4">
@@ -116,8 +107,8 @@ export default function AssistanceManagePage() {
                 Requisitos
               </h3>
               <ul className="space-y-3 p-4">
-                {assistance?.requirements?.map((req, index) => (
-                  <li key={index} className="flex items-start gap-3">
+                {assistance?.requirements?.map((req) => (
+                  <li key={req.id} className="flex items-start gap-3">
                     <CircleCheck className="w-10 h-7 mb-0.1 text-core-highlight" />
                     <div>
                       <p className="text-primary">{req.description}</p>

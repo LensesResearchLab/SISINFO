@@ -45,25 +45,42 @@ export class AssistanceApplicationsService {
   }
 
   async findAllByStudentDocument(studentDocument: string) {
-    return this.assistanceApplicationRepository.find({
+    const results = await this.assistanceApplicationRepository.find({
       where: { student: { document: studentDocument } },
       relations: {
         graduatedAssistance: true,
-        student: true,
+        student: true, // Ensures student data is included
       },
     });
+  
+    console.log("🔍 Retrieved Applications:", JSON.stringify(results, null, 2));
+  
+    return results;
   }
+  
+  
 
   findOne(id: number) {
     return `This action returns a #${id} assistanceApplication`;
   }
 
-  update(
-    id: number,
+  async update(
+    id: string,
     updateAssistanceApplicationDto: UpdateAssistanceApplicationDto,
   ) {
-    return `This action updates a #${id} assistanceApplication`;
+    const assistance = await this.assistanceApplicationRepository.findOneBy({
+      id,
+    });
+    if (!assistance) {
+      throw new NotFoundException(
+        `Graduated assistance with ID ${id} not found`,
+      );
+    }
+    Object.assign(assistance, updateAssistanceApplicationDto);
+    return this.assistanceApplicationRepository.save(assistance);
+    
   }
+
 
   remove(id: number) {
     return `This action removes a #${id} assistanceApplication`;

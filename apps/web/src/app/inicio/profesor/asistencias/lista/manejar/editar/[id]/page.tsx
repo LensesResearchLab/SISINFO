@@ -16,13 +16,13 @@ import {
 } from "@/components/ui/select";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { ROUTES } from "@/app/routes";
-
-import { Assistance } from "@/app/types/assistance.type";
 import {
+  createRequirement,
   getGraduatedAssistanceById,
   updateGraduatedAssistance,
   updateRequirement,
 } from "@/app/services/assistance.service";
+import { GraduatedAssistance, Requirement } from "@/app/types/graduated-assistance.type";
 
 export default function EditAssistancePage() {
   const params = useParams();
@@ -30,15 +30,14 @@ export default function EditAssistancePage() {
   const id = params.id as string;
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [formData, setFormData] = useState<Assistance>({
+  const [formData, setFormData] = useState<GraduatedAssistance>({
     id: "",
     title: "",
-    clasification: "",
-    publication_date: new Date(),
-    end_date: new Date(),
-    start_semester: "",
+    category: "",
+    startDate: new Date(),
+    endDate: new Date(),
     description: "",
-    requirements: [{ id: "", description: "", name: "" }],
+    requirements: [],
     professor: { name: "", email: "" },
   });
 
@@ -69,67 +68,65 @@ export default function EditAssistancePage() {
   const handleClassificationChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
-      clasification: value,
+      category: value,
     }));
   };
 
   const handleRequirementChange = (index: number, value: string) => {
-    const newRequirements = [...formData.requirements];
-    newRequirements[index] = { ...newRequirements[index], description: value };
-    setFormData((prev) => ({
-      ...prev,
-      requirements: newRequirements,
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      requirements: prevFormData.requirements.map((req, i) =>
+        i === index ? { ...req, description: value } : req
+      ),
     }));
   };
+  
 
   const addRequirement = () => {
     setFormData((prev) => ({
       ...prev,
-      requirements: [
-        ...prev.requirements,
-        { id: "", name: "", description: "" },
-      ],
+      requirements: [...prev.requirements, { id: "", description: "" }],
     }));
   };
 
   const removeRequirement = (index: number) => {
-    if (formData.requirements.length > 1) {
-      const newRequirements = formData.requirements.filter(
-        (_, i) => i !== index
-      );
-      setFormData((prev) => ({
-        ...prev,
-        requirements: newRequirements,
-      }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      requirements: prev.requirements.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-
+  
     try {
-      // API CALL
-      await updateGraduatedAssistance(id as string, formData);
-
-      // TODO: when multiple requirements not working!
-      const updateRequirementsPromises = formData.requirements.map(
-        (requirement) => {
-          return updateRequirement(requirement.id, requirement);
-        }
+      const updatedRequirements = await Promise.all(
+        formData.requirements.map(async (requirement) => {
+          if (!requirement.id || requirement.id === "") { // If no ID is new
+            //console.log(requirement.description)
+            const newRequirement = await createRequirement(requirement.description);
+            return { ...requirement, id: newRequirement.id }; 
+          }
+          console.log("dadad");
+          await updateRequirement(requirement.id, requirement);
+          return requirement;
+        })
       );
-
-      // Wait for all requirements to be updated
-      await Promise.all(updateRequirementsPromises);
-
+      setFormData((prev) => ({
+        ...prev,
+        requirements: updatedRequirements,
+      }));  
+  
+      await updateGraduatedAssistance(id as string, formData);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`;
-      router.push(path);
+      router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`);
     } catch (error) {
       console.error("Error saving assistance:", error);
       setIsSaving(false);
     }
   };
+  
 
   if (isLoading) {
     return <SpinnerPage />;
@@ -161,7 +158,7 @@ export default function EditAssistancePage() {
                 Clasificación
               </Label>
               <Select
-                value={formData?.clasification}
+                value={formData?.category}
                 onValueChange={handleClassificationChange}
               >
                 <SelectTrigger>
@@ -198,9 +195,7 @@ export default function EditAssistancePage() {
                       id={`requirement-${index}`}
                       name={`requirement-${index}`}
                       value={req.description}
-                      onChange={(e) =>
-                        handleRequirementChange(index, e.target.value)
-                      }
+                      onChange={(e) => handleRequirementChange(index, e.target.value)}
                       placeholder={`Requisito ${index + 1}`}
                       required
                     />

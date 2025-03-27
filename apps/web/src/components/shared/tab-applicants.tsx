@@ -23,6 +23,8 @@ import { ChevronDown, MoreVertical, Search } from "lucide-react";
 import { useState } from "react";
 import { ConfirmationModal } from "./confirmation-modal";
 import { ROUTES } from "@/app/routes";
+import { GraduatedAssistanceApplication } from "@/app/types/graduated-assistance-application.type";
+import { updateAssistanceApplication } from "@/app/services/assistance.service";
 
 interface Section {
   title: string;
@@ -30,12 +32,6 @@ interface Section {
   icon: React.ReactNode;
 }
 
-interface Applicant {
-  id: string;
-  name: string;
-  email: string;
-  status: "Aceptado" | "En revisión" | "Rechazado";
-}
 
 interface TabStatusProps {
   general: {
@@ -44,7 +40,7 @@ interface TabStatusProps {
   };
   status: {
     title: string;
-    applicants: Applicant[];
+    applicants: GraduatedAssistanceApplication[];
   };
   children?: React.ReactNode;
 }
@@ -116,20 +112,43 @@ export default function TabStatus({
   );
 }
 
-function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
+function ApplicantsTable({ applicants }: { applicants: GraduatedAssistanceApplication[] }) {
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAscending, setSortAscending] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedApplicantIds, setSelectedApplicantIds] = useState<string[]>([]);
+  const [newStatus, setNewStatus] = useState<string | null>(null);
 
-  const handleConfirmAccepted = () => {
-    console.log("Confirmed!");
+  const handleConfirmAccepted = async () => {
+    console.log(selectedApplicantIds)
+    console.log(newStatus)
+    if (!selectedApplicantIds) return;
+    try {
+      // Update multiple applicants status or just one
+      await Promise.all(
+        selectedApplicantIds.map((id) =>
+          updateAssistanceApplication(id, { status: newStatus })
+        )
+      );
+      setIsModalOpen(false);
+      }
+     catch (error) {
+      console.error(error);
+    };
+  }
+
+  const handleOpenModal = (ids: string[], status: string) => {
+    setSelectedApplicantIds(ids);
+    setNewStatus(status);
+    setIsModalOpen(true);
   };
+
 
   const filteredApplicants = applicants.filter(
     (applicant) =>
-      applicant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      applicant.email.toLowerCase().includes(searchQuery.toLowerCase())
+      applicant.student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      applicant.student.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSelectAll = (checked: boolean) => {
@@ -146,8 +165,8 @@ function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
 
   const sortedApplicants = [...filteredApplicants].sort((a, b) => {
     return sortAscending
-      ? a.name.localeCompare(b.name)
-      : b.name.localeCompare(a.name);
+      ? a.student.name.localeCompare(b.student.name)
+      : b.student.name.localeCompare(a.student.name);
   });
 
   return (
@@ -179,7 +198,7 @@ function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
               variant="default"
               className="bg-core hover:bg-core-highlight"
               disabled={selectedApplicants.length === 0}
-              onClick={() => setIsModalOpen(true)} // TODO: Implement backend logic
+              onClick={() => handleOpenModal(selectedApplicants, "Aceptado")}
             >
               Aceptar seleccionados
             </Button>
@@ -217,8 +236,8 @@ function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
                           }
                         />
                       </TableCell>
-                      <TableCell>{applicant.name}</TableCell>
-                      <TableCell>{applicant.email}</TableCell>
+                      <TableCell>{applicant.student.name}</TableCell>
+                      <TableCell>{applicant.student.email}</TableCell>
                       <TableCell>{applicant.status}</TableCell>
                       <TableCell>
                         <DropdownMenu>
@@ -230,14 +249,10 @@ function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem>Ver detalles</DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setIsModalOpen(true)}
-                            >
+                            <DropdownMenuItem onClick={() => handleOpenModal([applicant.id], "Aceptado")}>
                               Aceptar
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setIsModalOpen(true)}
-                            >
+                            <DropdownMenuItem onClick={() => handleOpenModal([applicant.id], "Rechazado")}>
                               Rechazar
                             </DropdownMenuItem>
                           </DropdownMenuContent>
