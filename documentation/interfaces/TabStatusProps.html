@@ -1,0 +1,632 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>sisinfo documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">sisinfo documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content interface">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  TabStatusProps</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/web/src/components/shared/tab-applicants.tsx</code>
+        </p>
+
+
+
+
+        <section data-compodoc="block-index">
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Properties</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#children" 
+>
+                                            children
+                                        </a>
+                                </li>
+                                <li>
+                                        <a href="#general" 
+>
+                                            general
+                                        </a>
+                                </li>
+                                <li>
+                                        <a href="#status" 
+>
+                                            status
+                                        </a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+
+
+            <section data-compodoc="block-properties">
+                <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="children"></a>
+                                        <span class="name "><b>children</b>
+                                            <a href="#children">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>children:     <code>React.ReactNode</code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code>React.ReactNode</code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="general"></a>
+                                        <span class="name "><b>general</b>
+                                            <a href="#general">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>general:     <code>literal type</code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code>literal type</code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="status"></a>
+                                        <span class="name "><b>status</b>
+                                            <a href="#status">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>status:     <code>literal type</code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>    <code>literal type</code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+            </section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">&quot;use client&quot;;
+import type React from &quot;react&quot;;
+import { Tabs, TabsContent, TabsList, TabsTrigger } from &quot;@/components/ui/tabs&quot;;
+import { Card, CardContent, CardHeader } from &quot;@/components/ui/card&quot;;
+import { Button } from &quot;@/components/ui/button&quot;;
+import { Input } from &quot;@/components/ui/input&quot;;
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from &quot;@/components/ui/table&quot;;
+import { Checkbox } from &quot;@/components/ui/checkbox&quot;;
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from &quot;@/components/ui/dropdown-menu&quot;;
+import { ChevronDown, MoreVertical, Search } from &quot;lucide-react&quot;;
+import { useState } from &quot;react&quot;;
+import { ConfirmationModal } from &quot;./confirmation-modal&quot;;
+import { ROUTES } from &quot;@/app/routes&quot;;
+
+interface Section {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}
+
+interface Applicant {
+  id: string;
+  name: string;
+  email: string;
+  status: &quot;Aceptado&quot; | &quot;En revisión&quot; | &quot;Rechazado&quot;;
+}
+
+interface TabStatusProps {
+  general: {
+    title: string;
+    sections: Section[];
+  };
+  status: {
+    title: string;
+    applicants: Applicant[];
+  };
+  children?: React.ReactNode;
+}
+
+const path &#x3D; &#x60;${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST}&#x60;;
+const dialogTextAccepted &#x3D; {
+  title: &quot;Confirmar Accion&quot;,
+  description: &quot;¿Estás seguro de que quieres proceder?&quot;,
+  buttonText: &quot;Aceptar&quot;,
+  successTitle: &quot;Exitoso.&quot;,
+  successText: &quot;Accion realizada correctamente.&quot;,
+  url: path,
+};
+
+export default function TabStatus({
+  general,
+  status,
+  children,
+}: TabStatusProps) {
+  return (
+    &lt;div className&#x3D;&quot;max-w-4xl mx-auto p-4&quot;&gt;
+      &lt;Tabs defaultValue&#x3D;&quot;general&quot;&gt;
+        &lt;TabsList className&#x3D;&quot;grid w-full grid-cols-2 rounded-t-xl h-16 bg-core color-card&quot;&gt;
+          {[&quot;general&quot;, &quot;status&quot;].map((tab, index) &#x3D;&gt; (
+            &lt;TabsTrigger
+              key&#x3D;{tab}
+              value&#x3D;{tab}
+              className&#x3D;&quot;rounded-none data-[state&#x3D;active]:bg-core-highlight data-[state&#x3D;active]:rounded-t-xl data-[state&#x3D;active]:text-card text-lg h-12 text-card flex items-center justify-center cursor-pointer&quot;
+            &gt;
+              {index &#x3D;&#x3D;&#x3D; 0 ? &quot;Información general&quot; : &quot;Aplicantes&quot;}
+            &lt;/TabsTrigger&gt;
+          ))}
+        &lt;/TabsList&gt;
+
+        &lt;TabsContent value&#x3D;&quot;general&quot;&gt;
+          &lt;Card className&#x3D;&quot;max-w-4xl border border-ring shadow-md rounded-b-xl bg-card&quot;&gt;
+            &lt;CardHeader&gt;
+              &lt;h1 className&#x3D;&quot;text-2xl font-medium text-core-highlight&quot;&gt;
+                {general.title}
+              &lt;/h1&gt;
+            &lt;/CardHeader&gt;
+            &lt;CardContent className&#x3D;&quot;space-y-6&quot;&gt;
+              &lt;div className&#x3D;&quot;space-y-4&quot;&gt;
+                {general.sections.map((section) &#x3D;&gt; (
+                  &lt;div key&#x3D;{section.title} className&#x3D;&quot;flex gap-3&quot;&gt;
+                    {section.icon}
+                    &lt;div className&#x3D;&quot;w-full&quot;&gt;
+                      &lt;h1 className&#x3D;&quot;font-medium text-core-highlight&quot;&gt;
+                        {section.title}
+                      &lt;/h1&gt;
+                      &lt;p className&#x3D;&quot;text-primary break-words&quot;&gt;
+                        {section.description}
+                      &lt;/p&gt;
+                      &lt;hr className&#x3D;&quot;bg-ring h-[1px] w-full my-2 border-0&quot; /&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                ))}
+                {children}
+              &lt;/div&gt;
+            &lt;/CardContent&gt;
+          &lt;/Card&gt;
+        &lt;/TabsContent&gt;
+
+        &lt;TabsContent value&#x3D;&quot;status&quot;&gt;
+          &lt;ApplicantsTable applicants&#x3D;{status.applicants} /&gt;
+        &lt;/TabsContent&gt;
+      &lt;/Tabs&gt;
+    &lt;/div&gt;
+  );
+}
+
+function ApplicantsTable({ applicants }: { applicants: Applicant[] }) {
+  const [selectedApplicants, setSelectedApplicants] &#x3D; useState&lt;string[]&gt;([]);
+  const [searchQuery, setSearchQuery] &#x3D; useState(&quot;&quot;);
+  const [sortAscending, setSortAscending] &#x3D; useState(true);
+  const [isModalOpen, setIsModalOpen] &#x3D; useState(false);
+
+  const handleConfirmAccepted &#x3D; () &#x3D;&gt; {
+    console.log(&quot;Confirmed!&quot;);
+  };
+
+  const filteredApplicants &#x3D; applicants.filter(
+    (applicant) &#x3D;&gt;
+      applicant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      applicant.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSelectAll &#x3D; (checked: boolean) &#x3D;&gt; {
+    setSelectedApplicants(checked ? filteredApplicants.map((a) &#x3D;&gt; a.id) : []);
+  };
+
+  const handleSelectApplicant &#x3D; (id: string, checked: boolean) &#x3D;&gt; {
+    setSelectedApplicants(
+      checked
+        ? [...selectedApplicants, id]
+        : selectedApplicants.filter((a) &#x3D;&gt; a !&#x3D;&#x3D; id)
+    );
+  };
+
+  const sortedApplicants &#x3D; [...filteredApplicants].sort((a, b) &#x3D;&gt; {
+    return sortAscending
+      ? a.name.localeCompare(b.name)
+      : b.name.localeCompare(a.name);
+  });
+
+  return (
+    &lt;Card className&#x3D;&quot;border-none max-w-4xl&quot;&gt;
+      &lt;CardContent className&#x3D;&quot;p-6&quot;&gt;
+        &lt;div className&#x3D;&quot;space-y-4&quot;&gt;
+          &lt;div className&#x3D;&quot;flex items-center justify-between gap-4&quot;&gt;
+            &lt;div className&#x3D;&quot;flex-1 relative&quot;&gt;
+              &lt;Search className&#x3D;&quot;absolute left-3 top-2.5 h-4 w-4 text-muted-foreground&quot; /&gt;
+              &lt;Input
+                placeholder&#x3D;&quot;Buscar un estudiante&quot;
+                value&#x3D;{searchQuery}
+                onChange&#x3D;{(e) &#x3D;&gt; setSearchQuery(e.target.value)}
+                className&#x3D;&quot;pl-9&quot;
+              /&gt;
+            &lt;/div&gt;
+            &lt;Button
+              variant&#x3D;&quot;outline&quot;
+              size&#x3D;&quot;sm&quot;
+              className&#x3D;&quot;h-9 px-3 bg-core text-card hover:bg-core-highlight&quot;
+              onClick&#x3D;{() &#x3D;&gt; setSortAscending(!sortAscending)}
+            &gt;
+              &lt;span className&#x3D;&quot;mr-1&quot;&gt;A - Z&lt;/span&gt;
+              &lt;ChevronDown
+                className&#x3D;{&#x60;h-4 w-4 transform ${sortAscending ? &quot;&quot; : &quot;rotate-180&quot;}&#x60;}
+              /&gt;
+            &lt;/Button&gt;
+            &lt;Button
+              variant&#x3D;&quot;default&quot;
+              className&#x3D;&quot;bg-core hover:bg-core-highlight&quot;
+              disabled&#x3D;{selectedApplicants.length &#x3D;&#x3D;&#x3D; 0}
+              onClick&#x3D;{() &#x3D;&gt; setIsModalOpen(true)} // TODO: Implement backend logic
+            &gt;
+              Aceptar seleccionados
+            &lt;/Button&gt;
+          &lt;/div&gt;
+
+          &lt;div className&#x3D;&quot;overflow-hidden rounded-lg border&quot;&gt;
+            &lt;Table&gt;
+              &lt;TableHeader className&#x3D;&quot;bg-core&quot;&gt;
+                &lt;TableRow&gt;
+                  &lt;TableHead className&#x3D;&quot;w-12 text-card&quot;&gt;
+                    &lt;Checkbox
+                      onCheckedChange&#x3D;{(checked: boolean) &#x3D;&gt;
+                        handleSelectAll(checked)
+                      }
+                      className&#x3D;&quot;border-card data-[state&#x3D;checked]:bg-card data-[state&#x3D;checked]:text-core&quot;
+                    /&gt;
+                  &lt;/TableHead&gt;
+                  &lt;TableHead className&#x3D;&quot;text-card&quot;&gt;Nombre&lt;/TableHead&gt;
+                  &lt;TableHead className&#x3D;&quot;text-card&quot;&gt;Correo&lt;/TableHead&gt;
+                  &lt;TableHead className&#x3D;&quot;text-card&quot;&gt;Estado&lt;/TableHead&gt;
+                  &lt;TableHead className&#x3D;&quot;text-card w-12 px-5&quot;&gt;
+                    Acciones
+                  &lt;/TableHead&gt;
+                &lt;/TableRow&gt;
+              &lt;/TableHeader&gt;
+              &lt;TableBody&gt;
+                {sortedApplicants.length &gt; 0 ? (
+                  sortedApplicants.map((applicant) &#x3D;&gt; (
+                    &lt;TableRow key&#x3D;{applicant.id}&gt;
+                      &lt;TableCell&gt;
+                        &lt;Checkbox
+                          checked&#x3D;{selectedApplicants.includes(applicant.id)}
+                          onCheckedChange&#x3D;{(checked: boolean) &#x3D;&gt;
+                            handleSelectApplicant(applicant.id, checked)
+                          }
+                        /&gt;
+                      &lt;/TableCell&gt;
+                      &lt;TableCell&gt;{applicant.name}&lt;/TableCell&gt;
+                      &lt;TableCell&gt;{applicant.email}&lt;/TableCell&gt;
+                      &lt;TableCell&gt;{applicant.status}&lt;/TableCell&gt;
+                      &lt;TableCell&gt;
+                        &lt;DropdownMenu&gt;
+                          &lt;DropdownMenuTrigger asChild&gt;
+                            &lt;Button variant&#x3D;&quot;ghost&quot; size&#x3D;&quot;icon&quot;&gt;
+                              &lt;MoreVertical className&#x3D;&quot;h-4 w-4&quot; /&gt;
+                              &lt;span className&#x3D;&quot;sr-only&quot;&gt;Abrir menú&lt;/span&gt;
+                            &lt;/Button&gt;
+                          &lt;/DropdownMenuTrigger&gt;
+                          &lt;DropdownMenuContent align&#x3D;&quot;end&quot;&gt;
+                            &lt;DropdownMenuItem&gt;Ver detalles&lt;/DropdownMenuItem&gt;
+                            &lt;DropdownMenuItem
+                              onClick&#x3D;{() &#x3D;&gt; setIsModalOpen(true)}
+                            &gt;
+                              Aceptar
+                            &lt;/DropdownMenuItem&gt;
+                            &lt;DropdownMenuItem
+                              onClick&#x3D;{() &#x3D;&gt; setIsModalOpen(true)}
+                            &gt;
+                              Rechazar
+                            &lt;/DropdownMenuItem&gt;
+                          &lt;/DropdownMenuContent&gt;
+                        &lt;/DropdownMenu&gt;
+
+                        &lt;ConfirmationModal
+                          dialogText&#x3D;{dialogTextAccepted}
+                          onConfirm&#x3D;{handleConfirmAccepted}
+                          open&#x3D;{isModalOpen}
+                          setIsOpen&#x3D;{setIsModalOpen}
+                        /&gt;
+                      &lt;/TableCell&gt;
+                    &lt;/TableRow&gt;
+                  ))
+                ) : (
+                  &lt;TableRow&gt;
+                    &lt;TableCell colSpan&#x3D;{5} className&#x3D;&quot;h-24 text-center&quot;&gt;
+                      No hay aplicantes que coincidan con la búsqueda.
+                    &lt;/TableCell&gt;
+                  &lt;/TableRow&gt;
+                )}
+              &lt;/TableBody&gt;
+            &lt;/Table&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/CardContent&gt;
+    &lt;/Card&gt;
+  );
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'TabStatusProps.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

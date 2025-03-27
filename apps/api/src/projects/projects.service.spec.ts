@@ -4,10 +4,12 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
 import { Repository } from 'typeorm';
 import { ProfessorsService } from '../professors/professors.service';
+import { PeriodsService } from '../periods/periods.service';
 
 describe('ProjectService', () => {
   let service: ProjectsService;
   let professorService: ProfessorsService;
+  let periodsService: PeriodsService
   let projecRepository: Repository<Project>;
 
   beforeEach(async () => {
@@ -34,6 +36,12 @@ describe('ProjectService', () => {
           provide: ProfessorsService,
           useValue: mockProfessorService,
         },
+        {
+          provide: PeriodsService,
+          useValue: {
+            findCurrentPeriod: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -42,6 +50,7 @@ describe('ProjectService', () => {
       getRepositoryToken(Project),
     );
     professorService = module.get<ProfessorsService>(ProfessorsService);
+    periodsService = module.get<PeriodsService>(PeriodsService);
   });
 
   it('should be defined', () => {

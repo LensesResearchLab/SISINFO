@@ -20,8 +20,20 @@ export class PeriodsService {
     return this.periodRepository.find();
   }
 
-  findOne(id: string) {
-    return this.periodRepository.findOne({ where: { id } });
+  async findOne(id: string): Promise<Period> {
+    const period = await this.periodRepository.findOne({ where: { id } });
+    if (!period) {
+      throw new Error(`Period with id ${id} not found`);
+    }
+    return period;
+  }
+
+  async findCurrentPeriod(): Promise<Period> {
+    const periods = await this.periodRepository.find();
+    const currentPeriod = periods.reduce((prev, current) => {
+      return prev.period > current.period ? prev : current;
+    });
+    return currentPeriod;
   }
 
   findOneByPeriodAndYear(period: string, year: number) {

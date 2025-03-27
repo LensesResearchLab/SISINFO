@@ -1,0 +1,257 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>sisinfo documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+	   <link rel="stylesheet" href="./styles/style.css">
+        <link rel="stylesheet" href="./styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="./" class="navbar-brand">sisinfo documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content getting-started">
+                   <div class="content-data">
+
+<p align="center">
+    <img src="readme_banner.png" alt="Sisinfo logo" width="300" height="140">
+</p>
+<h1 align="center">Sisinfo</h1>
+
+<p align="center">
+    Sisinfo es una aplicación web diseñada para gestionar múltiples tareas administrativas, como la aplicación a tesis, asistencias graduadas, publicación de ofertas de salones, entre otros. Desarrollada con <strong>Next.js</strong>, <strong>shadcn</strong>, <strong>Tailwind CSS</strong>, <strong>Zustand</strong> y <strong>TanStack Query</strong>.
+</p>
+
+<blockquote>
+<p>Para obtener documentación más detallada, por favor visita la <a href="https://github.com/TheSoftwareDesignLab/SISINFO/wiki">Wiki del proyecto</a>.</p>
+</blockquote>
+<hr>
+<h2>🚀 Tecnologías</h2>
+<p>Sisinfo está construido con las siguientes tecnologías:</p>
+<ul>
+<li><strong>Next.js</strong>: Un framework de React para la construcción de aplicaciones web modernas con renderizado híbrido y optimización automática.</li>
+<li><strong>shadcn</strong>: Un conjunto de componentes UI modernos, personalizables y accesibles.</li>
+<li><strong>Tailwind CSS</strong>: Un framework de CSS utilitario que permite diseñar interfaces de manera rápida y eficiente.</li>
+<li><strong>Zustand</strong>: Una solución ligera y flexible para el manejo del estado global de la aplicación.</li>
+<li><strong>TanStack Query</strong>: Una librería para gestionar, almacenar en caché y sincronizar datos del servidor.</li>
+<li><strong>Docker</strong>: Usado para desplegar la base de datos en un contenedor.</li>
+<li><strong>Nest.js</strong>: Servidor REST.</li>
+<li><strong>Turborepo</strong>: Manejador de monorepositorios. </li>
+<li><strong>npm/yarn</strong>: Gestores de paquetes para manejar dependencias del proyecto.</li>
+</ul>
+<hr>
+<h2>🔨 Instalación</h2>
+<p>Sigue estos pasos para configurar el proyecto en tu entorno local.</p>
+<h3>Prerrequisitos</h3>
+<p>Asegúrate de tener instalado lo siguiente:</p>
+<ul>
+<li><strong>Node.js</strong> (Versión ≥ 16)</li>
+<li><strong>npm</strong> o <strong>yarn</strong> (Gestores de paquetes)</li>
+<li><strong>Git</strong> (Opcional, para clonar el repositorio)</li>
+<li><strong>Docker</strong> (Para desplegar la base de datos)</li>
+</ul>
+<h3>Pasos para la instalación</h3>
+<ol>
+<li><p>Clona el repositorio (o descarga el código fuente):</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">git clone https://github.com/TheSoftwareDesignLab/SISINFO</code></pre></div></li>
+<li><p>Navega al directorio del proyecto:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">cd SISINFO</code></pre></div></li>
+<li><p>Instala las dependencias:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">npm install
+# o
+yarn install</code></pre></div></li>
+<li><p>Navega a la carpeta config:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">cd config</code></pre></div></li>
+<li><p>Ingresa el archivo <code>.env</code> basado en el archivo <code>.env.template</code> y configura las variables de entorno necesarias.</p>
+</li>
+<li><p>Despliega la base de datos en un contenedor de Docker:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">docker-compose up -d</code></pre></div></li>
+<li><p>Navega a la carpeta principal:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">cd ..</code></pre></div></li>
+<li><p>Inicia el servidor de desarrollo:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">npm run dev</code></pre></div></li>
+<li><p>Abre tu navegador y visita los enlaces a continuación para cargar los datos de prueba (generados de forma aleatoria).</p>
+</li>
+</ol>
+<ul>
+<li><a href="http://localhost:8000/api/seed/static">http://localhost:8000/api/seed/static</a></li>
+<li><a href="http://localhost:8000/api/seed/users">http://localhost:8000/api/seed/users</a></li>
+<li><a href="http://localhost:8000/api/seed/projects">http://localhost:8000/api/seed/projects</a></li>
+<li><a href="http://localhost:8000/api/seed/graduated-assistances">http://localhost:8000/api/seed/graduated-assistances</a></li>
+<li><a href="http://localhost:8000/api/seed/theses">http://localhost:8000/api/seed/theses</a></li>
+<li><a href="http://localhost:8000/api/seed/courses">http://localhost:8000/api/seed/courses</a></li>
+<li><a href="http://localhost:8000/api/seed/other">http://localhost:8000/api/seed/other</a></li>
+</ul>
+<ol start="10">
+<li>Visita <a href="http://localhost:3000">http://localhost:3000</a> para ver la aplicación en funcionamiento.</li>
+</ol>
+<blockquote>
+<p>Si deseas liberar los puertos 3000 y 8000, puedes usar el comando <code>npm run kill</code>.</p>
+</blockquote>
+<h3>Pruebas</h3>
+<p>Antes de realizar cualquier commit, asegúrate de ejecutar las pruebas unitarias y de extremo a extremo. Para ello, ejecuta el siguiente comando en la raíz del proyecto:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">  npm run test    </code></pre></div><p>Este comando ejecutará todas las pruebas definidas en el proyecto. Verifica que todas las pruebas se ejecuten correctamente antes de realizar cualquier cambio significativo en el código.</p>
+<h3>Pruebas con cobertura</h3>
+<p>También puedes ejecutar las pruebas con cobertura para asegurarte de que tu código esté bien cubierto por pruebas. Para ello, usa el siguiente comando:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">  npm run test:cov   </code></pre></div><p>Este comando generará un informe de cobertura que indicará qué partes del código están cubiertas por pruebas y cuáles no, permitiéndote mejorar la calidad del código en cada aplicación.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 0;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'getting-started';
+            var COMPODOC_CURRENT_PAGE_URL = 'index.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="./js/libs/custom-elements.min.js"></script>
+       <script src="./js/libs/lit-html.js"></script>
+
+       <script src="./js/menu-wc.js" defer></script>
+       <script nomodule src="./js/menu-wc_es5.js" defer></script>
+
+       <script src="./js/libs/bootstrap-native.js"></script>
+
+       <script src="./js/libs/es6-shim.min.js"></script>
+       <script src="./js/libs/EventDispatcher.js"></script>
+       <script src="./js/libs/promise.min.js"></script>
+
+       <script src="./js/compodoc.js"></script>
+
+       <script src="./js/tabs.js"></script>
+       <script src="./js/menu.js"></script>
+       <script src="./js/libs/clipboard.min.js"></script>
+       <script src="./js/libs/prism.js"></script>
+       <script src="./js/sourceCode.js"></script>
+          <script src="./js/search/search.js"></script>
+          <script src="./js/search/lunr.min.js"></script>
+          <script src="./js/search/search-lunr.js"></script>
+          <script src="./js/search/search_index.js"></script>
+       <script src="./js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
