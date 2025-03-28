@@ -54,7 +54,7 @@ export class AssistanceApplicationsController {
     @Body() updateAssistanceApplicationDto: UpdateAssistanceApplicationDto,
   ) {
     return this.assistanceApplicationsService.update(
-      +id,
+      id,
       updateAssistanceApplicationDto,
     );
   }

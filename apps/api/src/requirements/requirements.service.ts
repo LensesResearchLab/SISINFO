@@ -13,6 +13,7 @@ export class RequirementsService {
   ) {}
 
   async create(createRequirementDto: CreateRequirementDto) {
+    console.log(createRequirementDto);
     const requirement = this.requirementRepository.create(createRequirementDto);
     await this.requirementRepository.save(requirement);
     return requirement;

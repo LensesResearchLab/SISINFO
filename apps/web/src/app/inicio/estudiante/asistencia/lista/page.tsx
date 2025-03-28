@@ -27,12 +27,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Assistance } from "@/app/types/assistance.type";
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { getGraduatedAssistance } from "@/app/services/assistance.service";
+import { GraduatedAssistance } from "@/app/types/graduated-assistance.type";
 
 const semesters = [
   { value: "all", label: "Todos los semestres" },
@@ -143,7 +143,7 @@ export default function AssistanceList({
   professorName,
   role = "student",
 }: AssistanceListProps) {
-  const [data, setData] = React.useState<Assistance[]>([]);
+  const [data, setData] = React.useState<GraduatedAssistance[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [selectedSemester, setSelectedSemester] = React.useState("all");
   const [showOnlyMyAssistance, setShowOnlyMyAssistance] = React.useState(false);
@@ -158,20 +158,20 @@ export default function AssistanceList({
     router.push(path);
   };
 
-  const columns = React.useMemo<ColumnDef<Assistance>[]>(
+  const columns = React.useMemo<ColumnDef<GraduatedAssistance>[]>(
     () => [
       { accessorKey: "title", header: "Nombre" },
       { accessorKey: "category", header: "Clasificación" },
       { accessorKey: "professor.name", header: "Oferente" },
       {
-        accessorKey: "publication_date",
+        accessorKey: "startDate",
         header: "Fecha publicación",
-        cell: ({ getValue }) => formatDate(getValue() as Date),
+        cell: ({ getValue }) => formatDate(new Date(getValue() as string)),
       },
       {
-        accessorKey: "end_date",
+        accessorKey: "endDate",
         header: "Fecha fin",
-        cell: ({ getValue }) => formatDate(getValue() as Date),
+        cell: ({ getValue }) => formatDate(new Date(getValue() as string)),
       },
       {
         id: "ver",
@@ -206,9 +206,21 @@ export default function AssistanceList({
     fetchData();
   }, []);
 
+
+  // Auxiliary function to get semester (e.g. 2025-1) from startDate of assistance
+  const getSemester = (dateInput: string): string => {
+    let date: Date;
+    const [year, month, day] = dateInput.split("-").map(Number);
+    date = new Date(year, month - 1, day);
+    const cutoffDate = new Date(date.getFullYear(), 5, 30); // June = 5, day = 30
+  return date < cutoffDate ? `${date.getFullYear()}-01` : `${date.getFullYear()}-02`;
+  };
+
   const filteredData = React.useMemo(() => {
     return data.filter((item) => {
-      if (selectedSemester !== "all" && item.start_date !== selectedSemester) {
+      const semester = getSemester(String(item.startDate));
+      console.log(semester);
+      if (selectedSemester !== "all" && semester !== selectedSemester) {
         return false;
       }
       if (

@@ -12,18 +12,17 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Assistance, Requirement } from "@/app/types/assistance.type";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useParams, useRouter } from "next/navigation";
-
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { getGraduatedAssistanceById } from "@/app/services/assistance.service";
+import { GraduatedAssistance, Requirement } from "@/app/types/graduated-assistance.type";
 
 interface AssistanceProps {
-  assistance: Assistance;
+  assistance: GraduatedAssistance;
   setIsApplying: (value: boolean) => void;
 }
 
@@ -56,13 +55,12 @@ export default function AssistanceDetails() {
   const { id } = useParams();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [assistance, setAssistance] = useState<Assistance>({
+  const [assistance, setAssistance] = useState<GraduatedAssistance>({
     id: "",
     title: "",
-    clasification: "",
-    publication_date: new Date(),
-    end_date: new Date(),
-    start_semester: "",
+    category: "",
+    startDate: new Date(),
+    endDate: new Date(),
     description: "",
     requirements: [],
     professor: {
@@ -133,7 +131,7 @@ function AssistanceInscription({
   assistance,
   setIsApplying,
 }: {
-  assistance: Assistance;
+  assistance: GraduatedAssistance;
   setIsApplying: (value: boolean) => void;
 }) {
   return (
@@ -204,7 +202,7 @@ function InfoItem({ icon, title, content }: InfoItemProps) {
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing main position information
  */
-function MainInformation({ assistance }: { assistance: Assistance }) {
+function MainInformation({ assistance }: { assistance: GraduatedAssistance }) {
   return (
     <div className="space-y-12">
       <div className="space-y-6">
@@ -220,7 +218,7 @@ function MainInformation({ assistance }: { assistance: Assistance }) {
             <Users className="w-10 h-10 text-core-highlight flex-shrink-0 mt-1" />
           }
           title="Clasificación"
-          content={assistance.clasification}
+          content={assistance.category}
         />
         <InfoItem
           icon={
@@ -262,7 +260,7 @@ function Requisites({ requisites }: { requisites?: Requirement[] }) {
       </h3>
       <ul className="space-y-1">
         {requisites.map((requisite) => (
-          <li className="flex items-center gap-3" key={requisite.name}>
+          <li className="flex items-center gap-3" key={requisite.id}>
             <CheckCircle2 className="w-6 h-6 text-core-highlight flex-shrink-0" />
             <span className="text-xl">{requisite.description}</span>
           </li>
@@ -288,7 +286,7 @@ function Requisites({ requisites }: { requisites?: Requirement[] }) {
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing contact information
  */
-function ContactInfo({ assistance }: { assistance: Assistance }) {
+function ContactInfo({ assistance }: { assistance: GraduatedAssistance }) {
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-2xl text-core-highlight">
@@ -436,7 +434,7 @@ function ButtonBack({
  * @param {Object} props Component props
  * @returns {JSX.Element} File upload section
  */
-function UploadCV({ assistance }: { assistance: Assistance }) {
+function UploadCV({ assistance }: { assistance: GraduatedAssistance }) {
   const [uploadedFile, setUploadedFile] = useState<{
     name: string;
     url: string;

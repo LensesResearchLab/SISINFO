@@ -1,6 +1,7 @@
 const API_URL = "http://localhost:8000/api/graduated-assistances";
 const API_URL_REQUIREMENT = "http://localhost:8000/api/requirements";
 const API_URL_CONSULT_PERIOD = "http://localhost:8000/api/periods";
+const API_URL_APPLICATION = "http://localhost:8000/api/assistance-applications"
 
 export async function createGraduatedAssistance(
   data: object,
@@ -34,13 +35,16 @@ export async function createGraduatedAssistance(
 
   return response.json();
 }
-export async function createRequirement(requirement: string) {
+
+
+export async function createRequirement(description: string) {
+  console.log(description);
   const response = await fetch(`${API_URL_REQUIREMENT}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ name: requirement }),
+    body: JSON.stringify(description), 
   });
   if (!response.ok) {
     throw new Error("Failed to create requirement.");
@@ -64,6 +68,48 @@ export async function getGraduatedAssistanceById(id: string) {
   return response.json();
 }
 
+/* Updata Assistance application status using the assistance application id */
+// object is valid here for updateData?
+export async function updateAssistanceApplication(id: string, updateData: object){
+  const response = await fetch(`${API_URL_APPLICATION}/${id}`, {
+    method: "PATCH",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(updateData),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to update assistance.");
+  }
+  return response.json();
+}
+
+
+/* Update a requirement with its ID */
+export async function updateRequirement(
+  id: string,
+  requirementData: { description: string }
+) {
+  const response = await fetch(`${API_URL_REQUIREMENT}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requirementData),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update requirement with ID ${id}.`);
+  }
+
+  return response.json();
+}
+
+
+/* 
+    CHECK IF ALL THIS BELOW WORKS SOMEWHERE:
+*/
+
+
+// TODO: This works? /status returns nothing
 export async function getAssistanceStatus() {
   const response = await fetch(`${API_URL}/status`);
   if (!response.ok) {
@@ -72,6 +118,7 @@ export async function getAssistanceStatus() {
   return response.json();
 }
 
+// TODO: This works? /status returns nothing
 export async function getAssistanceStatusById(id: string) {
   const response = await fetch(`${API_URL}/status/${id}`);
   if (!response.ok) {
@@ -99,21 +146,4 @@ export async function updateGraduatedAssistance(
   return response.json();
 }
 
-export async function updateRequirement(
-  id: string,
-  requirementData: { name: string }
-) {
-  const response = await fetch(`${API_URL_REQUIREMENT}/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requirementData),
-  });
 
-  if (!response.ok) {
-    throw new Error(`Failed to update requirement with ID ${id}.`);
-  }
-
-  return response.json();
-}

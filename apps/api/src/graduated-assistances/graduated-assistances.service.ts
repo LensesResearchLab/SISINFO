@@ -61,7 +61,7 @@ export class GraduatedAssistancesService {
 
   async findAll(): Promise<GraduatedAssistance[]> {
     const assistances = await this.graduatedAssistanceRepository.find({
-      relations: ['requirements', 'assistant', 'professor', 'period'],
+      relations: ['requirements', 'assistant', 'professor', 'period', 'assistanceApplications', 'assistanceApplications.student'],
     });
     return assistances;
   }
@@ -69,7 +69,7 @@ export class GraduatedAssistancesService {
   async findOne(id: string): Promise<GraduatedAssistance> {
     const assistance = await this.graduatedAssistanceRepository.findOne({
       where: { id },
-      relations: ['requirements', 'assistant', 'professor', 'period'],
+      relations: ['requirements', 'assistant', 'professor', 'period', 'assistanceApplications', 'assistanceApplications.student'],
     });
 
     if (!assistance) {
