@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -18,14 +19,24 @@ export class ProjectController {
   @Post()
   create(
     @Body() createProjectDto: CreateProjectDto,
-    @Body('professorDocument') professorDocument: string,
+    @Query('professorDocument') professorDocument: string,
+    @Query('periodId') periodId: string,
   ) {
-    return this.projectsService.create(createProjectDto, professorDocument);
+    return this.projectsService.create(
+      createProjectDto,
+      professorDocument,
+      periodId,
+    );
   }
 
   @Get()
   findAll() {
     return this.projectsService.findAll();
+  }
+
+  @Get('professor/:document')
+  findByProfessor(@Param('document') document: string) {
+    return this.projectsService.findByProfessor(document);
   }
 
   @Get(':id')

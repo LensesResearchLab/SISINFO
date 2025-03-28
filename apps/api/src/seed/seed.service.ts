@@ -224,6 +224,7 @@ export class SeedService {
 
   async seedProjects() {
     const categories = ['Investigación', 'Proyecto aplicado a empresas'];
+    const periods = await this.periodsService.findAll();
     const insertPromises: Promise<Project>[] = [];
     for (let i = 0; i < this.PROFESSORS_NUMBER; i++) {
       for (
@@ -245,6 +246,7 @@ export class SeedService {
                 categories[Math.floor(Math.random() * categories.length)],
             },
             `Document ${i}`,
+            periods[Math.floor(Math.random() * periods.length)].id,
           ),
         );
       }

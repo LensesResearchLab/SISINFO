@@ -370,7 +370,6 @@ function ElementThesisTable({ thesisList }: { thesisList: Thesis[] }) {
                 variant="ghost"
                 size="icon"
                 onClick={() => handleClick(project.id)}
-                className="cursor-pointer"
               >
                 <Search className="w-4 h-4" />
               </Button>
