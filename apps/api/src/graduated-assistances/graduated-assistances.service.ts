@@ -8,6 +8,7 @@ import { PeriodsService } from '../periods/periods.service';
 import { RequirementsService } from '../requirements/requirements.service';
 import { Requirement } from '../requirements/entities/requirement.entity';
 import { ProfessorsService } from '../professors/professors.service';
+import { Period } from 'src/periods/entities/period.entity';
 
 @Injectable()
 export class GraduatedAssistancesService {
@@ -21,37 +22,40 @@ export class GraduatedAssistancesService {
 
   async create(
     createGraduatedAssistanceDto: CreateGraduatedAssistanceDto,
-    periodId: string,
-    requirementsId: string[],
+    date: any,
+    requirements: string[],
     professorDocument: string,
   ): Promise<GraduatedAssistance> {
-    const period = await this.periodsService.findOne(periodId);
-    const professor = await this.professorsService.findOne(professorDocument);
-    const requirements: Requirement[] =
-      await this.requirementsService.findByIds(requirementsId);
+    let period = await this.periodsService.findOneByPeriodAndYear(date.period, date.year);
+    let professor = await this.professorsService.findOne(professorDocument);
 
     if (!period) {
-      throw new NotFoundException(`Period with ID ${periodId} not found`);
+      const createPeriod: { year: any; period: any; semester: number } = {
+        year: date.year,
+        period: date.period,
+        semester: date.period[0] === 1 ? 1 : 2,
+      };
+      period = await this.periodsService.create(createPeriod);
     }
     if (!professor) {
       throw new NotFoundException(
         `Professor with document ${professorDocument} not found`,
       );
     }
-    if (requirements.length !== requirementsId.length) {
-      const notFoundIds = requirementsId.filter(
-        (id) => !requirements.some((req) => req.id === id),
-      );
-      throw new NotFoundException(
-        `Some requirements with IDs ${notFoundIds.join(', ')} not found`,
-      );
-    }
+
+    let requirementsCreated: Requirement[] = [];
+
+    requirements.map(async (requirement) => {
+      const createRequirementDto = { description: requirement };
+      let created = await this.requirementsService.create(createRequirementDto);
+      requirementsCreated.push(created);
+    });
 
     const graduatedAssistance = this.graduatedAssistanceRepository.create({
       ...createGraduatedAssistanceDto,
-      period,
-      professor,
-      requirements,
+      period: period,
+      professor: professor,
+      requirements: requirementsCreated,
     });
 
     const savedAssistance =

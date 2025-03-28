@@ -15,6 +15,7 @@ export class PeriodsService {
     await this.periodRepository.save(period);
     return period;
   }
+  
 
   async findAll(): Promise<Period[]> {
     return this.periodRepository.find();

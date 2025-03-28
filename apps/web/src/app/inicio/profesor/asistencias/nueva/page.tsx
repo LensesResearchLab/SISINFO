@@ -34,7 +34,6 @@ import { Input } from "@/components/ui/input";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { ROUTES } from "@/app/routes";
 import { createGraduatedAssistance } from "../../../../services/assistance.service";
-import { createRequirement } from "../../../../services/assistance.service"; // Nueva función para crear requisitos
 
 // Esquema de validación con Zod
 const thesisSchema = z.object({
@@ -45,7 +44,7 @@ const thesisSchema = z.object({
   category: z.string().min(1, "Debe seleccionar una categoría"),
   period: z.string().min(1, "Debe seleccionar un período"),
   requirements: z
-    .array(z.object({ id: z.string(), name: z.string() }))
+    .array(z.object({description: z.string() }))
     .min(1, "Debe agregar al menos un requisito"),
 });
 
@@ -73,31 +72,21 @@ export default function GraduateAssistanceForm() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newRequirement, setNewRequirement] = useState("");
 
-  // Función para agregar un nuevo requisito
   const handleAddRequirement = async () => {
     if (!newRequirement.trim()) return;
 
-    try {
-      const createdRequirement = await createRequirement(newRequirement);
-      if (createdRequirement) {
-        form.setValue("requirements", [
-          ...form.getValues("requirements"),
-          createdRequirement,
-        ]);
-      }
-      setNewRequirement("");
-    } catch (error) {
-      console.error("Error al crear el requisito:", error);
-    }
+    form.setValue("requirements", [
+      ...form.getValues("requirements"),
+      { description: newRequirement },
+    ]);
+    setNewRequirement("");
   };
 
-  // Manejo de envío del formulario
   const onSubmit = async (data: z.infer<typeof thesisSchema>) => {
     const year = Number(data.period.split("-")[0]);
     const period = data.period.split("-")[1];
-    const requirementsIds = data.requirements.map((req) => req.id); // Solo enviar los IDs
     createGraduatedAssistance(
-      { ...data, requirementsId: requirementsIds },
+      { ...data},
       period,
       year
     )
@@ -242,7 +231,7 @@ export default function GraduateAssistanceForm() {
                           variant="secondary"
                           className="bg-blue-200 text-blue-800 hover:bg-blue-300 px-3 py-1 rounded-full transition-colors"
                         >
-                          {tag.name}
+                          {tag.description}
                           <button
                             type="button"
                             onClick={() =>
