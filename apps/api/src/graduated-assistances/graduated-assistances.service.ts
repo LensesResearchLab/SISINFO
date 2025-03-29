@@ -24,18 +24,12 @@ export class GraduatedAssistancesService {
     createGraduatedAssistanceDto: CreateGraduatedAssistanceDto,
     professorDocument: string,
   ): Promise<GraduatedAssistance> {
-    let date = {year:Number(createGraduatedAssistanceDto.period.split("-")[0]), period:createGraduatedAssistanceDto.period.split("-")[1] }
     let requirements = createGraduatedAssistanceDto.requirements;
-    let period = await this.periodsService.findOneByPeriodAndYear(date.period, date.year);
+    let period = await this.periodsService.findOneByPeriodAndYear(createGraduatedAssistanceDto.period.period, createGraduatedAssistanceDto.period.year);
     let professor = await this.professorsService.findOne(professorDocument);
 
     if (!period) {
-      const createPeriod: { year: number; period: string; semester: number } = {
-        year: date.year,
-        period: date.period,
-        semester: date.period[0] === "1" ? 1 : 2,
-      };
-      period = await this.periodsService.create(createPeriod);
+      period = await this.periodsService.create(createGraduatedAssistanceDto.period);
     }
     if (!professor) {
       throw new NotFoundException(

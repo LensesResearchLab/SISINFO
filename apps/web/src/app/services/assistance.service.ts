@@ -1,6 +1,5 @@
 const API_URL = "http://localhost:8000/api/graduated-assistances";
 const API_URL_REQUIREMENT = "http://localhost:8000/api/requirements";
-const API_URL_CONSULT_PERIOD = "http://localhost:8000/api/periods";
 const API_URL_APPLICATION = "http://localhost:8000/api/assistance-applications"
 
 export async function createGraduatedAssistance(

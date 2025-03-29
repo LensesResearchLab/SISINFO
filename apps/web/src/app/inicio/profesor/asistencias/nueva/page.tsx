@@ -32,6 +32,7 @@ import { createGraduatedAssistance } from "../../../../services/assistance.servi
 import { addDays, format } from "date-fns";
 
 import DateRangePicker from "@/components/shared/datepicker-range"
+import { mapStringtoPeriod } from "@/app/mappers/period.mapper";
 
 const thesisSchema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres"),
@@ -85,6 +86,7 @@ export default function GraduateAssistanceForm() {
   const onSubmit = async (data: z.infer<typeof thesisSchema>) => {
     const payload = {
       ...data,
+      period:mapStringtoPeriod(data.period),
       startDate: data.dateRange.from.toISOString(),
       endDate: data.dateRange.to.toISOString(),
     };
