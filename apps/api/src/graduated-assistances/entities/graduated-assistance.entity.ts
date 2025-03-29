@@ -28,10 +28,10 @@ export class GraduatedAssistance extends Base {
   description: string;
 
   @Column({ type: 'date', nullable: true })
-  startDate: string;
+  startDate: Date;
 
   @Column({ type: 'date', nullable: true })
-  endDate: string;
+  endDate: Date;
 
   @ManyToMany(() => Requirement, (requirement) => requirement.assistances)
   @JoinTable({ name: 'graduated_assistance_requirements' })

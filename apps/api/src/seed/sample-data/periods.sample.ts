@@ -2,62 +2,62 @@ import { CreatePeriodDto } from '../../periods/dto/create-period.dto';
 
 export const samplePeriods: CreatePeriodDto[] = [
   {
-    period: '202510',
+    period: '10',
     year: 2025,
     semester: 1,
   },
   {
-    period: '202520',
+    period: '20',
     year: 2025,
     semester: 2,
   },
   {
-    period: '202610',
+    period: '10',
     year: 2026,
     semester: 1,
   },
   {
-    period: '202620',
+    period: '20',
     year: 2026,
     semester: 2,
   },
   {
-    period: '202710',
+    period: '10',
     year: 2027,
     semester: 1,
   },
   {
-    period: '202720',
+    period: '20',
     year: 2027,
     semester: 2,
   },
   {
-    period: '202810',
+    period: '10',
     year: 2028,
     semester: 1,
   },
   {
-    period: '202820',
+    period: '20',
     year: 2028,
     semester: 2,
   },
   {
-    period: '202910',
+    period: '10',
     year: 2029,
     semester: 1,
   },
   {
-    period: '202920',
+    period: '20',
     year: 2029,
     semester: 2,
   },
   {
-    period: '203010',
+    period: '10',
     year: 2030,
     semester: 1,
   },
   {
-    period: '203020',
+    period: '20',
     year: 2030,
     semester: 2,
   },

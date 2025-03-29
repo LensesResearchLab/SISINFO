@@ -88,7 +88,7 @@ export default function AssistanceManagePage() {
     console.log("Confirmed!");
   };
 
-  console.log("Assistance Requirements:", assistance?.requirements);
+  console.log("Assistance Requirements:", assistance);
 
   return (
     <div className="container mx-auto py-6 px-4">

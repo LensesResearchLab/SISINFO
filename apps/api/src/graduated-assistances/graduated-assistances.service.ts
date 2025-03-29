@@ -8,7 +8,7 @@ import { PeriodsService } from '../periods/periods.service';
 import { RequirementsService } from '../requirements/requirements.service';
 import { Requirement } from '../requirements/entities/requirement.entity';
 import { ProfessorsService } from '../professors/professors.service';
-import { Period } from 'src/periods/entities/period.entity';
+import { CreateRequirementDto } from 'src/requirements/dto/create-requirement.dto';
 
 @Injectable()
 export class GraduatedAssistancesService {
@@ -22,18 +22,18 @@ export class GraduatedAssistancesService {
 
   async create(
     createGraduatedAssistanceDto: CreateGraduatedAssistanceDto,
-    date: any,
-    requirements: string[],
     professorDocument: string,
   ): Promise<GraduatedAssistance> {
+    let date = {year:Number(createGraduatedAssistanceDto.period.split("-")[0]), period:createGraduatedAssistanceDto.period.split("-")[1] }
+    let requirements = createGraduatedAssistanceDto.requirements;
     let period = await this.periodsService.findOneByPeriodAndYear(date.period, date.year);
     let professor = await this.professorsService.findOne(professorDocument);
 
     if (!period) {
-      const createPeriod: { year: any; period: any; semester: number } = {
+      const createPeriod: { year: number; period: string; semester: number } = {
         year: date.year,
         period: date.period,
-        semester: date.period[0] === 1 ? 1 : 2,
+        semester: date.period[0] === "1" ? 1 : 2,
       };
       period = await this.periodsService.create(createPeriod);
     }
@@ -46,7 +46,7 @@ export class GraduatedAssistancesService {
     let requirementsCreated: Requirement[] = [];
 
     requirements.map(async (requirement) => {
-      const createRequirementDto = { description: requirement };
+      const createRequirementDto: CreateRequirementDto = { description: requirement };
       let created = await this.requirementsService.create(createRequirementDto);
       requirementsCreated.push(created);
     });

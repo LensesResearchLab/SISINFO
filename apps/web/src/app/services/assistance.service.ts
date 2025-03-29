@@ -4,14 +4,8 @@ const API_URL_CONSULT_PERIOD = "http://localhost:8000/api/periods";
 const API_URL_APPLICATION = "http://localhost:8000/api/assistance-applications"
 
 export async function createGraduatedAssistance(
-  data: object,
-  period: string,
-  year: number
+  data: object
 ) {
-  const date={period:period, year:year}
-  data = { ...data, date};
-
-
   const response = await fetch(`${API_URL}`, {
     method: "POST",
     headers: {
