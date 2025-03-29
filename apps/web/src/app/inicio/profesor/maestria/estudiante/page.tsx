@@ -31,7 +31,7 @@ export default function StudentDetail() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [student, setStudent] = useState<Student>();
   const [others, setOthers] = useState<Course[]>([]);
-  const [isLoading, setisLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   /**
    * useEffect hook to fetch student and course data when the component mounts.
@@ -40,35 +40,35 @@ export default function StudentDetail() {
     getCourses().then(setCourses);
     getStudent().then(setStudent);
     getStudent().then((data) => setOthers(data.others));
-    setisLoading(false);
+    setIsLoading(false);
   }, []);
   if (isLoading) return <SpinnerPage />;
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="max-w-3xl mx-auto p-4" style={{ backgroundColor: "var(--subtable)" }}>
       <Tabs defaultValue="profile" className="w-3xl">
-        <TabsList className="grid w-full grid-cols-2 bg-core text-white">
+        <TabsList
+          className="grid w-full grid-cols-2"
+          style={{ backgroundColor: "var(--core)", color: "var(--foreground-soft)" }}
+        >
           <TabsTrigger
             value="profile"
-            className="data-[state=active]:bg-core-highlight data-[state=active]:font-semibold data-[state=active]:text-white"
+            className="data-[state=active]:bg-[var(--core-highlight)] data-[state=active]:font-semibold data-[state=active]:text-[var(--subtable)]"
           >
             Perfil
           </TabsTrigger>
           <TabsTrigger
             value="detail"
-            className="data-[state=active]:bg-core-highlight data-[state=active]:font-semibold data-[state=active]:text-white"
+            className="data-[state=active]:bg-[var(--core-highlight)] data-[state=active]:font-semibold data-[state=active]:text-[var(--subtable)]"
           >
             Detalle plan de estudio
           </TabsTrigger>
         </TabsList>
 
         {/* Student Profile Tab */}
-        <TabsContent
-          value="profile"
-          className="flex justify-center flex-col items-center p-2"
-        >
+        <TabsContent value="profile" className="flex justify-center flex-col items-center p-2">
           <Card className="flex justify-center flex-col items-center border-none w-3xl">
-            <CardHeader style={{ color: "#075985" }}>
+            <CardHeader style={{ color: "var(--core)" }}>
               <CardTitle className="text-2xl">
                 Detalle de inscripción a perfil
               </CardTitle>
@@ -78,34 +78,25 @@ export default function StudentDetail() {
               <RenderFields label="Correo estudiante" value={student?.email} />
               <RenderFields label="Perfil" value={student?.profile} />
               <RenderFields label="Asesor de tesis" value={student?.advisor} />
-              <RenderFields
-                label="Semestre inicio tesis 1"
-                value={student?.thesis1}
-              />
-              <RenderFields
-                label="Semestre inicio tesis 2"
-                value={student?.thesis2}
-              />
+              <RenderFields label="Semestre inicio tesis 1" value={student?.thesis1} />
+              <RenderFields label="Semestre inicio tesis 2" value={student?.thesis2} />
             </CardContent>
-            <CardFooter className="flex justify-center flex-col space-y-3 ">
-              <CircleAlert style={{ color: "#075985" }} />
-              <Label>Estado: {student?.state}</Label>
+            <CardFooter className="flex justify-center flex-col space-y-3">
+              <CircleAlert style={{ color: "var(--core)" }} />
+              <Label style={{ color: "var(--core)" }}>Estado: {student?.state}</Label>
             </CardFooter>
           </Card>
         </TabsContent>
 
         {/* Study Plan Details Tab */}
-        <TabsContent
-          value="detail"
-          className="flex justify-center flex-col items-center p-2"
-        >
+        <TabsContent value="detail" className="flex justify-center flex-col items-center p-2">
           <Card className="w-3xl border-none">
-            <CardHeader className="text-center" style={{ color: "#075985" }}>
+            <CardHeader className="text-center" style={{ color: "var(--core)" }}>
               <CardTitle className="text-2xl text-center">
                 Detalle plan de estudio
               </CardTitle>
             </CardHeader>
-            <CardContent className="w-fullspace-y-6">
+            <CardContent className="w-full space-y-6">
               <div className="grid grid-cols-[2fr_3fr] gap-8 w-full pt-6">
                 <div className="space-y-6 w-full">
                   {courses.map((item, index) => (
@@ -123,15 +114,15 @@ export default function StudentDetail() {
                         label="Semestre"
                         className="flex-grow"
                         value={item.name}
-                      ></RenderFields>
-                      <Check className="flex-shrink-0" />
+                      />
+                      <Check className="flex-shrink-0" style={{ color: "var(--core-highlight)" }} />
                     </div>
                   ))}
                 </div>
               </div>
               {/* Others section */}
               <div className="pt-4">
-                <Label className="text-xl" style={{ color: "#075985" }}>
+                <Label className="text-xl" style={{ color: "var(--core)" }}>
                   Otros
                 </Label>
               </div>
@@ -149,8 +140,8 @@ export default function StudentDetail() {
                         label="Semestre"
                         className="flex-grow"
                         value={item.name}
-                      ></RenderFields>
-                      <Check className="flex-shrink-0" />
+                      />
+                      <Check className="flex-shrink-0" style={{ color: "var(--core-highlight)" }} />
                     </div>
                   ))}
                 </div>
@@ -186,8 +177,10 @@ function RenderFields({
   return (
     <div className={`flex gap-3 ${className}`}>
       <div className="w-full">
-        <h3 className="font-medium text-core-highlight">{label}</h3>
-        <p className="text-core-soft">{value}</p>
+        <h3 className="font-medium" style={{ color: "var(--core-highlight)" }}>
+          {label}
+        </h3>
+        <p>{value}</p>
         <hr className="bg-gray-300 h-[1px] w-full my-2 border-0" />
       </div>
     </div>

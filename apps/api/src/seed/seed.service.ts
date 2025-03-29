@@ -39,6 +39,7 @@ import { ProjectApplication } from '../project-applications/entities/project-app
 import { ProjectApplicationsService } from '../project-applications/project-applications.service';
 import { ThesisApplicationsService } from '../thesis-applications/thesis-applications.service';
 import { AssistanceApplicationsService } from '../assistance-applications/assistance-applications.service';
+import { Period } from '../periods/entities/period.entity';
 
 @Injectable()
 export class SeedService {
@@ -287,9 +288,14 @@ export class SeedService {
   }
 
   async seedGraduatedAssistances() {
-    const professors = await this.professorsService.findAll();
     const periods = await this.periodsService.findAll();
+    const professors = await this.professorsService.findAll();
     const requirements = await this.requirementsService.findAll();
+    const randomRequirements = requirements
+        .sort(() => 0.5 - Math.random())
+        .slice(0, Math.floor(Math.random() * 3) + 1)
+        .map((req) => req.id);
+    const randomPeriod = periods[Math.floor(Math.random() * periods.length)];
     const graduatedAssistances: CreateGraduatedAssistanceDto[] = Array.from({
       length: 10,
     }).map(() => {
@@ -297,22 +303,17 @@ export class SeedService {
         title: faker.lorem.word(),
         category: faker.lorem.word(),
         description: faker.lorem.sentence(),
-        startDate: faker.date.recent().toISOString(),
-        endDate: faker.date.recent().toISOString(),
+        period: randomPeriod as Period,
+        requirements: randomRequirements,
+        startDate: faker.date.recent(),
+        endDate: faker.date.recent()
       };
     });
     const insertPromises = graduatedAssistances.map((graduatedAssistance) => {
       const randomProfessor =
         professors[Math.floor(Math.random() * professors.length)];
-      const randomPeriod = periods[Math.floor(Math.random() * periods.length)];
-      const randomRequirements = requirements
-        .sort(() => 0.5 - Math.random())
-        .slice(0, Math.floor(Math.random() * 3) + 1)
-        .map((req) => req.id);
       return this.graduatedAssistancesService.create(
         graduatedAssistance,
-        randomPeriod.id,
-        randomRequirements,
         randomProfessor.document,
       );
     });

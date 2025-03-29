@@ -1,4 +1,6 @@
-import { IsDate, IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {IsNotEmpty, isString, IsString } from 'class-validator';
+import { Period } from 'src/periods/entities/period.entity';
 
 export class CreateGraduatedAssistanceDto {
   @IsString()
@@ -13,9 +15,18 @@ export class CreateGraduatedAssistanceDto {
   @IsNotEmpty()
   description: string;
 
-  @IsDate()
-  startDate: string;
+  @IsString()
+  @IsNotEmpty()
+  period: Period;
 
-  @IsDate()
-  endDate: string;
+  @IsNotEmpty()
+  requirements: string[];
+
+  @IsNotEmpty()
+  @Type(() => Date)
+  startDate: Date;
+
+  @IsNotEmpty()
+  @Type(() => Date)
+  endDate: Date;
 }

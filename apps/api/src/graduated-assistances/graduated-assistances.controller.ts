@@ -21,14 +21,10 @@ export class GraduatedAssistancesController {
   @Post()
   create(
     @Body() createGraduatedAssistanceDto: CreateGraduatedAssistanceDto,
-    @Query('periodId') periodId: string,
-    @Query('requirementsId') requirementsId: string[],
     @Query('professorDocument') professorDocument: string,
   ) {
     return this.graduatedAssistancesService.create(
       createGraduatedAssistanceDto,
-      periodId,
-      requirementsId,
       professorDocument,
     );
   }

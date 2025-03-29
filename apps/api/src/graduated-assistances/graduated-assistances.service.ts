@@ -8,6 +8,7 @@ import { PeriodsService } from '../periods/periods.service';
 import { RequirementsService } from '../requirements/requirements.service';
 import { Requirement } from '../requirements/entities/requirement.entity';
 import { ProfessorsService } from '../professors/professors.service';
+import { CreateRequirementDto } from 'src/requirements/dto/create-requirement.dto';
 
 @Injectable()
 export class GraduatedAssistancesService {
@@ -21,37 +22,34 @@ export class GraduatedAssistancesService {
 
   async create(
     createGraduatedAssistanceDto: CreateGraduatedAssistanceDto,
-    periodId: string,
-    requirementsId: string[],
     professorDocument: string,
   ): Promise<GraduatedAssistance> {
-    const period = await this.periodsService.findOne(periodId);
-    const professor = await this.professorsService.findOne(professorDocument);
-    const requirements: Requirement[] =
-      await this.requirementsService.findByIds(requirementsId);
+    let requirements = createGraduatedAssistanceDto.requirements;
+    let period = await this.periodsService.findOneByPeriodAndYear(createGraduatedAssistanceDto.period.period, createGraduatedAssistanceDto.period.year);
+    let professor = await this.professorsService.findOne(professorDocument);
 
     if (!period) {
-      throw new NotFoundException(`Period with ID ${periodId} not found`);
+      period = await this.periodsService.create(createGraduatedAssistanceDto.period);
     }
     if (!professor) {
       throw new NotFoundException(
         `Professor with document ${professorDocument} not found`,
       );
     }
-    if (requirements.length !== requirementsId.length) {
-      const notFoundIds = requirementsId.filter(
-        (id) => !requirements.some((req) => req.id === id),
-      );
-      throw new NotFoundException(
-        `Some requirements with IDs ${notFoundIds.join(', ')} not found`,
-      );
-    }
+
+    let requirementsCreated: Requirement[] = [];
+
+    requirements.map(async (requirement) => {
+      const createRequirementDto: CreateRequirementDto = { description: requirement };
+      let created = await this.requirementsService.create(createRequirementDto);
+      requirementsCreated.push(created);
+    });
 
     const graduatedAssistance = this.graduatedAssistanceRepository.create({
       ...createGraduatedAssistanceDto,
-      period,
-      professor,
-      requirements,
+      period: period,
+      professor: professor,
+      requirements: requirementsCreated,
     });
 
     const savedAssistance =
