@@ -36,7 +36,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { StatusInformation } from "@/app/types/assistance.type";
+import { StatusInformation } from "@/app/types/graduated-assistance.type";
 import Link from "next/link";
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
@@ -133,7 +133,7 @@ export default function AssistanceAppliedList() {
 
   const filteredData = React.useMemo(() => {
     return selectedSemester
-      ? data.filter((item) => item.start_semester === selectedSemester)
+      ? data.filter((item) => item.start_date === selectedSemester)
       : data;
   }, [selectedSemester, data]);
 

@@ -1,10 +1,8 @@
 const API_URL = "http://localhost:8000/api/graduated-assistances";
 const API_URL_REQUIREMENT = "http://localhost:8000/api/requirements";
-const API_URL_APPLICATION = "http://localhost:8000/api/assistance-applications"
+const API_URL_APPLICATION = "http://localhost:8000/api/assistance-applications";
 
-export async function createGraduatedAssistance(
-  data: object
-) {
+export async function createGraduatedAssistance(data: object) {
   const response = await fetch(`${API_URL}`, {
     method: "POST",
     headers: {
@@ -38,10 +36,13 @@ export async function getGraduatedAssistanceById(id: string) {
 
 /* Updata Assistance application status using the assistance application id */
 // object is valid here for updateData?
-export async function updateAssistanceApplication(id: string, updateData: object){
+export async function updateAssistanceApplication(
+  id: string,
+  updateData: object
+) {
   const response = await fetch(`${API_URL_APPLICATION}/${id}`, {
     method: "PATCH",
-    headers: {"Content-Type": "application/json"},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(updateData),
   });
   if (!response.ok) {
@@ -49,7 +50,6 @@ export async function updateAssistanceApplication(id: string, updateData: object
   }
   return response.json();
 }
-
 
 /* Update a requirement with its ID */
 export async function updateRequirement(
@@ -71,11 +71,39 @@ export async function updateRequirement(
   return response.json();
 }
 
+export async function createRequirimentForGraduatedAssistance(
+  graduatedAssistanceId: string,
+  requirementData: string
+) {
+  const response_post_req = await fetch(`${API_URL_REQUIREMENT}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ description: requirementData }),
+  });
+
+  const newRequirement = await response_post_req.json();
+  console.log(newRequirement);
+  const response_link_req = await fetch(
+    `${API_URL_REQUIREMENT}/${newRequirement.id}/assistance/${graduatedAssistanceId}`, // api/requirements/reqID/assistance/assistanceID
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response_post_req.ok || !response_link_req.ok) {
+    throw new Error(`Failed to update requirements.`);
+  }
+  return response_link_req.json();
+}
 
 /* 
     CHECK IF ALL THIS BELOW WORKS SOMEWHERE:
 */
-
 
 // TODO: This works? /status returns nothing
 export async function getAssistanceStatus() {
@@ -113,5 +141,3 @@ export async function updateGraduatedAssistance(
 
   return response.json();
 }
-
-
