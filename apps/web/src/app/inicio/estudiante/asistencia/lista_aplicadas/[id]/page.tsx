@@ -41,16 +41,27 @@ export default function AssistanceStatus({
   const [statusInformation, setStatusInformation] = useState<StatusInformation>(
     {
       id: "0",
-      assistance_id: 0,
-      start_date: "",
-      title: "",
-      professor: "",
-      student: "",
-      studentEmail: "",
-      studentCv: "",
-      lastStep: "",
-      inscription_date: new Date(),
-      clasification: "",
+      graduatedAssistance: {
+        id: "0",
+        title: "",
+        category: "",
+        description: "",
+        startDate: "",
+        endDate: "",
+        professor: {
+          document: "",
+          name: "",
+          email: "",
+        },
+      },
+      status: "",
+      student: {
+        document: "",
+        name: "",
+        email: "",
+        isUndergraduate: false,
+        code: "",
+      },
     }
   );
 
@@ -78,9 +89,9 @@ export default function AssistanceStatus({
     sections,
   };
   const statusProps = {
-    currentStatus: statusInformation.lastStep,
-    statusMessage: messagePerStep.get(statusInformation.lastStep) || "",
-    steps,
+    currentStatus: statusInformation.status,
+    statusMessage: messagePerStep.get(statusInformation.status) || "",
+    steps: statusInformation.status === "Rechazado" ? [] : steps,
     title: "Estado inscripción proyecto de grado",
   };
 
@@ -122,32 +133,32 @@ function getSections(statusInformation: StatusInformation) {
   return [
     {
       title: "Semestre de inicio",
-      description: statusInformation.start_date,
+      description: statusInformation.graduatedAssistance.startDate,
       icon: <Calendar className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Nombre de la asistencia",
-      description: statusInformation.title,
+      description: statusInformation.graduatedAssistance.title,
       icon: <FileText className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Profesor",
-      description: statusInformation.professor,
+      description: statusInformation.graduatedAssistance.professor.name,
       icon: <User className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Estudiante",
-      description: statusInformation.student,
+      description: statusInformation.student.name,
       icon: <User className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Correo del estudiante",
-      description: statusInformation.studentEmail,
+      description: statusInformation.student.email,
       icon: <Mail className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Archivo adjunto",
-      description: statusInformation.studentCv,
+      description: "statusInformation.studentCv",
       icon: <FileText className="h-5 w-5 text-core mt-1" />,
     },
   ];
@@ -165,6 +176,7 @@ function getSections(statusInformation: StatusInformation) {
  * - "Postulado": "Tu aplicacion ha sido enviada y se encuentra en proceso de revisión"
  * - "Aceptado": "Tu aplicacion ha sido aceptado y se encuentra en proceso de revisión"
  * - "Inscrito": "Tu aplicacion ha sido aceptada y se encuentra en proceso de revisión"
+ * - "Rechazado" : "Tu aplicacion fue rechazada." -- En este caso no se visualizan los demas pasos.
  */
 function getMessagesPerStep() {
   const messagePerStep = new Map<string, string>();
@@ -180,5 +192,6 @@ function getMessagesPerStep() {
     "Inscrito",
     "Tu aplicacion ha sido aceptada y se encuentra en proceso de revisión"
   );
+  messagePerStep.set("Rechazado", "Tu aplicación ha sido rechazada");
   return messagePerStep;
 }

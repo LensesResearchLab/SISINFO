@@ -45,7 +45,7 @@ export class AssistanceApplicationsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.assistanceApplicationsService.findOne(+id);
+    return this.assistanceApplicationsService.findOne(id);
   }
 
   @Patch(':id')
