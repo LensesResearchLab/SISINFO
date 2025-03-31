@@ -101,6 +101,19 @@ export async function createRequirimentForGraduatedAssistance(
   return response_link_req.json();
 }
 
+/* Delete grad assistance with id (also deletes reqs and applications linked) */
+export async function deleteGraduatedAssistance(id: string) {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to delete Graduated Assistance with ID ${id}.`);
+  }
+  return {
+    message: `Graduated Assistance with ID ${id} deleted successfully.`,
+  };
+}
+
 /* 
     CHECK IF ALL THIS BELOW WORKS SOMEWHERE:
 */

@@ -8,11 +8,11 @@ import TabApplicants from "@/components/shared/tab-applicants";
 import { ROUTES } from "@/app/routes";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import React from "react";
-import { getAssistanceStatusById, getGraduatedAssistanceById } from "@/app/services/assistance.service";
+import {
+  deleteGraduatedAssistance,
+  getGraduatedAssistanceById,
+} from "@/app/services/assistance.service";
 import { GraduatedAssistance } from "@/app/types/graduated-assistance.type";
-import { mapGraduatedAssistanceApplicationsToRowValues } from "@/app/mappers/graduated-assistance-application.mapper";
-import { GraduatedAssistanceApplication } from "@/app/types/graduated-assistance-application.type";
-
 
 export default function AssistanceManagePage() {
   const params = useParams();
@@ -20,10 +20,8 @@ export default function AssistanceManagePage() {
   const id = params.id as string;
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [assistance, setAssistanceDetail] = React.useState<GraduatedAssistance | null>(
-    null
-  );
-
+  const [assistance, setAssistanceDetail] =
+    React.useState<GraduatedAssistance | null>(null);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -77,15 +75,18 @@ export default function AssistanceManagePage() {
     title: "Aplicantes",
     applicants: assistance?.assistanceApplications || [],
   };
-  
-  
+
   const handleEditClick = (id: string) => {
     const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT_ID}/${id}`;
     router.push(path);
   };
 
-  const handleConfirmDeletion = () => {
-    console.log("Confirmed!");
+  const handleConfirmDeletion = async (id: string) => {
+    try {
+      await deleteGraduatedAssistance(id);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   console.log("Assistance Requirements:", assistance);
@@ -139,7 +140,11 @@ export default function AssistanceManagePage() {
 
                 <ConfirmationModal
                   dialogText={dialogTextAccepted}
-                  onConfirm={handleConfirmDeletion}
+                  onConfirm={() => {
+                    if (assistance) {
+                      handleConfirmDeletion(assistance.id);
+                    }
+                  }}
                   open={isModalOpen}
                   setIsOpen={setIsModalOpen}
                 />
