@@ -4,12 +4,16 @@ import { UpdateRequirementDto } from './dto/update-requirement.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Requirement } from './entities/requirement.entity';
+import { GraduatedAssistance } from 'src/graduated-assistances/entities/graduated-assistance.entity';
 
 @Injectable()
 export class RequirementsService {
   constructor(
     @InjectRepository(Requirement)
     private requirementRepository: Repository<Requirement>,
+
+    @InjectRepository(GraduatedAssistance)
+    private graduatedAssistanceRepository: Repository<GraduatedAssistance>,
   ) {}
 
   async create(createRequirementDto: CreateRequirementDto) {
@@ -52,5 +56,26 @@ export class RequirementsService {
 
   remove(id: number) {
     return `This action removes a #${id} requirement`;
+  }
+
+  async linkRequirementToAssistance(
+    requirementId: string,
+    graduatedAssistanceId: string,
+  ) {
+    const requirement = await this.requirementRepository.findOne({
+      where: { id: requirementId },
+      relations: ['assistances'],
+    });
+
+    const assistance = await this.graduatedAssistanceRepository.findOneBy({
+      id: graduatedAssistanceId,
+    });
+
+    if (!requirement || !assistance) {
+      throw new Error('Requirement or Project not found');
+    }
+
+    requirement.assistances.push(assistance);
+    return this.requirementRepository.save(requirement);
   }
 }

@@ -20,6 +20,17 @@ export class RequirementsController {
     return this.requirementsService.create(createRequirementDto);
   }
 
+  @Post(':requirementId/assistance/:graduatedAssistanceId')
+  async linkRequirementToAssistance(
+    @Param('requirementId') requirementId: string,
+    @Param('graduatedAssistanceId') graduatedAssistanceId: string,
+  ) {
+    return this.requirementsService.linkRequirementToAssistance(
+      requirementId,
+      graduatedAssistanceId,
+    );
+  }
+
   @Get()
   findAll() {
     return this.requirementsService.findAll();

@@ -17,12 +17,15 @@ import {
 import SpinnerPage from "@/components/shared/spinner-page";
 import { ROUTES } from "@/app/routes";
 import {
-  createRequirement,
+  createRequirimentForGraduatedAssistance,
   getGraduatedAssistanceById,
   updateGraduatedAssistance,
   updateRequirement,
 } from "@/app/services/assistance.service";
-import { GraduatedAssistance, Requirement } from "@/app/types/graduated-assistance.type";
+import {
+  GraduatedAssistance,
+  Requirement,
+} from "@/app/types/graduated-assistance.type";
 
 export default function EditAssistancePage() {
   const params = useParams();
@@ -80,7 +83,6 @@ export default function EditAssistancePage() {
       ),
     }));
   };
-  
 
   const addRequirement = () => {
     setFormData((prev) => ({
@@ -99,34 +101,41 @@ export default function EditAssistancePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-  
+
     try {
       const updatedRequirements = await Promise.all(
         formData.requirements.map(async (requirement) => {
-          if (!requirement.id || requirement.id === "") { // If no ID is new
-            //console.log(requirement.description)
-            const newRequirement = await createRequirement(requirement.description);
-            return { ...requirement, id: newRequirement.id }; 
+          if (!requirement.id || requirement.id === "") {
+            // If no ID is new
+            console.log(requirement.description);
+            console.log(id);
+            const newRequirement =
+              await createRequirimentForGraduatedAssistance(
+                id as string,
+                requirement.description
+              );
+            return { ...requirement, id: newRequirement.id };
+          } else {
+            console.log("dadad");
+            await updateRequirement(requirement.id, requirement);
+            return requirement;
           }
-          console.log("dadad");
-          await updateRequirement(requirement.id, requirement);
-          return requirement;
         })
       );
       setFormData((prev) => ({
         ...prev,
         requirements: updatedRequirements,
-      }));  
-  
-      await updateGraduatedAssistance(id as string, formData);
+      }));
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`);
+      router.push(
+        `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`
+      );
     } catch (error) {
       console.error("Error saving assistance:", error);
       setIsSaving(false);
     }
   };
-  
 
   if (isLoading) {
     return <SpinnerPage />;
@@ -195,7 +204,9 @@ export default function EditAssistancePage() {
                       id={`requirement-${index}`}
                       name={`requirement-${index}`}
                       value={req.description}
-                      onChange={(e) => handleRequirementChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleRequirementChange(index, e.target.value)
+                      }
                       placeholder={`Requisito ${index + 1}`}
                       required
                     />
