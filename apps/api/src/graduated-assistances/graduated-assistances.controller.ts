@@ -51,7 +51,7 @@ export class GraduatedAssistancesController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.graduatedAssistancesService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return this.graduatedAssistancesService.remove(id);
   }
 }

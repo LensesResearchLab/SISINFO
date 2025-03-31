@@ -206,14 +206,15 @@ export default function AssistanceList({
     fetchData();
   }, []);
 
-
   // Auxiliary function to get semester (e.g. 2025-1) from startDate of assistance
   const getSemester = (dateInput: string): string => {
     let date: Date;
     const [year, month, day] = dateInput.split("-").map(Number);
     date = new Date(year, month - 1, day);
     const cutoffDate = new Date(date.getFullYear(), 5, 30); // June = 5, day = 30
-  return date < cutoffDate ? `${date.getFullYear()}-01` : `${date.getFullYear()}-02`;
+    return date < cutoffDate
+      ? `${date.getFullYear()}-01`
+      : `${date.getFullYear()}-02`;
   };
 
   const filteredData = React.useMemo(() => {
