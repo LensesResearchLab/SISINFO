@@ -2,9 +2,7 @@
 import * as React from "react";
 import {
   ColumnDef,
-  ColumnFiltersState,
   SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -12,7 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -21,12 +19,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -40,7 +32,7 @@ import { StatusInformation } from "@/app/types/graduated-assistance.type";
 import Link from "next/link";
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
-import { getAssistanceStatus } from "@/app/services/assistance.service";
+import { getAssistanceApplications } from "@/app/services/assistance.service";
 
 /**
  * Column definitions for the AssistanceAppliedList table
@@ -52,33 +44,36 @@ import { getAssistanceStatus } from "@/app/services/assistance.service";
  */
 export const columns: ColumnDef<StatusInformation>[] = [
   {
-    accessorKey: "name",
+    id: "title",
+    accessorKey: "graduatedAssistance.title",
     header: "Nombre",
   },
   {
-    accessorKey: "clasification",
+    accessorKey: "graduatedAssistance.category",
     header: "Clasificacion",
   },
   {
-    accessorKey: "professor",
+    accessorKey: "graduatedAssistance.professor.name",
     header: "Oferente",
   },
   {
-    accessorKey: "inscription_date",
+    accessorKey: "graduatedAssistance.startDate",
     header: "Fecha de Inscripcion",
     cell: ({ getValue }) => {
-      const date = getValue() as Date;
-      return date ? date.toLocaleDateString() : "-";
+      const dateStr = getValue() as string;
+      const date = new Date(dateStr);
+      return !isNaN(date.getTime()) ? date.toLocaleDateString() : "-";
     },
   },
   {
-    accessorKey: "lastStep",
+    accessorKey: "status",
     header: "Estado",
   },
   {
     id: "ver",
     header: "Ver",
     cell: ({ row }) => {
+      console.log(row.original.id); // Application id
       return (
         <Link
           href={`${ROUTES.HOME}/${ROUTES.ASSISTANCE_APPLIED_LIST}/${row.original.id}`}
@@ -108,19 +103,14 @@ export const columns: ColumnDef<StatusInformation>[] = [
 export default function AssistanceAppliedList() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = React.useState<StatusInformation[]>([]);
   const [selectedSemester, setSelectedSemester] = React.useState<string>("");
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const assistanceData = await getAssistanceStatus();
+        const tempStudentID = "Document 3";
+        const assistanceData = await getAssistanceApplications(tempStudentID);
         setData(assistanceData);
       } catch (error) {
         console.error("Error fetching assistance data:", error);
@@ -132,27 +122,28 @@ export default function AssistanceAppliedList() {
   }, []);
 
   const filteredData = React.useMemo(() => {
-    return selectedSemester
-      ? data.filter((item) => item.start_date === selectedSemester)
-      : data;
+    if (!selectedSemester) return data;
+
+    /* Filter to select the semester based on the period, so for 2025-01 corresponds to months 1 to 6, else is 2025-02 */
+    return data.filter((item) => {
+      const [year, month] = item.graduatedAssistance.startDate.split("-");
+      const semester = parseInt(month) <= 6 ? "01" : "02";
+      const formattedSemester = `${year}-${semester}`;
+
+      return formattedSemester === selectedSemester;
+    });
   }, [selectedSemester, data]);
 
   const table = useReactTable({
     data: filteredData,
     columns,
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
     },
   });
 
@@ -161,135 +152,117 @@ export default function AssistanceAppliedList() {
   }
 
   return (
-    <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
-      <div className="flex items-center justify-between py-4">
-        <div className="flex items-center gap-4">
-          <Select value={selectedSemester} onValueChange={setSelectedSemester}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Elige un semestre" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="2025-01">2025-01</SelectItem>
-              <SelectItem value="2025-02">2025-02</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-left gap-4">
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar una asistencia"
-              className="pl-8 w-[300px]"
-              value={
-                (table.getColumn("name")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table.getColumn("name")?.setFilterValue(event.target.value)
-              }
-            />
+    <div className="min-h-full min-w-full p-20">
+      <div className="bg-card rounded-lg shadow-lg p-6">
+        <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-4">
+              <Select
+                value={selectedSemester}
+                onValueChange={setSelectedSemester}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Elige un semestre" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2025-01">2025-01</SelectItem>
+                  <SelectItem value="2025-02">2025-02</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-left gap-4">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar una asistencia"
+                  className="pl-8 w-[300px]"
+                  value={
+                    (table.getColumn("title")?.getFilterValue() as string) ?? ""
+                  }
+                  onChange={(event) =>
+                    table.getColumn("title")?.setFilterValue(event.target.value)
+                  }
+                />
+              </div>
+            </div>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto bg-core text-white">
-                Columnas <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {typeof column.columnDef.header === "string"
-                        ? column.columnDef.header
-                        : "Unnamed Column"}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader className="bg-core">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead className="text-card font-bold" key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader className="bg-core">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead
+                          className="text-card font-bold"
+                          key={header.id}
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      className="bg-card text-primary"
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
                           )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className="bg-card text-primary"
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center bg-card text-primary"
+                    >
+                      Sin resultados.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center bg-card text-primary"
-                >
-                  Sin resultados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="bg-card  text-primary"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Anterior
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="bg-card text-primary"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Siguiente
-          </Button>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-card  text-primary"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                Anterior
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-card text-primary"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                Siguiente
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

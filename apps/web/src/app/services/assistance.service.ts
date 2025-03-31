@@ -114,22 +114,18 @@ export async function deleteGraduatedAssistance(id: string) {
   };
 }
 
-/* 
-    CHECK IF ALL THIS BELOW WORKS SOMEWHERE:
-*/
-
-// TODO: This works? /status returns nothing
-export async function getAssistanceStatus() {
-  const response = await fetch(`${API_URL}/status`);
+/* Gets ALL assistance applications for ONE student (the one logged in) */
+export async function getAssistanceApplications(studentId: string) {
+  const response = await fetch(`${API_URL_APPLICATION}/student/${studentId}`);
   if (!response.ok) {
-    throw new Error("Failed to fetch assistance status.");
+    throw new Error("Failed to fetch assistances applications.");
   }
   return response.json();
 }
 
-// TODO: This works? /status returns nothing
+/* Gets detail of ONE assistance application by its id */
 export async function getAssistanceStatusById(id: string) {
-  const response = await fetch(`${API_URL}/status/${id}`);
+  const response = await fetch(`${API_URL_APPLICATION}/${id}`);
   if (!response.ok) {
     throw new Error("Assistance status not found.");
   }
