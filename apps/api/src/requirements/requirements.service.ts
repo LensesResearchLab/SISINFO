@@ -4,7 +4,7 @@ import { UpdateRequirementDto } from './dto/update-requirement.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Requirement } from './entities/requirement.entity';
-import { GraduatedAssistance } from 'src/graduated-assistances/entities/graduated-assistance.entity';
+import { GraduatedAssistance } from '../graduated-assistances/entities/graduated-assistance.entity';
 
 @Injectable()
 export class RequirementsService {

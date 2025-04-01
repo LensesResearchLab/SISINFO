@@ -26,6 +26,7 @@ import { IncidencesModule } from './incidences/incidences.module';
 import { AssistanceApplicationsModule } from './assistance-applications/assistance-applications.module';
 import { ThesisApplicationsModule } from './thesis-applications/thesis-applications.module';
 import { ProjectApplicationsModule } from './project-applications/project-applications.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ProjectApplicationsModule } from './project-applications/project-applic
     ThesesModule,
     ThesisApplicationsModule,
     StudentsModule,
+    UsersModule,
     ConfigModule.forRoot({
       envFilePath: path.resolve(__dirname, '../../../config/.env'),
     }),

@@ -8,8 +8,8 @@ import { PeriodsService } from '../periods/periods.service';
 import { RequirementsService } from '../requirements/requirements.service';
 import { Requirement } from '../requirements/entities/requirement.entity';
 import { ProfessorsService } from '../professors/professors.service';
-import { CreateRequirementDto } from 'src/requirements/dto/create-requirement.dto';
-import { AssistanceApplication } from 'src/assistance-applications/entities/assistance-application.entity';
+import { CreateRequirementDto } from '../requirements/dto/create-requirement.dto';
+import { AssistanceApplication } from '../assistance-applications/entities/assistance-application.entity';
 
 @Injectable()
 export class GraduatedAssistancesService {
@@ -32,12 +32,12 @@ export class GraduatedAssistancesService {
     createGraduatedAssistanceDto: CreateGraduatedAssistanceDto,
     professorDocument: string,
   ): Promise<GraduatedAssistance> {
-    let requirements = createGraduatedAssistanceDto.requirements;
+    const requirements = createGraduatedAssistanceDto.requirements;
     let period = await this.periodsService.findOneByPeriodAndYear(
       createGraduatedAssistanceDto.period.period,
       createGraduatedAssistanceDto.period.year,
     );
-    let professor = await this.professorsService.findOne(professorDocument);
+    const professor = await this.professorsService.findOne(professorDocument);
 
     if (!period) {
       period = await this.periodsService.create(
@@ -50,16 +50,15 @@ export class GraduatedAssistancesService {
       );
     }
 
-    let requirementsCreated: Requirement[] = [];
-
-    requirements.map(async (requirement) => {
+    const requirementsCreated: Requirement[] = [];
+    for (const requirement of requirements) {
       const createRequirementDto: CreateRequirementDto = {
         description: requirement,
       };
-      let created = await this.requirementsService.create(createRequirementDto);
+      const created =
+        await this.requirementsService.create(createRequirementDto);
       requirementsCreated.push(created);
-    });
-
+    }
     const graduatedAssistance = this.graduatedAssistanceRepository.create({
       ...createGraduatedAssistanceDto,
       period: period,

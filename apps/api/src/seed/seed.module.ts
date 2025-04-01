@@ -19,6 +19,7 @@ import { SeedService } from './seed.service';
 import { ProjectApplicationsModule } from '../project-applications/project-applications.module';
 import { ThesisApplicationsModule } from '../thesis-applications/thesis-applications.module';
 import { AssistanceApplicationsModule } from '../assistance-applications/assistance-applications.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   controllers: [SeedController],
@@ -42,6 +43,7 @@ import { AssistanceApplicationsModule } from '../assistance-applications/assista
     ThesesModule,
     ThesisApplicationsModule,
     StudentsModule,
+    UsersModule,
   ],
 })
 export class SeedModule {}

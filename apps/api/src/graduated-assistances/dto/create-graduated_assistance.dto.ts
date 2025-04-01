@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
-import {IsNotEmpty, isString, IsString } from 'class-validator';
-import { Period } from 'src/periods/entities/period.entity';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { Period } from '../../periods/entities/period.entity';
 
 export class CreateGraduatedAssistanceDto {
   @IsString()

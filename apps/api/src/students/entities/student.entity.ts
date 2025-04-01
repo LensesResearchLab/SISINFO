@@ -1,5 +1,5 @@
 import { ThesisApplication } from '../../thesis-applications/entities/thesis-application.entity';
-import { User } from '../../common/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { Course } from '../../courses/entities/course.entity';
 import { GraduatedAssistance } from '../../graduated-assistances/entities/graduated-assistance.entity';
 import { Project } from '../../projects/entities/project.entity';
@@ -15,13 +15,23 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
+  PrimaryColumn,
 } from 'typeorm';
 import { Thesis } from '../../theses/entities/thesis.entity';
 import { ProjectApplication } from '../../project-applications/entities/project-application.entity';
 import { AssistanceApplication } from '../../assistance-applications/entities/assistance-application.entity';
 
 @Entity()
-export class Student extends User {
+export class Student {
+  @PrimaryColumn()
+  document: string;
+
+  @OneToOne(() => User, (user) => user.student, { eager: true })
+  @JoinColumn({ name: 'document' })
+  user: User;
+
+  @Column('boolean', { default: true })
+  isActive: boolean;
   @Column('boolean')
   isUndergraduate: boolean;
 

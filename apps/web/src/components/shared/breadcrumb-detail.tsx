@@ -10,13 +10,13 @@ const EXCLUDED_ROUTES =
   .concat(professorData.map((item) => item.url))
   .concat(coordinatorData.map((item) => item.url))
   .concat(supportData.map((item) => item.url))
-  .concat(["inicio", "tesis", "publicar-consultar", "asistencia", "estudiante" ]);
+  .concat(["inicio", "tesis", "publicar-consultar", "asistencia", "estudiante","profesor", "coordinador", "maestria", "administrador" ]);
 
 function getBreadcrumbText(pathname: string) {
     const segments = pathname.split("/").filter(Boolean);
     const breadcrumbs = segments.map((segment, index) => {
       const path: string = `/${segments.slice(0, index + 1).join("/")}`;
-      let name: string = segment.replace(/_/g, " ");
+      const name: string = segment.replace(/_/g, " ");
       const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
       return { path, capitalizedName };
     });

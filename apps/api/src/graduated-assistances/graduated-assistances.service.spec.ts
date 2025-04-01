@@ -6,10 +6,14 @@ import { Repository } from 'typeorm';
 import { RequirementsService } from '../requirements/requirements.service';
 import { PeriodsService } from '../periods/periods.service';
 import { ProfessorsService } from '../professors/professors.service';
+import { AssistanceApplication } from '../assistance-applications/entities/assistance-application.entity';
+import { Requirement } from '../requirements/entities/requirement.entity';
 
 describe('GraduatedAssistancesService', () => {
   let service: GraduatedAssistancesService;
   let graduatedAssistancesRepository: Repository<GraduatedAssistance>;
+  let requirementsRepository: Repository<Requirement>;
+  let applicationsRepository: Repository<AssistanceApplication>;
   let periodsService: PeriodsService;
   let requirementsService: RequirementsService;
   let professorsService: ProfessorsService;
@@ -21,6 +25,8 @@ describe('GraduatedAssistancesService', () => {
       save: jest.fn(),
       delete: jest.fn(),
     };
+    const mockRequirementRepository = { ...mockRepository };
+    const mockApplicationRepository = { ...mockRepository };
     const mockRequirementsService = {
       findOne: jest.fn(),
       update: jest.fn(),
@@ -40,6 +46,14 @@ describe('GraduatedAssistancesService', () => {
         {
           provide: getRepositoryToken(GraduatedAssistance),
           useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(Requirement),
+          useValue: mockRequirementRepository,
+        },
+        {
+          provide: getRepositoryToken(AssistanceApplication),
+          useValue: mockApplicationRepository,
         },
         {
           provide: RequirementsService,

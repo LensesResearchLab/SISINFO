@@ -1,14 +1,33 @@
-import { User } from '../../common/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { Course } from '../../courses/entities/course.entity';
 import { GraduatedAssistance } from '../../graduated-assistances/entities/graduated-assistance.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Section } from '../../sections/entities/section.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Thesis } from '../../theses/entities/thesis.entity';
-import { Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm';
 
 @Entity()
-export class Professor extends User {
+export class Professor {
+  @PrimaryColumn()
+  document: string;
+
+  @OneToOne(() => User, (user) => user.professor, { eager: true })
+  @JoinColumn({ name: 'document' })
+  user: User;
+
+  @Column('boolean', { default: true })
+  isActive: boolean;
+
   @OneToMany(() => GraduatedAssistance, (assistance) => assistance.professor)
   assistances: GraduatedAssistance[];
 

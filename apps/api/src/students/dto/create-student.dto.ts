@@ -5,9 +5,12 @@ import {
   Length,
   Matches,
 } from 'class-validator';
-import { CreateUserDto } from '../../common/dto/create-user.dto';
 
-export class CreateStudentDto extends CreateUserDto {
+export class CreateStudentDto {
+  @IsString()
+  @IsNotEmpty()
+  document: string;
+
   @IsBoolean()
   isUndergraduate: boolean;
 

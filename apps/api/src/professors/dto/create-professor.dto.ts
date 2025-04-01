@@ -1,3 +1,7 @@
-import { CreateUserDto } from '../../common/dto/create-user.dto';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateProfessorDto extends CreateUserDto {}
+export class CreateProfessorDto {
+  @IsString()
+  @IsNotEmpty()
+  document: string;
+}

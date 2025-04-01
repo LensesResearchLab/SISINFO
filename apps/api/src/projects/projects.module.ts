@@ -4,7 +4,7 @@ import { ProjectController } from './projects.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
 import { ProfessorsModule } from '../professors/professors.module';
-import { PeriodsModule } from 'src/periods/periods.module';
+import { PeriodsModule } from '../periods/periods.module';
 
 @Module({
   controllers: [ProjectController],

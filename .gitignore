@@ -14,6 +14,7 @@ node_modules
 
 # Documentation
 documentation
+documentation/
 
 # Database
 postgres/

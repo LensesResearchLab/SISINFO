@@ -39,7 +39,9 @@ import { ProjectApplication } from '../project-applications/entities/project-app
 import { ProjectApplicationsService } from '../project-applications/project-applications.service';
 import { ThesisApplicationsService } from '../thesis-applications/thesis-applications.service';
 import { AssistanceApplicationsService } from '../assistance-applications/assistance-applications.service';
-import { Period } from '../periods/entities/period.entity';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UsersService } from '../users/users.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class SeedService {
@@ -62,10 +64,14 @@ export class SeedService {
     private readonly tasksService: TasksService,
     private readonly areasOfInterestService: AreasOfInterestService,
     private readonly studentsService: StudentsService,
+    private readonly usersService: UsersService,
   ) {}
 
   STUDENTS_NUMBER = 20;
   PROFESSORS_NUMBER = 20;
+  COORDINATORS_NUMBER = 20;
+  TOTAL_USERS =
+    this.STUDENTS_NUMBER + this.PROFESSORS_NUMBER + this.COORDINATORS_NUMBER;
   MAX_THESIS_PER_PROFESSOR = 3;
   MAX_PROJECTS_PER_PROFESSOR = 3;
   GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER = 30;
@@ -137,8 +143,7 @@ export class SeedService {
       .fill(null)
       .map((_, idx) => ({
         document: `Document ${idx}`,
-        name: faker.person.fullName(),
-        email: faker.internet.email(),
+        isActive: faker.datatype.boolean(),
       }));
     const insertPromises: Promise<CreateProfessorDto>[] = [];
     professors.forEach((professor) => {
@@ -292,9 +297,9 @@ export class SeedService {
     const professors = await this.professorsService.findAll();
     const requirements = await this.requirementsService.findAll();
     const randomRequirements = requirements
-        .sort(() => 0.5 - Math.random())
-        .slice(0, Math.floor(Math.random() * 3) + 1)
-        .map((req) => req.id);
+      .sort(() => 0.5 - Math.random())
+      .slice(0, Math.floor(Math.random() * 3) + 1)
+      .map((req) => req.id);
     const randomPeriod = periods[Math.floor(Math.random() * periods.length)];
     const graduatedAssistances: CreateGraduatedAssistanceDto[] = Array.from({
       length: 10,
@@ -303,10 +308,10 @@ export class SeedService {
         title: faker.lorem.word(),
         category: faker.lorem.word(),
         description: faker.lorem.sentence(),
-        period: randomPeriod as Period,
+        period: randomPeriod,
         requirements: randomRequirements,
         startDate: faker.date.recent(),
-        endDate: faker.date.recent()
+        endDate: faker.date.recent(),
       };
     });
     const insertPromises = graduatedAssistances.map((graduatedAssistance) => {
@@ -344,13 +349,14 @@ export class SeedService {
   }
 
   async seedCoordinator() {
-    const coordinators: CreateCoordinatorDto[] = Array.from({ length: 10 }).map(
-      () => ({
+    const coordinators: CreateCoordinatorDto[] = Array(this.COORDINATORS_NUMBER)
+      .fill(null)
+      .map((_, idx) => ({
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        document: faker.string.uuid(),
-      }),
-    );
+        document: `Document ${this.PROFESSORS_NUMBER + this.STUDENTS_NUMBER + idx}`,
+        isActive: faker.datatype.boolean(),
+      }));
     const insertPromises: Promise<CreateCoordinatorDto>[] = [];
     coordinators.forEach((coordinator) => {
       insertPromises.push(this.coordinatorsService.create(coordinator));
@@ -381,18 +387,34 @@ export class SeedService {
     return true;
   }
 
-  async seedStudents() {
-    const students: CreateStudentDto[] = Array(this.STUDENTS_NUMBER)
+  async seedUsers() {
+    const users: CreateUserDto[] = Array(this.TOTAL_USERS)
       .fill(null)
       .map((_, idx) => ({
         document: `Document ${idx}`,
         name: faker.person.fullName(),
         email: faker.internet.email(),
+      }));
+
+    const insertPromises: Promise<User>[] = [];
+    users.forEach((user) => {
+      insertPromises.push(this.usersService.create(user));
+    });
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedStudents() {
+    const students: CreateStudentDto[] = Array(this.STUDENTS_NUMBER)
+      .fill(null)
+      .map((_, idx) => ({
+        document: `Document ${this.PROFESSORS_NUMBER + idx}`,
         code: faker.string.uuid(),
         password: faker.internet.password(),
         semester: faker.number.int({ min: 1, max: 2 }),
         isUndergraduate: faker.datatype.boolean(),
         isTeachingAssistant: faker.datatype.boolean(),
+        isActive: faker.datatype.boolean(),
       }));
 
     const insertPromises: Promise<CreateStudentDto>[] = [];
@@ -412,6 +434,7 @@ export class SeedService {
   }
 
   async executeSeedUsers() {
+    await this.seedUsers();
     await this.seedProfessors();
     await this.seedStudents();
     await this.seedCoordinator();

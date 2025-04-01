@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export abstract class CreateUserDto {
+export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   document: string;
