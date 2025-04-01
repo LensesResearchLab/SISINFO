@@ -174,9 +174,9 @@ function TableRow({ thesis }: { thesis: Thesis }) {
 
 function TableRowDetail({ thesis }: { thesis: Thesis }) {
   const router = useRouter();
-  const handleClickEye = () => {
+  const handleClickEye = (id: string) => {
     router.push(
-      `${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_STUDENT}`
+      `${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_STUDENT}/${id}`
     );
   };
   return (
@@ -195,7 +195,7 @@ function TableRowDetail({ thesis }: { thesis: Thesis }) {
             <div className="col-span-3">{student.date}</div>
             <Eye
               className="col-span-3 cursor-pointer"
-              onClick={handleClickEye}
+              onClick={() => handleClickEye(student.id)}
             ></Eye>
           </div>
         </div>

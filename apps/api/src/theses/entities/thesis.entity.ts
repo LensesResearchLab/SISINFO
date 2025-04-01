@@ -29,11 +29,11 @@ export class Thesis extends Base {
   @Column('boolean', { default: false })
   isEnded: boolean;
 
-  @OneToOne(() => Student, (student) => student.thesis, {
-    nullable: true,
-  })
-  @JoinColumn()
-  student: Student;
+  @OneToOne(() => Student, (student) => student.thesis1, { nullable: true })
+  studentThesis1: Student;
+
+  @OneToOne(() => Student, (student) => student.thesis2, { nullable: true })
+  studentThesis2: Student;
 
   @OneToMany(
     () => ThesisApplication,
