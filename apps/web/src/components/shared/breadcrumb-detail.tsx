@@ -10,7 +10,7 @@ const EXCLUDED_ROUTES =
   .concat(professorData.map((item) => item.url))
   .concat(coordinatorData.map((item) => item.url))
   .concat(supportData.map((item) => item.url))
-  .concat(["inicio", "tesis", "publicar-consultar", "asistencia", "estudiante","profesor", "coordinador", "maestria", "administrador" ]);
+  .concat(["inicio", "tesis", "publicar-consultar", "asistencia", "estudiante","profesor", "coordinador", "maestria", "administrador", "aplicantes" ]);
 
 function getBreadcrumbText(pathname: string) {
     const segments = pathname.split("/").filter(Boolean);

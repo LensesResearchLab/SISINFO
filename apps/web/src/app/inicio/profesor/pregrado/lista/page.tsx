@@ -9,6 +9,7 @@ import {
   Download,
   Calendar,
   Circle,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,16 +56,16 @@ export default function ThesisProjects() {
     : sortedThesisList;
 
   return (
-    <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[1100px]">
+    <div className="min-h-full mx-auto p-4 space-y-8 container max-w-3xl">
       <div className="w-full bg-card shadow-lg rounded-xl p-5 h-full space-y-4">
-        <ProfessorActionButtons />
+        <TableActionButtons />
         <ThesisTable filteredProjects={filteredProjects} />
       </div>
     </div>
   );
 }
 
-function ProfessorActionButtons() {
+function TableActionButtons() {
   const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
   const setSearchQuery = useProfessorThesisListStore(
     (state) => state.setSearchQuery
@@ -108,7 +109,7 @@ function ProfessorActionButtons() {
 
 function ThesisTable({ filteredProjects }: { filteredProjects: Thesis[] }) {
   return (
-    <div className="border rounded-md overflow-hidden">
+    <div className="border-x border-t rounded-md overflow-hidden">
       <TableHeaders />
       {filteredProjects.map((thesis) => (
         <TableRow key={thesis.id} thesis={thesis} />
@@ -119,13 +120,11 @@ function ThesisTable({ filteredProjects }: { filteredProjects: Thesis[] }) {
 
 function TableHeaders() {
   return (
-    <div className="bg-core text-white grid grid-cols-12 p-3 items-center">
-      <div className="col-span-3 font-medium">Tema del proyecto</div>
-      <div className="col-span-3 font-medium">Categoria</div>
-      <div className="col-span-3 font-medium">Número de estudiantes</div>
-      <div className="col-span-1 font-medium">Ver detalle</div>
-      <div className="col-span-1 font-medium">Estado</div>
-      <div className="col-span-1 font-medium">Ver estudiantes</div>
+    <div className="bg-core text-white grid grid-cols-12 p-3">
+      <div className="col-span-4 font-medium">Tema del proyecto</div>
+      <div className="col-span-2 font-medium">Categoria</div>
+      <div className="col-span-3 font-medium">Ver detalle</div>
+      <div className="col-span-2 font-medium">Estado</div>
     </div>
   );
 }
@@ -138,30 +137,41 @@ function TableRow({ thesis }: { thesis: Thesis }) {
   const toggleExpandedProject = useProfessorThesisListStore(
     (state) => state.toggleExpandedProject
   );
-  const handleClick = () => {
+  const handleClickDetail = () => {
     router.push(
       `${ROUTES.HOME}/${ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST}/${thesis.id}`
     );
   }
+  const handleClickApplicants = () => {
+    router.push(
+      `${ROUTES.HOME}/${ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST}/${thesis.id}/${ROUTES.APPLICANTS}`
+    );
+  }
   return (
     <div key={thesis.id}>
-      <div className="grid grid-cols-12 p-3 items-center text-primary border-b ">
-        <div className="col-span-3">{thesis.title}</div>
-        <div className="col-span-3">{thesis.category}</div>
-        <div className="col-span-3">{thesis.students?.length}</div>
-        <div className="col-span-1">
+      <div className="grid grid-cols-12 p-1 items-center text-primary border-b ">
+        <div className="col-span-4">{thesis.title}</div>
+        <div className="col-span-2">{thesis.category}</div>
+        <div className="col-span-3">
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => handleClick()}
+            onClick={() => handleClickDetail()}
           >
-            <Search className="w-4 h-4" />
+            <Search className="w-5 h-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleClickApplicants()}
+          >
+            <Users className="w-5 h-5" />
           </Button>
         </div>
-        <div className="col-span-1">
+        <div className="col-span-2">
           <TriangleAlert />
         </div>
-        <div className="col-span-1 flex justify-center">
+        <div className="flex justify-center">
           <Button
             variant="ghost"
             size="icon"
@@ -183,7 +193,7 @@ function TableRow({ thesis }: { thesis: Thesis }) {
 function TableRowDetail({ thesis }: { thesis: Thesis }) {
   return (
     <div>
-      <div className="grid grid-cols-12 border-b py-2 px-3 text-primary">
+      <div className="grid grid-cols-12 border-b px-3 text-primary">
         <div className="col-span-4 font-medium">Nombre del estudiante</div>
         <div className="col-span-4 font-medium">Estado</div>
         <div className="col-span-4 font-medium">Fecha de la solicitud</div>

@@ -28,6 +28,7 @@ export const ROUTES: Record<string, string> = {
   SUPPORT_CONTACT: "/soporte/contacto",
 
   /*  Professor  */
+  APPLICANTS: 'aplicantes',
 
   PROFESSOR_UNDERGRADUATE_THESIS_LIST: "/profesor/pregrado/lista",
   PROFESSOR_UNDERGRADUATE_THESIS_NEW: "/profesor/pregrado/nuevo",
