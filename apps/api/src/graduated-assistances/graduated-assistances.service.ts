@@ -52,8 +52,13 @@ export class GraduatedAssistancesService {
 
     const requirementsCreated: Requirement[] = [];
     for (const requirement of requirements) {
+      const descriptionValue =
+        typeof requirement === 'object' && requirement !== null
+          ? (requirement as { description: string }).description
+          : (requirement as string);
+
       const createRequirementDto: CreateRequirementDto = {
-        description: requirement,
+        description: descriptionValue,
       };
       const created =
         await this.requirementsService.create(createRequirementDto);

@@ -53,7 +53,7 @@ export const columns: ColumnDef<StatusInformation>[] = [
     header: "Clasificacion",
   },
   {
-    accessorKey: "graduatedAssistance.professor.name",
+    accessorKey: "graduatedAssistance.professor.user.name",
     header: "Oferente",
   },
   {

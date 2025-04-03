@@ -2,14 +2,20 @@ const API_URL = "http://localhost:8000/api/graduated-assistances";
 const API_URL_REQUIREMENT = "http://localhost:8000/api/requirements";
 const API_URL_APPLICATION = "http://localhost:8000/api/assistance-applications";
 
-export async function createGraduatedAssistance(data: object) {
-  const response = await fetch(`${API_URL}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+export async function createGraduatedAssistance(
+  data: object,
+  professorDocument: string
+) {
+  const response = await fetch(
+    `${API_URL}?professorDocument=${professorDocument}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
 
   if (!response.ok) {
     throw new Error("Failed to create assistance.");

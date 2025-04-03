@@ -394,6 +394,7 @@ export class SeedService {
         document: `Document ${idx}`,
         name: faker.person.fullName(),
         email: faker.internet.email(),
+        password: faker.internet.password(),
       }));
 
     const insertPromises: Promise<User>[] = [];
@@ -410,7 +411,6 @@ export class SeedService {
       .map((_, idx) => ({
         document: `Document ${this.PROFESSORS_NUMBER + idx}`,
         code: faker.string.uuid(),
-        password: faker.internet.password(),
         semester: faker.number.int({ min: 1, max: 2 }),
         isUndergraduate: faker.datatype.boolean(),
         isTeachingAssistant: faker.datatype.boolean(),

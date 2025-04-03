@@ -2,17 +2,20 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Image from 'next/image';
-import Footer from '@/components/shared/footer';
+import Image from "next/image";
+import Footer from "@/components/shared/footer";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { loginUser } from "./auth-service";
 
 /**
  * Main Login page component
- * 
+ *
  * Renders the login page with a two-column layout on large screens:
  * - Left column contains the login form
  * - Right column contains the SISINFO banner (only visible on lg screens)
  * Also includes a footer at the bottom
- * 
+ *
  * @returns {JSX.Element} The login page component
  */
 export default function Login() {
@@ -21,7 +24,7 @@ export default function Login() {
       <main className="flex flex-grow ">
         <div className="grid lg:grid-cols-2 w-screen">
           <div className="flex items-center justify-center bg-white py-5">
-              <LogInForm/>
+            <LogInForm />
           </div>
           <div className="bg-core justify-center items-center hidden lg:flex">
             <SisinfoBanner />
@@ -30,66 +33,114 @@ export default function Login() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }
 
 /**
  * Login form component
- * 
+ *
  * Renders a form with:
  * - Systems department banner
  * - Username input field
  * - Password input field
  * - Submit button
- * 
+ *
  * @returns {JSX.Element} The login form component
  */
 function LogInForm() {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    alert("Successful")
-  }
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await loginUser(email, password);
+      if (response.success) {
+        router.push("/inicio");
+      } else {
+        setError("Error al iniciar sesión: " + response.message);
+      }
+    } catch (error) {
+      setError("Error al iniciar sesión: " + error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="border rounded-xl shadow-lg w-full max-w-md p-10 space-y-12">
+    <form
+      onSubmit={handleSubmit}
+      className="border rounded-xl shadow-lg w-full max-w-md p-10 space-y-12"
+    >
       <div className="text-center">
-        <Image 
-          src={"/banner_sistemas.png"} 
-          alt="Sistemas Logo" 
+        <Image
+          src={"/banner_sistemas.png"}
+          alt="Sistemas Logo"
           width={350}
           height={160}
-          className="mx-auto mb-8 " 
+          className="mx-auto mb-8 "
         />
       </div>
       <div className="space-y-8">
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
         <div className="space-y-4">
-          <Label htmlFor="user" className="text-lg">
-            Usuario uniandes
+          <Label htmlFor="email" className="text-lg">
+            Correo uniandes
           </Label>
-          <Input id="user" type="text" placeholder="Ingresa tu usuario" required className="h-12 text-lg" />
+          <Input
+            id="email"
+            type="text"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Ingresa tu correo"
+            required
+            className="h-12 text-lg"
+          />
         </div>
         <div className="space-y-4">
           <Label htmlFor="password" className="text-lg">
             Contraseña
           </Label>
-          <Input id="password" type="password" placeholder="Ingresa tu contraseña" required className="h-12 text-lg" />
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Ingresa tu contraseña"
+            required
+            className="h-12 text-lg"
+          />
         </div>
-        <Button type="submit" className="w-full h-12 text-lg mt-6">
-          Iniciar Sesion
+        <Button
+          type="submit"
+          className="w-full h-12 text-lg mt-6"
+          disabled={isLoading}
+        >
+          {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
         </Button>
       </div>
     </form>
-  )
+  );
 }
 
 /**
  * SISINFO Banner component
- * 
+ *
  * Displays the SISINFO branding on the right side of the login page
  * Contains:
  * - Large SISINFO text
  * - Uniandes logo
- * 
+ *
  * @returns {JSX.Element} The SISINFO banner component
  */
 function SisinfoBanner() {
@@ -97,13 +148,13 @@ function SisinfoBanner() {
     <div className="flex flex-col items-center justify-center p-8 text-white">
       <h1 className="text-6xl md:text-8xl font-bold mb-8">SISINFO</h1>
       <div>
-      <Image 
-          src={"/uniandes_logo.svg"} 
-          alt="Sistemas Logo" 
+        <Image
+          src={"/uniandes_logo.svg"}
+          alt="Sistemas Logo"
           width={384}
           height={384}
         />
       </div>
     </div>
-  )
+  );
 }

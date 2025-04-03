@@ -1,17 +1,8 @@
-"use client"
+"use client";
 
-import {
-  ChevronsUpDown,
-  LogOut,
-  SunMoon,
-} from "lucide-react"
-
-import Link from "next/link"
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { ChevronsUpDown, LogOut, SunMoon } from "lucide-react";
+import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,31 +11,47 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { logoutUser } from "@/app/auth/auth-service";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
 }: {
   user: {
-    name: string
-    email: string
-    avatar: string
-  }
+    name: string;
+    email: string;
+    avatar: string;
+  };
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
+  const router = useRouter();
 
   const toggleDarkMode = () => {
-    const current = localStorage.getItem("theme")
-    const localStorageTheme = current === "dark" ? "light" : "dark"
-    localStorage.setItem("theme", localStorageTheme)
-    window.location.reload()
-  }
+    const current = localStorage.getItem("theme");
+    const localStorageTheme = current === "dark" ? "light" : "dark";
+    localStorage.setItem("theme", localStorageTheme);
+    window.location.reload();
+  };
+
+  const handleLogout = async () => {
+    try {
+      const result = await logoutUser();
+      if (result.success) {
+        router.push("/auth");
+      } else {
+        console.error("Logout failed:", result.message);
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -87,22 +94,18 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <SunMoon className="text-white"  />
-                <button onClick={toggleDarkMode}>
-                  Cambiar tema
-                </button>
+                <SunMoon className="text-white" />
+                <button onClick={toggleDarkMode}>Cambiar tema</button>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="text-white" />
-               <Link href="/auth">
-                Cerrar sesión
-               </Link>
+              <Link href="/auth">Cerrar sesión</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

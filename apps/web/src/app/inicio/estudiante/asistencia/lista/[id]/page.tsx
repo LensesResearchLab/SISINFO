@@ -19,7 +19,10 @@ import { useParams, useRouter } from "next/navigation";
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { getGraduatedAssistanceById } from "@/app/services/assistance.service";
-import { GraduatedAssistance, Requirement } from "@/app/types/graduated-assistance.type";
+import {
+  GraduatedAssistance,
+  Requirement,
+} from "@/app/types/graduated-assistance.type";
 
 interface AssistanceProps {
   assistance: GraduatedAssistance;
@@ -64,8 +67,11 @@ export default function AssistanceDetails() {
     description: "",
     requirements: [],
     professor: {
-      name: "",
-      email: "",
+      user: {
+        document: "",
+        name: "",
+        email: "",
+      },
     },
   });
 
@@ -298,14 +304,14 @@ function ContactInfo({ assistance }: { assistance: GraduatedAssistance }) {
             <User className="w-8 h-8 text-core-highlight flex-shrink-0 mt-1" />
           }
           title="Profesor"
-          content={assistance.professor.name}
+          content={assistance.professor.user.name}
         />
         <InfoItem
           icon={
             <Mail className="w-8 h-8 text-core-highlight flex-shrink-0 mt-1" />
           }
           title="Email"
-          content={assistance.professor.email}
+          content={assistance.professor.user.email}
         />
       </div>
     </div>

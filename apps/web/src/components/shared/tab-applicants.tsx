@@ -147,8 +147,8 @@ function ApplicantsTable({ applicants }: { applicants: GraduatedAssistanceApplic
 
   const filteredApplicants = applicants.filter(
     (applicant) =>
-      applicant.student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      applicant.student.email.toLowerCase().includes(searchQuery.toLowerCase())
+      applicant.student.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      applicant.student.user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSelectAll = (checked: boolean) => {
@@ -165,8 +165,8 @@ function ApplicantsTable({ applicants }: { applicants: GraduatedAssistanceApplic
 
   const sortedApplicants = [...filteredApplicants].sort((a, b) => {
     return sortAscending
-      ? a.student.name.localeCompare(b.student.name)
-      : b.student.name.localeCompare(a.student.name);
+      ? a.student.user.name.localeCompare(b.student.user.name)
+      : b.student.user.name.localeCompare(a.student.user.name);
   });
 
   return (
@@ -236,8 +236,8 @@ function ApplicantsTable({ applicants }: { applicants: GraduatedAssistanceApplic
                           }
                         />
                       </TableCell>
-                      <TableCell>{applicant.student.name}</TableCell>
-                      <TableCell>{applicant.student.email}</TableCell>
+                      <TableCell>{applicant.student.user.name}</TableCell>
+                      <TableCell>{applicant.student.user.email}</TableCell>
                       <TableCell>{applicant.status}</TableCell>
                       <TableCell>
                         <DropdownMenu>

@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -18,11 +19,63 @@ export class UsersService {
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.userRepository.find({
+      select: ['email', 'name'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(document: string) {
+    const user = await this.userRepository.findOne({
+      where: { document },
+      relations: ['coordinator', 'professor', 'student'],
+    });
+
+    if (!user) return null;
+
+    const roles: string[] = [];
+    if (user.coordinator) roles.push('coordinador');
+    if (user.professor) roles.push('profesor');
+    if (user.student) roles.push('estudiante');
+    const { password, ...result } = user;
+    return { ...result, roles };
+  }
+
+  async findByEmail(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['coordinator', 'professor', 'student'],
+    });
+
+    if (!user) return null;
+
+    const roles: string[] = [];
+    if (user.coordinator) roles.push('coordinador');
+    if (user.professor) roles.push('profesor');
+    if (user.student) roles.push('estudiante');
+    return { ...user, roles };
+  }
+
+  async hashPassword(plainPassword: string): Promise<string> {
+    const saltRounds = 3;
+    return bcrypt.hash(plainPassword, saltRounds);
+  }
+
+  async verifyPassword(
+    plainPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    try {
+      // Check if the stored password is a bcrypt hash
+      if (hashedPassword.startsWith('$2')) {
+        return bcrypt.compare(plainPassword, hashedPassword);
+      } else {
+        // Fallback for testing with just string passwords
+        return plainPassword === hashedPassword;
+      }
+    } catch (error) {
+      console.error('Error verifying password:', error);
+      return false;
+    }
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
