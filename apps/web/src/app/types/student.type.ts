@@ -1,7 +1,9 @@
 export interface Student {
-    document:        string;
-    name:            string;
-    email:           string;
+    user:{
+        document: string;
+        name: string;
+        email: string;
+    }
     isUndergraduate: boolean;
-    code:            string;
+    code: string;
 }

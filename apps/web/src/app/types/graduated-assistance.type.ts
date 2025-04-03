@@ -29,11 +29,13 @@ export interface StatusInformation {
   id: string;
   status: string;
   student: {
-    document: string;
-    name: string;
-    email: string;
     isUndergraduate: boolean;
     code: string;
+    user: {
+      document: string;
+      name: string;
+      email: string;
+    }
   };
   graduatedAssistance: {
     id: string;

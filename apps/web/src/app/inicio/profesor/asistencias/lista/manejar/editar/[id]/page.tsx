@@ -128,11 +128,12 @@ export default function EditAssistancePage() {
           }
         })
       );
-      setFormData((prev) => ({
-        ...prev,
+      const updatedAssistance = {
+        ...formData,
         requirements: updatedRequirements,
-      }));
+      };
 
+      await updateGraduatedAssistance(id, updatedAssistance);
       await new Promise((resolve) => setTimeout(resolve, 1000));
       router.push(
         `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`
