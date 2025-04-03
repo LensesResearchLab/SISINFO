@@ -388,7 +388,6 @@ export class SeedService {
   }
 
   async seedUsers() {
-    const roles = ['profesor', 'coordinador', 'estudiante'];
     const users: CreateUserDto[] = Array(this.TOTAL_USERS)
       .fill(null)
       .map((_, idx) => ({
@@ -396,7 +395,6 @@ export class SeedService {
         name: faker.person.fullName(),
         email: faker.internet.email(),
         password: faker.internet.password(),
-        roles: faker.helpers.arrayElement(roles),
       }));
 
     const insertPromises: Promise<User>[] = [];

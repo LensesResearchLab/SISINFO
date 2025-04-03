@@ -25,14 +25,34 @@ export class UsersService {
   }
 
   async findOne(document: string) {
-    const user = await this.userRepository.findOne({ where: { document } });
+    const user = await this.userRepository.findOne({
+      where: { document },
+      relations: ['coordinator', 'professor', 'student'],
+    });
+
     if (!user) return null;
+
+    const roles: string[] = [];
+    if (user.coordinator) roles.push('coordinador');
+    if (user.professor) roles.push('profesor');
+    if (user.student) roles.push('estudiante');
     const { password, ...result } = user;
-    return result;
+    return { ...result, roles };
   }
 
   async findByEmail(email: string) {
-    return this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['coordinator', 'professor', 'student'],
+    });
+
+    if (!user) return null;
+
+    const roles: string[] = [];
+    if (user.coordinator) roles.push('coordinador');
+    if (user.professor) roles.push('profesor');
+    if (user.student) roles.push('estudiante');
+    return { ...user, roles };
   }
 
   async hashPassword(plainPassword: string): Promise<string> {
@@ -50,7 +70,6 @@ export class UsersService {
         return bcrypt.compare(plainPassword, hashedPassword);
       } else {
         // Fallback for testing with just string passwords
-        console.warn('Using direct comparison for non-hashed password');
         return plainPassword === hashedPassword;
       }
     } catch (error) {
