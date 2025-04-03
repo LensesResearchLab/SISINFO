@@ -14,6 +14,12 @@ export class User {
   @Column('text')
   email: string;
 
+  @Column('text')
+  password: string;
+
+  @Column('simple-array')
+  roles: string[];
+
   @OneToOne(() => Coordinator, (coordinator) => coordinator.user, {
     nullable: true,
   })

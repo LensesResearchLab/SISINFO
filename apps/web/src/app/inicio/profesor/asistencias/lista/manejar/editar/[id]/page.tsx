@@ -41,7 +41,13 @@ export default function EditAssistancePage() {
     endDate: new Date(),
     description: "",
     requirements: [],
-    professor: { name: "", email: "" },
+    professor: {
+      user: {
+        document: "",
+        name: "",
+        email: "",
+      },
+    },
   });
 
   useEffect(() => {

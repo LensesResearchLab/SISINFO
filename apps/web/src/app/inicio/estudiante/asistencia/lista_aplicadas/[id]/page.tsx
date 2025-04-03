@@ -49,9 +49,11 @@ export default function AssistanceStatus({
         startDate: "",
         endDate: "",
         professor: {
-          document: "",
-          name: "",
-          email: "",
+          user: {
+            document: "",
+            name: "",
+            email: "",
+          },
         },
       },
       status: "",
@@ -143,7 +145,7 @@ function getSections(statusInformation: StatusInformation) {
     },
     {
       title: "Profesor",
-      description: statusInformation.graduatedAssistance.professor.name,
+      description: statusInformation.graduatedAssistance.professor.user.name,
       icon: <User className="h-5 w-5 text-core mt-1" />,
     },
     {

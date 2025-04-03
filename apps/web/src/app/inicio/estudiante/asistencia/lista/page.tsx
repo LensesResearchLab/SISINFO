@@ -42,7 +42,7 @@ const semesters = [
 
 interface AssistanceListProps {
   professorName?: string;
-  role: "student" | "professor";
+  role: "estudiante" | "profesor";
 }
 
 interface FilterBarProps {
@@ -52,7 +52,7 @@ interface FilterBarProps {
   setNameFilter: (value: string) => void;
   showOnlyMyAssistance: boolean;
   setShowOnlyMyAssistance: (value: boolean) => void;
-  role: "student" | "professor";
+  role: "estudiante" | "profesor";
   sorting: { id: string; desc: boolean }[];
   setSorting: React.Dispatch<
     React.SetStateAction<{ id: string; desc: boolean }[]>
@@ -104,7 +104,7 @@ function FilterBar({
           />
         </div>
 
-        {role === "professor" && (
+        {role === "profesor" && (
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
@@ -141,7 +141,7 @@ function FilterBar({
  */
 export default function AssistanceList({
   professorName,
-  role = "student",
+  role = "estudiante",
 }: AssistanceListProps) {
   const [data, setData] = React.useState<GraduatedAssistance[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -152,7 +152,7 @@ export default function AssistanceList({
   const router = useRouter();
   const handleClick = (id: string) => {
     const path =
-      role === "professor"
+      role === "profesor"
         ? `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`
         : `${ROUTES.HOME}/${ROUTES.ASSISTANCE_LIST}/${id}`;
     router.push(path);
@@ -162,7 +162,7 @@ export default function AssistanceList({
     () => [
       { accessorKey: "title", header: "Nombre" },
       { accessorKey: "category", header: "Clasificación" },
-      { accessorKey: "professor.name", header: "Oferente" },
+      { accessorKey: "professor.user.name", header: "Oferente" },
       {
         accessorKey: "startDate",
         header: "Fecha publicación",
@@ -177,19 +177,30 @@ export default function AssistanceList({
         id: "ver",
         header: "Ver",
 
-        cell: ({ row }) => (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleClick(row.original.id)}
-            className="cursor-pointer"
-          >
-            <Search className="w-4 h-4" />
-          </Button>
-        ),
+        cell: ({ row }) => {
+          // For student role, always show the button
+          // For professor role, only show if it's their own assistance
+          const isOwnAssistance =
+            role === "estudiante" ||
+            (professorName &&
+              row.original.professor.user.name === professorName);
+
+          return isOwnAssistance ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleClick(row.original.id)}
+              className="cursor-pointer"
+            >
+              <Search className="w-4 h-4" />
+            </Button>
+          ) : (
+            <span className="text-gray-400">-</span>
+          );
+        },
       },
     ],
-    [role]
+    [role, professorName]
   );
 
   useEffect(() => {
@@ -220,15 +231,14 @@ export default function AssistanceList({
   const filteredData = React.useMemo(() => {
     return data.filter((item) => {
       const semester = getSemester(String(item.startDate));
-      console.log(semester);
       if (selectedSemester !== "all" && semester !== selectedSemester) {
         return false;
       }
       if (
-        role === "professor" &&
+        role === "profesor" &&
         showOnlyMyAssistance &&
         professorName &&
-        item.professor.name !== professorName
+        item.professor.user.name !== professorName
       ) {
         return false;
       }

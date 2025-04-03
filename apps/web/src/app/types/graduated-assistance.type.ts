@@ -1,8 +1,11 @@
 import { GraduatedAssistanceApplication } from "./graduated-assistance-application.type";
 
 export interface Professor {
-  name: string;
-  email: string;
+  user: {
+    document: string;
+    name: string;
+    email: string;
+  };
 }
 
 export interface Requirement {
@@ -40,9 +43,11 @@ export interface StatusInformation {
     startDate: string;
     endDate: string;
     professor: {
-      document: string;
-      name: string;
-      email: string;
+      user: {
+        document: string;
+        name: string;
+        email: string;
+      };
     };
   };
 }
