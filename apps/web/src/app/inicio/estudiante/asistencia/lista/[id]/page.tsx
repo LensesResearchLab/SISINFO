@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -82,7 +82,6 @@ export default function AssistanceDetails() {
       if (!id) return router.push("/404");
       try {
         const data = await getGraduatedAssistanceById(id as string);
-        console.log(data);
         setAssistance(data);
       } catch {
         router.push("/404");
@@ -337,9 +336,8 @@ function ContactInfo({ assistance }: { assistance: GraduatedAssistance }) {
  * @returns {JSX.Element} Application form card
  */
 function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   const modalProps = {
     title: "¿Estás seguro de aplicar a esta asistencia graduada?",
@@ -350,21 +348,44 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
     url: `${ROUTES.HOME}/${ROUTES.ASSISTANCE_APPLIED_LIST}`,
   };
 
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const handleSubmit = async () => {
+    if (!file) {
+      console.error("No se seleccionó ningún archivo");
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append("cv", file);
+    formData.append("name", file.name);
+    try {
+      const response = await fetch(`/api/upload/${assistance.id}`, {
+        method: "POST",
+        body: formData,
+      });
+  
+      if (response.ok) {
+        await response.json();
+        setIsConfirmed(false);
+        setIsApplying(false);
+      } else {
+        console.error("Error subiendo archivo:", await response.text());
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
-    <Card className="max-w-3xl  mx-auto shadow-lg">
-      <CardHeader className=" flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+    <Card className="max-w-3xl mx-auto shadow-lg">
+      <CardHeader className="flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <CardTitle className="text-2xl font-bold text-center text-core">
           {assistance.title}
         </CardTitle>
         <ButtonBack setIsApplying={setIsApplying} />
       </CardHeader>
       <CardContent>
-        <form
-          /* onSubmit={TODO: APLICAR EFECTOS EN BACKEND} */ className="space-y-6"
-        >
-          <UploadCV assistance={assistance} />
+        <form className="space-y-6">
+          <UploadCV assistance={assistance} setFile={setFile} />
           <div className="flex justify-center pt-3.5">
             <Button
               type="button"
@@ -385,6 +406,7 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
     </Card>
   );
 }
+
 
 /**
  * ButtonBack Component
@@ -440,17 +462,18 @@ function ButtonBack({
  * @param {Object} props Component props
  * @returns {JSX.Element} File upload section
  */
-function UploadCV({ assistance }: { assistance: GraduatedAssistance }) {
-  const [uploadedFile, setUploadedFile] = useState<{
-    name: string;
-    url: string;
-  } | null>(null);
+function UploadCV({ assistance, setFile }: { 
+  assistance: GraduatedAssistance; 
+  setFile: (file: File | null) => void; 
+}) {
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; url: string } | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === "application/pdf") {
       const url = URL.createObjectURL(file);
       setUploadedFile({ name: file.name, url });
+      setFile(file);
     }
   };
 
@@ -460,6 +483,7 @@ function UploadCV({ assistance }: { assistance: GraduatedAssistance }) {
     if (file && file.type === "application/pdf") {
       const url = URL.createObjectURL(file);
       setUploadedFile({ name: file.name, url });
+      setFile(file);
     }
   };
 
@@ -485,8 +509,7 @@ function UploadCV({ assistance }: { assistance: GraduatedAssistance }) {
           <div>
             <Upload className="mx-auto h-12 w-12 text-ring" />
             <Label htmlFor="cv" className="mt-4 block text-sm font-medium">
-              <span className="text-core-highlight">Click para subir</span> o
-              arrastra y suelta
+              <span className="text-core-highlight">Click para subir</span> o arrastra y suelta
             </Label>
             <Input
               id="cv"
@@ -494,6 +517,7 @@ function UploadCV({ assistance }: { assistance: GraduatedAssistance }) {
               className="hidden"
               accept=".pdf"
               onChange={handleFileChange}
+              name="cv"
             />
             <p className="text-xs text-ring mt-2">Solo archivos PDF</p>
           </div>
@@ -507,7 +531,10 @@ function UploadCV({ assistance }: { assistance: GraduatedAssistance }) {
               variant="ghost"
               size="sm"
               className="text-destructive"
-              onClick={() => setUploadedFile(null)}
+              onClick={() => {
+                setUploadedFile(null);
+                setFile(null);
+              }}
             >
               <X className="h-4 w-4" />
             </Button>
