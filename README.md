@@ -71,8 +71,6 @@ Asegúrate de tener instalado lo siguiente:
     ```bash
     cd ..
     ```
-
-
 8. Inicia el servidor de desarrollo:
     ```bash
     npm run dev
@@ -86,6 +84,10 @@ Asegúrate de tener instalado lo siguiente:
 - http://localhost:8000/api/seed/courses
 - http://localhost:8000/api/seed/other
 10. Visita http://localhost:3000 para ver la aplicación en funcionamiento.
+
+11. Ingresa con alguno de los usuarios generados. Asimismo, puedes ingresar con las siguientes credenciales de prueba:
+- email: admin@admin.com
+- password: admin
 
 > Si deseas liberar los puertos 3000 y 8000, puedes usar el comando `npm run kill`.
 

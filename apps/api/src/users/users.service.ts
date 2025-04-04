@@ -5,11 +5,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import { RoleSimpleFactory } from './helpers/RoleSimpleFactory';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    private readonly roleSimpleFactory: RoleSimpleFactory,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -84,5 +86,10 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async assignRole<T>(user: User, roleType: string, roleInfo: T) {
+    const roleService = this.roleSimpleFactory.getStrategy(roleType);
+    return await roleService.addRole(user, roleInfo);
   }
 }

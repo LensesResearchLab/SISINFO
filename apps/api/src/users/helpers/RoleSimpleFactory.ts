@@ -1,0 +1,33 @@
+import { AdministratorsService } from '../../administrators/administrators.service';
+import { CoordinatorsService } from '../../coordinators/coordinators.service';
+import { ProfessorsService } from '../../professors/professors.service';
+import { StudentsService } from '../../students/students.service';
+import { RoleService } from '../../common/interfaces/role.service';
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class RoleSimpleFactory {
+  private strategies: Record<string, RoleService>;
+
+  constructor(
+    professorService: ProfessorsService,
+    studentService: StudentsService,
+    coordinatorService: CoordinatorsService,
+    administratorsService: AdministratorsService,
+  ) {
+    this.strategies = {
+      professor: professorService,
+      student: studentService,
+      coordinator: coordinatorService,
+      administrator: administratorsService,
+    };
+  }
+
+  getStrategy(roleType: string): RoleService {
+    const strategy = this.strategies[roleType];
+    if (!strategy) {
+      throw new Error(`Unsupported role type: ${roleType}`);
+    }
+    return strategy;
+  }
+}

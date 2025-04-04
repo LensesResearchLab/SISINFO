@@ -1,6 +1,7 @@
 import {
   IsBoolean,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Length,
   Matches,
@@ -19,4 +20,8 @@ export class CreateStudentDto {
   @Length(9, 9)
   @Matches(/^[0-9]{4}$/)
   code: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isActive: boolean = true;
 }

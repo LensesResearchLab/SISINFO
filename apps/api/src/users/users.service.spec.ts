@@ -3,10 +3,12 @@ import { UsersService } from './users.service';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { RoleSimpleFactory } from './helpers/RoleSimpleFactory';
 
 describe('UsersService', () => {
   let service: UsersService;
   let userRepository: Repository<User>;
+  let factoryMock: RoleSimpleFactory;
 
   beforeEach(async () => {
     const mockRepository = {
@@ -21,6 +23,12 @@ describe('UsersService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: mockRepository,
+        },
+        {
+          provide: RoleSimpleFactory,
+          useValue: {
+            getRole: jest.fn(),
+          },
         },
       ],
     }).compile();

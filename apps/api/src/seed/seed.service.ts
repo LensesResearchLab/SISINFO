@@ -42,6 +42,7 @@ import { AssistanceApplicationsService } from '../assistance-applications/assist
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
+import { CreateAdministratorDto } from '../administrators/dto/create-administrator.dto';
 
 @Injectable()
 export class SeedService {
@@ -405,6 +406,42 @@ export class SeedService {
     return true;
   }
 
+  async seedAdmin() {
+    const adminRaw = {
+      document: 'admin',
+      name: 'admin',
+      email: 'admin@admin.com',
+      password: 'admin',
+    };
+    const admin = await this.usersService.create(adminRaw);
+    await this.usersService.assignRole<CreateStudentDto>(admin, 'student', {
+      code: 'admin',
+      isActive: true,
+      isUndergraduate: true,
+      document: 'admin',
+    });
+    await this.usersService.assignRole<CreateCoordinatorDto>(
+      admin,
+      'coordinator',
+      {
+        isActive: true,
+        document: 'admin',
+      },
+    );
+    await this.usersService.assignRole<CreateProfessorDto>(admin, 'professor', {
+      isActive: true,
+      document: 'admin',
+    });
+    await this.usersService.assignRole<CreateAdministratorDto>(
+      admin,
+      'administrator',
+      {
+        isActive: true,
+      },
+    );
+    return true;
+  }
+
   async seedStudents() {
     const students: CreateStudentDto[] = Array(this.STUDENTS_NUMBER)
       .fill(null)
@@ -438,6 +475,7 @@ export class SeedService {
     await this.seedProfessors();
     await this.seedStudents();
     await this.seedCoordinator();
+    await this.seedAdmin();
     return 'SEED_EXECUTED';
   }
 

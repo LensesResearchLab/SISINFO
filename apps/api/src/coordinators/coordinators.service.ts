@@ -4,9 +4,11 @@ import { UpdateCoordinatorDto } from './dto/update-coordinator.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Coordinator } from './entities/coordinator.entity';
 import { Repository } from 'typeorm';
+import { RoleService } from '../common/interfaces/role.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
-export class CoordinatorsService {
+export class CoordinatorsService implements RoleService {
   constructor(
     @InjectRepository(Coordinator)
     private coordinatorRepository: Repository<Coordinator>,
@@ -22,15 +24,44 @@ export class CoordinatorsService {
     return `This action returns all coordinator`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} coordinator`;
+  async findOne(document: string) {
+    const coordinator = await this.coordinatorRepository.findOne({
+      where: { document },
+    });
+    if (!coordinator) return null;
+    return coordinator;
   }
 
-  update(id: number, updateCoordinatorDto: UpdateCoordinatorDto) {
-    return `This action updates a #${id} coordinator`;
+  async update(document: string, updateCoordinatorDto: UpdateCoordinatorDto) {
+    const coordinator = await this.coordinatorRepository.findOneBy({
+      document: document,
+    });
+    if (!coordinator) return null;
+    Object.assign(coordinator, updateCoordinatorDto);
+    await this.coordinatorRepository.save(coordinator);
+    return coordinator;
   }
 
   remove(id: number) {
     return `This action removes a #${id} coordinator`;
+  }
+
+  async addRole<CreateCoordinatorDto>(
+    user: User,
+    roleInfo: CreateCoordinatorDto,
+  ): Promise<void> {
+    let coordinator = await this.coordinatorRepository.findOne({
+      where: { document: user.document },
+    });
+    if (!coordinator) {
+      coordinator = this.coordinatorRepository.create({
+        ...roleInfo,
+        user: user,
+      });
+    } else {
+      coordinator.isActive = true;
+      Object.assign(coordinator, roleInfo);
+    }
+    await this.coordinatorRepository.save(coordinator);
   }
 }

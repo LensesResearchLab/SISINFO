@@ -25,17 +25,17 @@ export class CoordinatorsController {
     return this.coordinatorsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.coordinatorsService.findOne(+id);
+  @Get(':document')
+  findOne(@Param('document') document: string) {
+    return this.coordinatorsService.findOne(document);
   }
 
-  @Patch(':id')
+  @Patch(':document')
   update(
-    @Param('id') id: string,
+    @Param('document') document: string,
     @Body() updateCoordinatorDto: UpdateCoordinatorDto,
   ) {
-    return this.coordinatorsService.update(+id, updateCoordinatorDto);
+    return this.coordinatorsService.update(document, updateCoordinatorDto);
   }
 
   @Delete(':id')

@@ -27,6 +27,7 @@ import { AssistanceApplicationsModule } from './assistance-applications/assistan
 import { ThesisApplicationsModule } from './thesis-applications/thesis-applications.module';
 import { ProjectApplicationsModule } from './project-applications/project-applications.module';
 import { UsersModule } from './users/users.module';
+import { AdministratorsModule } from './administrators/administrators.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { UsersModule } from './users/users.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    AdministratorsModule,
   ],
   controllers: [],
   providers: [],

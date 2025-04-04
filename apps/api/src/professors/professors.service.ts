@@ -4,9 +4,11 @@ import { UpdateProfessorDto } from './dto/update-professor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Professor } from './entities/professor.entity';
 import { Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
+import { RoleService } from '../common/interfaces/role.service';
 
 @Injectable()
-export class ProfessorsService {
+export class ProfessorsService implements RoleService {
   constructor(
     @InjectRepository(Professor)
     private professorRepository: Repository<Professor>,
@@ -25,11 +27,36 @@ export class ProfessorsService {
     return this.professorRepository.findOneBy({ document: document });
   }
 
-  update(document: string, updateProfessorDto: UpdateProfessorDto) {
-    return `This action updates a #${document} professor`;
+  async update(document: string, updateProfessorDto: UpdateProfessorDto) {
+    const professor = await this.professorRepository.findOneBy({
+      document: document,
+    });
+    if (!professor) return null;
+    Object.assign(professor, updateProfessorDto);
+    await this.professorRepository.save(professor);
+    return professor;
   }
 
   remove(document: string) {
     return `This action removes a #${document} professor`;
+  }
+
+  async addRole<CreateProfessorDto>(
+    user: User,
+    roleInfo: CreateProfessorDto,
+  ): Promise<void> {
+    let professor = await this.professorRepository.findOne({
+      where: { document: user.document },
+    });
+    if (!professor) {
+      professor = this.professorRepository.create({
+        ...roleInfo,
+        user: user,
+      });
+    } else {
+      professor.isActive = true;
+      Object.assign(professor, roleInfo);
+    }
+    await this.professorRepository.save(professor);
   }
 }
