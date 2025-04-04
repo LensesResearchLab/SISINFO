@@ -8,6 +8,7 @@ import { useHomeStore } from "./home.store";
 import RoleTab from "@/components/shared/role-tab";
 import SupportFeatures from "./components/support-features";
 import { getUserInfo } from "../auth/auth-service";
+import SpinnerPage from "@/components/shared/spinner-page";
 
 const roleMap = new Map<string, React.ReactNode>([
   [
@@ -51,13 +52,8 @@ export default function Home() {
     }
   }, [setRoles]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Cargando...
-      </div>
-    );
-  }
+  if (loading) return (<SpinnerPage />);
+  
 
   if (roles.length === 0) return null;
   if (roles.length === 1) return roleMap.get(roles[0]);
