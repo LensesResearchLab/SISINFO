@@ -11,12 +11,12 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useParams, useRouter } from "next/navigation";
-import { ROUTES } from "@/app/routes";
+import { API_ROUTES, ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { getGraduatedAssistanceById } from "@/app/services/assistance.service";
 import {
@@ -338,6 +338,7 @@ function ContactInfo({ assistance }: { assistance: GraduatedAssistance }) {
 function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const { id } = useParams();
 
   const modalProps = {
     title: "¿Estás seguro de aplicar a esta asistencia graduada?",
@@ -354,17 +355,25 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
       return;
     }
   
+    const studentDocument = "Document 10";
+    const graduatedAssistanceId = id;
+  
     const formData = new FormData();
-    formData.append("cv", file);
+    formData.append("file", file);
     formData.append("name", file.name);
+  
     try {
-      const response = await fetch(`/api/upload/${assistance.id}`, {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `${API_ROUTES.BASE}/${API_ROUTES.ASSISTANCE_APPLICATIONS}?studentDocument=${studentDocument}&graduatedAssistanceId=${graduatedAssistanceId}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
   
       if (response.ok) {
-        await response.json();
+        const result = await response.json();
+        console.log("Aplicación creada:", result);
         setIsConfirmed(false);
         setIsApplying(false);
       } else {

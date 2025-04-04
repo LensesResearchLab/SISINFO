@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { CircleCheck, ClipboardList, FileText, User2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TabApplicants from "@/components/shared/tab-applicants";
 import { ROUTES } from "@/app/routes";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
@@ -76,6 +76,12 @@ export default function AssistanceManagePage() {
     applicants: assistance?.assistanceApplications || [],
   };
 
+  const handleDetails = (id: string) => {
+    const currentPath = window.location.pathname;
+    const newPath = `${currentPath}/${id}`;
+    router.push(newPath);
+  }
+
   const handleEditClick = (id: string) => {
     const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT_ID}/${id}`;
     router.push(path);
@@ -102,7 +108,7 @@ export default function AssistanceManagePage() {
       ) : (
         <>
           <h1 className="sr-only">Detalle asistencia graduada</h1>
-          <TabApplicants general={generalProps} status={statusProps}>
+          <TabApplicants general={generalProps} status={statusProps} handleDetails={handleDetails}>
             <div className="mt-8">
               <h3 className="text-xl font-medium text-core-highlight">
                 Requisitos

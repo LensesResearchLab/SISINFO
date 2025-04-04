@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
-
+import { promises as fs } from 'fs';
+import * as path from 'path';
 import { BillboardsService } from '../billboards/billboards.service';
 import { CreateBillboardDto } from '../billboards/dto/create-billboard.dto';
 import { PeriodsService } from '../periods/periods.service';
@@ -43,6 +44,7 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { CreateAdministratorDto } from '../administrators/dto/create-administrator.dto';
+import { Readable } from 'stream';
 
 @Injectable()
 export class SeedService {
@@ -68,14 +70,14 @@ export class SeedService {
     private readonly usersService: UsersService,
   ) {}
 
-  STUDENTS_NUMBER = 20;
-  PROFESSORS_NUMBER = 20;
-  COORDINATORS_NUMBER = 20;
+  STUDENTS_NUMBER = 10;
+  PROFESSORS_NUMBER = 10;
+  COORDINATORS_NUMBER = 3;
   TOTAL_USERS =
     this.STUDENTS_NUMBER + this.PROFESSORS_NUMBER + this.COORDINATORS_NUMBER;
   MAX_THESIS_PER_PROFESSOR = 3;
   MAX_PROJECTS_PER_PROFESSOR = 3;
-  GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER = 30;
+  GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER = 2;
 
   async seedBillboard() {
     const billboards: CreateBillboardDto[] = Array.from({ length: 10 }).map(
@@ -225,7 +227,7 @@ export class SeedService {
         ),
       );
     }
-
+    await Promise.all(insertPromises);
     return true;
   }
 
@@ -332,21 +334,46 @@ export class SeedService {
     const students = await this.studentsService.findAll();
     const graduatedAssistances =
       await this.graduatedAssistancesService.findAll();
-    for (let i = 0; i < this.GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER; i++) {
-      const randomStudent =
-        students[Math.floor(Math.random() * students.length)];
 
-      const randomGraduatedAssistance =
-        graduatedAssistances[
-          Math.floor(Math.random() * graduatedAssistances.length)
-        ];
-      await this.graduatedAssistanceApplicationsService.create(
-        {},
-        randomStudent.document,
-        randomGraduatedAssistance.id,
-      );
+    const filePath = path.join(__dirname, 'sample-data', 'HV_SAMPLE.PDF');
+
+    try {
+      const fileBuffer = await fs.readFile(filePath);
+
+      const file: Express.Multer.File = {
+        fieldname: 'file',
+        originalname: 'HV_SAMPLE.PDF',
+        encoding: '7bit',
+        mimetype: 'application/pdf',
+        size: fileBuffer.length,
+        buffer: fileBuffer,
+        stream: Readable.from(fileBuffer),
+        destination: '',
+        filename: '',
+        path: '',
+      };
+
+      for (let i = 0; i < this.GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER; i++) {
+        const randomStudent =
+          students[Math.floor(Math.random() * students.length)];
+        const randomGraduatedAssistance =
+          graduatedAssistances[
+            Math.floor(Math.random() * graduatedAssistances.length)
+          ];
+
+        await this.graduatedAssistanceApplicationsService.create(
+          {},
+          randomStudent.document,
+          randomGraduatedAssistance.id,
+          file,
+        );
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error al leer el archivo:', error);
+      return false;
     }
-    return true;
   }
 
   async seedCoordinator() {

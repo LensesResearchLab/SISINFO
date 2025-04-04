@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AssistanceApplication } from './entities/assistance-application.entity';
 import { StudentsModule } from '../students/students.module';
 import { GraduatedAssistancesModule } from '../graduated-assistances/graduated-assistances.module';
+import { DocumentsModule } from '../documents/documents.module';
 
 @Module({
   controllers: [AssistanceApplicationsController],
@@ -12,6 +13,7 @@ import { GraduatedAssistancesModule } from '../graduated-assistances/graduated-a
   imports: [
     StudentsModule,
     GraduatedAssistancesModule,
+    DocumentsModule,
     TypeOrmModule.forFeature([AssistanceApplication]),
   ],
   exports: [TypeOrmModule, AssistanceApplicationsService],

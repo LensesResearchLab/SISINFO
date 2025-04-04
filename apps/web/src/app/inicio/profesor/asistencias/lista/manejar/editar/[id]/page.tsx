@@ -24,7 +24,6 @@ import {
 } from "@/app/services/assistance.service";
 import {
   GraduatedAssistance,
-  Requirement,
 } from "@/app/types/graduated-assistance.type";
 
 export default function EditAssistancePage() {

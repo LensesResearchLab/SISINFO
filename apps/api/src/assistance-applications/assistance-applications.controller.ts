@@ -7,10 +7,16 @@ import {
   Param,
   Delete,
   Query,
+  UploadedFile,
+  UseInterceptors,
+  ParseFilePipe,
+  FileTypeValidator,
+  MaxFileSizeValidator,
 } from '@nestjs/common';
 import { AssistanceApplicationsService } from './assistance-applications.service';
 import { CreateAssistanceApplicationDto } from './dto/create-assistance-application.dto';
 import { UpdateAssistanceApplicationDto } from './dto/update-assistance-application.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('assistance-applications')
 export class AssistanceApplicationsController {
@@ -19,16 +25,31 @@ export class AssistanceApplicationsController {
   ) {}
 
   @Post()
+  @UseInterceptors(FileInterceptor('file'))
   async create(
     @Body() createAssistanceApplicationDto: CreateAssistanceApplicationDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1000000 }),
+          new FileTypeValidator({ fileType: 'application/pdf' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
     @Query('studentDocument') studentDocument: string,
     @Query('graduatedAssistanceId') graduatedAssistanceId: string,
   ) {
-    return this.assistanceApplicationsService.create(
+    await this.assistanceApplicationsService.create(
       createAssistanceApplicationDto,
       studentDocument,
       graduatedAssistanceId,
+      file,
     );
+    return {
+      message: 'Aplicación creada correctamente',
+      status: 201,
+    };
   }
 
   @Get()

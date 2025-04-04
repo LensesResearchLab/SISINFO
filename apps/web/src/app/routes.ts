@@ -67,4 +67,5 @@ export const ROUTES: Record<string, string> = {
 export const API_ROUTES: Record<string, string> = {
   BASE : "http://localhost:8000/api",
   PERIODS: "periods",
+  ASSISTANCE_APPLICATIONS: 'assistance-applications',
 };

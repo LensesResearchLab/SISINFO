@@ -5,12 +5,14 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { AssistanceApplication } from './entities/assistance-application.entity';
 import { StudentsService } from '../students/students.service';
 import { GraduatedAssistancesService } from '../graduated-assistances/graduated-assistances.service';
+import { DocumentsService } from '../documents/documents.service';
 
 describe('AssistanceApplicationsService', () => {
   let service: AssistanceApplicationsService;
   let assistanceApplicationRepository: Repository<AssistanceApplication>;
   let studentsService: StudentsService;
   let graduatedAssistancesService: GraduatedAssistancesService;
+  let documentsService: DocumentsService;
 
   beforeEach(async () => {
     const repositoryMock = {
@@ -24,6 +26,9 @@ describe('AssistanceApplicationsService', () => {
     };
     const graduatedAssistancesServiceMock = {
       findOne: jest.fn(),
+    };
+    const documentsServiceMock = {
+      create: jest.fn(),
     };
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -39,6 +44,10 @@ describe('AssistanceApplicationsService', () => {
         {
           provide: GraduatedAssistancesService,
           useValue: graduatedAssistancesServiceMock,
+        },
+        {
+          provide: DocumentsService,
+          useValue: documentsServiceMock,
         },
       ],
     }).compile();

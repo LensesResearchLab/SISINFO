@@ -6,12 +6,14 @@ import { StudentsService } from '../students/students.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AssistanceApplication } from './entities/assistance-application.entity';
 import { Repository } from 'typeorm';
+import { DocumentsService } from '../documents/documents.service';
 
 @Injectable()
 export class AssistanceApplicationsService {
   constructor(
     private readonly graduatedAssistancesService: GraduatedAssistancesService,
     private readonly studentsService: StudentsService,
+    private readonly documentsService: DocumentsService,
     @InjectRepository(AssistanceApplication)
     private assistanceApplicationRepository: Repository<AssistanceApplication>,
   ) {}
@@ -20,6 +22,7 @@ export class AssistanceApplicationsService {
     createAssistanceApplicationDto: CreateAssistanceApplicationDto,
     studentDocument: string,
     graduatedAssistanceId: string,
+    file: Express.Multer.File,
   ) {
     const assitance = await this.graduatedAssistancesService.findOne(
       graduatedAssistanceId,
@@ -32,10 +35,16 @@ export class AssistanceApplicationsService {
     if (!student) {
       throw new NotFoundException('Student not found');
     }
+    const document = await this.documentsService.create({
+      name: file.originalname,
+      file: file.buffer,
+    });
+
     const application = this.assistanceApplicationRepository.create({
       ...createAssistanceApplicationDto,
       graduatedAssistance: assitance,
       student: student,
+      document: document,
     });
     return this.assistanceApplicationRepository.save(application);
   }

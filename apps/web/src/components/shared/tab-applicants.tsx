@@ -43,6 +43,7 @@ interface TabStatusProps {
     applicants: GraduatedAssistanceApplication[];
   };
   children?: React.ReactNode;
+  handleDetails?: (id: string) => void;
 }
 
 const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST}`;
@@ -59,6 +60,7 @@ export default function TabStatus({
   general,
   status,
   children,
+  handleDetails,
 }: TabStatusProps) {
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -105,14 +107,14 @@ export default function TabStatus({
         </TabsContent>
 
         <TabsContent value="status">
-          <ApplicantsTable applicants={status.applicants} />
+          <ApplicantsTable applicants={status.applicants} handleDetails={handleDetails} />
         </TabsContent>
       </Tabs>
     </div>
   );
 }
 
-function ApplicantsTable({ applicants }: { applicants: GraduatedAssistanceApplication[] }) {
+function ApplicantsTable({ applicants, handleDetails }: { applicants: GraduatedAssistanceApplication[], handleDetails?: (id:string) => void }) {
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAscending, setSortAscending] = useState(true);
@@ -248,7 +250,7 @@ function ApplicantsTable({ applicants }: { applicants: GraduatedAssistanceApplic
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Ver detalles</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDetails?.(applicant?.id)}>Ver detalles</DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleOpenModal([applicant.id], "Aceptado")}>
                               Aceptar
                             </DropdownMenuItem>
