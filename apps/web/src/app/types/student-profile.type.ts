@@ -1,11 +1,12 @@
+import { Thesis } from "./thesis.type";
+
 export interface Student {
     id: number;
     name: string;
     email: string;
     profile: string;
-    advisor: string;
-    thesis1: string;
-    thesis2: string;
+    thesis1: Thesis;
+    thesis2: Thesis;
     state: string;
     courses: Course[];
     others: Course[];

@@ -11,7 +11,7 @@ export interface Thesis {
 }
 
 export interface StudentDetail {
-id: number
+id: string
 name: string
 status: string
 date: string

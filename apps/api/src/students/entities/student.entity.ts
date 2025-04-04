@@ -50,8 +50,13 @@ export class Student {
   })
   otherCourses: Course[];
 
-  @OneToOne(() => Thesis, (thesis) => thesis.student, { nullable: true })
-  thesis: Thesis;
+  @OneToOne(() => Thesis, (thesis) => thesis.studentThesis1, { nullable: true })
+  @JoinColumn({ name: 'thesis1Id' })
+  thesis1: Thesis;
+
+  @OneToOne(() => Thesis, (thesis) => thesis.studentThesis2, { nullable: true })
+  @JoinColumn({ name: 'thesis2Id' }) 
+  thesis2: Thesis;
 
   @ManyToOne(() => Project, (project) => project.students, { nullable: true })
   project: Project;

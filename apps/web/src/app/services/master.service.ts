@@ -1,7 +1,7 @@
 const API_URL="http://localhost:8000/api/student"
 
 export async function getStudentbyId(id:string) {
-  const response = await fetch(`${API_URL}${id}`, {
+  const response = await fetch(`${API_URL}/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

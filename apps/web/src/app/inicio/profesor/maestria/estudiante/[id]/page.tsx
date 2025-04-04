@@ -1,6 +1,6 @@
 "use client";
 
-import { getCourses, getStudent } from "@/app/services/student-profile.service";
+import {getStudentbyId } from "@/app/services/master.service";
 import {
   Card,
   CardContent,
@@ -12,8 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, CircleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { Course, Student } from "../../../../types/student-profile.type";
+import type { Course, Student } from "../../../../../types/student-profile.type";
 import SpinnerPage from "@/components/shared/spinner-page";
+import { useParams, useRouter } from "next/navigation";
 
 /**
  * StudentDetail Component
@@ -28,6 +29,9 @@ import SpinnerPage from "@/components/shared/spinner-page";
  * @returns {JSX.Element} A component containing student details and study plan information.
  */
 export default function StudentDetail() {
+  const params = useParams();
+  const router = useRouter();
+  const id = params.id as string;
   const [courses, setCourses] = useState<Course[]>([]);
   const [student, setStudent] = useState<Student>();
   const [others, setOthers] = useState<Course[]>([]);
@@ -37,9 +41,11 @@ export default function StudentDetail() {
    * useEffect hook to fetch student and course data when the component mounts.
    */
   useEffect(() => {
-    getCourses().then(setCourses);
-    getStudent().then(setStudent);
-    getStudent().then((data) => setOthers(data.others));
+    getStudentbyId(id).then((data)=>{
+      setStudent(data)  
+      setOthers(data.otherCourses)
+      setCourses(data.courses)
+    } );
     setIsLoading(false);
   }, []);
   if (isLoading) return <SpinnerPage />;
@@ -77,9 +83,9 @@ export default function StudentDetail() {
               <RenderFields label="Estudiante" value={student?.name} />
               <RenderFields label="Correo estudiante" value={student?.email} />
               <RenderFields label="Perfil" value={student?.profile} />
-              <RenderFields label="Asesor de tesis" value={student?.advisor} />
-              <RenderFields label="Semestre inicio tesis 1" value={student?.thesis1} />
-              <RenderFields label="Semestre inicio tesis 2" value={student?.thesis2} />
+              <RenderFields label="Asesor de tesis" value={student?.thesis2.professor} />
+              <RenderFields label="Semestre inicio tesis 1" value={student?.thesis1.semester} />
+              <RenderFields label="Semestre inicio tesis 2" value={student?.thesis2.semester} />
             </CardContent>
             <CardFooter className="flex justify-center flex-col space-y-3">
               <CircleAlert style={{ color: "var(--core)" }} />
