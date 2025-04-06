@@ -24,7 +24,7 @@ export class Thesis extends Base {
   description: string;
 
   @Column('text')
-  investigation_subarea: string;
+  investigationSubarea: string;
 
   @Column('boolean', { default: false })
   isEnded: boolean;
