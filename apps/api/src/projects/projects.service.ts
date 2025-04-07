@@ -54,7 +54,6 @@ export class ProjectsService {
     const projects = await this.projectRepository.find({
       where: { professor: { document: professorDocument }, period },
     });
-    console.log(professorDocument, period);
     if (!projects) {
       throw new NotFoundException(
         `Projects with professor document ${professorDocument} not found in period ${period.period}`,
