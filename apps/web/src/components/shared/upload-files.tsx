@@ -5,7 +5,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button"
 import { Upload } from "lucide-react"
 
-export default function uploadFiles() {
+interface UploadFilesProps {
+  title: string;
+}
+
+export function UploadFiles({ title }: UploadFilesProps) {
   const [file, setFile] = useState<File | null>(null)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files
@@ -20,9 +24,9 @@ export default function uploadFiles() {
     console.log("Uploading file:", file)
   }
   return (
-    <Card>
+    <Card className="border-none">
       <CardHeader>
-        <CardTitle>Upload a File</CardTitle>
+        <CardTitle className="text-[var(--core)]">{title}</CardTitle>
         <CardDescription>Select a file to upload and click the submit button.</CardDescription>
       </CardHeader>
       <CardContent>

@@ -29,7 +29,7 @@ import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { ROUTES } from "@/app/routes";
 import { createGraduatedAssistance } from "../../../../services/assistance.service";
 import { addDays, format } from "date-fns";
-import DateRangePicker from "@/components/shared/datepicker-range";
+import DateRangePicker from "@/components/shared/datepicker";
 import { mapStringtoPeriod } from "@/app/mappers/period.mapper";
 import { getUserInfo } from "@/app/auth/auth-service";
 
