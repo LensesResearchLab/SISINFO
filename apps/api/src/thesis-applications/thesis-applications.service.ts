@@ -11,7 +11,7 @@ export class ThesisApplicationsService {
     @InjectRepository(ThesisApplication)
     private thesisApplicationRepository: Repository<ThesisApplication>,
   ) {}
-  
+
   create(createThesisApplicationDto: CreateThesisApplicationDto) {
     return 'This action adds a new thesisApplication';
   }
@@ -36,30 +36,31 @@ export class ThesisApplicationsService {
     const applications = await this.thesisApplicationRepository.find({
       where: {
         student: {
-          isUndergraduate: false
-        }
+          isUndergraduate: false,
+        },
       },
       relations: {
         student: {
-          user: true
+          user: true,
         },
         thesis: {
           professor: {
-            user: true
-          }
-        }
-      }
+            user: true,
+          },
+        },
+      },
     });
 
-    return applications.map(app => ({
+    return applications.map((app) => ({
       student_code: app.student.code,
       student_name: app.student.user.name,
       student_email: app.student.user.email,
       professor_name: app.thesis.professor.user.name,
       professor_email: app.thesis.professor.user.email,
-      status: app.status,
-      thesis_title: app.thesis.title,
       thesis_investigation_subarea: app.thesis.investigationSubarea,
+      thesis_title: app.thesis.title,
+      status: app.status,
+      thesis_grade: app.grade,
     }));
   }
 }

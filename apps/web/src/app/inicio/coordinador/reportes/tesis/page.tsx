@@ -1,6 +1,6 @@
 "use client";
-import { getProjectApplicationsReport } from "@/app/services/project-application.service";
-import { ProjectReport } from "@/app/types/project.type";
+import { getThesisApplicationsReport } from "@/app/services/thesis.service";
+import { ThesisReport } from "@/app/types/thesis.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,12 +24,12 @@ export default function UndergraduateProjectsReport() {
 }
 
 function ProjectsReportList() {
-  const [data, setData] = useState<ProjectReport[]>([]);
+  const [data, setData] = useState<ThesisReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getProjectApplicationsReport();
+        const data = await getThesisApplicationsReport();
         setData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -55,8 +55,10 @@ function ProjectsReportList() {
           "Correo",
           "Nombres y apellidos (Asesor)",
           "Correo (Asesor)",
+          "Subarea",
           "Tema Tesis",
-          "Estado Tesis",
+          "Estado",
+          "Calificación",
         ],
       ],
       { origin: "A1" }
@@ -70,9 +72,7 @@ function ProjectsReportList() {
     <div className="min-h-full min-w-full p-10">
       <div className="bg-card rounded-lg shadow-lg p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-core">
-            Reporte de Proyectos de Grado
-          </h2>
+          <h2 className="text-2xl font-bold text-core">Reporte de Tesis 1</h2>
           <Button
             onClick={downloadExcel}
             className="bg-core-highlight hover:bg-core text-white"
@@ -100,7 +100,7 @@ function ProjectsReportList() {
                 </TableCell>
                 <TableCell
                   className="border-r text-center font-medium text-white"
-                  colSpan={2}
+                  colSpan={4}
                 >
                   Información Académica
                 </TableCell>
@@ -122,10 +122,16 @@ function ProjectsReportList() {
                   Correo
                 </TableHead>
                 <TableHead className="border-r text-center text-white">
+                  Subárea
+                </TableHead>
+                <TableHead className="border-r text-center text-white">
                   Tema Tesis
                 </TableHead>
                 <TableHead className="border-r text-center text-white">
-                  Estado Tesis
+                  Estado
+                </TableHead>
+                <TableHead className="border-r text-center text-white">
+                  Calificación
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -148,9 +154,15 @@ function ProjectsReportList() {
                     {project.professor_email}
                   </TableCell>
                   <TableCell className="border-r">
-                    {project.project_title}
+                    {project.thesis_investigation_subarea}
+                  </TableCell>
+                  <TableCell className="border-r">
+                    {project.thesis_title}
                   </TableCell>
                   <TableCell className="border-r">{project.status}</TableCell>
+                  <TableCell className="border-r">
+                    {project.thesis_grade}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

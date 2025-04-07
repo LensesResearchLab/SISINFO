@@ -11,18 +11,30 @@ export interface Thesis {
 }
 
 export interface StudentDetail {
-id: string
-name: string
-status: string
-date: string
+  id: string;
+  name: string;
+  status: string;
+  date: string;
 }
 
 export interface StatusInformation {
-semester: string
-projectTitle: string
-advisor: string
-student: string
-studentEmail: string
-grade: string
-lastStep: string
+  semester: string;
+  projectTitle: string;
+  advisor: string;
+  student: string;
+  studentEmail: string;
+  grade: string;
+  lastStep: string;
+}
+
+export interface ThesisReport {
+  student_code: string;
+  student_name: string;
+  student_email: string;
+  professor_name: string;
+  professor_email: string;
+  thesis_investigation_subarea: string;
+  thesis_title: string;
+  status: string;
+  thesis_grade: string;
 }

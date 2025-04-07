@@ -634,3 +634,14 @@ export async function getThesisByProfessorId(professorId: number) {
   await new Promise((resolve) => setTimeout(resolve, 1500));
   return thesisList[professors[professorId]];
 }
+
+/* API GET for coordinators report of thesis */
+const API_URL_REPORT =
+  "http://localhost:8000/api/thesis-applications/thesis-report";
+export async function getThesisApplicationsReport() {
+  const response = await fetch(`${API_URL_REPORT}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch undergraduate projects data for report.");
+  }
+  return response.json();
+}

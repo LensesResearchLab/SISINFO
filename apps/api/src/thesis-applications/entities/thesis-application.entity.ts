@@ -20,6 +20,6 @@ export class ThesisApplication extends Base {
   @ManyToOne(() => Thesis, (thesis) => thesis.thesisApplications)
   thesis: Thesis;
 
-  @Column('float')
-  grade: number;
+  @Column()
+  grade: string;
 }

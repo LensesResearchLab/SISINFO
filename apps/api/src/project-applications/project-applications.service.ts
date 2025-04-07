@@ -31,7 +31,7 @@ export class ProjectApplicationsService {
         const project = await transactionalEntityManager
           .getRepository(Project)
           .findOne({ where: { id: projectId } });
-  
+
         if (!student || !project) {
           throw new NotFoundException(
             !student
@@ -39,13 +39,16 @@ export class ProjectApplicationsService {
               : `Proyecto con ID ${projectId} no encontrado`,
           );
         }
-  
-        const projectApplication = transactionalEntityManager.create(ProjectApplication, {
-          ...createProjectApplicationDto,
-          project,
-          student,
-        });
-  
+
+        const projectApplication = transactionalEntityManager.create(
+          ProjectApplication,
+          {
+            ...createProjectApplicationDto,
+            project,
+            student,
+          },
+        );
+
         return transactionalEntityManager.save(projectApplication);
       },
     );
@@ -71,29 +74,29 @@ export class ProjectApplicationsService {
     const applications = await this.projectApplicationRepository.find({
       where: {
         student: {
-          isUndergraduate: true
-        }
+          isUndergraduate: true,
+        },
       },
       relations: {
         student: {
-          user: true
+          user: true,
         },
         project: {
           professor: {
-            user: true
-          }
-        }
-      }
+            user: true,
+          },
+        },
+      },
     });
 
-    return applications.map(app => ({
+    return applications.map((app) => ({
       student_code: app.student.code,
       student_name: app.student.user.name,
       student_email: app.student.user.email,
       professor_name: app.project.professor.user.name,
       professor_email: app.project.professor.user.email,
+      project_title: app.project.title,
       status: app.status,
-      project_title: app.project.title
     }));
   }
 }
