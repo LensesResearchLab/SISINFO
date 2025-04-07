@@ -66,4 +66,34 @@ export class ProjectApplicationsService {
   remove(id: number) {
     return `This action removes a #${id} projectApplication`;
   }
+
+  async getProjectApplicationsReport() {
+    const applications = await this.projectApplicationRepository.find({
+      where: {
+        student: {
+          isUndergraduate: true
+        }
+      },
+      relations: {
+        student: {
+          user: true
+        },
+        project: {
+          professor: {
+            user: true
+          }
+        }
+      }
+    });
+
+    return applications.map(app => ({
+      student_code: app.student.code,
+      student_name: app.student.user.name,
+      student_email: app.student.user.email,
+      professor_name: app.project.professor.user.name,
+      professor_email: app.project.professor.user.email,
+      status: app.status,
+      project_title: app.project.title
+    }));
+  }
 }

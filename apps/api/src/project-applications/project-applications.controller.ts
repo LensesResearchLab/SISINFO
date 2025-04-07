@@ -36,6 +36,11 @@ export class ProjectApplicationsController {
     return this.projectApplicationsService.findAll();
   }
 
+  @Get('projects-report')
+  getProjectApplicationsReport() {
+    return this.projectApplicationsService.getProjectApplicationsReport();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.projectApplicationsService.findOne(+id);
