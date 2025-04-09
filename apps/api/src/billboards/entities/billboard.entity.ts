@@ -1,3 +1,4 @@
+import { Course } from 'src/courses/entities/course.entity';
 import { Base } from '../../common/entities/base.entity';
 import { Period } from '../../periods/entities/period.entity';
 import { Section } from '../../sections/entities/section.entity';
@@ -8,8 +9,8 @@ export class Billboard extends Base {
   @Column('boolean')
   publicated: boolean;
 
-  @OneToMany(() => Section, (section) => section.billboard)
-  sections: Section[];
+  @OneToMany(() => Course, (course) => course.billboard)
+  courses: Course[];
 
   @OneToOne(() => Period, (period) => period.billboard, {
     nullable: true,

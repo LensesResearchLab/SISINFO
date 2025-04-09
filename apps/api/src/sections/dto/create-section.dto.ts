@@ -1,11 +1,9 @@
-import { IsNumber, IsPositive } from 'class-validator';
+import {IsString } from 'class-validator';
 
 export class CreateSectionDto {
-  @IsNumber()
-  @IsPositive()
-  NRC: number;
+  @IsString()
+  NRC: string;
 
-  @IsNumber()
-  @IsPositive()
-  section: number;
+  @IsString()
+  section: string;
 }

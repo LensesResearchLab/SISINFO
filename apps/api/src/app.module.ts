@@ -67,7 +67,7 @@ import { AdministratorsModule } from './administrators/administrators.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      dropSchema:false
+      dropSchema: false,
     }),
     AdministratorsModule,
   ],

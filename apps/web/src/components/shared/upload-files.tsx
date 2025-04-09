@@ -4,12 +4,13 @@ import { SetStateAction, useState } from "react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Upload } from "lucide-react"
-
+import Papa from "papaparse"
 interface UploadFilesProps {
   title: string;
+  onFileProcessed:any
 }
 
-export function UploadFiles({ title }: UploadFilesProps) {
+export function UploadFiles({ title, onFileProcessed }: UploadFilesProps) {
   const [file, setFile] = useState<File | null>(null)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files
@@ -19,9 +20,32 @@ export function UploadFiles({ title }: UploadFilesProps) {
           setFile(null)
       }
   }
+  const headerMapping={
+    NRC:"NRC",
+    Materia:"code",
+    "Nombre largo curso": "name",
+    Departamento:"departament",
+    Créditos:"credits",
+    Secc:"section",
+    Periodo:"period",
+    "Profesor(es)":"professors"
+  }
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault()
     console.log("Uploading file:", file)
+    if (file) {
+      Papa.parse(file, {
+        header: true,
+        transformHeader: (header: string) => headerMapping[header as keyof typeof headerMapping] || header,
+        complete: (results) => {
+          console.log("Datos parseados:", results.data);
+          onFileProcessed(results.data);
+        },
+        error: (error) => {
+          console.error("Error al parsear el CSV:", error);
+        },
+      });
+    }
   }
   return (
     <Card className="border-none">

@@ -1,3 +1,4 @@
+import { Billboard } from 'src/billboards/entities/billboard.entity';
 import { Base } from '../../common/entities/base.entity';
 import { Professor } from '../../professors/entities/professor.entity';
 import { Program } from '../../programs/entities/program.entity';
@@ -26,6 +27,9 @@ export class Course extends Base {
 
   @Column('numeric')
   credits: number;
+
+  @ManyToOne(()=>Billboard, (billboard) => billboard.courses)
+  billboard: Billboard;
 
   @ManyToOne(() => Professor, (professor) => professor.directedCourses)
   mainProfessor: Professor;

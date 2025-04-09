@@ -8,11 +8,11 @@ import { Column, Entity, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
 export class Section extends Base {
-  @Column('numeric')
-  NRC: number;
+  @Column('text')
+  NRC: string;
 
-  @Column('numeric')
-  section: number;
+  @Column('text')
+  section: string;
 
   @OneToMany(
     () => TeachingAssistance,
@@ -25,9 +25,6 @@ export class Section extends Base {
 
   @ManyToOne(() => Course, (course) => course.sections)
   course: Course;
-
-  @ManyToOne(() => Billboard, (billboard) => billboard.sections)
-  billboard: Billboard;
 
   @ManyToOne(() => Professor, (professor) => professor.sections)
   professor: Professor;

@@ -16,7 +16,7 @@ export class BillboardsController {
   constructor(private readonly billboardsService: BillboardsService) {}
 
   @Post()
-  create(@Body() createBillboardDto: CreateBillboardDto) {
+  create(@Body() createBillboardDto: CreateBillboardDto[]) {
     return this.billboardsService.create(createBillboardDto);
   }
 

@@ -15,11 +15,6 @@ import { UpdateSectionDto } from './dto/update-section.dto';
 export class SectionController {
   constructor(private readonly sectionsService: SectionsService) {}
 
-  @Post()
-  create(@Body() createSectionDto: CreateSectionDto) {
-    return this.sectionsService.create(createSectionDto);
-  }
-
   @Get()
   findAll() {
     return this.sectionsService.findAll();

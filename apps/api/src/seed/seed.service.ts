@@ -45,6 +45,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { CreateAdministratorDto } from '../administrators/dto/create-administrator.dto';
 import { Readable } from 'stream';
+import { Billboard } from 'src/billboards/entities/billboard.entity';
 
 @Injectable()
 export class SeedService {
@@ -80,15 +81,32 @@ export class SeedService {
   GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER = 2;
 
   async seedBillboard() {
-    const billboards: CreateBillboardDto[] = Array.from({ length: 10 }).map(
-      () => ({
-        publicated: faker.datatype.boolean(),
-      }),
-    );
-    const insertPromises: Promise<CreateBillboardDto>[] = [];
-    billboards.forEach((billboard) => {
-      insertPromises.push(this.billboardsService.create(billboard));
-    });
+    const professors = await this.professorsService.findAll();
+    const professorsChosen = professors
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3);
+    const professorsNames = professorsChosen.map((professor) => professor.user.name);
+    const sections = await this.sectionsService.findAll();
+    const sectionsNames = sections.map((section) => section.section);
+    const randomSection = sectionsNames[Math.floor(Math.random() * sectionsNames.length)];
+
+    // Se generan objetos completos para CreateBillboardDto
+    const billboards: CreateBillboardDto[] = Array.from({ length: 3 }).map(() => ({
+      publicated: faker.datatype.boolean(),
+      NRC: faker.string.numeric(5),
+      code: faker.lorem.word(),
+      name: faker.lorem.words(2),
+      departament: faker.lorem.word(),
+      credits: faker.number.int({ min: 1, max: 10 }),
+      section: randomSection,
+      // Formato "YYYYX" donde X es "1" o "2"
+      period: `${faker.number.int({ min: 2020, max: 2025 })}${faker.helpers.arrayElement(["10", "20"])}`,
+      // Convertimos el array de nombres de profesores en una cadena separada por "|"
+      professors: professorsNames.join(`|${faker.helpers.arrayElement(["(01)", "(02)"])}` ),
+    }));
+    // Se espera que el método create del billboardsService reciba un array de CreateBillboardDto
+    const insertPromises: Promise<Billboard>[] = [];
+    insertPromises.push(this.billboardsService.create(billboards));
     await Promise.all(insertPromises);
     return true;
   }
@@ -127,36 +145,59 @@ export class SeedService {
     await Promise.all(insertPromises);
     return true;
   }
-
-  async seedSection() {
-    const sections: CreateSectionDto[] = Array.from({ length: 10 }).map(() => ({
-      NRC: faker.number.int({ min: 10000, max: 99999 }),
-      section: faker.number.int({ min: 1, max: 100 }),
-    }));
-    const insertPromises: Promise<CreateSectionDto>[] = [];
-    sections.forEach((section) => {
-      insertPromises.push(this.sectionsService.create(section));
+  async seedProfessors() {
+    const professorsData = Array.from({ length: this.PROFESSORS_NUMBER }).map((_, idx) => {
+      const document = `ProfessorDoc${idx}`; // Usamos un prefijo distinto para diferenciar a los profesores
+      const professor: CreateProfessorDto = {
+        document,
+        isActive: faker.datatype.boolean(),
+      };
+      const user: CreateUserDto = {
+        document,
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+      };
+      return { professor, user };
     });
+  
+    const insertPromises = professorsData.map(async ({ professor, user }) => {
+      // Primero se crea el usuario
+      const createdUser = await this.usersService.create(user);
+      await this.usersService.assignRole<CreateProfessorDto>(createdUser, 'professor', {
+        isActive: professor.isActive,
+        document: createdUser.document,
+      });
+      // Opcionalmente se puede asignar el rol de 'professor' al usuario mediante usersService.assignRole(...)
+      // Luego se crea el profesor (la relación se establece automáticamente por el documento)
+      return await this.professorsService.create(professor);
+    });
+  
     await Promise.all(insertPromises);
     return true;
   }
+  
 
-  async seedProfessors() {
-    const professors: CreateProfessorDto[] = Array(this.PROFESSORS_NUMBER)
-      .fill(null)
-      .map((_, idx) => ({
-        document: `Document ${idx}`,
-        isActive: faker.datatype.boolean(),
-      }));
-    const insertPromises: Promise<CreateProfessorDto>[] = [];
-    professors.forEach((professor) => {
-      insertPromises.push(this.professorsService.create(professor));
+  async seedSection() {
+    const professors = await this.professorsService.findAll();
+    const sections: CreateSectionDto[] = Array.from({ length: 10 }).map(() => ({
+      NRC: faker.number.int({ min: 10000, max: 99999 }).toString(),
+      section: faker.number.int({ min: 1, max: 100 }).toString(),
+    }));
+    const supportProfessors = professors
+      .sort(() => 0.5 - Math.random()).slice(
+        0,2)
+    const insertPromises: Promise<CreateSectionDto>[] = [];
+    sections.forEach((section) => {
+      insertPromises.push(this.sectionsService.create(section, supportProfessors, professors[0]));
     });
     await Promise.all(insertPromises);
     return true;
   }
 
   async seedCourse() {
+    const sections = await this.sectionsService.findAll();
+    const section = sections[Math.floor(Math.random() * sections.length)];
     const courses: CreateCourseDto[] = Array.from({ length: 10 }).map(() => ({
       name: faker.lorem.word(),
       description: faker.lorem.sentence(),
@@ -168,7 +209,7 @@ export class SeedService {
     }));
     const insertPromises: Promise<CreateCourseDto>[] = [];
     courses.forEach((course) => {
-      insertPromises.push(this.coursesService.create(course));
+      insertPromises.push(this.coursesService.create(course, section));
     });
     await Promise.all(insertPromises);
     return true;
@@ -525,8 +566,8 @@ export class SeedService {
   }
 
   async executeSeedCourses() {
-    await this.seedCourse();
     await this.seedBillboard();
+    await this.seedCourse();
     await this.seedSection();
     return 'SEED_EXECUTED';
   }

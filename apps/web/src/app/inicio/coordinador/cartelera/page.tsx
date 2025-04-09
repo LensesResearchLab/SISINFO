@@ -1,61 +1,14 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { UploadFiles } from "../../../../components/shared/upload-files" // Ensure UploadFiles supports 'title' prop
+import { UploadFiles } from "../../../../components/shared/upload-files"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import { Download, Search } from "lucide-react"
 import { DatePicker } from "@/components/shared/datepicker"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
-
-/**
- * Data structure for each class.
- * Each class includes an array of professors to demonstrate nested rows.
- */
-interface ClassData {
-  name: string // Class name (e.g., "Móviles")
-  code: string // Class code (e.g., "ISIS2510")
-  sections: number // Number of sections available
-  credits: number // Number of credits
-  professors: {
-    name: string // Professor's name
-    nrc: string // NRC or section identifier
-    cycle: string // Cycle or duration (e.g., "16 weeks")
-    section:string
-  }[]
-}
-
-/** Example data for demonstration */
-const classesData: ClassData[] = [
-  {
-    name: "Móviles",
-    code: "ISIS2510",
-    sections: 3,
-    credits: 4,
-    professors: [
-      { name: "Camilo Escobar Velásquez", nrc: "213213", cycle: "16 weeks", section:"3" },
-      { name: "Mario Linares", nrc: "213219", cycle: "16 weeks", section:"2" },
-    ],
-  },
-  {
-    name: "Web",
-    code: "ISIS3510",
-    sections: 2,
-    credits: 3,
-    professors: [{ name: "Juan Pérez", nrc: "213220", cycle: "16 weeks", section:"2" }],
-  },
-  {
-    name: "Arquitectura de Software",
-    code: "ISIS4010",
-    sections: 4,
-    credits: 3,
-    professors: [
-      { name: "Ana Gómez", nrc: "213221", cycle: "16 weeks", section:"3" },
-      { name: "Carlos Rodríguez", nrc: "213222", cycle: "16 weeks", section:"4" },
-      { name: "Laura Martínez", nrc: "213223", cycle: "16 weeks", section:"1" },
-    ],
-  },
-]
+import { Course } from "@/app/types/billboard.type"
+import { getCourses } from "@/app/services/billboard.service"
 
 /**
  * Main component that renders the board upload and listing.
@@ -65,6 +18,17 @@ const classesData: ClassData[] = [
  * 3. The loaded board table with accordion functionality.
  */
 export default function UploadBillboard() {
+  const [csvData, setCsvData]= useState()
+  const [coursesData, setCoursesData] = useState<Course[]>([])
+  const handleUploadCsv=(data:any)=>{
+    setCsvData(data)
+    
+  }
+  useEffect(()=>{
+    getCourses().then((data)=>{
+      setCoursesData(data)
+    })
+  },[])
   return (
     <div className="grid grid-rows-3 w-full h-full gap-4 p-4">
       {/* Row 1: Cards for Academic Period and Templates */}
@@ -94,11 +58,11 @@ export default function UploadBillboard() {
       </div>
       {/* Row 2: File Upload */}
       <div className="row-span-3">
-        <UploadFiles title="Cargar cartelera" />
+        <UploadFiles title="Cargar cartelera" onFileProcessed={handleUploadCsv} />
       </div>
       {/* Row 3: Loaded Board Table with Accordion */}
       <div className="row-span-3">
-        <UploadedBillboard />
+        <UploadedBillboard classesData={csvData}/>
       </div>
     </div>
   )
@@ -113,7 +77,7 @@ export default function UploadBillboard() {
  *  - `var(--core)` for backgrounds (e.g., header)
  *  - `var(--card)` for text on dark backgrounds.
  */
-export function UploadedBillboard() {
+export function UploadedBillboard({classesData = [] as Course[]}) {
   const [searchTerm, setSearchTerm] = useState("")
   const [sortDesc, setSortDesc] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({})
@@ -143,7 +107,7 @@ export function UploadedBillboard() {
     })
 
     return result
-  }, [searchTerm, sortDesc])
+  }, [searchTerm, sortDesc, classesData])
 
   return (
     <div className="min-h-full min-w-full">
@@ -199,7 +163,7 @@ export function UploadedBillboard() {
                     >
                       <TableCell className="py-3 p-2 font-semibold text-primary cursor-pointer">{clase.name}</TableCell>
                       <TableCell className="py-3 p-2 text-primary">{clase.code}</TableCell>
-                      <TableCell className="py-3 p-2 text-primary">{clase.sections}</TableCell>
+                      <TableCell className="py-3 p-2 text-primary">{clase.section.length}</TableCell>
                       <TableCell className="py-3 p-2 text-primary">{clase.credits}</TableCell>
                       <TableCell className="py-3 p-2">
                         <Button
@@ -225,8 +189,8 @@ export function UploadedBillboard() {
                               <TableHeader className="text-primary">
                                 <TableRow>
                                   <TableHead className="py-2 text-primary font-semibold">Profesor</TableHead>
+                                  <TableHead className="py-2 text-primary font-semibold">Section</TableHead>
                                   <TableHead className="py-2 text-primary font-semibold">NRC</TableHead>
-                                  <TableHead className="py-2 text-primary font-semibold">Sección</TableHead>
                                   <TableHead className="py-2 text-primary font-semibold">Ciclo</TableHead>
                                 </TableRow>
                               </TableHeader>
@@ -235,7 +199,7 @@ export function UploadedBillboard() {
                                   clase.professors.map((prof, pidx) => (
                                     <TableRow key={`${idx}-${pidx}`} className="border-b border-gray-200">
                                       <TableCell className="py-2 text-primary">{prof.name}</TableCell>
-                                      <TableCell>{prof.section}</TableCell>
+                                      <TableCell>{prof.section.section}</TableCell>
                                       <TableCell className="py-2 text-primary">{prof.nrc}</TableCell>
                                       <TableCell className="py-2 text-primary">{prof.cycle}</TableCell>
                                     </TableRow>
