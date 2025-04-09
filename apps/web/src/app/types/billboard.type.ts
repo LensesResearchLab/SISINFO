@@ -17,22 +17,24 @@ export interface Course {
     id: string;
     name: string;
     code: string;
-    section: Section[];
+    sections: Section[];
     credits: number;
     professors: Professor[];
 }
 export interface Professor {
     id: string;
-    name: string;
-    email: string
-    nrc: string;
-    cycle: string;
-    section: Section;
+    user:User;
+}
+export interface User{
+    document:string;
+    email:string;
+    name:string;
 }
 export interface Section {
     id: string;
     NRC: number;
     section: number;
+    professor:Professor;
     teaching_assistance: TeachingAssistance;
     period: Period,
 }

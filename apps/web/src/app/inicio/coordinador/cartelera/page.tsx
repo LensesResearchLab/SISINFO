@@ -8,8 +8,14 @@ import { Download, Search } from "lucide-react"
 import { DatePicker } from "@/components/shared/datepicker"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Course } from "@/app/types/billboard.type"
-import { getCourses } from "@/app/services/billboard.service"
-
+import { createBillboard, getBillboard } from "@/app/services/billboard.service"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 /**
  * Main component that renders the board upload and listing.
  * The grid is divided into three rows:
@@ -18,17 +24,22 @@ import { getCourses } from "@/app/services/billboard.service"
  * 3. The loaded board table with accordion functionality.
  */
 export default function UploadBillboard() {
-  const [csvData, setCsvData]= useState()
+  const [csvData, setCsvData] = useState()
   const [coursesData, setCoursesData] = useState<Course[]>([])
-  const handleUploadCsv=(data:any)=>{
+  const [period, setPeriod] = useState("")
+  const handleUploadCsv = (data: any) => {
     setCsvData(data)
-    
+    createBillboard(data)
   }
-  useEffect(()=>{
-    getCourses().then((data)=>{
-      setCoursesData(data)
+  const handlePeriodChange = (value: string) => {
+    setPeriod(value)
+  }
+  useEffect(() => {
+    getBillboard().then((data) => {
+      setCoursesData(data[0].courses)
+      console.log(data[0].courses)
     })
-  },[])
+  }, [])
   return (
     <div className="grid grid-rows-3 w-full h-full gap-4 p-4">
       {/* Row 1: Cards for Academic Period and Templates */}
@@ -39,7 +50,22 @@ export default function UploadBillboard() {
             <CardTitle className="text-[var(--core)]">Periodo académico</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
-            <DatePicker />
+            <Select
+              onValueChange={handlePeriodChange}
+              defaultValue=""
+            >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona una clasificación" />
+                </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="2025-10">
+                  2025-10
+                </SelectItem>
+                <SelectItem value="2025-20">2025-20</SelectItem>
+                <SelectItem value="2026-10">2026-10</SelectItem>
+                <SelectItem value="2026-20">2026-20</SelectItem>
+              </SelectContent>
+            </Select>
           </CardContent>
           <CardFooter>Selecciona el periodo para ver/cargar la cartelera</CardFooter>
         </Card>
@@ -62,7 +88,7 @@ export default function UploadBillboard() {
       </div>
       {/* Row 3: Loaded Board Table with Accordion */}
       <div className="row-span-3">
-        <UploadedBillboard classesData={csvData}/>
+        <UploadedBillboard classesData={coursesData} period={period} />
       </div>
     </div>
   )
@@ -77,7 +103,7 @@ export default function UploadBillboard() {
  *  - `var(--core)` for backgrounds (e.g., header)
  *  - `var(--card)` for text on dark backgrounds.
  */
-export function UploadedBillboard({classesData = [] as Course[]}) {
+export function UploadedBillboard({ classesData = [] as Course[], period }: { classesData: Course[]; period: string }) {
   const [searchTerm, setSearchTerm] = useState("")
   const [sortDesc, setSortDesc] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({})
@@ -92,22 +118,30 @@ export function UploadedBillboard({classesData = [] as Course[]}) {
 
   // Filter and sort class data based on search term and sort order.
   const filteredClasses = useMemo(() => {
+    if (!Array.isArray(classesData)) return [];
     let result = classesData.filter((c) => {
-      const lowerSearch = searchTerm.toLowerCase()
-      const matchClassName = c.name.toLowerCase().includes(lowerSearch)
-      const matchCode = c.code.toLowerCase().includes(lowerSearch)
-      const matchProfessor = c.professors.some((p) => p.name.toLowerCase().includes(lowerSearch))
-      return matchClassName || matchCode || matchProfessor
-    })
-
+      const lowerSearch = searchTerm.toLowerCase();
+      const matchClassName = c.name.toLowerCase().includes(lowerSearch);
+      const matchCode = c.code.toLowerCase().includes(lowerSearch);
+      const matchPeriod =
+        c.sections?.some((section) => {
+          // Verificamos que la sección tenga definido el objeto period
+          if (!section.period) return false;
+          // Creamos el string en el formato "YEAR-PERIOD" (por ejemplo, "2025-10")
+          const sectionPeriod = `${section.period.year}-${section.period.period}`;
+          return sectionPeriod === period;
+        }) || false;
+      return matchClassName || matchCode || matchPeriod;
+    });
+  
     result = result.sort((a, b) => {
-      if (a.name < b.name) return sortDesc ? 1 : -1
-      if (a.name > b.name) return sortDesc ? -1 : 1
-      return 0
-    })
-
-    return result
-  }, [searchTerm, sortDesc, classesData])
+      if (a.name < b.name) return sortDesc ? 1 : -1;
+      if (a.name > b.name) return sortDesc ? -1 : 1;
+      return 0;
+    });
+    return result;
+  }, [searchTerm, sortDesc, classesData, period]);
+  
 
   return (
     <div className="min-h-full min-w-full">
@@ -163,7 +197,7 @@ export function UploadedBillboard({classesData = [] as Course[]}) {
                     >
                       <TableCell className="py-3 p-2 font-semibold text-primary cursor-pointer">{clase.name}</TableCell>
                       <TableCell className="py-3 p-2 text-primary">{clase.code}</TableCell>
-                      <TableCell className="py-3 p-2 text-primary">{clase.section.length}</TableCell>
+                      <TableCell className="py-3 p-2 text-primary">{clase.sections.length}</TableCell>
                       <TableCell className="py-3 p-2 text-primary">{clase.credits}</TableCell>
                       <TableCell className="py-3 p-2">
                         <Button
@@ -195,13 +229,13 @@ export function UploadedBillboard({classesData = [] as Course[]}) {
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {clase.professors.length > 0 ? (
-                                  clase.professors.map((prof, pidx) => (
+                                {clase.sections.length > 0 ? (
+                                  clase.sections.map((section, pidx) => (
                                     <TableRow key={`${idx}-${pidx}`} className="border-b border-gray-200">
-                                      <TableCell className="py-2 text-primary">{prof.name}</TableCell>
-                                      <TableCell>{prof.section.section}</TableCell>
-                                      <TableCell className="py-2 text-primary">{prof.nrc}</TableCell>
-                                      <TableCell className="py-2 text-primary">{prof.cycle}</TableCell>
+                                      <TableCell className="py-2 text-primary">{section.professor.user.name}</TableCell>
+                                      <TableCell>{section.section}</TableCell>
+                                      <TableCell className="py-2 text-primary">{section.NRC}</TableCell>
+                                      <TableCell className="py-2 text-primary">{section.period.period}</TableCell>
                                     </TableRow>
                                   ))
                                 ) : (

@@ -6,6 +6,7 @@
   import { InjectRepository } from '@nestjs/typeorm';
   import { Course } from 'src/courses/entities/course.entity';
   import { Professor } from 'src/professors/entities/professor.entity';
+import { Period } from 'src/periods/entities/period.entity';
 
   @Injectable()
   export class SectionsService {
@@ -13,12 +14,10 @@
       @InjectRepository(Section) private sectionRepository: Repository<Section>,
     ) {}
 
-    async create(createSectionDto: CreateSectionDto, supportProfessors:Professor[], professor: Professor) {
-      console.log("createSectionDto", createSectionDto)
-      console.log("supportProfessors", supportProfessors)
-      console.log("professor create section", professor)
+    async create(createSectionDto: CreateSectionDto, supportProfessors:Professor[], professor: Professor, period:Period) {
       const section = this.sectionRepository.create(createSectionDto);
       section.supportProfessors = supportProfessors;
+      section.period=period
       if (professor.document != null) { 
         section.professor = professor;
       }

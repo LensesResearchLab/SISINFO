@@ -86,10 +86,8 @@ export class SeedService {
       .sort(() => 0.5 - Math.random())
       .slice(0, 3);
     const professorsNames = professorsChosen.map((professor) => professor.user.name);
-    const sections = await this.sectionsService.findAll();
-    const sectionsNames = sections.map((section) => section.section);
-    const randomSection = sectionsNames[Math.floor(Math.random() * sectionsNames.length)];
-
+    const section = faker.helpers.arrayElements([1, 2, 3], faker.number.int({ min: 1, max: 3 }));
+    const randomSection = section[Math.floor(Math.random() * section.length)];
     // Se generan objetos completos para CreateBillboardDto
     const billboards: CreateBillboardDto[] = Array.from({ length: 3 }).map(() => ({
       publicated: faker.datatype.boolean(),
@@ -98,7 +96,7 @@ export class SeedService {
       name: faker.lorem.words(2),
       departament: faker.lorem.word(),
       credits: faker.number.int({ min: 1, max: 10 }),
-      section: randomSection,
+      section: String(randomSection),
       // Formato "YYYYX" donde X es "1" o "2"
       period: `${faker.number.int({ min: 2020, max: 2025 })}${faker.helpers.arrayElement(["10", "20"])}`,
       // Convertimos el array de nombres de profesores en una cadena separada por "|"
@@ -147,7 +145,7 @@ export class SeedService {
   }
   async seedProfessors() {
     const professorsData = Array.from({ length: this.PROFESSORS_NUMBER }).map((_, idx) => {
-      const document = `ProfessorDoc${idx}`; // Usamos un prefijo distinto para diferenciar a los profesores
+      const document = `Document ${idx}`;
       const professor: CreateProfessorDto = {
         document,
         isActive: faker.datatype.boolean(),
@@ -162,24 +160,25 @@ export class SeedService {
     });
   
     const insertPromises = professorsData.map(async ({ professor, user }) => {
-      // Primero se crea el usuario
       const createdUser = await this.usersService.create(user);
       await this.usersService.assignRole<CreateProfessorDto>(createdUser, 'professor', {
         isActive: professor.isActive,
         document: createdUser.document,
       });
-      // Opcionalmente se puede asignar el rol de 'professor' al usuario mediante usersService.assignRole(...)
-      // Luego se crea el profesor (la relación se establece automáticamente por el documento)
       return await this.professorsService.create(professor);
     });
   
-    await Promise.all(insertPromises);
+    const createdProfessors = await Promise.all(insertPromises);
+    console.log("Created Professors:", createdProfessors);
     return true;
   }
+  
   
 
   async seedSection() {
     const professors = await this.professorsService.findAll();
+    const periods = await this.periodsService.findAll();
+    const period = periods[Math.floor(Math.random() * periods.length)];
     const sections: CreateSectionDto[] = Array.from({ length: 10 }).map(() => ({
       NRC: faker.number.int({ min: 10000, max: 99999 }).toString(),
       section: faker.number.int({ min: 1, max: 100 }).toString(),
@@ -189,7 +188,7 @@ export class SeedService {
         0,2)
     const insertPromises: Promise<CreateSectionDto>[] = [];
     sections.forEach((section) => {
-      insertPromises.push(this.sectionsService.create(section, supportProfessors, professors[0]));
+      insertPromises.push(this.sectionsService.create(section, supportProfessors, professors[0], period));
     });
     await Promise.all(insertPromises);
     return true;
@@ -198,7 +197,7 @@ export class SeedService {
   async seedCourse() {
     const sections = await this.sectionsService.findAll();
     const section = sections[Math.floor(Math.random() * sections.length)];
-    const courses: CreateCourseDto[] = Array.from({ length: 10 }).map(() => ({
+    const courses: CreateCourseDto[] = Array.from({ length: 4 }).map(() => ({
       name: faker.lorem.word(),
       description: faker.lorem.sentence(),
       code: faker.lorem.word(),
@@ -567,8 +566,6 @@ export class SeedService {
 
   async executeSeedCourses() {
     await this.seedBillboard();
-    await this.seedCourse();
-    await this.seedSection();
     return 'SEED_EXECUTED';
   }
 

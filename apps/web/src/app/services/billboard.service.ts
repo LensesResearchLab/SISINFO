@@ -1,8 +1,8 @@
 import { API_ROUTES } from "../routes";
 import { Billboard } from "../types/billboard.type";
 
-export async function getCourses() {
-  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.COURSES}`, {
+export async function getBillboard() {
+  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.COORDINATOR_BILLBOARD}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -10,7 +10,7 @@ export async function getCourses() {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to get courses.");
+    throw new Error("Failed to get billboard.");
   }
 
   return response.json();

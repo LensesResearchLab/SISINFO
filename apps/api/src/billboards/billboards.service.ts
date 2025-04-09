@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConsoleLogger, Injectable } from '@nestjs/common';
 import { CreateBillboardDto } from './dto/create-billboard.dto';
 import { UpdateBillboardDto } from './dto/update-billboard.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -46,60 +46,60 @@ export class BillboardsService {
           });
         }
 
-        let professors = info.professors.split("|");
-        let isCreatedCourse = await this.courseService.findByCode(info.code);
-        let section = await this.sectionService.findByNRC(info.NRC)
-        let supportProfessors: Professor[] = [];
-        let findedProfessor: Professor = new Professor();
+        if (info.professors != undefined && info.professors != null && info.professors != "") {
+          let professors = info.professors.split("|");
+          let isCreatedCourse = await this.courseService.findByCode(info.code);
+          let section = await this.sectionService.findByNRC(info.NRC)
+          let supportProfessors: Professor[] = [];
+          let findedProfessor: Professor = new Professor();
 
-        // Esperar a que se completen las búsquedas de profesores antes de continuar:
-        await Promise.all(
-          professors.map(async (prof) => {
-            const cleanedName = prof.replace(/^\s*\(\d+\)\s*/, ""); // Se asume que "professors" es un array de strings
-            const searchProfessor = await this.professorService.findByName(cleanedName);
-            if (searchProfessor) {
-              // Comprobar si el nombre contiene "01"
-              if (prof.search("01") !== -1) {
-                findedProfessor = searchProfessor;
-              } else {
-                supportProfessors.push(searchProfessor);
+          // Esperar a que se completen las búsquedas de profesores antes de continuar:
+          await Promise.all(
+            professors.map(async (prof) => {
+              const cleanedName = prof.replace(/^\s*\(\d+\)\s*/, ""); // Se asume que "professors" es un array de strings
+              const searchProfessor = await this.professorService.findByName(cleanedName);
+              if (searchProfessor) {
+                // Comprobar si el nombre contiene "01"
+                if (prof.search("01") !== -1) {
+                  findedProfessor = searchProfessor;
+                } else {
+                  supportProfessors.push(searchProfessor);
+                }
               }
+            })
+          );
+
+
+          if (!isCreatedCourse) {
+            let sectionToUse: Section;
+
+            if (!section) {
+              // Si la sección no existe, se crea y se guarda el resultado
+              const newSection = new CreateSectionDto();
+              newSection.NRC = info.NRC;
+              newSection.section = info.section;
+              if (supportProfessors.length === 0 || !findedProfessor) {
+                throw new Error("No professors found for the section");
+              }
+              sectionToUse = await this.sectionService.create(newSection, supportProfessors, findedProfessor, period) as Section;
+            } else {
+              // Actualiza la sección y asigna el resultado a sectionToUse
+              sectionToUse = await this.sectionService.updateProfessorsSection(section, findedProfessor, supportProfessors);
             }
-          })
-        );
 
-
-        if (!isCreatedCourse) {
-          let sectionToUse: Section;
-
-          if (!section) {
-            // Si la sección no existe, se crea y se guarda el resultado
-            const newSection = new CreateSectionDto();
-            newSection.NRC = info.NRC;
-            newSection.section = info.section;
-            if (supportProfessors.length === 0 || !findedProfessor) {
-              throw new Error("No professors found for the section");
+            // Luego se crea el curso usando la sección resultante
+            let course = new CreateCourseDto();
+            course.code = info.code;
+            course.credits = info.credits;
+            course.departament = info.departament;
+            course.name = info.name;
+            if (!sectionToUse) {
+              throw new Error("Section not found");
             }
-            sectionToUse = await this.sectionService.create(newSection, supportProfessors, findedProfessor) as Section;
-          } else {
-            // Actualiza la sección y asigna el resultado a sectionToUse
-            sectionToUse = await this.sectionService.updateProfessorsSection(section, findedProfessor, supportProfessors);
+            isCreatedCourse = await this.courseService.create(course, sectionToUse);
+            await billboardCoursesMap.set(isCreatedCourse.code, isCreatedCourse);
           }
-
-          // Luego se crea el curso usando la sección resultante
-          let course = new CreateCourseDto();
-          course.code = info.code;
-          course.credits = info.credits;
-          course.departament = info.departament;
-          course.name = info.name;
-          if (!sectionToUse) {
-            throw new Error("Section not found");
-          }
-          isCreatedCourse = await this.courseService.create(course, sectionToUse);
-          await billboardCoursesMap.set(isCreatedCourse.code, isCreatedCourse);
         }
-
-
       })
     );
     const billboardCourses = Array.from(billboardCoursesMap.values());
@@ -136,11 +136,13 @@ export class BillboardsService {
 
 
   findAll() {
-    return `This action returns all billboard`;
+    return this.billboardRepository.find({ relations: ["courses.sections", "courses.sections.professor", "courses.sections.professor.user", "courses.sections.period"] });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} billboard`;
+    return this.billboardRepository.findOne({
+      relations: { courses: true, period: true },
+    });
   }
 
   update(id: number, updateBillboardDto: UpdateBillboardDto) {

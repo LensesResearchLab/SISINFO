@@ -24,7 +24,7 @@ export class ProfessorsService implements RoleService {
   }
 
   findOne(document: string) {
-    return this.professorRepository.findOneBy({ document: document });
+    return this.professorRepository.findOne({ where: { document } });
   }
 
   findByName(name: string) {

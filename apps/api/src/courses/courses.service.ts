@@ -13,8 +13,6 @@ export class CoursesService {
   ) {}
 
   async create(createCourseDto: CreateCourseDto, section:Section) {
-    console.log("createCourseDto", createCourseDto)
-    console.log("section", section)
     const course = this.courseRepository.create(createCourseDto);
     course.sections = [section];
     await this.courseRepository.save(course);
@@ -22,7 +20,7 @@ export class CoursesService {
   }
 
   findAll() {
-    return this.courseRepository.find({relations:["sections"]});
+    return this.courseRepository.find({relations:["sections", "sections.professor", "sections.professor.user", "sections.period"]});
   }
 
   findOne(id: number) {
