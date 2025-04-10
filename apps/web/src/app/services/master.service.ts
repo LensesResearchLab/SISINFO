@@ -1,4 +1,4 @@
-const API_URL="http://localhost:8000/api/student"
+const API_URL="http://localhost:8000/api/students"
 
 export async function getStudentbyId(id:string) {
   const response = await fetch(`${API_URL}/${id}`, {

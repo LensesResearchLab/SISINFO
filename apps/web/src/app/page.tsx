@@ -59,7 +59,7 @@ function HeroSection(){
 
 function FeaturesSection(){
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 flex flex-col items-center justify-center" id="info">
+    <section className="w-full py-12 bg-slate-100 md:py-24 lg:py-32 flex flex-col items-center justify-center" id="info">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
@@ -72,7 +72,7 @@ function FeaturesSection(){
           </div>
         </div>
         <Tabs defaultValue="undergraduate" className="mt-12">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3 bg-core text-white">
             <TabsTrigger className="cursor-pointer" value="undergraduate">Proyectos de Grado</TabsTrigger>
             <TabsTrigger className="cursor-pointer" value="postgraduate">Tesis de Maestría</TabsTrigger>
             <TabsTrigger className="cursor-pointer" value="assistances">Asistencias Graduadas</TabsTrigger>
@@ -233,7 +233,7 @@ function GraduateAssistanceTabContent(){
 
 function AccessSection(){
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50 flex flex-col items-center justify-center" id="login">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-white flex flex-col items-center justify-center" id="login">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-6 text-center">
           <div className="space-y-2 max-w-[800px]">
@@ -262,7 +262,7 @@ function AccessSection(){
 
 function Header(){
   return (
-    <header className="border-b">
+    <header className="border-b bg-white">
       <div className="py-4 px-4 md:px-6 flex items-center justify-between">
         <Image
           src="/banner_sistemas.png"

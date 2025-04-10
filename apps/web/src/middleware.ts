@@ -9,6 +9,7 @@ const roleRoutes = {
   estudiante: [
     "/inicio/estudiante",
     "/inicio/pregrado",
+    "/inicio/maestria",
     "/inicio/soporte",
     "/inicio/tareas",
   ],
