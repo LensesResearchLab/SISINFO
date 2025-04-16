@@ -24,8 +24,17 @@ export class ProfessorsService implements RoleService {
   }
 
   findOne(document: string) {
-    return this.professorRepository.findOneBy({ document: document });
+    return this.professorRepository.findOne({ where: { document } });
   }
+
+  findByName(name: string) {
+    return this.professorRepository
+      .createQueryBuilder('professor')
+      .innerJoinAndSelect('professor.user', 'user')
+      .where('LOWER(user.name) = LOWER(:name)', { name })
+      .getOne();
+  }
+  
 
   async update(document: string, updateProfessorDto: UpdateProfessorDto) {
     const professor = await this.professorRepository.findOneBy({
@@ -40,11 +49,7 @@ export class ProfessorsService implements RoleService {
   remove(document: string) {
     return `This action removes a #${document} professor`;
   }
-
-  async addRole<CreateProfessorDto>(
-    user: User,
-    roleInfo: CreateProfessorDto,
-  ): Promise<void> {
+  async addRole<T>(user: User, roleInfo: T): Promise<void> {
     let professor = await this.professorRepository.findOne({
       where: { document: user.document },
     });

@@ -15,11 +15,6 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 export class CourseController {
   constructor(private readonly coursesService: CoursesService) {}
 
-  @Post()
-  create(@Body() createCourseDto: CreateCourseDto) {
-    return this.coursesService.create(createCourseDto);
-  }
-
   @Get()
   findAll() {
     return this.coursesService.findAll();
@@ -32,7 +27,7 @@ export class CourseController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
-    return this.coursesService.update(+id, updateCourseDto);
+    return this.coursesService.update(id, updateCourseDto);
   }
 
   @Delete(':id')

@@ -1,27 +1,67 @@
 "use client"
-
-import { SetStateAction, useState } from "react"
+import { useState } from "react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Upload } from "lucide-react"
+import Papa from "papaparse"
+import { ConfirmationModal } from "./confirmation-modal"
+import { ROUTES } from "@/app/routes"
 
 interface UploadFilesProps {
   title: string;
+  onFileProcessed: any;
 }
 
-export function UploadFiles({ title }: UploadFilesProps) {
+export function UploadFiles({ title, onFileProcessed }: UploadFilesProps) {
   const [file, setFile] = useState<File | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // Texto que se mostrará en el modal de confirmación.
+  const dialogText = {
+    title: "Publicar Proyecto",
+    description: "¿Estás seguro de que deseas publicar este proyecto?",
+    buttonText: "Publicar Proyecto",
+    successTitle: "Proyecto Publicado",
+    successText: "Tu proyecto ha sido publicado exitosamente",
+    url: `${ROUTES.HOME}/${ROUTES.BULLETIN_BOARD}`,
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = e.target.files
-      if (files && files.length > 0) {
-          setFile(files[0])
-      } else {
-          setFile(null)
-      }
+    const files = e.target.files
+    if (files && files.length > 0) {
+      setFile(files[0])
+    } else {
+      setFile(null)
+    }
   }
-  const handleSubmit = (e: { preventDefault: () => void }) => {
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Uploading file:", file)
+    setIsModalOpen(true)
+  }
+
+  const onConfirmUpload = () => {
+    if (file) {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          console.log("Parsed CSV data:", results.data)
+          const filteredData = results.data.filter((row: any) =>
+            Object.values(row).some(
+              (value) => typeof value === "string" && value.trim() !== ""
+            )
+          )
+          onFileProcessed(filteredData)
+          window.location.reload();
+        },
+        error: (error) => {
+          console.error("Error al parsear el CSV:", error)
+        },
+      });
+    } else {
+      setIsModalOpen(false)
+    }
   }
   return (
     <Card className="border-none">
@@ -57,6 +97,14 @@ export function UploadFiles({ title }: UploadFilesProps) {
           )}
         </form>
       </CardContent>
+      {isModalOpen && (
+        <ConfirmationModal
+          dialogText={dialogText}
+          onConfirm={onConfirmUpload}
+          open={isModalOpen}
+          setIsOpen={setIsModalOpen}
+        />
+      )}
     </Card>
   )
 }
