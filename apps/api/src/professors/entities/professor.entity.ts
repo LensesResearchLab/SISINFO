@@ -43,7 +43,8 @@ export class Professor {
   @OneToMany(() => Task, (task) => task.professor)
   tasks: Task[];
 
-  @OneToMany(() => Section, (section) => section.professor)
+  @ManyToMany(() => Section, (section) => section.professors)
+  @JoinTable({name: 'section_professors'})
   sections: Section[];
 
   @ManyToMany(() => Section, (section) => section.supportProfessors)

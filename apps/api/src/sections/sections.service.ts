@@ -4,7 +4,6 @@
   import { Repository } from 'typeorm';
   import { Section } from './entities/section.entity';
   import { InjectRepository } from '@nestjs/typeorm';
-  import { Course } from 'src/courses/entities/course.entity';
   import { Professor } from 'src/professors/entities/professor.entity';
 import { Period } from 'src/periods/entities/period.entity';
 
@@ -14,22 +13,23 @@ import { Period } from 'src/periods/entities/period.entity';
       @InjectRepository(Section) private sectionRepository: Repository<Section>,
     ) {}
 
-    async create(createSectionDto: CreateSectionDto, supportProfessors:Professor[], professor: Professor, period:Period) {
+    async create(createSectionDto: CreateSectionDto, supportProfessors: Professor[], professors: Professor[], period: Period) {
       const section = this.sectionRepository.create(createSectionDto);
       section.supportProfessors = supportProfessors;
-      section.period=period
-      if (professor.document != null) { 
-        section.professor = professor;
-      }
+      section.professors = professors;
+      section.period = period;
+      
       await this.sectionRepository.save(section);
+      
       return section;
     }
+    
 
     findAll() {
       return this.sectionRepository.find({
         relations: {
           supportProfessors: true,
-          professor: true,
+          professors: true,
         },
       });
     }
@@ -42,10 +42,20 @@ import { Period } from 'src/periods/entities/period.entity';
       return `This action updates a #${id} section`;
     }
 
-    async updateProfessorsSection(section:Section, professor:Professor, supportProfessors:Professor[]){
-      section.supportProfessors=section.supportProfessors.concat(supportProfessors);
-      if (professor.document != null) {
-        section.professor = professor;
+    async findByNRCAndPeriod(NRC:string, period:Period){
+      return await this.sectionRepository.findOne({where:{NRC, period}, relations:["professors", "supportProfessors"]})
+    }
+
+    async updateProfessorsSection(section:Section, professors:Professor[], supportProfessors:Professor[]){
+      if(section.supportProfessors!=null){
+        section.supportProfessors=section.supportProfessors.concat(supportProfessors);
+      }else{
+        section.supportProfessors=supportProfessors;
+      }
+      if(section.professors!=null){
+        section.professors = section.professors.concat(professors);
+      }else{
+        section.professors=professors;
       }
       let sectionUpdated= await this.sectionRepository.save(section);
       return sectionUpdated;

@@ -25,9 +25,9 @@ export class BillboardsController {
     return this.billboardsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.billboardsService.findOne(+id);
+  @Get(':period')
+  findOne(@Param('period') period: string) {
+    return this.billboardsService.findOne(period);
   }
 
   @Patch(':id')
@@ -40,6 +40,6 @@ export class BillboardsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.billboardsService.remove(+id);
+    return this.billboardsService.remove(id);
   }
 }

@@ -5,11 +5,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from './entities/course.entity';
 import { Section } from 'src/sections/entities/section.entity';
+import { Period } from 'src/periods/entities/period.entity';
+import { PeriodsService } from 'src/periods/periods.service';
 
 @Injectable()
 export class CoursesService {
   constructor(
     @InjectRepository(Course) private courseRepository: Repository<Course>,
+    private periodsService: PeriodsService,
   ) {}
 
   async create(createCourseDto: CreateCourseDto, section:Section) {
@@ -27,9 +30,25 @@ export class CoursesService {
     return `This action returns a #${id} course`;
   }
 
-  findByCode(code:string){
-    return this.courseRepository.findOne({ where: { code } });
+  async findByCodeAndPeriod(code: string, period: Period): Promise<Course | null> {
+    let searchPeriod: Period = period;
+    if (period.period === "11" || period.period === "12") {
+      const foundPeriod = await this.periodsService.findOneByPeriodAndYear("10", period.year);
+      if (!foundPeriod) {
+        throw new Error('Period not found');
+      }
+      searchPeriod = foundPeriod;
+    }
+    return await this.courseRepository
+        .createQueryBuilder('course')
+        .leftJoinAndSelect('course.sections', 'section')
+        .leftJoin('section.period', 'period')
+        .where('course.code = :code', { code })
+        .andWhere('period.id = :periodId', { periodId: searchPeriod.id })
+        .getOne();
   }
+  
+  
 
   async update(id: string, updateCourseDto: UpdateCourseDto) {
     
@@ -42,9 +61,11 @@ export class CoursesService {
   }
 
   updateSections(section:Section, course:Course){
-    console.log("Course: ", course)
-    console.log("Section: ", section)
-    course.sections.push(section);
+    if (course.sections!=undefined){
+      course.sections.push(section);
+    }else{
+      course.sections=[section]
+    }
     return this.courseRepository.save(course);
   }
 

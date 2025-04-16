@@ -34,7 +34,7 @@ export interface Section {
     id: string;
     NRC: number;
     section: number;
-    professor:Professor;
+    professors:Professor[];
     teaching_assistance: TeachingAssistance;
     period: Period,
 }

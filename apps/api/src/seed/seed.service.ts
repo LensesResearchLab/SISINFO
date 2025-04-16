@@ -82,14 +82,16 @@ export class SeedService {
 
   async seedBillboard() {
     const professors = await this.professorsService.findAll();
+    const periods = await this.periodsService.findAll();
+    
     const professorsChosen = professors
       .sort(() => 0.5 - Math.random())
       .slice(0, 3);
     const professorsNames = professorsChosen.map((professor) => professor.user.name);
-    const section = faker.helpers.arrayElements([1, 2, 3], faker.number.int({ min: 1, max: 3 }));
+    const section = faker.helpers.arrayElements([1, 2, 3], faker.number.int({ min: 1, max: 6 }));
     const randomSection = section[Math.floor(Math.random() * section.length)];
-    // Se generan objetos completos para CreateBillboardDto
-    const billboards: CreateBillboardDto[] = Array.from({ length: 3 }).map(() => ({
+
+    const billboards: CreateBillboardDto[] = Array.from({ length: 6 }).map(() => ({
       publicated: faker.datatype.boolean(),
       NRC: faker.string.numeric(5),
       code: faker.lorem.word(),
@@ -97,12 +99,10 @@ export class SeedService {
       departament: faker.lorem.word(),
       credits: faker.number.int({ min: 1, max: 10 }),
       section: String(randomSection),
-      // Formato "YYYYX" donde X es "1" o "2"
-      period: `${faker.number.int({ min: 2020, max: 2025 })}${faker.helpers.arrayElement(["10", "20"])}`,
-      // Convertimos el array de nombres de profesores en una cadena separada por "|"
+      period: periods[Math.floor(Math.random() * periods.length)].year + faker.helpers.arrayElement(["10", "20"]) ,
       professors: professorsNames.join(`|${faker.helpers.arrayElement(["(01)", "(02)"])}` ),
     }));
-    // Se espera que el método create del billboardsService reciba un array de CreateBillboardDto
+
     const insertPromises: Promise<Billboard>[] = [];
     insertPromises.push(this.billboardsService.create(billboards));
     await Promise.all(insertPromises);
@@ -177,6 +177,9 @@ export class SeedService {
 
   async seedSection() {
     const professors = await this.professorsService.findAll();
+    const professorsChosen = professors
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3);
     const periods = await this.periodsService.findAll();
     const period = periods[Math.floor(Math.random() * periods.length)];
     const sections: CreateSectionDto[] = Array.from({ length: 10 }).map(() => ({
@@ -188,7 +191,7 @@ export class SeedService {
         0,2)
     const insertPromises: Promise<CreateSectionDto>[] = [];
     sections.forEach((section) => {
-      insertPromises.push(this.sectionsService.create(section, supportProfessors, professors[0], period));
+      insertPromises.push(this.sectionsService.create(section, supportProfessors, professorsChosen, period));
     });
     await Promise.all(insertPromises);
     return true;
@@ -375,14 +378,14 @@ export class SeedService {
     const graduatedAssistances =
       await this.graduatedAssistancesService.findAll();
 
-    const filePath = path.join(__dirname, 'sample-data', 'HV_SAMPLE.PDF');
+    const filePath = path.join(__dirname, 'sample-data', 'HV_SAMPLE.pdf');
 
     try {
       const fileBuffer = await fs.readFile(filePath);
 
       const file: Express.Multer.File = {
         fieldname: 'file',
-        originalname: 'HV_SAMPLE.PDF',
+        originalname: 'HV_SAMPLE.pdf',
         encoding: '7bit',
         mimetype: 'application/pdf',
         size: fileBuffer.length,

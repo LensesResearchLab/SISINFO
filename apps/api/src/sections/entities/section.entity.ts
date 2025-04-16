@@ -26,8 +26,8 @@ export class Section extends Base {
   @ManyToOne(() => Course, (course) => course.sections)
   course: Course;
 
-  @ManyToOne(() => Professor, (professor) => professor.sections)
-  professor: Professor;
+  @ManyToMany(() => Professor, (professor) => professor.sections)
+  professors: Professor[];
 
   @ManyToMany(() => Professor, (professor) => professor.supportSections)
   supportProfessors: Professor[];

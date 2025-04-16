@@ -4,21 +4,32 @@ import { UpdatePeriodDto } from './dto/update-period.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Period } from './entities/period.entity';
+import { Not, In } from 'typeorm';
 
 @Injectable()
 export class PeriodsService {
   constructor(
     @InjectRepository(Period) private periodRepository: Repository<Period>,
-  ) {}
+  ) { }
   async create(createPeriodDto: CreatePeriodDto) {
+    const existingPeriod = await this.periodRepository.findOne({
+      where: { period: createPeriodDto.period, year: createPeriodDto.year },
+    });
+    if (existingPeriod) {
+      throw new Error(`Period ${createPeriodDto.period} for year ${createPeriodDto.year} already exists`);
+    }
     const period = this.periodRepository.create(createPeriodDto);
     await this.periodRepository.save(period);
     return period;
   }
-  
+
 
   async findAll(): Promise<Period[]> {
-    return this.periodRepository.find();
+    return await this.periodRepository.find({
+      where: {
+        period: Not(In(["11", "12"]))
+      }
+    });
   }
 
   async findOne(id: string): Promise<Period> {
@@ -37,8 +48,8 @@ export class PeriodsService {
     return currentPeriod;
   }
 
-  findOneByPeriodAndYear(period: string, year: number) {
-    return this.periodRepository.findOne({ where: { period, year } });
+  async findOneByPeriodAndYear(period: string, year: number) {
+    return await this.periodRepository.findOne({ where: { period, year } });
   }
 
   update(id: number, updatePeriodDto: UpdatePeriodDto) {
