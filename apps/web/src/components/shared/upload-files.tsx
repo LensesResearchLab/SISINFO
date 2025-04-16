@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -64,7 +63,6 @@ export function UploadFiles({ title, onFileProcessed }: UploadFilesProps) {
       setIsModalOpen(false)
     }
   }
-
   return (
     <Card className="border-none">
       <CardHeader>

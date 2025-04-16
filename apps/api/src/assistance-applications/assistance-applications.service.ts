@@ -84,6 +84,25 @@ export class AssistanceApplicationsService {
     return application;
   }
 
+  async findOneDocument(id: string) {
+    const application = await this.assistanceApplicationRepository.findOne({
+      where: { id },
+      relations: {
+        graduatedAssistance: {
+          professor: true,
+        },
+        student: true,
+        document: true,
+      },
+    });
+    if (!application) {
+      throw new NotFoundException(
+        `Assistance Application with ID ${id} not found`,
+      );
+    }
+    return application;
+  }
+
   async update(
     id: string,
     updateAssistanceApplicationDto: UpdateAssistanceApplicationDto,

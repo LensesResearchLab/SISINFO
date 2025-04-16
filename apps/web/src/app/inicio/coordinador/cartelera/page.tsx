@@ -1,5 +1,4 @@
 "use client"
-
 import React, { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { UploadFiles } from "../../../../components/shared/upload-files"
@@ -76,7 +75,6 @@ export default function UploadBillboard() {
         setCoursesData(data.courses)
       })
   }
-
   return (
     <div className="grid grid-rows-3 w-full h-full gap-4 p-4">
       {/* Row 1: Cards for Academic Period and Templates */}
@@ -120,6 +118,7 @@ export default function UploadBillboard() {
         </Card>
       </div>
 
+
       <div className="row-span-3">
         <UploadFiles title="Cargar cartelera" onFileProcessed={handleUploadCsv}   />
       </div>
@@ -133,6 +132,7 @@ export default function UploadBillboard() {
 
 /**
  * UploadedBillboard Component
+
  *
  * Renders a table that displays the loaded board data using a Card container.
  * Implements an accordion-style layout for expanding class details.
@@ -150,7 +150,6 @@ export function UploadedBillboard({
   const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({})
   const [currentPage, setCurrentPage] = useState(1)
   const rowsPerPage = 10
-
   const toggleRow = (idx: number) => {
     setExpandedRows((prev) => ({
       ...prev,
@@ -257,7 +256,6 @@ export function UploadedBillboard({
                         </Button>
                       </TableCell>
                     </TableRow>
-
                     {expandedRows[idx] && (
                       <TableRow className="text-primary">
                         <TableCell colSpan={5} className="p-0">
