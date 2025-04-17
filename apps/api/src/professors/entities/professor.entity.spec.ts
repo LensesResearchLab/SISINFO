@@ -1,0 +1,61 @@
+import 'reflect-metadata';
+import { Professor } from './professor.entity';
+import { User } from '../../users/entities/user.entity';
+import { GraduatedAssistance } from '../../graduated-assistances/entities/graduated-assistance.entity';
+import { Thesis } from '../../theses/entities/thesis.entity';
+import { Project } from '../../projects/entities/project.entity';
+import { Course } from '../../courses/entities/course.entity';
+import { Task } from '../../tasks/entities/task.entity';
+import { Section } from '../../sections/entities/section.entity';
+
+describe('Professor Entity', () => {
+  it('should create a Professor with expected properties and relationships', () => {
+    const mockUser = new User();
+    const mockAssistance1 = new GraduatedAssistance();
+    const mockAssistance2 = new GraduatedAssistance();
+    const mockThesis1 = new Thesis();
+    const mockThesis2 = new Thesis();
+    const mockProject1 = new Project();
+    const mockProject2 = new Project();
+    const mockCourse1 = new Course();
+    const mockCourse2 = new Course();
+    const mockTask1 = new Task();
+    const mockTask2 = new Task();
+    const mockSection1 = new Section();
+    const mockSection2 = new Section();
+
+    const professor = new Professor();
+    professor.user = mockUser;
+    professor.assistances = [mockAssistance1, mockAssistance2];
+    professor.theses = [mockThesis1, mockThesis2];
+    professor.projects = [mockProject1, mockProject2];
+    professor.directedCourses = [mockCourse1, mockCourse2];
+    professor.tasks = [mockTask1, mockTask2];
+    professor.sections = [mockSection1, mockSection2];
+    professor.supportSections = [mockSection1, mockSection2];
+
+    expect(professor).toBeInstanceOf(Professor);
+    expect(professor.user).toBeInstanceOf(User);
+    expect(professor.assistances).toHaveLength(2);
+    expect(professor.assistances[0]).toBeInstanceOf(GraduatedAssistance);
+    expect(professor.assistances[1]).toBeInstanceOf(GraduatedAssistance);
+    expect(professor.theses).toHaveLength(2);
+    expect(professor.theses[0]).toBeInstanceOf(Thesis);
+    expect(professor.theses[1]).toBeInstanceOf(Thesis);
+    expect(professor.projects).toHaveLength(2);
+    expect(professor.projects[0]).toBeInstanceOf(Project);
+    expect(professor.projects[1]).toBeInstanceOf(Project);
+    expect(professor.directedCourses).toHaveLength(2);
+    expect(professor.directedCourses[0]).toBeInstanceOf(Course);
+    expect(professor.directedCourses[1]).toBeInstanceOf(Course);
+    expect(professor.tasks).toHaveLength(2);
+    expect(professor.tasks[0]).toBeInstanceOf(Task);
+    expect(professor.tasks[1]).toBeInstanceOf(Task);
+    expect(professor.sections).toHaveLength(2);
+    expect(professor.sections[0]).toBeInstanceOf(Section);
+    expect(professor.sections[1]).toBeInstanceOf(Section);
+    expect(professor.supportSections).toHaveLength(2);
+    expect(professor.supportSections[0]).toBeInstanceOf(Section);
+    expect(professor.supportSections[1]).toBeInstanceOf(Section);
+  });
+});

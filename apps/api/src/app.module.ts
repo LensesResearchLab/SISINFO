@@ -19,8 +19,7 @@ import { TeachingAssistancesModule } from './teaching-assistances/teaching-assis
 import { ThesesModule } from './theses/theses.module';
 import { StudentsModule } from './students/students.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ImportantDatesModule } from './important_dates/important_dates.module';
-import { ProgramsModule } from './programs/programs.module';
+import { ImportantDatesModule } from './important-dates/important-dates.module';
 import { DocumentsModule } from './documents/documents.module';
 import { IncidencesModule } from './incidences/incidences.module';
 import { AssistanceApplicationsModule } from './assistance-applications/assistance-applications.module';
@@ -43,7 +42,6 @@ import { AdministratorsModule } from './administrators/administrators.module';
     IncidencesModule,
     PeriodsModule,
     ProfessorsModule,
-    ProgramsModule,
     ProjectsModule,
     ProjectApplicationsModule,
     RequirementsModule,

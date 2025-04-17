@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select"
 import { Period } from "@/app/types/period.type"
 import { getPeriodsWMap } from "@/app/services/period.service"
+import { mapPeriodToString } from "@/app/mappers/period.mapper"
 
 /**
  * Main component that renders the board upload and listing.
@@ -29,12 +30,12 @@ export default function UploadBillboard() {
   const [csvData, setCsvData] = useState<any[]>([])
   const [coursesData, setCoursesData] = useState<Course[]>([])
   const [selectedPeriod, setSelectedPeriod] = useState<string | undefined>()
-  const [periods, setPeriods] = useState([] as string[])
+  const [periods, setPeriods] = useState<string[]>([])
 
   useEffect(() => {
     getPeriodsWMap()
       .then((data) => {
-        setPeriods(data.map((period: Period) => `${period.year}${period.period}`))
+        setPeriods(data.map(mapPeriodToString))
       })
       .catch((error) => {
         console.error("Error fetching periods:", error)

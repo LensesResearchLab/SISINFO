@@ -2,6 +2,7 @@ import { Column, Entity, OneToOne } from 'typeorm';
 import { Base } from '../../common/entities/base.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { AssistanceApplication } from '../../assistance-applications/entities/assistance-application.entity';
+import { Course } from '../../courses/entities/course.entity';
 
 @Entity()
 export class Document extends Base {
@@ -17,6 +18,9 @@ export class Document extends Base {
 
   @Column({ type: 'text' })
   name: string;
+
+  @OneToOne(() => Course, (course) => course.program)
+  course: Course;
 
   @Column({ type: 'bytea' })
   file: Buffer;

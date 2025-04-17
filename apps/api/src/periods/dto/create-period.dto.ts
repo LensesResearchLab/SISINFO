@@ -13,8 +13,6 @@ import {
 export class CreatePeriodDto {
   @IsString()
   @IsNotEmpty()
-  @Length(6, 6)
-  @Matches(/^[0-9]{4}$/)
   period: string;
 
   @IsNumber()

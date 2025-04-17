@@ -1,5 +1,5 @@
 import { Base } from '../../common/entities/base.entity';
-import { ImportantDate } from '../../important_dates/entities/important-date.entity';
+import { ImportantDate } from '../../important-dates/entities/important-date.entity';
 import { Document } from '../../documents/entities/document.entity';
 
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';

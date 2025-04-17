@@ -9,8 +9,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { GraduatedAssistancesService } from './graduated-assistances.service';
-import { CreateGraduatedAssistanceDto } from './dto/create-graduated_assistance.dto';
-import { UpdateGraduatedAssistanceDto } from './dto/update-graduated_assistance.dto';
+import { CreateGraduatedAssistanceDto } from './dto/create-graduated-assistance.dto';
+import { UpdateGraduatedAssistanceDto } from './dto/update-graduated-assistance.dto';
 
 @Controller('graduated-assistances')
 export class GraduatedAssistancesController {

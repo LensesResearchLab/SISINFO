@@ -1,7 +1,6 @@
-import { Course } from 'src/courses/entities/course.entity';
+import { Course } from '../../courses/entities/course.entity';
 import { Base } from '../../common/entities/base.entity';
 import { Period } from '../../periods/entities/period.entity';
-import { Section } from '../../sections/entities/section.entity';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 
 @Entity()

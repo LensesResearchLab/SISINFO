@@ -15,23 +15,18 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryColumn,
 } from 'typeorm';
 import { Thesis } from '../../theses/entities/thesis.entity';
 import { ProjectApplication } from '../../project-applications/entities/project-application.entity';
 import { AssistanceApplication } from '../../assistance-applications/entities/assistance-application.entity';
+import { Role } from '../../common/entities/role.entity';
 
 @Entity()
-export class Student {
-  @PrimaryColumn()
-  document: string;
-
+export class Student extends Role {
   @OneToOne(() => User, (user) => user.student, { eager: true })
   @JoinColumn({ name: 'document' })
   user: User;
 
-  @Column('boolean', { default: true })
-  isActive: boolean;
   @Column('boolean')
   isUndergraduate: boolean;
 
@@ -55,7 +50,7 @@ export class Student {
   thesis1: Thesis;
 
   @OneToOne(() => Thesis, (thesis) => thesis.studentThesis2, { nullable: true })
-  @JoinColumn({ name: 'thesis2Id' }) 
+  @JoinColumn({ name: 'thesis2Id' })
   thesis2: Thesis;
 
   @ManyToOne(() => Project, (project) => project.students, { nullable: true })

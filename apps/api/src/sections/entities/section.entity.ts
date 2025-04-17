@@ -1,4 +1,3 @@
-import { Billboard } from '../../billboards/entities/billboard.entity';
 import { Base } from '../../common/entities/base.entity';
 import { Course } from '../../courses/entities/course.entity';
 import { Period } from '../../periods/entities/period.entity';
