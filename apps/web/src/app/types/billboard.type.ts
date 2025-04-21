@@ -19,7 +19,8 @@ export interface Course {
     code: string;
     sections: Section[];
     credits: number;
-    professors: Professor[];
+    mainProfessor: Professor;
+    program: string
 }
 export interface Professor {
     id: string;

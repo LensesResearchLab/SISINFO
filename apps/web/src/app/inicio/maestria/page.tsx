@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { Tabs, TabsContent} from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { StudentTabList, ProfileTab } from "../profesor/maestria/estudiante/[id]/page"
+import { StudentTabList, ProfileTab } from "../profesor/maestria/lista/[id]/page"
 import type { Course, Student } from "../../types/student-profile.type"
 import { getStudentbyId } from "@/app/services/master.service"
 

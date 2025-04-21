@@ -78,9 +78,7 @@ export default function UploadBillboard() {
   }
   return (
     <div className="grid grid-rows-3 w-full h-full gap-4 p-4">
-      {/* Row 1: Cards for Academic Period and Templates */}
       <div className="grid grid-cols-2 row-span-1 gap-4 h-4">
-        {/* Academic Period Card */}
         <Card className="border-none">
           <CardHeader>
             <CardTitle className="text-[var(--core)]">Periodo académico</CardTitle>
@@ -101,7 +99,6 @@ export default function UploadBillboard() {
           </CardContent>
           <CardFooter>Selecciona el periodo para ver la cartelera</CardFooter>
         </Card>
-        {/* Templates Card */}
         <Card className="border-none">
           <CardHeader>
             <CardTitle className="text-[var(--core)]">Plantillas</CardTitle>
@@ -196,14 +193,14 @@ export function UploadedBillboard({
   return (
     <div className="min-h-full min-w-full">
       <div className="bg-card rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold mb-4 text-primary text-center">Loaded Board</h2>
+        <h2 className="text-2xl font-bold mb-4 text-primary text-center">Cartelera cargada</h2>
         <div className="flex items-center gap-2 mb-6 justify-center">
           <div className="relative w-[300px]">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
             <input
               type="text"
               className="pl-9 pr-4 py-2 border rounded focus:outline-none text-primary w-full text-center"
-              placeholder="Search for a class or professor"
+              placeholder="Busca una clase o profesor"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -228,7 +225,7 @@ export function UploadedBillboard({
               {displayedClasses.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="h-24 text-primary">
-                    No results found.
+                    No encontrado.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -238,7 +235,6 @@ export function UploadedBillboard({
                       className={`border-b border-gray-200 cursor-pointer ${expandedRows[idx] ? "text-primary" : ""}`}
                       onClick={() => toggleRow(idx)}
                     >
-                      {/* Celdas centradas en el body */}
                       <TableCell className="py-3 p-2 font-semibold text-primary">{clase.name}</TableCell>
                       <TableCell className="py-3 p-2 text-primary">{clase.code}</TableCell>
                       <TableCell className="py-3 p-2 text-primary">{clase.sections.length}</TableCell>
@@ -264,7 +260,6 @@ export function UploadedBillboard({
                             <Table className="w-full table-fixed">
                               <TableHeader className="text-primary">
                                 <TableRow>
-                                  {/* En la tabla interna también removemos el centramiento en los headers */}
                                   <TableHead className="py-2 text-primary font-semibold">Profesores</TableHead>
                                   <TableHead className="py-2 text-primary font-semibold">Section</TableHead>
                                   <TableHead className="py-2 text-primary font-semibold">NRC</TableHead>
@@ -275,7 +270,6 @@ export function UploadedBillboard({
                                 {clase.sections.length > 0 ? (
                                   clase.sections.map((section, pidx) => (
                                     <TableRow key={`${idx}-${pidx}`} className="border-b border-gray-200">
-                                      {/* Celdas de la tabla interna centradas */}
                                       <TableCell className="py-2 text-primary">
                                         {section.professors.length > 0
                                           ? section.professors.map((prof) => prof.user.name).join(", ")

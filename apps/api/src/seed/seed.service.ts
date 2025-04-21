@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import { promises as fs } from 'fs';
 import * as path from 'path';
+
 import { BillboardsService } from '../billboards/billboards.service';
 import { CreateBillboardDto } from '../billboards/dto/create-billboard.dto';
 import { PeriodsService } from '../periods/periods.service';
@@ -46,6 +47,7 @@ import { User } from '../users/entities/user.entity';
 import { CreateAdministratorDto } from '../administrators/dto/create-administrator.dto';
 import { Readable } from 'stream';
 import { Billboard } from '../billboards/entities/billboard.entity';
+import { DocumentsService } from 'src/documents/documents.service';
 
 @Injectable()
 export class SeedService {
@@ -68,6 +70,7 @@ export class SeedService {
     private readonly tasksService: TasksService,
     private readonly areasOfInterestService: AreasOfInterestService,
     private readonly studentsService: StudentsService,
+    private readonly documentsService: DocumentsService,
     private readonly usersService: UsersService,
   ) {}
 
@@ -81,48 +84,41 @@ export class SeedService {
   GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER = 2;
 
   async seedBillboard() {
+    const filePath = path.join(process.cwd(), 'src', 'seed', 'sample-data', 'HV_SAMPLE.pdf');
+    const buffer = await fs.readFile(filePath);
+  
     const professors = await this.professorsService.findAll();
-    const periods = await this.periodsService.findAll();
     const professorsChosen = professors
       .sort(() => 0.5 - Math.random())
       .slice(0, 3);
-    const professorsNames = professorsChosen.map(
-      (professor) => professor.user.name,
-    );
-    const section = faker.helpers.arrayElements(
-      [1, 2, 3],
-      faker.number.int({ min: 1, max: 6 }),
-    );
-    const randomSection = section[Math.floor(Math.random() * section.length)];
-    const courseDto: CreateCourseDto = {
+    const professorsNames = professorsChosen.map((professor) => professor.user.name);
+    const periods = await this.periodsService.findAll();
+    const dtos: CreateBillboardDto[] = Array.from({ length: 6 }).map(() => ({
+      publicated: faker.datatype.boolean(),
+      NRC: faker.string.numeric(5),
       code: faker.lorem.word(),
       name: faker.lorem.words(2),
       departament: faker.lorem.word(),
       credits: faker.number.int({ min: 1, max: 10 }),
-    };
-    const sectionDto: CreateSectionDto = {
-      NRC: faker.string.numeric(5),
-      section: String(randomSection),
-    };
-
-    const billboards: CreateBillboardDto[] = Array.from({ length: 6 }).map(
-      () => ({
-        publicated: faker.datatype.boolean(),
-        course: courseDto,
-        section: sectionDto,
-
-        period:
-          periods[Math.floor(Math.random() * periods.length)].year +
-          faker.helpers.arrayElement(['10', '20']),
-        professors: professorsNames.join(
-          `|${faker.helpers.arrayElement(['(01)', '(02)'])}`,
-        ),
-      }),
-    );
-
-    const insertPromises: Promise<Billboard>[] = [];
-    insertPromises.push(this.billboardsService.create(billboards));
-    await Promise.all(insertPromises);
+      section: String(faker.helpers.arrayElement([1, 2, 3])),
+      period: `${faker.helpers.arrayElement(periods).year}${faker.helpers.arrayElement(['10', '20'])}`,
+      professors: professorsNames.join(`|${faker.helpers.arrayElement(["(01)", "(02)"])}`),
+    }));
+  
+    await this.billboardsService.create(dtos);
+  
+    const courses = await this.coursesService.findAll();
+    for (const course of courses) {
+      const programDoc = await this.documentsService.create({
+        name: 'HV_SAMPLE.pdf',
+        file: buffer,
+      });
+      const profs = await this.professorsService.findAll();
+      const professorChosen = faker.helpers.arrayElement(profs);
+      await this.coursesService.updateMainProfessor(course.id, professorChosen);
+      await this.coursesService.updateProgram(course.id, programDoc);
+    }
+  
     return true;
   }
 
@@ -190,9 +186,6 @@ export class SeedService {
       );
       return await this.professorsService.create(professor);
     });
-
-    const createdProfessors = await Promise.all(insertPromises);
-    console.log('Created Professors:', createdProfessors);
     return true;
   }
 
@@ -200,7 +193,7 @@ export class SeedService {
     const professors = await this.professorsService.findAll();
     const professorsChosen = professors
       .sort(() => 0.5 - Math.random())
-      .slice(0, 3);
+      .slice(0, 1);
     const periods = await this.periodsService.findAll();
     const period = periods[Math.floor(Math.random() * periods.length)];
     const sections: CreateSectionDto[] = Array.from({ length: 10 }).map(() => ({

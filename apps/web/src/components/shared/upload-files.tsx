@@ -16,7 +16,6 @@ export function UploadFiles({ title, onFileProcessed }: UploadFilesProps) {
   const [file, setFile] = useState<File | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // Texto que se mostrará en el modal de confirmación.
   const dialogText = {
     title: "Publicar Proyecto",
     description: "¿Estás seguro de que deseas publicar este proyecto?",
@@ -67,7 +66,7 @@ export function UploadFiles({ title, onFileProcessed }: UploadFilesProps) {
     <Card className="border-none">
       <CardHeader>
         <CardTitle className="text-[var(--core)]">{title}</CardTitle>
-        <CardDescription>Select a file to upload and click the submit button.</CardDescription>
+        <CardDescription>Selecciona un archivo y haz click en subir</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="grid gap-4">
@@ -79,9 +78,9 @@ export function UploadFiles({ title, onFileProcessed }: UploadFilesProps) {
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 <Upload className="w-10 h-10 text-gray-400" />
                 <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-semibold">Click to upload</span> or drag and drop
+                  <span className="font-semibold">Click para subir</span> o arrastra y suelta
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">CSV</p>
               </div>
               <input id="dropzone-file" type="file" className="hidden" onChange={handleFileChange} />
             </label>
@@ -92,7 +91,7 @@ export function UploadFiles({ title, onFileProcessed }: UploadFilesProps) {
                 <p className="font-medium">{file.name}</p>
                 <p className="text-sm text-muted-foreground">{(file.size / 1024).toFixed(2)} KB</p>
               </div>
-              <Button type="submit">Upload</Button>
+              <Button type="submit">Subir</Button>
             </div>
           )}
         </form>

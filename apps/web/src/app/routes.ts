@@ -50,7 +50,7 @@ export const ROUTES: Record<string, string> = {
 
   /*  Coordinators  */
 
-  COURSE_PROGRAMS: "/coordinador/programas_clases",
+  COURSE_PROGRAMS: "/coordinador/programas/lista",
   GRADE_LOAD: "/coordinador/carga_notas",
   BULLETIN_BOARD: "/coordinador/cartelera",
 
