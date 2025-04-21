@@ -25,6 +25,7 @@ export class CoursesService {
   findAll() {
     return this.courseRepository.find({
       relations: [
+        'mainProfessor',
         'sections',
         'sections.professor',
         'sections.professor.user',
@@ -33,8 +34,8 @@ export class CoursesService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+  findOne(id: string) {
+    return this.courseRepository.findOne({where:{id}, relations:["mainProfessor", "program"]});
   }
 
   async findByCodeAndPeriod(

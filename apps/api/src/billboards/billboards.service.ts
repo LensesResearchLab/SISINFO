@@ -51,11 +51,11 @@ export class BillboardsService {
       }
 
       let existingCourse = await this.courseService.findByCodeAndPeriod(
-        info.course.code,
+        info.code,
         periodFound,
       );
       const existingSection = await this.sectionService.findByNRCAndPeriod(
-        info.section.NRC,
+        info.NRC,
         periodFound,
       );
 
@@ -104,8 +104,8 @@ export class BillboardsService {
           billboardSectionsMap.set(sectionToUse.NRC, sectionToUse);
         } else {
           const newSectionDto = new CreateSectionDto();
-          newSectionDto.NRC = info.section.NRC;
-          newSectionDto.section = info.section.section;
+          newSectionDto.NRC = info.NRC;
+          newSectionDto.section = info.section;
           if (findedProfessors.length === 0 && supportProfessors.length === 0) {
             throw new Error('No professors found for the section');
           }
@@ -131,15 +131,15 @@ export class BillboardsService {
           billboardCoursesMap.set(existingCourse.code, existingCourse);
         } else {
           const courseDto = new CreateCourseDto();
-          courseDto.code = info.course.code;
-          courseDto.credits = info.course.credits;
-          courseDto.departament = info.course.departament;
-          courseDto.name = info.course.name;
+          courseDto.code = info.code;
+          courseDto.credits = +info.credits;
+          courseDto.departament = info.departament;
+          courseDto.name = info.name;
           existingCourse = await this.courseService.create(
             courseDto,
             sectionToUse,
           );
-          billboardCoursesMap.set(info.course.code, existingCourse);
+          billboardCoursesMap.set(info.code, existingCourse);
         }
       }
     }
@@ -179,15 +179,17 @@ export class BillboardsService {
     return await this.billboardRepository.save(billboard);
   }
 
-  findAll() {
-    return this.billboardRepository.find({
+  async findAll() {
+    const response= await this.billboardRepository.find({
       relations: [
         'courses',
+        'courses.mainProfessor',
         'courses.sections',
         'courses.sections.professors',
         'courses.sections.period',
       ],
     });
+    return response
   }
 
   async findOne(period: string) {
@@ -204,6 +206,7 @@ export class BillboardsService {
       where: { period: periodBillboard },
       relations: [
         'courses',
+        'courses.mainProfessor',
         'courses.sections',
         'courses.sections.professors',
         'courses.sections.period',

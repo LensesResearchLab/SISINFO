@@ -83,42 +83,25 @@ export class SeedService {
   async seedBillboard() {
     const professors = await this.professorsService.findAll();
     const periods = await this.periodsService.findAll();
+    
     const professorsChosen = professors
       .sort(() => 0.5 - Math.random())
       .slice(0, 3);
-    const professorsNames = professorsChosen.map(
-      (professor) => professor.user.name,
-    );
-    const section = faker.helpers.arrayElements(
-      [1, 2, 3],
-      faker.number.int({ min: 1, max: 6 }),
-    );
+    const professorsNames = professorsChosen.map((professor) => professor.user.name);
+    const section = faker.helpers.arrayElements([1, 2, 3], faker.number.int({ min: 1, max: 6 }));
     const randomSection = section[Math.floor(Math.random() * section.length)];
-    const courseDto: CreateCourseDto = {
+
+    const billboards: CreateBillboardDto[] = Array.from({ length: 6 }).map(() => ({
+      publicated: faker.datatype.boolean(),
+      NRC: faker.string.numeric(5),
       code: faker.lorem.word(),
       name: faker.lorem.words(2),
       departament: faker.lorem.word(),
       credits: faker.number.int({ min: 1, max: 10 }),
-    };
-    const sectionDto: CreateSectionDto = {
-      NRC: faker.string.numeric(5),
       section: String(randomSection),
-    };
-
-    const billboards: CreateBillboardDto[] = Array.from({ length: 6 }).map(
-      () => ({
-        publicated: faker.datatype.boolean(),
-        course: courseDto,
-        section: sectionDto,
-
-        period:
-          periods[Math.floor(Math.random() * periods.length)].year +
-          faker.helpers.arrayElement(['10', '20']),
-        professors: professorsNames.join(
-          `|${faker.helpers.arrayElement(['(01)', '(02)'])}`,
-        ),
-      }),
-    );
+      period: periods[Math.floor(Math.random() * periods.length)].year + faker.helpers.arrayElement(["10", "20"]),
+      professors: professorsNames.join(`|${faker.helpers.arrayElement(["(01)", "(02)"])}`),
+    }));
 
     const insertPromises: Promise<Billboard>[] = [];
     insertPromises.push(this.billboardsService.create(billboards));

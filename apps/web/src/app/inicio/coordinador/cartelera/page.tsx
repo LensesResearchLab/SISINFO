@@ -78,9 +78,7 @@ export default function UploadBillboard() {
   }
   return (
     <div className="grid grid-rows-3 w-full h-full gap-4 p-4">
-      {/* Row 1: Cards for Academic Period and Templates */}
       <div className="grid grid-cols-2 row-span-1 gap-4 h-4">
-        {/* Academic Period Card */}
         <Card className="border-none">
           <CardHeader>
             <CardTitle className="text-[var(--core)]">Periodo académico</CardTitle>
