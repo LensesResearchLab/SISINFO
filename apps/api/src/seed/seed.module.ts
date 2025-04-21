@@ -20,6 +20,7 @@ import { ProjectApplicationsModule } from '../project-applications/project-appli
 import { ThesisApplicationsModule } from '../thesis-applications/thesis-applications.module';
 import { AssistanceApplicationsModule } from '../assistance-applications/assistance-applications.module';
 import { UsersModule } from '../users/users.module';
+import { DocumentsModule } from 'src/documents/documents.module';
 
 @Module({
   controllers: [SeedController],
@@ -44,6 +45,7 @@ import { UsersModule } from '../users/users.module';
     ThesisApplicationsModule,
     StudentsModule,
     UsersModule,
+    DocumentsModule
   ],
 })
 export class SeedModule {}

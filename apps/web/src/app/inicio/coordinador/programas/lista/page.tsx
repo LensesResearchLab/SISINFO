@@ -14,7 +14,7 @@ import { mapPeriodToString } from "@/app/mappers/period.mapper"
 import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 
-export default function ProgramsListCard() {
+export default function ProgramsList() {
   const router = useRouter()
   const { period, setPeriod, ids, setIds } = useProgramsStore()
   const [periods, setPeriods] = useState<string[]>([])
@@ -120,7 +120,7 @@ export default function ProgramsListCard() {
                       <TableCell className="py-2 px-3 font-semibold text-primary">{c.name}</TableCell>
                       <TableCell className="py-2 px-3 text-primary">{c.code}</TableCell>
                       <TableCell className="py-2 px-3 text-primary">{c.program ? 'Cargado' : 'Pendiente'}</TableCell>
-                      <TableCell className="py-2 px-3 text-primary">{c.mainProfessor.user.name}</TableCell>
+                      <TableCell className="py-2 px-3 text-primary">{c.mainProfessor.user.name!=null ? c.mainProfessor.user.name : "No professor asigned"}</TableCell>
                       <TableCell className="py-2 px-3">
                         <Button variant="ghost" size="icon" onClick={e => { e.stopPropagation(); handleDetail(c.id); }}>
                           <MoreHorizontal className="w-4 h-4 text-primary" />

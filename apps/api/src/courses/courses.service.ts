@@ -7,6 +7,8 @@ import { Course } from './entities/course.entity';
 import { Section } from '../sections/entities/section.entity';
 import { Period } from '../periods/entities/period.entity';
 import { PeriodsService } from '../periods/periods.service';
+import { Professor } from 'src/professors/entities/professor.entity';
+import { Document } from 'src/documents/entities/document.entity';
 
 @Injectable()
 export class CoursesService {
@@ -27,8 +29,8 @@ export class CoursesService {
       relations: [
         'mainProfessor',
         'sections',
-        'sections.professor',
-        'sections.professor.user',
+        'sections.professors',
+        'sections.professors.user',
         'sections.period',
       ],
     });
@@ -69,6 +71,24 @@ export class CoursesService {
       return await this.courseRepository.save(course);
     }
     throw new Error('Course not found');
+  }
+
+  async updateMainProfessor(id:string, professor:Professor){
+    const course = await this.courseRepository.findOne({ where: { id } });
+    if (course) {
+      course.mainProfessor=professor;
+      return await this.courseRepository.save(course);
+    }
+    throw new Error('Course not found')
+  }
+
+  async updateProgram(id:string, program:Document){
+    const course = await this.courseRepository.findOne({ where: { id } });
+    if (course) {
+      course.program=program;
+      return await this.courseRepository.save(course);
+    }
+    throw new Error('Course not found')
   }
 
   updateSections(section: Section, course: Course) {
