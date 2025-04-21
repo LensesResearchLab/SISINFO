@@ -17,11 +17,11 @@ export function UploadFiles({ title, onFileProcessed }: UploadFilesProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const dialogText = {
-    title: "Publicar Proyecto",
-    description: "¿Estás seguro de que deseas publicar este proyecto?",
-    buttonText: "Publicar Proyecto",
-    successTitle: "Proyecto Publicado",
-    successText: "Tu proyecto ha sido publicado exitosamente",
+    title: "Publicar cartelera",
+    description: "¿Estás seguro de que deseas publicar esta cartelera?",
+    buttonText: "Publicar cartelera",
+    successTitle: "Cartelera Publicado",
+    successText: "Tu cartelera ha sido publicada exitosamente",
     url: `${ROUTES.HOME}/${ROUTES.BULLETIN_BOARD}`,
   };
 
