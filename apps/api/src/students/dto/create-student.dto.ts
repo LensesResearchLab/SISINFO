@@ -1,27 +1,12 @@
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Length,
-  Matches,
-} from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString, Matches } from 'class-validator';
+import { CreateRoleDto } from '../../common/dto/create-role.dto';
 
-export class CreateStudentDto {
-  @IsString()
-  @IsNotEmpty()
-  document: string;
-
+export class CreateStudentDto extends CreateRoleDto {
   @IsBoolean()
   isUndergraduate: boolean;
 
   @IsString()
   @IsNotEmpty()
-  @Length(9, 9)
-  @Matches(/^[0-9]{4}$/)
+  @Matches(/^[0-9]{9}$/)
   code: string;
-
-  @IsBoolean()
-  @IsOptional()
-  isActive: boolean = true;
 }

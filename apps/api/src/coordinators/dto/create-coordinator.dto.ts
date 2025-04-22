@@ -1,11 +1,3 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { CreateRoleDto } from '../../common/dto/create-role.dto';
 
-export class CreateCoordinatorDto {
-  @IsString()
-  @IsNotEmpty()
-  document: string;
-
-  @IsBoolean()
-  @IsOptional()
-  isActive: boolean = true;
-}
+export class CreateCoordinatorDto extends CreateRoleDto {}

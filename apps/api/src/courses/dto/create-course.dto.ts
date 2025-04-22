@@ -1,10 +1,9 @@
 import { Type } from 'class-transformer';
 import {
+  IsInt,
   IsNotEmpty,
-  IsNumber,
   IsPositive,
   IsString,
-  Length,
   Matches,
   Max,
 } from 'class-validator';
@@ -12,7 +11,6 @@ import {
 export class CreateCourseDto {
   @IsString()
   @IsNotEmpty()
-  @Length(4, 4)
   @Matches(/^[0-9]{4}$/)
   code: string;
 
@@ -24,8 +22,8 @@ export class CreateCourseDto {
   @IsNotEmpty()
   name: string;
 
-  @IsNumber()
   @Type(() => Number)
+  @IsInt()
   @IsPositive()
   @Max(50)
   credits: number;

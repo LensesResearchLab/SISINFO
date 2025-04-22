@@ -1,7 +1,3 @@
-import { IsBoolean, IsOptional } from 'class-validator';
+import { CreateRoleDto } from '../../common/dto/create-role.dto';
 
-export class CreateAdministratorDto {
-  @IsBoolean()
-  @IsOptional()
-  isActive: boolean = true;
-}
+export class CreateAdministratorDto extends CreateRoleDto {}

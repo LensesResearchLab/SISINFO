@@ -1,11 +1,11 @@
-import { IsNumber, IsPositive } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateSectionDto {
-  @IsNumber()
-  @IsPositive()
-  NRC: number;
+  @IsString()
+  @IsNotEmpty()
+  NRC: string;
 
-  @IsNumber()
-  @IsPositive()
-  section: number;
+  @IsString()
+  @IsNotEmpty()
+  section: string;
 }

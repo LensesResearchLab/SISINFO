@@ -1,15 +1,13 @@
+import { Role } from '../../common/entities/role.entity';
 import { User } from '../../users/entities/user.entity';
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @Entity()
-export class Administrator {
-  @PrimaryColumn()
-  document: string;
-
+export class Administrator extends Role {
+  status(status: any) {
+      throw new Error('Method not implemented.');
+  }
   @OneToOne(() => User, (user) => user.administrator, { eager: true })
   @JoinColumn({ name: 'document' })
   user: User;
-
-  @Column('boolean', { default: true })
-  isActive: boolean;
 }

@@ -1,6 +1,7 @@
+import { Billboard } from '../../billboards/entities/billboard.entity';
 import { Base } from '../../common/entities/base.entity';
 import { Professor } from '../../professors/entities/professor.entity';
-import { Program } from '../../programs/entities/program.entity';
+import { Document } from '../../documents/entities/document.entity';
 import { Section } from '../../sections/entities/section.entity';
 import { Student } from '../../students/entities/student.entity';
 import {
@@ -27,6 +28,9 @@ export class Course extends Base {
   @Column('numeric')
   credits: number;
 
+  @ManyToOne(() => Billboard, (billboard) => billboard.courses)
+  billboard: Billboard;
+
   @ManyToOne(() => Professor, (professor) => professor.directedCourses)
   mainProfessor: Professor;
 
@@ -39,7 +43,9 @@ export class Course extends Base {
   @ManyToMany(() => Student, (student) => student.otherCourses)
   otherStudents: Student[];
 
-  @OneToOne(() => Program, (program) => program.course)
+  @OneToOne(() => Document, (document) => document.course, {
+    nullable: true,
+  })
   @JoinColumn()
-  program: Program;
+  program: Document;
 }

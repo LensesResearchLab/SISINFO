@@ -3,9 +3,10 @@ import { CoursesService } from './courses.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Course } from './entities/course.entity';
 import { Repository } from 'typeorm';
+import { PeriodsService } from '../periods/periods.service';
 
 describe('CoursesService', () => {
-  let service: CoursesService;
+  let coursesService: CoursesService;
   let coursesRepository: Repository<Course>;
 
   beforeEach(async () => {
@@ -15,9 +16,21 @@ describe('CoursesService', () => {
       save: jest.fn(),
       delete: jest.fn(),
     };
+
+    const mockPeriodsService = {
+      find: jest.fn(),
+      findOne: jest.fn(),
+      save: jest.fn(),
+      delete: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CoursesService,
+        {
+          provide: PeriodsService,
+          useValue: mockPeriodsService,
+        },
         {
           provide: getRepositoryToken(Course),
           useValue: mockRepository,
@@ -25,13 +38,13 @@ describe('CoursesService', () => {
       ],
     }).compile();
 
-    service = module.get<CoursesService>(CoursesService);
+    coursesService = module.get<CoursesService>(CoursesService);
     coursesRepository = module.get<Repository<Course>>(
       getRepositoryToken(Course),
     );
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(coursesService).toBeDefined();
   });
 });

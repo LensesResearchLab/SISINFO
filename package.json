@@ -53,6 +53,7 @@
     "framer-motion": "^12.5.0",
     "jose": "^6.0.10",
     "kill-port": "^2.0.1",
+    "papaparse": "^5.5.2",
     "react-hook-form": "^7.54.2",
     "ts-jest": "^29.2.6",
     "xlsx": "^0.18.5",

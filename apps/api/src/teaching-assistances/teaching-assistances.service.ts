@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTeachingAssistanceDto } from './dto/create-teaching_assistance.dto';
-import { UpdateTeachingAssistanceDto } from './dto/update-teaching_assistance.dto';
+import { CreateTeachingAssistanceDto } from './dto/create-teaching-assistance.dto';
+import { UpdateTeachingAssistanceDto } from './dto/update-teaching-assistance.dto';
 import { TeachingAssistance } from './entities/teaching-assistance.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';

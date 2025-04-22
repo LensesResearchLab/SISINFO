@@ -119,11 +119,10 @@ export default function GraduateAssistanceForm() {
 
   return (
     <div
-      className="max-w-3xl mx-auto p-4"
-      style={{ backgroundColor: "var(--subtable)" }}
+      className="max-w-3xl mx-auto p-4 bg-subtable"
     >
       <Card className="border-none w-3xl">
-        <CardHeader style={{ color: "var(--core)" }}>
+        <CardHeader className="text-core">
           <CardTitle className="text-2xl">
             Nueva oferta de asistencia graduada
           </CardTitle>
@@ -263,11 +262,7 @@ export default function GraduateAssistanceForm() {
                         <Badge
                           key={`${tag}-${index}`}
                           variant="secondary"
-                          className="px-3 py-1 rounded-full transition-colors"
-                          style={{
-                            backgroundColor: "var(--core-soft)",
-                            color: "var(--foreground-soft)",
-                          }}
+                          className="px-3 py-1 rounded-full transition-colors bg-core-soft text-foreground-soft"
                         >
                           {tag.description}
                           <button
@@ -277,8 +272,7 @@ export default function GraduateAssistanceForm() {
                                 field.value.filter((t) => t !== tag)
                               )
                             }
-                            className="ml-1"
-                            style={{ color: "var(--core-highlight)" }}
+                            className="ml-1 text-core-highlight"
                           >
                             <X size={14} className="inline-block" />
                           </button>
@@ -292,8 +286,8 @@ export default function GraduateAssistanceForm() {
 
               <Button
                 type="button"
+                className="bg-core-highlight"
                 onClick={() => setIsModalOpen(true)}
-                style={{ backgroundColor: "var(--core-highlight)" }}
               >
                 Publicar asistencia
               </Button>

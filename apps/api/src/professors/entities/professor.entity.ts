@@ -6,27 +6,20 @@ import { Section } from '../../sections/entities/section.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Thesis } from '../../theses/entities/thesis.entity';
 import {
-  Column,
   Entity,
   JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
   OneToOne,
-  PrimaryColumn,
 } from 'typeorm';
+import { Role } from '../../common/entities/role.entity';
 
 @Entity()
-export class Professor {
-  @PrimaryColumn()
-  document: string;
-
+export class Professor extends Role {
   @OneToOne(() => User, (user) => user.professor, { eager: true })
   @JoinColumn({ name: 'document' })
   user: User;
-
-  @Column('boolean', { default: true })
-  isActive: boolean;
 
   @OneToMany(() => GraduatedAssistance, (assistance) => assistance.professor)
   assistances: GraduatedAssistance[];
@@ -43,7 +36,8 @@ export class Professor {
   @OneToMany(() => Task, (task) => task.professor)
   tasks: Task[];
 
-  @OneToMany(() => Section, (section) => section.professor)
+  @ManyToMany(() => Section, (section) => section.professors)
+  @JoinTable({ name: 'section_professors' })
   sections: Section[];
 
   @ManyToMany(() => Section, (section) => section.supportProfessors)

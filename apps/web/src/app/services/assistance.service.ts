@@ -138,6 +138,14 @@ export async function getAssistanceStatusById(id: string) {
   return response.json();
 }
 
+export async function getAssistanceStatusByIdWithDocument(id: string) {
+  const response = await fetch(`${API_URL_APPLICATION}/${id}/document`);
+  if (!response.ok) {
+    throw new Error("Assistance status not found.");
+  }
+  return response.json();
+}
+
 export async function updateGraduatedAssistance(
   id: string,
   updateData: object

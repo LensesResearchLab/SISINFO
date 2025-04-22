@@ -69,6 +69,11 @@ export class AssistanceApplicationsController {
     return this.assistanceApplicationsService.findOne(id);
   }
 
+  @Get(':id/document')
+  findOneDocument(@Param('id') id: string) {
+    return this.assistanceApplicationsService.findOneDocument(id);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

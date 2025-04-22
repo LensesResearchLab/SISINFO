@@ -50,7 +50,7 @@ export const ROUTES: Record<string, string> = {
 
   /*  Coordinators  */
 
-  COURSE_PROGRAMS: "/coordinador/programas_clases",
+  COURSE_PROGRAMS: "/coordinador/programas/lista",
   GRADE_LOAD: "/coordinador/carga_notas",
   BULLETIN_BOARD: "/coordinador/cartelera",
 
@@ -68,4 +68,6 @@ export const API_ROUTES: Record<string, string> = {
   BASE : "http://localhost:8000/api",
   PERIODS: "periods",
   ASSISTANCE_APPLICATIONS: 'assistance-applications',
+  COURSES:'courses',
+  COORDINATOR_BILLBOARD:'billboards',
 };
