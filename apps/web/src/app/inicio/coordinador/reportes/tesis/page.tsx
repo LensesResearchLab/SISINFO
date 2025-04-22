@@ -15,15 +15,15 @@ import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 
-export default function UndergraduateProjectsReport() {
+export default function ThesisReports() {
   return (
     <div className="container mx-auto py-10 px-8">
-      <ProjectsReportList />
+      <ThesisReportList />
     </div>
   );
 }
 
-function ProjectsReportList() {
+function ThesisReportList() {
   const [data, setData] = useState<ThesisReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
@@ -64,8 +64,8 @@ function ProjectsReportList() {
       { origin: "A1" }
     );
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte Proyectos");
-    XLSX.writeFile(workbook, "reporte_proyectos_grado.xlsx");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte Tesis");
+    XLSX.writeFile(workbook, "reporte_tesis1.xlsx");
   };
 
   return (
@@ -136,32 +136,32 @@ function ProjectsReportList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((project) => (
-                <TableRow key={project.student_code} className="bg-white">
+              {data.map((thesis) => (
+                <TableRow key={thesis.student_code} className="bg-white">
                   <TableCell className="border-r font-medium">
-                    {project.student_code}
+                    {thesis.student_code}
                   </TableCell>
                   <TableCell className="border-r">
-                    {project.student_name}
+                    {thesis.student_name}
                   </TableCell>
                   <TableCell className="border-r">
-                    {project.student_email}
+                    {thesis.student_email}
                   </TableCell>
                   <TableCell className="border-r">
-                    {project.professor_name}
+                    {thesis.professor_name}
                   </TableCell>
                   <TableCell className="border-r">
-                    {project.professor_email}
+                    {thesis.professor_email}
                   </TableCell>
                   <TableCell className="border-r">
-                    {project.thesis_investigation_subarea}
+                    {thesis.thesis_investigation_subarea}
                   </TableCell>
                   <TableCell className="border-r">
-                    {project.thesis_title}
+                    {thesis.thesis_title}
                   </TableCell>
-                  <TableCell className="border-r">{project.status}</TableCell>
+                  <TableCell className="border-r">{thesis.status}</TableCell>
                   <TableCell className="border-r">
-                    {project.thesis_grade}
+                    {thesis.thesis_grade}
                   </TableCell>
                 </TableRow>
               ))}

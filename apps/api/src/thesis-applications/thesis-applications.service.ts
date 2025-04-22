@@ -44,6 +44,7 @@ export class ThesisApplicationsService {
           user: true,
         },
         thesis: {
+          period: true,
           professor: {
             user: true,
           },
@@ -61,6 +62,7 @@ export class ThesisApplicationsService {
       thesis_title: app.thesis.title,
       status: app.status,
       thesis_grade: app.grade,
+      thesis_period: app.thesis.period,
     }));
   }
 }

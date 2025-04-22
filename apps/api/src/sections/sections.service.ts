@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { Section } from './entities/section.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Professor } from '../professors/entities/professor.entity';
@@ -40,6 +40,61 @@ export class SectionsService {
 
   findOne(id: number) {
     return `This action returns a #${id} section`;
+  }
+
+  async getReport(reportType: 'program' | 'partial' | 'final') {
+    /* Type of report to check */
+    const fieldToCheck =
+      reportType === 'program'
+        ? 'program'
+        : reportType === 'partial'
+          ? 'partialGrades'
+          : 'finalGrades';
+
+    const sections = await this.sectionRepository.find({
+      where: {
+        period: {
+          year: 2025,
+        },
+        course: {
+          [fieldToCheck]: IsNull(),
+        },
+      },
+      relations: {
+        period: true,
+        course: {
+          mainProfessor: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    return sections.map((section) => {
+      const result = {
+        id: section.id,
+        crn: section.NRC,
+        section: section.section,
+        courseCode: section.course.code,
+        courseName: section.course.name,
+        professorName: section.course.mainProfessor.user.name,
+        professorEmail: section.course.mainProfessor.user.email,
+      };
+
+      return result;
+    });
+  }
+
+  async getProgramReport() {
+    return this.getReport('program');
+  }
+
+  async getPartialReport() {
+    return this.getReport('partial');
+  }
+
+  async getFinalReport() {
+    return this.getReport('final');
   }
 
   update(id: number, updateSectionDto: UpdateSectionDto) {

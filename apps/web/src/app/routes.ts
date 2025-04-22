@@ -28,7 +28,7 @@ export const ROUTES: Record<string, string> = {
   SUPPORT_CONTACT: "/soporte/contacto",
 
   /*  Professor  */
-  APPLICANTS: 'aplicantes',
+  APPLICANTS: "aplicantes",
 
   PROFESSOR_UNDERGRADUATE_THESIS_LIST: "/profesor/pregrado/lista",
   PROFESSOR_UNDERGRADUATE_THESIS_NEW: "/profesor/pregrado/nuevo",
@@ -43,7 +43,8 @@ export const ROUTES: Record<string, string> = {
 
   PROFESSOR_ASSISTANCE_LIST: "/profesor/asistencias/lista",
   PROFESSOR_ASSISTANCE_LIST_EDIT: "profesor/asistencias/lista/manejar",
-  PROFESSOR_ASSISTANCE_LIST_EDIT_ID: "profesor/asistencias/lista/manejar/editar",
+  PROFESSOR_ASSISTANCE_LIST_EDIT_ID:
+    "profesor/asistencias/lista/manejar/editar",
   PROFESSOR_NEW_ASSISTANCE: "/profesor/asistencias/nueva",
 
   PROFESSOR_TEACHING_ASSISTANCE_LIST: "/profesor/monitorias/",
@@ -65,9 +66,10 @@ export const ROUTES: Record<string, string> = {
 };
 
 export const API_ROUTES: Record<string, string> = {
-  BASE : "http://localhost:8000/api",
+  BASE: "http://localhost:8000/api",
   PERIODS: "periods",
-  ASSISTANCE_APPLICATIONS: 'assistance-applications',
-  COURSES:'courses',
-  COORDINATOR_BILLBOARD:'billboards',
+  ASSISTANCE_APPLICATIONS: "assistance-applications",
+  COURSES: "courses",
+  COORDINATOR_BILLBOARD: "billboards",
+  SECTIONS_REPORTS: "sections",
 };
