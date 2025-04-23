@@ -86,7 +86,7 @@ function RenderFields({
   return (
     <div className={`flex gap-3 ${className}`}>
       <div className="w-full">
-        <h3 className="font-medium" style={{ color: "var(--core-highlight)" }}>
+        <h3 className="font-medium text-core-highlight">
           {label}
         </h3>
         <p>{value}</p>
@@ -120,7 +120,7 @@ export function ProfileTab({student}: {student:Student}) {
   return (
     <TabsContent value="profile" className="flex justify-center flex-col items-center p-2">
       <Card className="flex justify-center flex-col items-center border-none w-3xl">
-        <CardHeader style={{ color: "var(--core)" }}>
+        <CardHeader className="text-core">
           <CardTitle className="text-2xl">
             Detalle de inscripción a perfil
           </CardTitle>
@@ -134,8 +134,8 @@ export function ProfileTab({student}: {student:Student}) {
           <RenderFields label="Semestre inicio tesis 2" value={student?.thesis2?.semester} />
         </CardContent>
         <CardFooter className="flex justify-center flex-col space-y-3">
-          <CircleAlert style={{ color: "var(--core)" }} />
-          <Label style={{ color: "var(--core)" }}>Estado: {student?.state}</Label>
+          <CircleAlert className="text-core"/>
+          <Label className="text-core">Estado: {student?.state}</Label>
         </CardFooter>
       </Card>
     </TabsContent>
@@ -146,7 +146,7 @@ export function PlanDetailsTab({others, courses}: {others: Course[], courses: Co
   return (
     <TabsContent value="detail" className="flex justify-center flex-col items-center p-2">
       <Card className="w-3xl border-none">
-        <CardHeader className="text-center" style={{ color: "var(--core)" }}>
+        <CardHeader className="text-center text-core">
           <CardTitle className="text-2xl text-center">
             Detalle plan de estudio
           </CardTitle>
@@ -195,7 +195,7 @@ export function PlanDetailsTab({others, courses}: {others: Course[], courses: Co
                     className="flex-grow"
                     value={item.name}
                   />
-                  <Check className="flex-shrink-0" style={{ color: "var(--core-highlight)" }} />
+                  <Check className="flex-shrink-0 text-core-highlight"/>
                 </div>
               ))}
             </div>

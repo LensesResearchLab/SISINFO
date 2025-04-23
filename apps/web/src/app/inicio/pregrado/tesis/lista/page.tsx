@@ -138,8 +138,8 @@ function SelectSemester({
   className?: string;
 }) {
   const setSearchTerm = useThesisListStore((state) => state.setSearchTerm);
-  const handleClick = (category: string) => {
-    setSearchTerm(category);
+  const handleClick = (term: string) => {
+    setSearchTerm(term);
   };
   return (
     <Select onValueChange={handleClick}>

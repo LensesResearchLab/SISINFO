@@ -16,7 +16,7 @@ export async function getBillboard(periodId: string) {
   return response.json();
 }
 
-export async function createBillboard(coursesInformation: Billboard) {
+export async function createBillboard(coursesInformation: Billboard[]) {
   const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.COORDINATOR_BILLBOARD}`, {
     method: "POST",
     headers: {

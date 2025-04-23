@@ -1,29 +1,54 @@
 "use client"
+
 import { useState } from "react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Upload } from "lucide-react"
-import Papa from "papaparse"
-import { ConfirmationModal } from "./confirmation-modal"
-import { ROUTES } from "@/app/routes"
+import Papa, { ParseResult } from "papaparse"
+import { ConfirmationModal, DialogTextProps } from "./confirmation-modal"
 
 interface UploadFilesProps {
   title: string;
-  onFileProcessed: any;
+  handleUploadCsv: (data: Record<string, string | number | boolean | null>[]) => void;
+  dialogText: DialogTextProps;
 }
 
-export function UploadFiles({ title, onFileProcessed }: UploadFilesProps) {
-  const [file, setFile] = useState<File | null>(null)
+export default function UploadFiles({
+  title,
+  handleUploadCsv,
+  dialogText,
+}: UploadFilesProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [file, setFile] = useState<File | null>(null)
 
-  const dialogText = {
-    title: "Publicar cartelera",
-    description: "¿Estás seguro de que deseas publicar esta cartelera?",
-    buttonText: "Publicar cartelera",
-    successTitle: "Cartelera Publicado",
-    successText: "Tu cartelera ha sido publicada exitosamente",
-    url: `${ROUTES.HOME}/${ROUTES.BULLETIN_BOARD}`,
-  };
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsModalOpen(true)
+  }
+
+  const onConfirmUpload = () => {
+    if (file) {
+      Papa.parse<Record<string, string | number | boolean | null>>(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results: ParseResult<Record<string, string | number | boolean | null>>) => {
+          console.log("Parsed CSV data:", results.data)
+          const filteredData = results.data.filter((row) =>
+            Object.values(row).some(
+              (value) => typeof value === "string" && value.trim() !== ""
+            )
+          )
+          handleUploadCsv(filteredData)
+          window.location.reload()
+        },
+        error: (error) => {
+          console.error("Error al parsear el CSV:", error)
+        },
+      })
+    } else {
+      setIsModalOpen(false)
+    }
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -34,38 +59,10 @@ export function UploadFiles({ title, onFileProcessed }: UploadFilesProps) {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsModalOpen(true)
-  }
-
-  const onConfirmUpload = () => {
-    if (file) {
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          console.log("Parsed CSV data:", results.data)
-          const filteredData = results.data.filter((row: any) =>
-            Object.values(row).some(
-              (value) => typeof value === "string" && value.trim() !== ""
-            )
-          )
-          onFileProcessed(filteredData)
-          window.location.reload();
-        },
-        error: (error) => {
-          console.error("Error al parsear el CSV:", error)
-        },
-      });
-    } else {
-      setIsModalOpen(false)
-    }
-  }
   return (
     <Card className="border-none">
       <CardHeader>
-        <CardTitle className="text-[var(--core)]">{title}</CardTitle>
+        <CardTitle className="text-core">{title}</CardTitle>
         <CardDescription>Selecciona un archivo y haz click en subir</CardDescription>
       </CardHeader>
       <CardContent>
@@ -82,7 +79,7 @@ export function UploadFiles({ title, onFileProcessed }: UploadFilesProps) {
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">CSV</p>
               </div>
-              <input id="dropzone-file" type="file" className="hidden" onChange={handleFileChange} />
+              <input id="dropzone-file" type="file" className="hidden" accept=".csv" onChange={handleFileChange} />
             </label>
           </div>
           {file && (

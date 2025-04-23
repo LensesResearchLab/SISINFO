@@ -98,19 +98,19 @@ export default function ProgramsList() {
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={() => setSortDesc(!sortDesc)} className="bg-[var(--core)] text-[var(--card)] hover:bg-[var(--core)]">
+            <Button onClick={() => setSortDesc(!sortDesc)} className="bg-core text-card hover:bg-core">
               {sortDesc ? "Z - A" : "A - Z"}
             </Button>
           </div>
           <div className="rounded-md border overflow-hidden">
             <Table>
-              <TableHeader className="bg-[var(--core)]">
+              <TableHeader className="bg-core">
                 <TableRow>
-                  <TableHead className="text-[var(--card)] py-2 px-3">Clase</TableHead>
-                  <TableHead className="text-[var(--card)] py-2 px-3">Código</TableHead>
-                  <TableHead className="text-[var(--card)] py-2 px-3">Estado</TableHead>
-                  <TableHead className="text-[var(--card)] py-2 px-3">Profesor</TableHead>
-                  <TableHead className="text-[var(--card)] py-2 px-3">Acciones</TableHead>
+                  <TableHead className="text-card py-2 px-3">Clase</TableHead>
+                  <TableHead className="text-card py-2 px-3">Código</TableHead>
+                  <TableHead className="text-card py-2 px-3">Estado</TableHead>
+                  <TableHead className="text-card py-2 px-3">Profesor</TableHead>
+                  <TableHead className="text-card py-2 px-3">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

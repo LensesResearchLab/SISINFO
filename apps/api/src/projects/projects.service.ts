@@ -40,8 +40,27 @@ export class ProjectsService {
     return project;
   }
 
-  async findAll() {
+  async findAll(period?: string) {
+    let whereCondition = {};
+
+    if (period) {
+      if (!/^\d{6}$/.test(period)) {
+        throw new Error(
+          'El parámetro semestre debe tener el formato YYYYSS (por ejemplo, 202510)',
+        );
+      }
+      const year = period.slice(0, 4);
+      const periodPart = period.slice(4, 6);
+      whereCondition = {
+        period: {
+          year,
+          period: periodPart,
+        },
+      };
+    }
+
     return this.projectRepository.find({
+      where: whereCondition,
       relations: {
         professor: true,
         areasOfInterest: true,

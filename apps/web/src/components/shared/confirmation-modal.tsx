@@ -8,7 +8,6 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
   import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
   import { Button } from '@/components/ui/button'
@@ -16,7 +15,7 @@ import {
   import React, { useState } from "react"
   import { useRouter } from 'next/navigation'
   
-  interface DialogTextProps {
+  export interface DialogTextProps {
     title: string
     description: string
     buttonText: string

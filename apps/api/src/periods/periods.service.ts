@@ -10,25 +10,30 @@ import { Not, In } from 'typeorm';
 export class PeriodsService {
   constructor(
     @InjectRepository(Period) private periodRepository: Repository<Period>,
-  ) { }
+  ) {}
   async create(createPeriodDto: CreatePeriodDto) {
     const existingPeriod = await this.periodRepository.findOne({
       where: { period: createPeriodDto.period, year: createPeriodDto.year },
     });
     if (existingPeriod) {
-      throw new Error(`Period ${createPeriodDto.period} for year ${createPeriodDto.year} already exists`);
+      throw new Error(
+        `Period ${createPeriodDto.period} for year ${createPeriodDto.year} already exists`,
+      );
     }
     const period = this.periodRepository.create(createPeriodDto);
     await this.periodRepository.save(period);
     return period;
   }
 
-
   async findAll(): Promise<Period[]> {
     return await this.periodRepository.find({
       where: {
-        period: Not(In(["11", "12"]))
-      }
+        period: Not(In(['11', '12'])),
+      },
+      order: {
+        year: 'ASC',
+        period: 'ASC',
+      },
     });
   }
 

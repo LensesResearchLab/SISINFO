@@ -1,7 +1,7 @@
 import { Period } from "./period.type"
 import { Student } from "./student.type"
 export interface Billboard {
-    id:string;
+    id?: string;
     NRC: string;
     code: string;
     name: string;
