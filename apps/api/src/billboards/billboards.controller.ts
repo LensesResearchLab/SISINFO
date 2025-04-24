@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { BillboardsService } from './billboards.service';
 import { UpdateBillboardDto } from './dto/update-billboard.dto';
-import { CreateSectionDto } from 'src/sections/dto/create-section.dto';
+import { CreateSectionDto } from '../sections/dto/create-section.dto';
 
 @Controller('billboards')
 export class BillboardsController {

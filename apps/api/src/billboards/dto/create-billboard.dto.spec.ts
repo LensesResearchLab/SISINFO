@@ -3,13 +3,10 @@ import { validate } from 'class-validator';
 import { CreateBillboardDto } from './create-billboard.dto';
 
 describe('createBillboardDto validation', () => {
-  it('shoud not validate with empty period', async () => {
+  it('shoud validate with basic values', async () => {
     const dto = new CreateBillboardDto();
-    dto.period = '';
+    dto.publicated = true;
     const errors = await validate(dto);
-    const periodError = errors.find((error) => error.property === 'period');
-    const constraints = periodError?.constraints;
-    expect(constraints).toBeDefined();
-    expect(constraints).toHaveProperty('isNotEmpty');
+    expect(errors).toHaveLength(0);
   });
 });

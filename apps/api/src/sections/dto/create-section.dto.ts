@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateSectionDto {
   @IsString()
@@ -21,8 +22,8 @@ export class CreateSectionDto {
   @IsNotEmpty()
   departament: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsInt()
+  @Type(() => Number)
   credits: number;
 
   @IsString()

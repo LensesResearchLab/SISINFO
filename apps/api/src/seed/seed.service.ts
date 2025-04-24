@@ -4,7 +4,6 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 
 import { BillboardsService } from '../billboards/billboards.service';
-import { CreateBillboardDto } from '../billboards/dto/create-billboard.dto';
 import { PeriodsService } from '../periods/periods.service';
 import { CreatePeriodDto } from '../periods/dto/create-period.dto';
 import { TeachingAssistancesService } from '../teaching-assistances/teaching-assistances.service';
@@ -109,7 +108,12 @@ export class SeedService {
 
     for (const section of sampleSection) {
       sections.push(
-        await this.sectionsService.create(section, [], professors, period),
+        await this.sectionsService.createSimple(
+          section,
+          [],
+          professors,
+          period,
+        ),
       );
     }
     for (let i = 0; i < sampleCourse.length; i++) {
