@@ -7,6 +7,7 @@ import { Billboard, Course } from "@/app/types/billboard.type";
 import { createBillboard, getBillboard } from "@/app/services/billboard.service";
 import { ROUTES } from "@/app/routes";
 import { UploadFilePage } from "@/components/shared/upload-files-page";
+import { AlertDialogError } from "@/components/shared/alert-dialog-error";
 
 
 export default function UploadBillboard() {
@@ -20,9 +21,9 @@ export default function UploadBillboard() {
     "period",
     "professors",
   ];
-  const [selectedPeriod, setSelectedPeriod] = useState<string | undefined>();
   const [csvData, setCsvData] = useState<Billboard[]>([]);
   const [coursesData, setCoursesData] = useState<Course[]>([]);
+  const [loadError, setLoadError] = useState(false);
 
 
   const dialogText = {
@@ -33,6 +34,7 @@ export default function UploadBillboard() {
     successText: "Tu cartelera ha sido publicada exitosamente",
     url: `${ROUTES.HOME}/${ROUTES.BULLETIN_BOARD}`,
   };
+  
 
   const convertToCSV = (headers: (keyof Billboard)[], data: Billboard[]) => {
     const csv = [headers.join(",")];
@@ -62,13 +64,18 @@ export default function UploadBillboard() {
   };
 
   const handlePeriodChange = (value: string) => {
-    setSelectedPeriod(value);
     getBillboard(value).then((data) => {
       setCoursesData(data.courses);
-    });
+      setLoadError(false);
+    }).catch(()=>{
+      setCoursesData([]);
+      setLoadError(true);
+      
+    })
   };
 
   return (
+    <>
   <UploadFilePage
     title="Cargar cartelera"
     handlePeriodChange={handlePeriodChange}
@@ -79,13 +86,18 @@ export default function UploadBillboard() {
     }}
     dialogText={dialogText}
   >
-    <UploadedBillboard classesData={coursesData} />
+    <UploadedBillboard classesData={coursesData} loadError={loadError} />
   </UploadFilePage>
+  <AlertDialogError
+        open={loadError}
+        onOpenChange={setLoadError}/>
+  </>
+  
   );
 }
 
 
-function UploadedBillboard({ classesData }: { classesData: Course[] }) {
+function UploadedBillboard({ classesData, loadError }: { classesData: Course[], loadError: boolean }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortDesc, setSortDesc] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);

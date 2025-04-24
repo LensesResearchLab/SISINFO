@@ -26,14 +26,14 @@ export class BillboardsService {
     private professorService: ProfessorsService,
   ) {}
 
-  async create(createBillboardDto: CreateBillboardDto[]) {
+  async create(sectionsDto: CreateSectionDto[]) {
     const billboardCoursesMap = new Map<string, Course>();
     const billboardSectionsMap = new Map<string, Section>();
 
-    for (const info of createBillboardDto) {
-      const year = Number(info.period.slice(0, 4));
-      const semester = info.period.slice(4, 5);
-      const periodStr = info.period.slice(4, 6);
+    for (const section of sectionsDto) {
+      const year = Number(section.period.slice(0, 4));
+      const semester = section.period.slice(4, 5);
+      const periodStr = section.period.slice(4, 6);
 
       let periodFound = await this.periodsService.findOneByPeriodAndYear(
         periodStr,
@@ -51,16 +51,16 @@ export class BillboardsService {
       }
 
       let existingCourse = await this.courseService.findByCodeAndPeriod(
-        info.code,
+        section.code,
         periodFound,
       );
       const existingSection = await this.sectionService.findByNRCAndPeriod(
-        info.NRC,
+        section.NRC,
         periodFound,
       );
 
-      if (info.professors != null && info.professors !== '') {
-        const professorsArr = info.professors.split('|');
+      if (section.professors != null && section.professors !== '') {
+        const professorsArr = section.professors.split('|');
         const supportProfessors: Professor[] = [];
         const findedProfessors: Professor[] = [];
 
@@ -104,8 +104,8 @@ export class BillboardsService {
           billboardSectionsMap.set(sectionToUse.NRC, sectionToUse);
         } else {
           const newSectionDto = new CreateSectionDto();
-          newSectionDto.NRC = info.NRC;
-          newSectionDto.section = info.section;
+          newSectionDto.NRC = section.NRC;
+          newSectionDto.section = section.section;
           if (findedProfessors.length === 0 && supportProfessors.length === 0) {
             throw new Error('No professors found for the section');
           }
@@ -131,22 +131,22 @@ export class BillboardsService {
           billboardCoursesMap.set(existingCourse.code, existingCourse);
         } else {
           const courseDto = new CreateCourseDto();
-          courseDto.code = info.code;
-          courseDto.credits = +info.credits;
-          courseDto.departament = info.departament;
-          courseDto.name = info.name;
+          courseDto.code = section.code;
+          courseDto.credits = +section.credits;
+          courseDto.departament = section.departament;
+          courseDto.name = section.name;
           existingCourse = await this.courseService.create(
             courseDto,
             sectionToUse,
           );
-          billboardCoursesMap.set(info.code, existingCourse);
+          billboardCoursesMap.set(section.code, existingCourse);
         }
       }
     }
 
-    const firstInfo = createBillboardDto[0];
-    const billboardYear = Number(firstInfo.period.slice(0, 4));
-    const firstPeriodStr = firstInfo.period.slice(4, 6);
+    const firstsection = sectionsDto[0];
+    const billboardYear = Number(firstsection.period.slice(0, 4));
+    const firstPeriodStr = firstsection.period.slice(4, 6);
 
     let periodForBillboard = await this.periodsService.findOneByPeriodAndYear(
       firstPeriodStr,
@@ -156,7 +156,7 @@ export class BillboardsService {
       periodForBillboard = await this.periodsService.create({
         period: firstPeriodStr,
         year: billboardYear,
-        semester: firstInfo.period.slice(4, 5) === '1' ? 1 : 2,
+        semester: firstsection.period.slice(4, 5) === '1' ? 1 : 2,
       });
     }
 
@@ -169,7 +169,7 @@ export class BillboardsService {
       billboard.period.year + billboard.period.period,
     );
     if (billboardExisting) {
-      billboardExisting.courses = billboard.courses;
+      billboardExisting.courses = billboardExisting.courses.concat(billboard.courses);
       billboardExisting.period = billboard.period;
       billboardExisting.publicated = true;
       await this.billboardRepository.save(billboardExisting);
