@@ -257,6 +257,8 @@ function TeachingAssistantTable({ teachingAssistantList }: { teachingAssistantLi
     if (gradingId) {
       submitTeachingAssistantGrade(gradingId, grade, description);
       setGradingId(null);
+      setGrade('');
+      setDescription('');
     }
   };
 
