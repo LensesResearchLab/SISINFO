@@ -37,6 +37,18 @@ export class TeachingAssistancesController {
     return this.teachingAssistancesService.findOne(+id);
   }
 
+  @Patch(':id/grade')
+  updateGrade(
+    @Param('id') id: string,
+    @Body() body: UpdateTeachingAssistanceDto,
+  ) {
+    return this.teachingAssistancesService.updateGrade(
+      id,
+      body.grade,
+      body.gradeDescription,
+    );
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

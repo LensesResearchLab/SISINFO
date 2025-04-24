@@ -39,3 +39,26 @@ export async function getTeachingAssistants(period: string) {
     return response.json();
   }
   
+export async function submitTeachingAssistantGrade(id: string, grade: string, gradeDescription: string) {
+  const url = `${API}/${id}/grade`;
+  const data: { grade?: string; gradeDescription?: string } = {};
+  if (grade) {
+    data.grade = grade;
+  }
+  if (gradeDescription) {
+    data.gradeDescription = gradeDescription;
+  }
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(`Error al calificar el monitor: ${response.statusText}`, { cause: errorData });
+  }
+  return response.json();
+}
+

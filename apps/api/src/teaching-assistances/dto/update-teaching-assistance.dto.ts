@@ -1,26 +1,11 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateTeachingAssistanceDto } from './create-teaching-assistance.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsUUID,
-  IsOptional,
-  IsNumber,
-  Min,
-  Max,
-  IsString,
-} from 'class-validator';
-import { UUID } from 'crypto';
+import { IsOptional, IsNumber, Min, Max, IsString } from 'class-validator';
 
 export class UpdateTeachingAssistanceDto extends PartialType(
   CreateTeachingAssistanceDto,
 ) {
-  @ApiProperty({
-    example: 'a81bc81b-dead-4e5d-abff-90865d1e13b1',
-    description: 'Teaching Assitantship ID in UUID format',
-  })
-  @IsUUID('4', { message: 'id debe ser un UUID válido versión 4' })
-  id: UUID;
-
   @ApiProperty({
     example: 4.5,
     required: false,

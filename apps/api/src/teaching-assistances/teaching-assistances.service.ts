@@ -77,6 +77,26 @@ export class TeachingAssistancesService {
     return await this.teachingAssistanceRepository.save(newAssistances);
   }
 
+  async updateGrade(id: string, grade?: number, gradeDescription?: string) {
+    const assistance = await this.teachingAssistanceRepository.findOne({
+      where: { id },
+    });
+
+    if (!assistance) {
+      throw new NotFoundException(`Monitor con id ${id} no encontrado`);
+    }
+
+    if (grade !== undefined) {
+      assistance.grade = grade;
+    }
+
+    if (gradeDescription !== undefined) {
+      assistance.gradeDescription = gradeDescription;
+    }
+
+    return this.teachingAssistanceRepository.save(assistance);
+  }
+
   async findAll(periodStr: string) {
     const period =
       await this.periodsService.findOneByPeriodAndYearString(periodStr);

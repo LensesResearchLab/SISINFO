@@ -46,7 +46,7 @@ export const ROUTES: Record<string, string> = {
   PROFESSOR_ASSISTANCE_LIST_EDIT_ID: "profesor/asistencias/lista/manejar/editar",
   PROFESSOR_NEW_ASSISTANCE: "/profesor/asistencias/nueva",
 
-  PROFESSOR_TEACHING_ASSISTANCE_LIST: "/profesor/monitorias/",
+  PROFESSOR_TEACHING_ASSISTANCE_LIST: "/profesor/monitores/",
 
   /*  Coordinators  */
 
@@ -71,5 +71,7 @@ export const API_ROUTES: Record<string, string> = {
   COURSES:'courses',
   COORDINATOR_BILLBOARD:'billboards',
 
-  TEACHING_ASSISTANTS: 'teaching-assistances'
+  TEACHING_ASSISTANTS: 'teaching-assistances',
+  PROFESSORS: 'professors',
+
 };

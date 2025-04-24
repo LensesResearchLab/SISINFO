@@ -8,7 +8,7 @@ export function mapTeachingAssistantshipsToCoordinatorTable(
   return teachingAssistantships.map(mapTeachingAssistantShipToRow)
 }
 
-export function mapCswRowTooCreateTeachingAssistance(rows: CsvTASRow[]){
+export function mapCswRowTwoCreateTeachingAssistance(rows: CsvTASRow[]){
   return rows.map(csvRowToCreateTeachingAssistance);
 }
 
@@ -33,3 +33,4 @@ export function mapTeachingAssistantShipToRow(teachingAssistantship: TeachingAss
     section: teachingAssistantship.section.section
   }
 }
+

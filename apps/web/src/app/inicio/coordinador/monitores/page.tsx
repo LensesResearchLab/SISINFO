@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { getTeachingAssistants, uploadTeachingAssistantsFile } from '@/app/services/teaching-assistantship.service';
 import { TeachingAssistantship } from '@/app/types/teachingAssistantship.type';
 import { DataTable } from '@/components/data-table';
-import { mapCswRowTooCreateTeachingAssistance, mapTeachingAssistantshipsToCoordinatorTable } from '@/app/mappers/teaching-assistantships-mapper';
+import { mapCswRowTwoCreateTeachingAssistance, mapTeachingAssistantshipsToCoordinatorTable } from '@/app/mappers/teaching-assistantships-mapper';
 import { columns } from './TableColumns';
 import { CsvTASRow } from '@/app/types/Csv-TAS-row';
 
@@ -42,7 +42,7 @@ export default function UploadTeachingAssistants() {
     handlePeriodChange={handlePeriodChange}
     handleDownload={handleDownload}
     handleUploadCsv={(data) => {
-      const teachingAssistantsData = mapCswRowTooCreateTeachingAssistance(data  as unknown as CsvTASRow[]);
+      const teachingAssistantsData = mapCswRowTwoCreateTeachingAssistance(data  as unknown as CsvTASRow[]);
       handleUploadCsv(teachingAssistantsData);
     }}
     dialogText={dialogText}

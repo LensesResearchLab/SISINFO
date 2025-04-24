@@ -2,15 +2,15 @@ import { CreateSimpleSectionDto } from '../../sections/dto/create-simple-section
 
 export const sampleSection: CreateSimpleSectionDto[] = [
   {
-    NRC: '111',
+    NRC: '1',
     section: '1',
   },
   {
-    NRC: '111',
+    NRC: '2',
     section: '1',
   },
   {
-    NRC: '111',
+    NRC: '3',
     section: '1',
   },
 ];
