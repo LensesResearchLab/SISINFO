@@ -38,6 +38,7 @@ export interface ThesisReport {
   status: string;
   thesis_grade: string;
   thesis_period: {
+    year: string;
     period: string;
   };
 }

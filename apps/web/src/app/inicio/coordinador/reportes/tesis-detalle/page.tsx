@@ -21,6 +21,29 @@ function ThesisDetailedCards() {
   const [isLoading, setIsLoading] = useState(true);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 
+  // For search filters
+  const [nameFilter, setNameFilter] = useState('');
+  const [semesterFilter, setSemesterFilter] = useState('');
+  const [subareaFilter, setSubareaFilter] = useState('');
+
+  // For pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4; 
+
+  // Filter cards based on search
+  const filteredData = data.filter(thesis => {
+    const nameMatch = thesis.student_name.toLowerCase().includes(nameFilter.toLowerCase());
+    const semesterMatch = !semesterFilter || `${thesis.thesis_period.year}-${thesis.thesis_period.period}` === semesterFilter;
+    const subareaMatch = !subareaFilter || thesis.thesis_investigation_subarea.toLowerCase().includes(subareaFilter.toLowerCase());
+    
+    return nameMatch && semesterMatch && subareaMatch;
+  });
+
+  // Pages
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -119,7 +142,7 @@ function ThesisDetailedCards() {
   };
 
   return (
-    <div className="min-h-full min-w-full p-10">
+    <div className="min-h-full min-w-full px-10 py-0">
       <div className="bg-card rounded-lg shadow-lg p-6">
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -138,12 +161,58 @@ function ThesisDetailedCards() {
             Descargar PDF
           </Button>
         </div>
+  
+        {/* Search and filter section */}
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label htmlFor="nameSearch" className="block text-sm font-medium text-gray-700 mb-1">
+              Buscar por nombre
+            </label>
+            <input
+              type="text"
+              id="nameSearch"
+              placeholder="Nombre del estudiante"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-core-highlight"
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="subareaFilter" className="block text-sm font-medium text-gray-700 mb-1">
+              Buscar por subárea
+            </label>
+            <input
+              type="text"
+              id="subareaFilter"
+              placeholder="Nombre de la subárea"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-core-highlight"
+              value={subareaFilter}
+              onChange={(e) => setSubareaFilter(e.target.value)}/>
+          </div>  
+          <div>
+            <label htmlFor="semesterFilter" className="block text-sm font-medium text-gray-700 mb-1">
+              Filtrar por semestre
+            </label>
+            <select
+              id="semesterFilter"
+              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-core-highlight"
+              value={semesterFilter}
+              onChange={(e) => setSemesterFilter(e.target.value)}
+            >
+              <option value="">Todos los semestres</option>
+              {[...new Set(data.map(thesis => `${thesis.thesis_period.year}-${thesis.thesis_period.period}`))].map(semester => (
+                <option key={semester} value={semester}>{semester}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
 
         <div
           ref={cardsContainerRef}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8"
         >
-          {data.map((thesis) => (
+          {filteredData.slice(startIndex, endIndex).map((thesis) => (
             <div
               key={thesis.student_code}
               className="thesis-card bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
@@ -158,7 +227,7 @@ function ThesisDetailedCards() {
                   </p>
                 </div>
               </div>
-
+  
               <div className="p-5 grid grid-cols-1 gap-4">
                 <div className="border-b pb-4">
                   <div className="flex justify-between mb-3">
@@ -176,7 +245,7 @@ function ThesisDetailedCards() {
                     </div>
                     <div>
                       <p className="text-gray-500 text-sm">Correo:</p>
-                      <p className="font-medium">{thesis.student_email}</p>
+                      <p className="font-medium break-words">{thesis.student_email}</p>
                     </div>
                     <div className="col-span-2">
                       <p className="text-gray-500 text-sm">
@@ -186,7 +255,7 @@ function ThesisDetailedCards() {
                     </div>
                   </div>
                 </div>
-
+  
                 <div className="border-b pb-4">
                   <h4 className="font-semibold text-core text-lg mb-3">
                     Asesor
@@ -196,15 +265,15 @@ function ThesisDetailedCards() {
                       <p className="text-gray-500 text-sm">
                         Nombres y Apellidos:
                       </p>
-                      <p className="font-medium">{thesis.professor_name}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 text-sm">Correo:</p>
-                      <p className="font-medium">{thesis.professor_email}</p>
+                      <p className="font-medium">
+                        <a href={`mailto:${thesis.professor_email}`} className="text-core-highlight hover:underline">
+                          {thesis.professor_name}
+                        </a>
+                      </p>
                     </div>
                   </div>
                 </div>
-
+  
                 <div>
                   <h4 className="font-semibold text-core text-lg mb-3">
                     Información Académica
@@ -212,16 +281,10 @@ function ThesisDetailedCards() {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <p className="text-gray-500 text-sm">
-                        Subárea de Investigación:
+                        Semestre de inicio del proyecto:
                       </p>
                       <p className="font-medium">
-                        {thesis.thesis_investigation_subarea}
-                      </p>
-                      <p className="text-gray-500 text-sm">
-                        Semestre de iniciación del proyecto:
-                      </p>
-                      <p className="font-medium">
-                        {thesis.thesis_period.period}
+                      {thesis.thesis_period.year}-{thesis.thesis_period.period}
                       </p>
                     </div>
                     <div>
@@ -231,10 +294,53 @@ function ThesisDetailedCards() {
                       </p>
                     </div>
                   </div>
+                  <div className="grid grid-cols-1">
+                  <p className="text-gray-500 text-sm">
+                        Subárea de Investigación:
+                      </p>
+                      <p className="font-medium break-all">
+                        {thesis.thesis_investigation_subarea}
+                      </p>
+                    </div>
                 </div>
               </div>
             </div>
           ))}
+        </div>
+  
+        {/* Paginacion */}
+        <div className="mt-8 flex justify-center">
+          <div className="flex space-x-2">
+            <Button 
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 disabled:opacity-50"
+            >
+              Anterior
+            </Button>
+            
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <Button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`${
+                  currentPage === page 
+                    ? 'bg-core-highlight text-white' 
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                }`}
+              >
+                {page}
+              </Button>
+            ))}
+            
+            <Button 
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 disabled:opacity-50"
+            >
+              Siguiente
+            </Button>
+          </div>
         </div>
       </div>
     </div>
