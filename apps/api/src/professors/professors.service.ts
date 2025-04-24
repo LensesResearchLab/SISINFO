@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProfessorDto } from './dto/create-professor.dto';
 import { UpdateProfessorDto } from './dto/update-professor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,12 +6,14 @@ import { Professor } from './entities/professor.entity';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { RoleService } from '../common/interfaces/role.service';
+import { PeriodsService } from '../periods/periods.service';
 
 @Injectable()
 export class ProfessorsService implements RoleService {
   constructor(
     @InjectRepository(Professor)
     private professorRepository: Repository<Professor>,
+    private periodsService: PeriodsService,
   ) {}
   async create(createProfessorDto: CreateProfessorDto) {
     const professor = this.professorRepository.create(createProfessorDto);
@@ -21,6 +23,40 @@ export class ProfessorsService implements RoleService {
 
   async findAll(): Promise<Professor[]> {
     return this.professorRepository.find();
+  }
+
+  async findWithTasByPeriod(periodStr: string, document: string) {
+    const period =
+      await this.periodsService.findOneByPeriodAndYearString(periodStr);
+    if (!period) {
+      throw new NotFoundException(
+        `No se encontró el periodo con el identificador: ${periodStr}`,
+      );
+    }
+
+    const professor = await this.professorRepository.findOne({
+      where: { document },
+      relations: [
+        'sections',
+        'sections.course',
+        'sections.period',
+        'sections.teachingAssistances',
+        'sections.teachingAssistances.student',
+        'sections.teachingAssistances.student.user',
+      ],
+    });
+
+    if (!professor) {
+      throw new NotFoundException(
+        `No se encontró el profesor con documento: ${document}`,
+      );
+    }
+
+    const filteredSections = professor.sections.filter(
+      (section) => section.period.id === period.id,
+    );
+
+    return filteredSections;
   }
 
   findOne(document: string) {
@@ -34,7 +70,6 @@ export class ProfessorsService implements RoleService {
       .where('LOWER(user.name) = LOWER(:name)', { name })
       .getOne();
   }
-  
 
   async update(document: string, updateProfessorDto: UpdateProfessorDto) {
     const professor = await this.professorRepository.findOneBy({

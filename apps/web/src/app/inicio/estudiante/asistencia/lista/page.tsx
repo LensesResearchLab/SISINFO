@@ -217,11 +217,9 @@ export default function AssistanceList({
     fetchData();
   }, []);
 
-  // Auxiliary function to get semester (e.g. 2025-1) from startDate of assistance
   const getSemester = (dateInput: string): string => {
-    let date: Date;
     const [year, month, day] = dateInput.split("-").map(Number);
-    date = new Date(year, month - 1, day);
+   const date = new Date(year, month - 1, day);
     const cutoffDate = new Date(date.getFullYear(), 5, 30); // June = 5, day = 30
     return date < cutoffDate
       ? `${date.getFullYear()}-01`
@@ -295,13 +293,13 @@ export default function AssistanceList({
 
         <div className="rounded-md border overflow-hidden">
           <Table>
-            <TableHeader className="bg-[var(--core)]">
+            <TableHeader className="bg-core">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="text-[var(--card)] font-bold py-3"
+                      className="text-card font-bold py-3"
                     >
                       {flexRender(
                         header.column.columnDef.header,

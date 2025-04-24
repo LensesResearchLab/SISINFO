@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,25 +10,30 @@ import { Not, In } from 'typeorm';
 export class PeriodsService {
   constructor(
     @InjectRepository(Period) private periodRepository: Repository<Period>,
-  ) { }
+  ) {}
   async create(createPeriodDto: CreatePeriodDto) {
     const existingPeriod = await this.periodRepository.findOne({
       where: { period: createPeriodDto.period, year: createPeriodDto.year },
     });
     if (existingPeriod) {
-      throw new Error(`Period ${createPeriodDto.period} for year ${createPeriodDto.year} already exists`);
+      throw new Error(
+        `Period ${createPeriodDto.period} for year ${createPeriodDto.year} already exists`,
+      );
     }
     const period = this.periodRepository.create(createPeriodDto);
     await this.periodRepository.save(period);
     return period;
   }
 
-
   async findAll(): Promise<Period[]> {
     return await this.periodRepository.find({
       where: {
-        period: Not(In(["11", "12"]))
-      }
+        period: Not(In(['11', '12'])),
+      },
+      order: {
+        year: 'ASC',
+        period: 'ASC',
+      },
     });
   }
 
@@ -50,6 +55,15 @@ export class PeriodsService {
 
   async findOneByPeriodAndYear(period: string, year: number) {
     return await this.periodRepository.findOne({ where: { period, year } });
+  }
+
+  async findOneByPeriodAndYearString(periodStr: string) {
+    if (!/^\d{6}$/.test(periodStr)) {
+      throw new BadRequestException('El formato del periodo es inválido');
+    }
+    const year = Number(periodStr.slice(0, 4));
+    const period = periodStr.slice(4);
+    return await this.findOneByPeriodAndYear(period, year);
   }
 
   update(id: number, updatePeriodDto: UpdatePeriodDto) {

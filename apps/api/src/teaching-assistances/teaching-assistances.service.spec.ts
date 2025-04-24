@@ -3,13 +3,37 @@ import { TeachingAssistancesService } from './teaching-assistances.service';
 import { TeachingAssistance } from './entities/teaching-assistance.entity';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { PeriodsService } from '../periods/periods.service';
+import { SectionsService } from '../sections/sections.service';
+import { StudentsService } from '../students/students.service';
 
 describe('TeachingAssistancesService', () => {
-  let service: TeachingAssistancesService;
+  let teachingAssistantshipsservice: TeachingAssistancesService;
   let TeachingAssistanceRepository: Repository<TeachingAssistance>;
+  let periodsService: PeriodsService;
+  let sectionsService: SectionsService;
+  let studentsService: StudentsService;
 
   beforeEach(async () => {
     const mockRepository = {
+      find: jest.fn(),
+      findOne: jest.fn(),
+      save: jest.fn(),
+      delete: jest.fn(),
+    };
+    const mockPeriodsService = {
+      find: jest.fn(),
+      findOne: jest.fn(),
+      save: jest.fn(),
+      delete: jest.fn(),
+    };
+    const mockStudentsService = {
+      find: jest.fn(),
+      findOne: jest.fn(),
+      save: jest.fn(),
+      delete: jest.fn(),
+    };
+    const mockSectionsService = {
       find: jest.fn(),
       findOne: jest.fn(),
       save: jest.fn(),
@@ -22,10 +46,22 @@ describe('TeachingAssistancesService', () => {
           provide: getRepositoryToken(TeachingAssistance),
           useValue: mockRepository,
         },
+        {
+          provide: PeriodsService,
+          useValue: mockPeriodsService,
+        },
+        {
+          provide: StudentsService,
+          useValue: mockStudentsService,
+        },
+        {
+          provide: SectionsService,
+          useValue: mockSectionsService,
+        },
       ],
     }).compile();
 
-    service = module.get<TeachingAssistancesService>(
+    teachingAssistantshipsservice = module.get<TeachingAssistancesService>(
       TeachingAssistancesService,
     );
     TeachingAssistanceRepository = module.get<Repository<TeachingAssistance>>(
@@ -34,6 +70,6 @@ describe('TeachingAssistancesService', () => {
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(teachingAssistantshipsservice).toBeDefined();
   });
 });

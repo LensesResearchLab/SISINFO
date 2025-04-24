@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProfessorsService } from './professors.service';
 import { CreateProfessorDto } from './dto/create-professor.dto';
@@ -28,6 +29,14 @@ export class ProfessorsController {
   @Get(':document')
   findOne(@Param('document') document: string) {
     return this.professorsService.findOne(document);
+  }
+
+  @Get(':document/teaching-assistances')
+  findOneTAS(
+    @Param('document') document: string,
+    @Query('period') period: string,
+  ) {
+    return this.professorsService.findWithTasByPeriod(period, document);
   }
 
   @Patch(':document')

@@ -8,16 +8,16 @@ import {
   Delete,
 } from '@nestjs/common';
 import { BillboardsService } from './billboards.service';
-import { CreateBillboardDto } from './dto/create-billboard.dto';
 import { UpdateBillboardDto } from './dto/update-billboard.dto';
+import { CreateSectionDto } from '../sections/dto/create-section.dto';
 
 @Controller('billboards')
 export class BillboardsController {
   constructor(private readonly billboardsService: BillboardsService) {}
 
   @Post()
-  create(@Body() createBillboardDto: CreateBillboardDto[]) {
-    return this.billboardsService.create(createBillboardDto);
+  create(@Body() sectionsDto: CreateSectionDto[]) {
+    return this.billboardsService.create(sectionsDto);
   }
 
   @Get()

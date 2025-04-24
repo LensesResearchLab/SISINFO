@@ -29,6 +29,12 @@ export class StudentsService implements RoleService {
     });
   }
 
+  async findOneByCode(code: string) {
+    return this.studentRepository.findOne({
+      where: { code },
+    });
+  }
+
   async update(document: string, updateStudentDto: UpdateStudentDto) {
     const student = await this.studentRepository.findOneBy({ document });
     if (!student) return null;

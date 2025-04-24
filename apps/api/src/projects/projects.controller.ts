@@ -30,8 +30,8 @@ export class ProjectController {
   }
 
   @Get()
-  findAll() {
-    return this.projectsService.findAll();
+  findAll(@Query('period') periodId?: string) {
+    return this.projectsService.findAll(periodId);
   }
 
   @Get('professor/:document')

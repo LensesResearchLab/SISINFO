@@ -12,7 +12,7 @@ interface TeachingAssistantListState {
 
 export const useTeachingAssistantListStore = create<TeachingAssistantListState>((set) => ({
   searchCategory: "professor",
-  searchTerm: "",
+  searchTerm: "202510",
   sortDirection: 1,
   order: [],
 

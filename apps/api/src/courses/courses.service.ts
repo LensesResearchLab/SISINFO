@@ -7,8 +7,8 @@ import { Course } from './entities/course.entity';
 import { Section } from '../sections/entities/section.entity';
 import { Period } from '../periods/entities/period.entity';
 import { PeriodsService } from '../periods/periods.service';
-import { Professor } from 'src/professors/entities/professor.entity';
-import { Document } from 'src/documents/entities/document.entity';
+import { Professor } from '../professors/entities/professor.entity';
+import { Document } from '../documents/entities/document.entity';
 
 @Injectable()
 export class CoursesService {
@@ -37,7 +37,10 @@ export class CoursesService {
   }
 
   findOne(id: string) {
-    return this.courseRepository.findOne({where:{id}, relations:["mainProfessor", "program"]});
+    return this.courseRepository.findOne({
+      where: { id },
+      relations: ['mainProfessor', 'program'],
+    });
   }
 
   async findByCodeAndPeriod(

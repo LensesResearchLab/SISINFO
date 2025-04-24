@@ -19,17 +19,16 @@ export async function getBillboard(periodId: string) {
   return response.json();
 }
 
-export async function createBillboard(coursesInformation: Billboard) {
-  const response = await fetch(
-    `${API_ROUTES.BASE}/${API_ROUTES.COORDINATOR_BILLBOARD}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(coursesInformation),
-    }
-  );
+
+export async function createBillboard(coursesInformation: Billboard[]) {
+  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.COORDINATOR_BILLBOARD}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(coursesInformation),
+  });
+
 
   if (!response.ok) {
     throw new Error("Failed to create billboard.");

@@ -9,6 +9,7 @@ import { TeachingAssistance } from '../../teaching-assistances/entities/teaching
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -30,6 +31,7 @@ export class Student extends Role {
   @Column('boolean')
   isUndergraduate: boolean;
 
+  @Index()
   @Column('text')
   code: string;
 

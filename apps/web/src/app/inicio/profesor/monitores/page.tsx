@@ -6,7 +6,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { User } from "lucide-react";
 
 import {
   Table,
@@ -16,13 +15,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search } from "lucide-react";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import {
-  getUndergraduateThesis,
-} from "@/app/services/thesis.service";
-import { Thesis } from "@/app/types/thesis.type";
+import { useEffect, useState } from "react";
+import { User } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { submitTeachingAssistantGrade } from "@/app/services/teaching-assistantship.service";
 
 import {
   Select,
@@ -38,9 +36,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useTeachingAssistantListStore } from "./store";
 import { cn } from "@/lib/utils";
-import { ROUTES } from "@/app/routes";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
 import { getPeriods } from "@/app/services/period.service";
+import { getTeachingAssistants } from "@/app/services/professor.service";
+import { mapSectionsToProfessorTable } from "@/app/mappers/section.mapper";
+import { ProfessorTA, TeachingAssistantshipProfessorSection } from "@/app/types/teachingAssistantshipProfessorSection";
+
+
 
 /**
  * TeachingAssistantList Component
@@ -63,28 +65,28 @@ export default function TeachingAssistantList() {
   );
   const setOrder = useTeachingAssistantListStore((state) => state.setOrder);
 
-  const { data: teachingAssistantList, isFetching: isFetchingTeachingAssistants } = useQuery({
-    queryKey: ["teaching-assistants", searchTerm],
-    queryFn: () =>
-      getUndergraduateThesis({
-        semester: searchTerm,
-      }),
-  });
-
-
   const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
     queryKey: ["undergraduate-semesters"],
     queryFn: getPeriods,
   });
 
+
+  const { data: sectionsList, isFetching: isFetchingTeachingAssistants } = useQuery({
+    queryKey: ["teaching-assistants-professor", searchTerm],
+    queryFn: () =>
+      getTeachingAssistants(searchTerm),
+  });
+
+  const mappedTASList = mapSectionsToProfessorTable(sectionsList ?? []);
+
   useEffect(() => {
-    if (teachingAssistantList) {
-      const sortedOrder = Object.keys(teachingAssistantList).sort((a, b) => {
+    if (mappedTASList) {
+      const sortedOrder = Object.keys(mappedTASList).sort((a, b) => {
         return sortDirection * a.localeCompare(b);
       });
       setOrder(sortedOrder);
     }
-  }, [teachingAssistantList, sortDirection]);
+  }, [mappedTASList, sortDirection]);
 
   if (isLoadingSemesters) return <SpinnerPage />;
 
@@ -111,7 +113,7 @@ export default function TeachingAssistantList() {
         {isFetchingTeachingAssistants ? (
           <SkeletonAccordion />
         ) : (
-          <CourseAccordionList teachingAssistantList={teachingAssistantList ?? {}} />
+          <SectionAccordionList sectionsList={mappedTASList ?? {}} />
         )}
       </Accordion>
     </div>
@@ -171,26 +173,27 @@ function SelectSemester({
  * @param {string[]} props.order - Sorted order of professors
  * @returns {JSX.Element} Professor based accordion list
  */
-function CourseAccordionList({
-    teachingAssistantList,
+function SectionAccordionList({
+  sectionsList,
 }: {
-    teachingAssistantList: { [professor: string]: Thesis[] };
+  sectionsList: TeachingAssistantshipProfessorSection;
 }) {
   const order = useTeachingAssistantListStore((state) => state.order);
+
   return (
     <>
-      {order.map((professor) => (
-        <CourseAccordion
-          element={professor}
-          key={professor}
+      {order.map((sectionName) => (
+        <SectionAccordion
+          element={sectionName}
+          key={sectionName}
           icon={<User className="mr-2 h-5 w-5 text-core-highlight" />}
         >
-          {professor in teachingAssistantList ? (
-            <TeachingAssistantTable teachingAssistantList={teachingAssistantList[professor]} />
+          {sectionsList[sectionName] ? (
+            <TeachingAssistantTable teachingAssistantList={sectionsList[sectionName]} />
           ) : (
             <SkeletonAccordion />
           )}
-        </CourseAccordion>
+        </SectionAccordion>
       ))}
     </>
   );
@@ -207,7 +210,7 @@ function CourseAccordionList({
  * @param {React.ReactNode} props.icon - Icon to display in trigger
  * @returns {JSX.Element} Accordion item component
  */
-function CourseAccordion({
+function SectionAccordion({
   element,
   children,
   icon,
@@ -244,54 +247,121 @@ function CourseAccordion({
  * @param {Thesis[]} props.thesisList - Array of thesis projects to display
  * @returns {JSX.Element} Thesis data table
  */
-function TeachingAssistantTable({ teachingAssistantList }: { teachingAssistantList: Thesis[] }) {
-  const router = useRouter();
-  const handleClick = (id: number) => {
-    router.push(`${ROUTES.HOME}/${ROUTES.UNDERGRADUATE_THESIS_LIST}/${id}`);
+function TeachingAssistantTable({ teachingAssistantList }: { teachingAssistantList: ProfessorTA[] }) {
+  const [gradingId, setGradingId] = useState<string | null>(null);
+  const [grade, setGrade] = useState('');
+  const [description, setDescription] = useState('');
+  const [selectedGrade, setSelectedGrade] = useState<{ value: number; description: string } | null>(null);
+
+  const handleSubmit = () => {
+    if (gradingId) {
+      submitTeachingAssistantGrade(gradingId, grade, description);
+      setGradingId(null);
+      setGrade('');
+      setDescription('');
+    }
   };
-  console.log(teachingAssistantList)
+
+  const handleGradeClick = (grade: number, description: string) => {
+    setSelectedGrade({ value: grade, description });
+  };
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="bg-core-highlight text-white text-center">
-            Nombre del monitor
-          </TableHead>
-          <TableHead className="bg-core-highlight text-white text-center">
-            Codigo
-          </TableHead>
-          <TableHead className="bg-core-highlight text-white text-center">
-            Calificación
-          </TableHead>
-          <TableHead className="bg-core-highlight text-white text-center">
-            Acciones
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody className="text-center">
-        {teachingAssistantList.map((project, index) => (
-          <TableRow key={index}>
-            <TableCell className="font-medium">{project.title}</TableCell>
-            <TableCell className="font-medium">{project.category}</TableCell>
-            <TableCell className="font-medium">
-              {project.students.length}
-            </TableCell>
-            <TableCell className="font-medium">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleClick(project.id)}
-                className="cursor-pointer"
-              >
-                <Search className="w-4 h-4" />
-              </Button>
-            </TableCell>
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="bg-core-highlight text-white text-center">Nombre del monitor</TableHead>
+            <TableHead className="bg-core-highlight text-white text-center">Código</TableHead>
+            <TableHead className="bg-core-highlight text-white text-center">Acciones</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody className="text-center">
+          {teachingAssistantList.map((student, index) => (
+            <TableRow key={index}>
+              <TableCell className="font-medium">{student.name}</TableCell>
+              <TableCell className="font-medium">{student.code}</TableCell>
+              <TableCell className="font-medium">
+                {student.grade != null ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Button
+                      variant="link"
+                      onClick={() => handleGradeClick(student.grade ?? 0, student.gradeDescription ?? '')}
+                      className="text-muted-foreground cursor-pointer"
+                    >
+                      Ver Calificación
+                    </Button>
+                  </div>
+                ) : (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button onClick={() => setGradingId(student.id)}>Calificar</Button>
+                    </DialogTrigger>
+                    {gradingId === student.id && (
+                      <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                          <DialogTitle>Calificar Monitor</DialogTitle>
+                        </DialogHeader>
+                        <div className="flex flex-col gap-4">
+                          <Input
+                            type="number"
+                            min="0"
+                            max="5"
+                            step="0.01"
+                            placeholder="Calificación (0.00 - 5.00)"
+                            value={grade}
+                            onChange={(e) => setGrade(e.target.value)}
+                          />
+                          <Textarea
+                            placeholder="Descripción"
+                            className="max-h-80 h-40 overflow-auto"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                          />
+                        </div>
+                        <DialogFooter className="mt-4 flex justify-end gap-2">
+                          <Button onClick={handleSubmit}>Guardar</Button>
+                          <Button variant="outline" onClick={() => setGradingId(null)}>Cancelar</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    )}
+                  </Dialog>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      {selectedGrade && (
+        <Dialog open={true} onOpenChange={() => setSelectedGrade(null)}>
+          <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-auto">
+            <DialogHeader>
+              <DialogTitle>Calificación del Monitor</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p><strong>Calificación:</strong> {selectedGrade.value}</p>
+              <div className="max-h-60 overflow-y-auto p-2 bg-muted">
+                {selectedGrade.description.trim() ? (
+                  <p className="whitespace-pre-wrap">{selectedGrade.description}</p>
+                ) : (
+                  <p className="italic text-muted-foreground">No se proporcionó una descripción para esta calificación.</p>
+                )}
+              </div>
+            </div>
+            <DialogFooter className="mt-4">
+              <Button onClick={() => setSelectedGrade(null)}>Cerrar</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+    </>
   );
 }
+
+
+
 
 /**
  * SkeletonAccordion Component

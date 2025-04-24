@@ -47,7 +47,7 @@ export const ROUTES: Record<string, string> = {
     "profesor/asistencias/lista/manejar/editar",
   PROFESSOR_NEW_ASSISTANCE: "/profesor/asistencias/nueva",
 
-  PROFESSOR_TEACHING_ASSISTANCE_LIST: "/profesor/monitorias/",
+  PROFESSOR_TEACHING_ASSISTANCE_LIST: "/profesor/monitores/",
 
   /*  Coordinators  */
 
@@ -58,7 +58,7 @@ export const ROUTES: Record<string, string> = {
   REPORTS: "/coordinador/reportes",
   DATE_ALERTS: "/coordinador/alertas_fechas",
 
-  UPLOAD_TAS: "/coordinador/cargar_monitores",
+  UPLOAD_TAS: "/coordinador/monitores",
 
   /*  General  */
 
@@ -72,4 +72,8 @@ export const API_ROUTES: Record<string, string> = {
   COURSES: "courses",
   COORDINATOR_BILLBOARD: "billboards",
   SECTIONS_REPORTS: "sections",
+  TEACHING_ASSISTANTS: 'teaching-assistances',
+  PROFESSORS: 'professors',
+
 };
+

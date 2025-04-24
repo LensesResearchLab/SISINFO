@@ -6,6 +6,7 @@ import { Section } from './entities/section.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Professor } from '../professors/entities/professor.entity';
 import { Period } from '../periods/entities/period.entity';
+import { CreateSimpleSectionDto } from './dto/create-simple-section.dto';
 
 @Injectable()
 export class SectionsService {
@@ -15,6 +16,24 @@ export class SectionsService {
 
   async create(
     createSectionDto: CreateSectionDto,
+    supportProfessors: Professor[],
+    professors: Professor[],
+    period: Period,
+  ) {
+    const section = this.sectionRepository.create();
+    section.NRC = createSectionDto.NRC;
+    section.period = period;
+    section.section = createSectionDto.section;
+    section.supportProfessors = supportProfessors;
+    section.professors = professors;
+
+    await this.sectionRepository.save(section);
+
+    return section;
+  }
+
+  async createSimple(
+    createSectionDto: CreateSimpleSectionDto,
     supportProfessors: Professor[],
     professors: Professor[],
     period: Period,
@@ -41,6 +60,7 @@ export class SectionsService {
   findOne(id: number) {
     return `This action returns a #${id} section`;
   }
+
 
   async getReport(reportType: 'program' | 'partial' | 'final') {
     /* Type of report to check */
@@ -95,6 +115,26 @@ export class SectionsService {
 
   async getFinalReport() {
     return this.getReport('final');
+  }
+
+  async findOneBySectionNumber(
+    courseCode: string,
+    sectionNumber: number,
+    periodId: string,
+  ) {
+    return this.sectionRepository.findOne({
+      where: {
+        section: String(sectionNumber),
+        course: {
+          code: courseCode,
+        },
+        period: {
+          id: periodId,
+        },
+      },
+      relations: ['course'],
+    });
+
   }
 
   update(id: number, updateSectionDto: UpdateSectionDto) {

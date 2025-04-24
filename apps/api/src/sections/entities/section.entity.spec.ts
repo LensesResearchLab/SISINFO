@@ -20,7 +20,7 @@ describe('Section Entity', () => {
     const section = new Section();
     section.NRC = mockNRC;
     section.section = mockSection;
-    section.teaching_assistances = [
+    section.teachingAssistances = [
       mockTeachingAssistance1,
       mockTeachingAssistance2,
     ];
@@ -32,9 +32,9 @@ describe('Section Entity', () => {
     expect(section).toBeInstanceOf(Section);
     expect(section.NRC).toBe(mockNRC);
     expect(section.section).toBe(mockSection);
-    expect(section.teaching_assistances).toHaveLength(2);
-    expect(section.teaching_assistances[0]).toBeInstanceOf(TeachingAssistance);
-    expect(section.teaching_assistances[1]).toBeInstanceOf(TeachingAssistance);
+    expect(section.teachingAssistances).toHaveLength(2);
+    expect(section.teachingAssistances[0]).toBeInstanceOf(TeachingAssistance);
+    expect(section.teachingAssistances[1]).toBeInstanceOf(TeachingAssistance);
     expect(section.period).toBeInstanceOf(Period);
     expect(section.course).toBeInstanceOf(Course);
     expect(section.professors).toHaveLength(2);

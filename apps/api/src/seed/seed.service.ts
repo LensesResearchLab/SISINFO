@@ -4,11 +4,9 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 
 import { BillboardsService } from '../billboards/billboards.service';
-import { CreateBillboardDto } from '../billboards/dto/create-billboard.dto';
 import { PeriodsService } from '../periods/periods.service';
 import { CreatePeriodDto } from '../periods/dto/create-period.dto';
 import { TeachingAssistancesService } from '../teaching-assistances/teaching-assistances.service';
-import { CreateTeachingAssistanceDto } from '../teaching-assistances/dto/create-teaching-assistance.dto';
 import { SectionsService } from '../sections/sections.service';
 import { CreateSectionDto } from '../sections/dto/create-section.dto';
 import { ProfessorsService } from '../professors/professors.service';
@@ -46,8 +44,14 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { CreateAdministratorDto } from '../administrators/dto/create-administrator.dto';
 import { Readable } from 'stream';
-import { Billboard } from '../billboards/entities/billboard.entity';
-import { DocumentsService } from 'src/documents/documents.service';
+import { DocumentsService } from '../documents/documents.service';
+import { sampleUser } from './sample-data/user.sample';
+import { sampleStudent } from './sample-data/student.sample';
+import { sampleProfessor } from './sample-data/professor.sample copy';
+import { sampleCourse } from './sample-data/course.sample';
+import { sampleSection } from './sample-data/section.sample';
+import { Professor } from '../professors/entities/professor.entity';
+import { Section } from '../sections/entities/section.entity';
 
 @Injectable()
 export class SeedService {
@@ -83,17 +87,59 @@ export class SeedService {
   MAX_PROJECTS_PER_PROFESSOR = 3;
   GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER = 2;
 
+  async seedSampleTASEntities() {
+    const period =
+      await this.periodsService.findOneByPeriodAndYearString('202510');
+    if (!period) {
+      return 'SEED_FAILED';
+    }
+
+    for (const user of sampleUser) {
+      await this.usersService.create(user);
+    }
+    for (const student of sampleStudent) {
+      await this.studentsService.create(student);
+    }
+    const professors: Professor[] = [];
+    for (const professor of sampleProfessor) {
+      professors.push(await this.professorsService.create(professor));
+    }
+    const sections: Section[] = [];
+
+    for (const section of sampleSection) {
+      sections.push(
+        await this.sectionsService.createSimple(
+          section,
+          [],
+          professors,
+          period,
+        ),
+      );
+    }
+    for (let i = 0; i < sampleCourse.length; i++) {
+      await this.coursesService.create(sampleCourse[i], sections[i]);
+    }
+  }
+
   async seedBillboard() {
-    const filePath = path.join(process.cwd(), 'src', 'seed', 'sample-data', 'HV_SAMPLE.pdf');
+    const filePath = path.join(
+      process.cwd(),
+      'src',
+      'seed',
+      'sample-data',
+      'HV_SAMPLE.pdf',
+    );
     const buffer = await fs.readFile(filePath);
-  
+
     const professors = await this.professorsService.findAll();
     const professorsChosen = professors
       .sort(() => 0.5 - Math.random())
       .slice(0, 3);
-    const professorsNames = professorsChosen.map((professor) => professor.user.name);
+    const professorsNames = professorsChosen.map(
+      (professor) => professor.user.name,
+    );
     const periods = await this.periodsService.findAll();
-    const dtos: CreateBillboardDto[] = Array.from({ length: 6 }).map(() => ({
+    const dtos: CreateSectionDto[] = Array.from({ length: 6 }).map(() => ({
       publicated: faker.datatype.boolean(),
       NRC: faker.string.numeric(5),
       code: faker.lorem.word(),
@@ -102,11 +148,13 @@ export class SeedService {
       credits: faker.number.int({ min: 1, max: 10 }),
       section: String(faker.helpers.arrayElement([1, 2, 3])),
       period: `${faker.helpers.arrayElement(periods).year}${faker.helpers.arrayElement(['10', '20'])}`,
-      professors: professorsNames.join(`|${faker.helpers.arrayElement(["(01)", "(02)"])}`),
+      professors: professorsNames.join(
+        `|${faker.helpers.arrayElement(['(01)', '(02)'])}`,
+      ),
     }));
-  
+
     await this.billboardsService.create(dtos);
-  
+
     const courses = await this.coursesService.findAll();
     for (const course of courses) {
       const programDoc = await this.documentsService.create({
@@ -118,7 +166,7 @@ export class SeedService {
       await this.coursesService.updateMainProfessor(course.id, professorChosen);
       await this.coursesService.updateProgram(course.id, programDoc);
     }
-  
+
     return true;
   }
 
@@ -132,30 +180,6 @@ export class SeedService {
     return true;
   }
 
-  async seedTeachingAssistance() {
-    const teachingAssistances: CreateTeachingAssistanceDto[] = Array.from({
-      length: 10,
-    }).map(() => ({
-      title: faker.lorem.word(),
-      clasification: faker.lorem.word(),
-      description: faker.lorem.sentence(),
-      status: faker.lorem.word(),
-      task: faker.lorem.word(),
-      periodTypeDescription: faker.lorem.sentence(),
-      grade: faker.number.int({ min: 1, max: 10 }),
-      initialDate: faker.date.recent(),
-      finalDate: faker.date.recent(),
-      weeklyHours: faker.number.int({ min: 1, max: 12 }),
-    }));
-    const insertPromises: Promise<CreateTeachingAssistanceDto>[] = [];
-    teachingAssistances.forEach((teachingAssistance) => {
-      insertPromises.push(
-        this.teachingAssistancesService.create(teachingAssistance),
-      );
-    });
-    await Promise.all(insertPromises);
-    return true;
-  }
   async seedProfessors() {
     const professorsData = Array.from({ length: this.PROFESSORS_NUMBER }).map(
       (_, idx) => {
@@ -185,34 +209,6 @@ export class SeedService {
         },
       );
       return await this.professorsService.create(professor);
-    });
-    return true;
-  }
-
-  async seedSection() {
-    const professors = await this.professorsService.findAll();
-    const professorsChosen = professors
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 1);
-    const periods = await this.periodsService.findAll();
-    const period = periods[Math.floor(Math.random() * periods.length)];
-    const sections: CreateSectionDto[] = Array.from({ length: 10 }).map(() => ({
-      NRC: faker.number.int({ min: 10000, max: 99999 }).toString(),
-      section: faker.number.int({ min: 1, max: 100 }).toString(),
-    }));
-    const supportProfessors = professors
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 2);
-    const insertPromises: Promise<CreateSectionDto>[] = [];
-    sections.forEach((section) => {
-      insertPromises.push(
-        this.sectionsService.create(
-          section,
-          supportProfessors,
-          professorsChosen,
-          period,
-        ),
-      );
     });
     await Promise.all(insertPromises);
     return true;
@@ -595,8 +591,8 @@ export class SeedService {
   }
 
   async executeTaskAndTas() {
-    await this.seedTeachingAssistance();
     await this.seedTask();
+    await this.seedSampleTASEntities();
     return 'SEED_EXECUTED';
   }
 }
