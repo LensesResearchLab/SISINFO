@@ -6,10 +6,11 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { TeachingAssistancesService } from './teaching-assistances.service';
-import { CreateTeachingAssistanceDto } from './dto/create-teaching-assistance.dto';
 import { UpdateTeachingAssistanceDto } from './dto/update-teaching-assistance.dto';
+import { CreateAllTeachingAssistantship } from './dto/create-all-teaching-assistantship.dto';
 
 @Controller('teaching-assistances')
 export class TeachingAssistancesController {
@@ -18,13 +19,17 @@ export class TeachingAssistancesController {
   ) {}
 
   @Post()
-  create(@Body() createTeachingAssistanceDto: CreateTeachingAssistanceDto) {
-    return this.teachingAssistancesService.create(createTeachingAssistanceDto);
+  create(
+    @Body() createAllTeachingAssistantship: CreateAllTeachingAssistantship,
+  ) {
+    return this.teachingAssistancesService.create(
+      createAllTeachingAssistantship.assistants,
+      createAllTeachingAssistantship.period,
+    );
   }
-
   @Get()
-  findAll() {
-    return this.teachingAssistancesService.findAll();
+  findAll(@Query('period') period: string) {
+    return this.teachingAssistancesService.findAll(period);
   }
 
   @Get(':id')

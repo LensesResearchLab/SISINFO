@@ -17,7 +17,7 @@ export class Section extends Base {
     () => TeachingAssistance,
     (teaching_assistance) => teaching_assistance.section,
   )
-  teaching_assistances: TeachingAssistance[];
+  teachingAssistances: TeachingAssistance[];
 
   @ManyToOne(() => Period, (period) => period.sections)
   period: Period;

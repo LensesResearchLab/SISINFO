@@ -1,3 +1,4 @@
+import { TeachingAssistance } from '../../teaching-assistances/entities/teaching-assistance.entity';
 import { Billboard } from '../../billboards/entities/billboard.entity';
 import { Base } from '../../common/entities/base.entity';
 import { GraduatedAssistance } from '../../graduated-assistances/entities/graduated-assistance.entity';
@@ -37,4 +38,10 @@ export class Period extends Base {
 
   @OneToMany(() => Section, (section) => section.period)
   sections: Section[];
+
+  @OneToMany(
+    () => TeachingAssistance,
+    (teachingAssistance) => teachingAssistance.period,
+  )
+  teachingAssistances: TeachingAssistance[];
 }

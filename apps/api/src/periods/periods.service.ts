@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -55,6 +55,15 @@ export class PeriodsService {
 
   async findOneByPeriodAndYear(period: string, year: number) {
     return await this.periodRepository.findOne({ where: { period, year } });
+  }
+
+  async findOneByPeriodAndYearString(periodStr: string) {
+    if (!/^\d{6}$/.test(periodStr)) {
+      throw new BadRequestException('El formato del periodo es inválido');
+    }
+    const year = Number(periodStr.slice(0, 4));
+    const period = periodStr.slice(4);
+    return await this.findOneByPeriodAndYear(period, year);
   }
 
   update(id: number, updatePeriodDto: UpdatePeriodDto) {

@@ -1,5 +1,5 @@
 import { Period } from "./period.type"
-import { Student } from "./student.type"
+import { TeachingAssistantship } from "./teachingAssistantship.type";
 export interface Billboard {
     id?: string;
     NRC: string;
@@ -36,18 +36,7 @@ export interface Section {
     NRC: number;
     section: number;
     professors:Professor[];
-    teaching_assistance: TeachingAssistance;
+    teachingAssistances: TeachingAssistantship[];
+    course: Course,
     period: Period,
-}
-export interface TeachingAssistance {
-    id: string;
-    task: string;
-    status: string;
-    periodTypeDescription: string;
-    finalDate: Date;
-    initialDate: Date;
-    weeklyHours: number;
-    description: string;
-    grade: number;
-    student: Student;
 }

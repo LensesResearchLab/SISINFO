@@ -42,6 +42,25 @@ export class SectionsService {
     return `This action returns a #${id} section`;
   }
 
+  async findOneBySectionNumber(
+    courseCode: string,
+    sectionNumber: number,
+    periodId: string,
+  ) {
+    return this.sectionRepository.findOne({
+      where: {
+        section: String(sectionNumber),
+        course: {
+          code: courseCode,
+        },
+        period: {
+          id: periodId,
+        },
+      },
+      relations: ['course'],
+    });
+  }
+
   update(id: number, updateSectionDto: UpdateSectionDto) {
     return `This action updates a #${id} section`;
   }

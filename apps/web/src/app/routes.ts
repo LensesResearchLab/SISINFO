@@ -57,7 +57,7 @@ export const ROUTES: Record<string, string> = {
   REPORTS: "/coordinador/reportes",
   DATE_ALERTS: "/coordinador/alertas_fechas",
 
-  UPLOAD_TAS: "/coordinador/cargar_monitores",
+  UPLOAD_TAS: "/coordinador/monitores",
 
   /*  General  */
 
@@ -70,4 +70,6 @@ export const API_ROUTES: Record<string, string> = {
   ASSISTANCE_APPLICATIONS: 'assistance-applications',
   COURSES:'courses',
   COORDINATOR_BILLBOARD:'billboards',
+
+  TEACHING_ASSISTANTS: 'teaching-assistances'
 };
