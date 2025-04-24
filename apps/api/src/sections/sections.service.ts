@@ -19,10 +19,12 @@ export class SectionsService {
     professors: Professor[],
     period: Period,
   ) {
-    const section = this.sectionRepository.create(createSectionDto);
+    const section = this.sectionRepository.create();
+    section.NRC=createSectionDto.NRC;
+    section.period=period;
+    section.section=createSectionDto.section;
     section.supportProfessors = supportProfessors;
     section.professors = professors;
-    section.period = period;
 
     await this.sectionRepository.save(section);
 

@@ -93,7 +93,7 @@ export class SeedService {
       .slice(0, 3);
     const professorsNames = professorsChosen.map((professor) => professor.user.name);
     const periods = await this.periodsService.findAll();
-    const dtos: CreateBillboardDto[] = Array.from({ length: 6 }).map(() => ({
+    const dtos: CreateSectionDto[] = Array.from({ length: 6 }).map(() => ({
       publicated: faker.datatype.boolean(),
       NRC: faker.string.numeric(5),
       code: faker.lorem.word(),
@@ -186,35 +186,6 @@ export class SeedService {
       );
       return await this.professorsService.create(professor);
     });
-    return true;
-  }
-
-  async seedSection() {
-    const professors = await this.professorsService.findAll();
-    const professorsChosen = professors
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 1);
-    const periods = await this.periodsService.findAll();
-    const period = periods[Math.floor(Math.random() * periods.length)];
-    const sections: CreateSectionDto[] = Array.from({ length: 10 }).map(() => ({
-      NRC: faker.number.int({ min: 10000, max: 99999 }).toString(),
-      section: faker.number.int({ min: 1, max: 100 }).toString(),
-    }));
-    const supportProfessors = professors
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 2);
-    const insertPromises: Promise<CreateSectionDto>[] = [];
-    sections.forEach((section) => {
-      insertPromises.push(
-        this.sectionsService.create(
-          section,
-          supportProfessors,
-          professorsChosen,
-          period,
-        ),
-      );
-    });
-    await Promise.all(insertPromises);
     return true;
   }
 
