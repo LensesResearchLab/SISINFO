@@ -9,21 +9,23 @@ describe('ThesisApplicationsService', () => {
   let thesisApplicationRepository: Repository<ThesisApplication>;
 
   beforeEach(async () => {
-    const repositoryMock = {
-      find: jest.fn(),
-      findOne: jest.fn(),
-      save: jest.fn(),
-      delete: jest.fn(),
+    const mockRepository = {
+      find: jest.fn().mockResolvedValue([]),
+      findOne: jest.fn().mockResolvedValue({}),
+      save: jest.fn().mockResolvedValue({}),
+      delete: jest.fn().mockResolvedValue({}),
     };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ThesisApplicationsService,
         {
           provide: getRepositoryToken(ThesisApplication),
-          useValue: repositoryMock,
+          useValue: mockRepository,
         },
       ],
     }).compile();
+
     service = module.get<ThesisApplicationsService>(ThesisApplicationsService);
     thesisApplicationRepository = module.get<Repository<ThesisApplication>>(
       getRepositoryToken(ThesisApplication),
