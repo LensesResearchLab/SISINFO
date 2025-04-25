@@ -2,7 +2,7 @@ import { Period } from "./period.type";
 import { Student } from "./student.type";
 
 export interface Thesis {
-  id: number;
+  id: string;
   title: string;
   description: string;
   investigationSubarea: string[];

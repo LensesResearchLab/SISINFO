@@ -4,16 +4,50 @@ import { UpdateThesisApplicationDto } from './dto/update-thesis-application.dto'
 import { ThesisApplication } from './entities/thesis-application.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Student } from 'src/students/entities/student.entity';
+import { Thesis } from 'src/theses/entities/thesis.entity';
 
 @Injectable()
 export class ThesisApplicationsService {
   constructor(
     @InjectRepository(ThesisApplication)
     private thesisApplicationRepository: Repository<ThesisApplication>,
+    @InjectRepository(Student)
+    private studentRepository: Repository<Student>,
+    @InjectRepository(Thesis)
+    private thesisRepository: Repository<Thesis>,
   ) {}
 
-  create(createThesisApplicationDto: CreateThesisApplicationDto) {
-    return 'This action adds a new thesisApplication';
+  async create(
+    createThesisApplicationDto: CreateThesisApplicationDto,
+  ): Promise<ThesisApplication> {
+    const { studentDocument, thesisId, ...rest } = createThesisApplicationDto;
+
+    const student = await this.studentRepository.findOne({
+      where: { document: studentDocument },
+    });
+
+    if (!student) {
+      throw new NotFoundException(
+        `Student with document ${studentDocument} not found`,
+      );
+    }
+
+    const thesis = await this.thesisRepository.findOne({
+      where: { id: thesisId },
+    });
+
+    if (!thesis) {
+      throw new NotFoundException(`Thesis with ID ${thesisId} not found`);
+    }
+
+    const thesisApplication = this.thesisApplicationRepository.create({
+      ...rest,
+      student,
+      thesis,
+    });
+
+    return await this.thesisApplicationRepository.save(thesisApplication);
   }
 
   findAll() {

@@ -3,7 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Mail, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getPostgraduateThesisById } from "@/app/services/thesis.service";
+import {
+  getPostgraduateThesisById,
+  postThesisApplication,
+} from "@/app/services/thesis.service";
 import { Thesis } from "@/app/types/thesis.type";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,6 +20,7 @@ import {
   ThesisDetailCard,
   ThesisNotFound,
 } from "@/components/shared/thesis-detail-card";
+import { useAuth } from "@/hooks/use-auth";
 
 /**
  * ThesisInscription Component
@@ -127,15 +131,21 @@ function ThesisApplying({ thesis }: { thesis: Thesis }) {
   const setContacted = useThesisInscriptionStore((state) => state.setContacted);
 
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const { user } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(
-      "Aplicación enviada con exito, motivación: " +
-        motivation +
-        ", contacto: " +
-        contacted
-    );
+    const thesisId = thesis.id;
+    const userDocument = user?.id;
+    console.log(userDocument);
+
+    if (!thesisId || !userDocument) {
+      console.log("Error: Missing thesis ID or user document.");
+      return;
+    }
+
+    postThesisApplication(thesisId, userDocument);
+    alert("Aplicación enviada con éxito");
   };
 
   const modalProps = {

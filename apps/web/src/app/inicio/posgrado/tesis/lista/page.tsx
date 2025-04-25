@@ -63,7 +63,6 @@ export default function ThesisList() {
   );
   const setOrder = useThesisListStore((state) => state.setOrder);
 
-  // Replace the existing query with this one that uses getPostgraduateThesis
   const { data: thesisList, isFetching: isFetchingThesis } = useQuery({
     queryKey: ["postgraduate-thesis-projects", searchCategory, searchTerm],
     queryFn: () => getPostgraduateThesis(),
@@ -176,6 +175,9 @@ function SelectSemester({
   const handleClick = (term: string) => {
     setSearchTerm(term);
   };
+
+  const uniqueSemesters = Array.from(new Set(semesters));
+
   return (
     <Select onValueChange={handleClick}>
       <SelectTrigger className={cn("w-[180px]", className)}>
@@ -184,7 +186,7 @@ function SelectSemester({
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Semestre</SelectLabel>
-          {semesters.map((semester: string) => (
+          {uniqueSemesters.map((semester: string) => (
             <SelectItem value={semester} key={semester}>
               {semester}
             </SelectItem>
@@ -348,7 +350,7 @@ function ElementAccordion({
  */
 function ElementThesisTable({ thesisList }: { thesisList: Thesis[] }) {
   const router = useRouter();
-  const handleClick = (id: number) => {
+  const handleClick = (id: string) => {
     router.push(`${ROUTES.HOME}/${ROUTES.POSTGRADUATE_THESIS_LIST}/${id}`);
   };
   return (
