@@ -518,6 +518,36 @@ export async function getPostgraduateThesisStatus(document?: string) {
   return response.json();
 }
 
+export async function postThesisApplication(
+  thesisId: string,
+  studentDocument: string
+) {
+  try {
+    const response = await fetch(`${API_URL_APPLICATIONS}/${studentDocument}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        thesisId,
+        status: "Postulado",
+        grade: "Pendiente",
+      }),
+    });
+
+    console.log("studentdoc", studentDocument);
+
+    if (response.ok) {
+      alert("Aplicación enviada con éxito");
+    } else {
+      alert("Error al enviar la aplicación");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Error al enviar la aplicación");
+  }
+}
+
 // TODO: Delete this?
 /*
 export async function getUndergraduateThesis({
@@ -670,17 +700,6 @@ export async function getThesisByProfessorId(professorId: number) {
 } */
 
 /* Posgraduate Report */
-/* API GET for coordinators report of thesis */
-const API_URL_REPORT =
-  "http://localhost:8000/api/thesis-applications/thesis-report";
-export async function getThesisApplicationsReport() {
-  const response = await fetch(`${API_URL_REPORT}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch postgraduate data for report.");
-  }
-  return response.json();
-}
-
 /* API GET for coordinators report of thesis */
 const API_URL_REPORT =
   "http://localhost:8000/api/thesis-applications/thesis-report";

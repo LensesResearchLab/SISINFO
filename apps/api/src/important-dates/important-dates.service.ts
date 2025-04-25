@@ -12,8 +12,13 @@ export class ImportantDatesService {
     private importantDateRepository: Repository<ImportantDate>,
   ) {}
 
-  create(createImportantDateDto: CreateImportantDateDto) {
-    return 'This action adds a new importantDate';
+  async create(
+    createImportantDateDto: CreateImportantDateDto,
+  ): Promise<ImportantDate> {
+    const importantDate = this.importantDateRepository.create(
+      createImportantDateDto,
+    );
+    return await this.importantDateRepository.save(importantDate);
   }
 
   async findAll() {

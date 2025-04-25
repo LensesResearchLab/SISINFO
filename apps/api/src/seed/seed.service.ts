@@ -52,6 +52,9 @@ import { sampleCourse } from './sample-data/course.sample';
 import { sampleSection } from './sample-data/section.sample';
 import { Professor } from '../professors/entities/professor.entity';
 import { Section } from '../sections/entities/section.entity';
+import { ImportantDatesService } from 'src/important-dates/important-dates.service';
+import { ImportantDate } from 'src/important-dates/entities/important-date.entity';
+import { CreateImportantDateDto } from 'src/important-dates/dto/create-important-date.dto';
 
 @Injectable()
 export class SeedService {
@@ -76,6 +79,7 @@ export class SeedService {
     private readonly studentsService: StudentsService,
     private readonly documentsService: DocumentsService,
     private readonly usersService: UsersService,
+    private readonly importantDatesService: ImportantDatesService,
   ) {}
 
   STUDENTS_NUMBER = 10;
@@ -550,11 +554,34 @@ export class SeedService {
     return true;
   }
 
+  async seedImportantDates() {
+    const periods = await this.periodsService.findAll();
+    const insertPromises: Promise<ImportantDate>[] = [];
+    const importantDates: CreateImportantDateDto[] = Array.from({
+      length: 10,
+    }).map(() => ({
+      description: faker.lorem.sentence(),
+      date: faker.date.future(),
+      sectionTitle: faker.lorem.word(),
+      type: faker.helpers.arrayElement(['type1', 'type2', 'type3']),
+      period: periods[Math.floor(Math.random() * periods.length)].id,
+    }));
+
+    importantDates.forEach((importantDate) => {
+      insertPromises.push(this.importantDatesService.create(importantDate));
+    });
+
+    await Promise.all(insertPromises);
+    return true;
+  }
+
   async executeSeedStatic() {
     await this.seedPeriods();
     await this.seedRequirements();
     await this.seedTags();
     await this.seedAreasOfInterest();
+    await this.seedImportantDates();
+
     return 'SEED_EXECUTED';
   }
 

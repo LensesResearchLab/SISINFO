@@ -17,9 +17,15 @@ export class ThesisApplicationsController {
     private readonly thesisApplicationsService: ThesisApplicationsService,
   ) {}
 
-  @Post()
-  create(@Body() createThesisApplicationDto: CreateThesisApplicationDto) {
-    return this.thesisApplicationsService.create(createThesisApplicationDto);
+  @Post(':studentDocument')
+  create(
+    @Param('studentDocument') studentDocument: string,
+    @Body() createThesisApplicationDto: CreateThesisApplicationDto,
+  ) {
+    return this.thesisApplicationsService.create({
+      ...createThesisApplicationDto,
+      studentDocument,
+    });
   }
 
   @Get()
