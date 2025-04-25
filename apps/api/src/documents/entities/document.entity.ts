@@ -22,6 +22,12 @@ export class Document extends Base {
   @OneToOne(() => Course, (course) => course.program)
   course: Course;
 
+  @OneToOne(() => Course, (course) => course.partialGrades)
+  partialGrades: Course;
+
+  @OneToOne(() => Course, (course) => course.finalGrades)
+  finalGrades: Course;
+
   @Column({ type: 'bytea' })
   file: Buffer;
 }

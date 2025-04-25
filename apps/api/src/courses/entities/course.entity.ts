@@ -48,4 +48,16 @@ export class Course extends Base {
   })
   @JoinColumn()
   program: Document;
+
+  @OneToOne(() => Document, (document) => document.partialGrades, {
+    nullable: true,
+  })
+  @JoinColumn()
+  partialGrades: Document;
+
+  @OneToOne(() => Document, (document) => document.finalGrades, {
+    nullable: true,
+  })
+  @JoinColumn()
+  finalGrades: Document;
 }

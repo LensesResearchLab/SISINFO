@@ -51,11 +51,15 @@
     "dotenv": "^16.4.7",
     "eslint": "^9.23.0",
     "framer-motion": "^12.5.0",
+    "html2canvas": "^1.4.1",
+    "html2canvas-pro": "^1.5.8",
     "jose": "^6.0.10",
+    "jspdf": "^3.0.1",
     "kill-port": "^2.0.1",
     "papaparse": "^5.5.2",
     "react-hook-form": "^7.54.2",
     "ts-jest": "^29.2.6",
+    "xlsx": "^0.18.5",
     "zod": "^3.24.2"
   }
 }

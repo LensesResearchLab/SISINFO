@@ -20,6 +20,21 @@ export class SectionController {
     return this.sectionsService.findAll();
   }
 
+  @Get('program-report')
+  getProgramReport() {
+    return this.sectionsService.getProgramReport();
+  }
+
+  @Get('partial-report')
+  getPartialReport() {
+    return this.sectionsService.getPartialReport();
+  }
+
+  @Get('final-report')
+  getFinalReport() {
+    return this.sectionsService.getFinalReport();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.sectionsService.findOne(+id);

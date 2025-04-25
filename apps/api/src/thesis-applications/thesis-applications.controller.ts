@@ -17,6 +17,11 @@ export class ThesisApplicationsController {
     return this.thesisApplicationsService.findAll();
   }
 
+  @Get('thesis-report')
+  getThesisApplicationsReport() {
+    return this.thesisApplicationsService.getThesisApplicationsReport();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.thesisApplicationsService.findOne(+id);
