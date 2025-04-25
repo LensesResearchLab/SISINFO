@@ -27,6 +27,12 @@ export const ROUTES: Record<string, string> = {
   SUPPORT_TUTORIALS: "/soporte/tutoriales",
   SUPPORT_CONTACT: "/soporte/contacto",
 
+  /* Graduate Student */
+
+  POSTGRADUATE_THESIS_LIST: "/posgrado/tesis/lista",
+  POSTGRADUATE_THESIS_STATUS: "/posgrado/tesis/estado",
+  POSTGRADUATE_THESIS_DATES: "/posgrado/tesis/fechas",
+
   /*  Professor  */
   APPLICANTS: "aplicantes",
 
@@ -72,8 +78,6 @@ export const API_ROUTES: Record<string, string> = {
   COURSES: "courses",
   COORDINATOR_BILLBOARD: "billboards",
   SECTIONS_REPORTS: "sections",
-  TEACHING_ASSISTANTS: 'teaching-assistances',
-  PROFESSORS: 'professors',
-
+  TEACHING_ASSISTANTS: "teaching-assistances",
+  PROFESSORS: "professors",
 };
-

@@ -37,7 +37,13 @@ export class UsersService {
     const roles: string[] = [];
     if (user.coordinator) roles.push('coordinador');
     if (user.professor) roles.push('profesor');
-    if (user.student) roles.push('estudiante');
+    if (user.student) {
+      if (user.student.isUndergraduate) {
+        roles.push('estudiante');
+      } else {
+        roles.push('estudiante_maestria'); // Para Posgrado
+      }
+    }
     const { password, ...result } = user;
     return { ...result, roles };
   }
@@ -53,7 +59,13 @@ export class UsersService {
     const roles: string[] = [];
     if (user.coordinator) roles.push('coordinador');
     if (user.professor) roles.push('profesor');
-    if (user.student) roles.push('estudiante');
+    if (user.student) {
+      if (user.student.isUndergraduate) {
+        roles.push('estudiante');
+      } else {
+        roles.push('estudiante_maestria'); // Para Posgrado
+      }
+    }
     return { ...user, roles };
   }
 

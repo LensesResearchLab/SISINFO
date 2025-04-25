@@ -31,7 +31,7 @@ export class ThesesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.thesesService.findOne(+id);
+    return this.thesesService.findOne(id);
   }
 
   @Patch(':id')

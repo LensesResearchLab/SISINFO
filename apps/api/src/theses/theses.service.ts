@@ -31,16 +31,48 @@ export class ThesesService {
   }
 
   async findAll() {
-    return this.thesisRepository.find({
+    const thesisData = await this.thesisRepository.find({
       relations: {
-        professor: true,
+        professor: {
+          user: true,
+        },
         tags: true,
+        period: true,
       },
     });
+
+    thesisData.forEach((thesis) => {
+      if (thesis.professor?.user) {
+        const { password, ...userWithoutPassword } = thesis.professor.user;
+        thesis.professor.user = userWithoutPassword as any;
+      }
+    });
+
+    return thesisData;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} thesis`;
+  async findOne(id: string) {
+    const thesis = await this.thesisRepository.findOne({
+      where: { id },
+      relations: {
+        professor: {
+          user: true,
+        },
+        tags: true,
+        period: true,
+      },
+    });
+
+    if (!thesis) {
+      throw new NotFoundException(`Thesis with id ${id} not found`);
+    }
+
+    if (thesis.professor?.user) {
+      const { password, ...userWithoutPassword } = thesis.professor.user;
+      thesis.professor.user = userWithoutPassword as any;
+    }
+
+    return thesis;
   }
 
   update(id: number, updateThesisDto: UpdateThesisDto) {

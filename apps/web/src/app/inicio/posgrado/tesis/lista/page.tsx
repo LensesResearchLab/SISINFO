@@ -19,10 +19,7 @@ import {
 import { Search } from "lucide-react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-/*
-import {
-  getUndergraduateThesis,
-} from "@/app/services/thesis.service"; */
+import { getPostgraduateThesis } from "@/app/services/thesis.service";
 import { Thesis } from "@/app/types/thesis.type";
 
 import {
@@ -66,28 +63,63 @@ export default function ThesisList() {
   );
   const setOrder = useThesisListStore((state) => state.setOrder);
 
+  // Replace the existing query with this one that uses getPostgraduateThesis
   const { data: thesisList, isFetching: isFetchingThesis } = useQuery({
-    queryKey: ["student-thesis-projects", searchCategory, searchTerm],
-    queryFn: () =>
-      getUndergraduateThesis({
-        category: searchCategory,
-        semester: searchTerm,
-      }),
+    queryKey: ["postgraduate-thesis-projects", searchCategory, searchTerm],
+    queryFn: () => getPostgraduateThesis(),
   });
+
   const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
     queryKey: ["undergraduate-semesters"],
     queryFn: getPeriods,
   });
 
-  useEffect(() => {
-    if (thesisList) {
-      const sortedOrder = Object.keys(thesisList).sort((a, b) => {
-        return sortDirection * a.localeCompare(b);
-      });
-      setOrder(sortedOrder);
-    }
-  }, [thesisList, sortDirection]);
+  let filteredThesisList = Array.isArray(thesisList)
+    ? thesisList.filter(
+        (thesis) =>
+          !searchTerm ||
+          `${thesis.period.year}${thesis.period.period}` === searchTerm
+      )
+    : [];
 
+  let groupedByProfessor: { [professor: string]: Thesis[] } = {};
+  let groupedByArea: { [area: string]: Thesis[] } = {};
+  if (Array.isArray(filteredThesisList)) {
+    groupedByProfessor = filteredThesisList.reduce(
+      (acc, thesis) => {
+        const profName =
+          thesis.professor?.user?.name &&
+          typeof thesis.professor.user.name === "string"
+            ? thesis.professor.user.name
+            : "Sin profesor";
+        if (!acc[profName]) acc[profName] = [];
+        acc[profName].push(thesis);
+        return acc;
+      },
+      {} as { [professor: string]: Thesis[] }
+    );
+
+    groupedByArea = filteredThesisList.reduce(
+      (acc, thesis) => {
+        const area = thesis.investigationSubarea;
+        if (!acc[area]) acc[area] = [];
+        acc[area].push(thesis);
+        return acc;
+      },
+      {} as { [area: string]: Thesis[] }
+    );
+  }
+
+  useEffect(() => {
+    let keys: string[] = [];
+    if (searchCategory === "investigation_subarea") {
+      keys = Object.keys(groupedByArea);
+    } else {
+      keys = Object.keys(groupedByProfessor);
+    }
+    const sortedOrder = keys.sort((a, b) => sortDirection * a.localeCompare(b));
+    setOrder(sortedOrder);
+  }, [thesisList, sortDirection, searchCategory]);
   if (isLoadingSemesters) return <SpinnerPage />;
 
   return (
@@ -113,8 +145,10 @@ export default function ThesisList() {
         </div>
         {isFetchingThesis ? (
           <SkeletonAccordion />
+        ) : searchCategory === "investigation_subarea" ? (
+          <AreaOfInterestAccordionList thesisList={groupedByArea} />
         ) : (
-          <AccordionListSimpleFactory thesisList={thesisList ?? {}} />
+          <ProfessorAccordionList thesisList={groupedByProfessor} />
         )}
       </Accordion>
     </div>
@@ -185,32 +219,11 @@ function SelectSearchCategory({ className }: { className?: string }) {
         <SelectGroup>
           <SelectLabel>Buscar categoria</SelectLabel>
           <SelectItem value="professor">Profesor</SelectItem>
-          <SelectItem value="areas_of_interest">Area de interés</SelectItem>
+          <SelectItem value="investigation_subarea">Area de interés</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
   );
-}
-
-/**
- * AccordionListSimpleFactory Component
- *
- * Factory component that renders appropriate accordion list based on selected category.
- * Switches between professor-based and area-of-interest-based views.
- *
- * @param {Object} props - Component properties
- * @param {Object} props.thesisList - Grouped thesis data by professor or area
- * @returns {JSX.Element} Appropriate accordion list component
- */
-function AccordionListSimpleFactory({
-  thesisList,
-}: {
-  thesisList: { [professor: string]: Thesis[] };
-}) {
-  const category = useThesisListStore((state) => state.searchCategory);
-  if (category === "areas_of_interest")
-    return <AreaOfInterestAccordionList thesisList={thesisList} />;
-  return <ProfessorAccordionList thesisList={thesisList} />;
 }
 
 /**
@@ -231,7 +244,7 @@ function AreaOfInterestAccordionList({
 }) {
   const order = useThesisListStore((state) => state.order);
   return (
-    <>
+    <div className="py-10">
       {order.map((field) => (
         <ElementAccordion
           element={field}
@@ -245,7 +258,7 @@ function AreaOfInterestAccordionList({
           )}
         </ElementAccordion>
       ))}
-    </>
+    </div>
   );
 }
 
@@ -267,7 +280,7 @@ function ProfessorAccordionList({
 }) {
   const order = useThesisListStore((state) => state.order);
   return (
-    <>
+    <div className="py-10">
       {order.map((professor) => (
         <ElementAccordion
           element={professor}
@@ -281,7 +294,7 @@ function ProfessorAccordionList({
           )}
         </ElementAccordion>
       ))}
-    </>
+    </div>
   );
 }
 
@@ -336,7 +349,7 @@ function ElementAccordion({
 function ElementThesisTable({ thesisList }: { thesisList: Thesis[] }) {
   const router = useRouter();
   const handleClick = (id: number) => {
-    router.push(`${ROUTES.HOME}/${ROUTES.UNDERGRADUATE_THESIS_LIST}/${id}`);
+    router.push(`${ROUTES.HOME}/${ROUTES.POSTGRADUATE_THESIS_LIST}/${id}`);
   };
   return (
     <Table>
@@ -346,10 +359,7 @@ function ElementThesisTable({ thesisList }: { thesisList: Thesis[] }) {
             Nombre del proyecto
           </TableHead>
           <TableHead className="bg-core-highlight text-white text-center">
-            Categoria
-          </TableHead>
-          <TableHead className="bg-core-highlight text-white text-center">
-            Número de estudiantes
+            Subarea de investigación
           </TableHead>
           <TableHead className="bg-core-highlight text-white text-center">
             Ver
@@ -357,18 +367,17 @@ function ElementThesisTable({ thesisList }: { thesisList: Thesis[] }) {
         </TableRow>
       </TableHeader>
       <TableBody className="text-center">
-        {thesisList.map((project, index) => (
+        {thesisList.map((thesis, index) => (
           <TableRow key={index}>
-            <TableCell className="font-medium">{project.title}</TableCell>
-            <TableCell className="font-medium">{project.category}</TableCell>
+            <TableCell className="font-medium">{thesis.title}</TableCell>
             <TableCell className="font-medium">
-              {project.students.length}
+              {thesis.investigationSubarea}
             </TableCell>
             <TableCell className="font-medium">
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => handleClick(project.id)}
+                onClick={() => handleClick(thesis.id)}
               >
                 <Search className="w-4 h-4" />
               </Button>
