@@ -7,13 +7,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-//import { getUndergraduateThesisDates } from "@/app/services/thesis.service";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useQuery } from "@tanstack/react-query";
+import { getPostgraduateThesisDates } from "@/app/services/important-dates.service";
 
 interface ThesisDatesInterface {
-  title: string;
+  id: string;
+  description: string;
   date: string;
+  sectionTitle: string;
 }
 
 /**
@@ -38,7 +40,7 @@ export default function ThesisDates() {
     error,
   } = useQuery({
     queryKey: ["student-thesis-dates"],
-    queryFn: getUndergraduateThesisDates,
+    queryFn: getPostgraduateThesisDates,
   });
 
   if (isFetching) return <SpinnerPage />;
@@ -46,12 +48,8 @@ export default function ThesisDates() {
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
       <div className="w-full bg-card shadow-lg rounded-xl p-5 h-full space-y-4">
-        {Object.keys(dates).map((dateName) => (
-          <DateTable
-            key={dateName}
-            title={dateName}
-            dates={dates[dateName as keyof typeof dates]}
-          />
+        {dates.map((date: any) => (
+          <DateTable key={date.id} title={date.sectionTitle} dates={[date]} />
         ))}
       </div>
     </div>
@@ -82,10 +80,11 @@ function DateTable({
   title: string;
   dates: ThesisDatesInterface[];
 }) {
+  console.log("Rendering DateTable with dates:", dates);
   return (
     <div>
       <h2 className="text-xl font-semibold text-core">{title}</h2>
-      <Table>
+      <Table className="w-full">
         <TableHeader>
           <TableRow>
             <TableHead className="bg-core-highlight text-white text-center">
@@ -98,9 +97,13 @@ function DateTable({
         </TableHeader>
         <TableBody>
           {dates.map((date) => (
-            <TableRow key={date.title}>
-              <TableCell className="text-primary">{date.title}</TableCell>
-              <TableCell className="text-primary">{date.date}</TableCell>
+            <TableRow key={date.id}>
+              <TableCell className="text-primary text-center">
+                {date.description}
+              </TableCell>
+              <TableCell className="text-primary text-center">
+                {date.date}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

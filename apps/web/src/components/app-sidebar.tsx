@@ -17,6 +17,7 @@ import {
   professorData,
   coordinatorData,
   supportData,
+  graduateData,
 } from "@/components/links-per-group";
 import { useHomeStore } from "@/app/inicio/home.store";
 import { getUserInfo } from "@/app/auth/auth-service";
@@ -52,6 +53,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ["coordinador", coordinatorData],
     ["profesor", professorData],
     ["estudiante", undergraduateData],
+    ["estudiante_maestria", graduateData],
   ]);
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -63,7 +65,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavMain
             key={role}
             items={roleNavMainMap.get(role) ?? []}
-            title={role[0].toUpperCase() + role.slice(1)}
+            title={
+              role === "estudiante_maestria"
+                ? "Estudiante Maestria"
+                : role[0].toUpperCase() + role.slice(1)
+            }
           />
         ))}
         <NavMain items={supportData} title="Soporte" />

@@ -1,5 +1,4 @@
-import { StatusInformation, Thesis } from "../types/thesis.type";
-
+/*
 const thesisList: { [professor: string]: Thesis[] } = {
   "Camilo Escobar": [
     {
@@ -489,8 +488,38 @@ const thesisList: { [professor: string]: Thesis[] } = {
       professor: "Mario Sanchéz",
     },
   ],
-};
+}; */
 
+/* Undergraduate Thesis */
+const API_URL = "http://localhost:8000/api/theses";
+const API_URL_APPLICATIONS = "http://localhost:8000/api/thesis-applications";
+
+export async function getPostgraduateThesis() {
+  const response = await fetch(`${API_URL}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch graduated thesis data.");
+  }
+  return response.json();
+}
+
+export async function getPostgraduateThesisById(id: string) {
+  const response = await fetch(`${API_URL}/${id}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch graduated thesis data.");
+  }
+  return response.json();
+}
+
+export async function getPostgraduateThesisStatus(document?: string) {
+  const response = await fetch(`${API_URL_APPLICATIONS}/${document}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch graduated thesis data.");
+  }
+  return response.json();
+}
+
+// TODO: Delete this?
+/*
 export async function getUndergraduateThesis({
   semester,
   category,
@@ -503,7 +532,7 @@ export async function getUndergraduateThesis({
   }
   return getUndergraduateThesisByProfessor(semester, category);
 }
-
+// TODO: Delete this?
 export async function getUndergraduateThesisByProfessor(
   semester?: string,
   category?: string
@@ -512,6 +541,7 @@ export async function getUndergraduateThesisByProfessor(
   return thesisList;
 }
 
+// TODO: Delete this?
 async function getUndergraduateThesisByArea(
   semester?: string,
   category?: string
@@ -530,11 +560,13 @@ async function getUndergraduateThesisByArea(
   return thesisPerField;
 }
 
+// TODO: Delete this?
 export async function getUndegraduadeThesisSemesters() {
   await new Promise((resolve) => setTimeout(resolve, 1500));
   return ["202510", "202520", "202610", "202620"];
 }
 
+// TODO: Delete this?
 export async function getUndergraduateThesisById(id: string) {
   await new Promise((resolve) => setTimeout(resolve, 1500));
   for (const professor in thesisList) {
@@ -548,6 +580,7 @@ export async function getUndergraduateThesisById(id: string) {
   throw new Error("No se encontró el proyecto de grado");
 }
 
+// TODO: Delete this?
 export async function getUndergraduateThesisDates() {
   await new Promise((resolve) => setTimeout(resolve, 1500));
   return {
@@ -609,7 +642,7 @@ export async function getUndergraduateThesisDates() {
     ],
   };
 }
-
+// TODO: Delete this?
 export async function getThesisStatusInformation() {
   await new Promise((resolve) => setTimeout(resolve, 1500));
   const status: StatusInformation = {
@@ -624,6 +657,7 @@ export async function getThesisStatusInformation() {
   return status;
 }
 
+// TODO: Delete this?
 export async function getThesisByProfessorId(professorId: number) {
   const professors = [
     "Camilo Escobar",
@@ -633,4 +667,16 @@ export async function getThesisByProfessorId(professorId: number) {
   ];
   await new Promise((resolve) => setTimeout(resolve, 1500));
   return thesisList[professors[professorId]];
+} */
+
+/* Posgraduate Report */
+/* API GET for coordinators report of thesis */
+const API_URL_REPORT =
+  "http://localhost:8000/api/thesis-applications/thesis-report";
+export async function getThesisApplicationsReport() {
+  const response = await fetch(`${API_URL_REPORT}`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch postgraduate data for report.");
+  }
+  return response.json();
 }

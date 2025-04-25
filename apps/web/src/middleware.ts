@@ -12,8 +12,15 @@ const roleRoutes = {
     "/inicio/soporte",
     "/inicio/tareas",
   ],
-  profesor: ["/inicio/profesor", "/inicio/tareas"],
-  coordinador: ["/inicio/coordinador", "/inicio/tareas"],
+  estudiante_maestria: [
+    "/inicio/estudiante",
+    "/inicio/posgrado",
+    "/inicio/maestria",
+    "/inicio/soporte",
+    "/inicio/tareas",
+  ],
+  profesor: ["/inicio/profesor", "/inicio/tareas", "/inicio/soporte"],
+  coordinador: ["/inicio/coordinador", "/inicio/tareas", "/inicio/soporte"],
 };
 
 /* Key for decryption */
@@ -54,6 +61,8 @@ export async function middleware(req: NextRequest) {
   const isProtectedRoute =
     path.startsWith("/inicio") ||
     path.startsWith("/pregrado") ||
+    path.startsWith("/posgrado") ||
+    path.startsWith("/maestria") ||
     path.startsWith("/estudiante") ||
     path.startsWith("/profesor") ||
     path.startsWith("/coordinador") ||

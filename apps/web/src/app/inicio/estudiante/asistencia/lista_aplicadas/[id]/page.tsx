@@ -58,9 +58,11 @@ export default function AssistanceStatus({
       },
       status: "",
       student: {
-        document: "",
-        name: "",
-        email: "",
+        user: {
+          document: "",
+          name: "",
+          email: "",
+        },
         isUndergraduate: false,
         code: "",
       },
@@ -150,12 +152,12 @@ function getSections(statusInformation: StatusInformation) {
     },
     {
       title: "Estudiante",
-      description: statusInformation.student.name,
+      description: statusInformation.student.user.name,
       icon: <User className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Correo del estudiante",
-      description: statusInformation.student.email,
+      description: statusInformation.student.user.email,
       icon: <Mail className="h-5 w-5 text-core mt-1" />,
     },
     {
