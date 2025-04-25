@@ -1,10 +1,12 @@
 "use client";
 import { Calendar, FileText, Mail, Star, User } from "lucide-react";
-//import { getThesisStatusInformation } from "@/app/services/thesis.service";
+import { getPostgraduateThesisStatus } from "@/app/services/thesis.service";
 import { StatusInformation } from "@/app/types/thesis.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import TabStatus from "@/components/shared/tab-status";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 /**
  * ThesisStatus Component
@@ -34,34 +36,67 @@ import { useQuery } from "@tanstack/react-query";
  *
  * @returns {JSX.Element} A tabbed interface showing thesis status and information
  */
-export default function ThesisStatus() {
-  const {
-    data: statusInformation,
-    isFetching,
-    error,
-  } = useQuery({
-    queryKey: ["student-thesis-status"],
-    queryFn: getThesisStatusInformation,
-  });
+export default function ThesisStatus({}) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<StatusInformation[]>([]);
 
-  if (isFetching) return <SpinnerPage />;
-  if (error || !statusInformation) return <ThesisNotFound />;
+  const { user, isLoading: isAuthLoading } = useAuth();
 
-  const sections = getSections(statusInformation);
-  const steps = ["Postulado", "Aceptado", "Inscrito", "Informe", "Finalizado"];
-  const messagePerStep = getMessagesPerStep();
-  const generalInformationProps = {
-    title: "Información de inscripción proyecto de grado",
-    sections,
-  };
-  const statusProps = {
-    currentStatus: statusInformation.lastStep,
-    statusMessage: messagePerStep.get(statusInformation.lastStep) || "",
-    steps,
-    title: "Estado inscripción proyecto de grado",
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!user?.id) return;
+        const userDocument = user?.id;
+        const statusData = await getPostgraduateThesisStatus(userDocument);
+        setData(statusData);
+      } catch (error) {
+        console.error("Error fetching assistance data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  return <TabStatus general={generalInformationProps} status={statusProps} />;
+    // Only fetch data if auth is not loading
+    if (!isAuthLoading) {
+      fetchData();
+    }
+  }, [isAuthLoading, user]);
+
+  {
+    const {
+      data: statusInformation,
+      isFetching,
+      error,
+    } = useQuery({
+      queryKey: ["student-thesis-status", user?.id],
+      queryFn: () => getPostgraduateThesisStatus(user?.id),
+    });
+
+    if (isFetching) return <SpinnerPage />;
+    if (error || !statusInformation) return <ThesisNotFound />;
+
+    const sections = getSections(statusInformation);
+    const steps = [
+      "Postulado",
+      "Aceptado",
+      "Inscrito",
+      "Informe",
+      "Finalizado",
+    ];
+    const messagePerStep = getMessagesPerStep();
+    const generalInformationProps = {
+      title: "Información de inscripción de tesis de maestría",
+      sections,
+    };
+    const statusProps = {
+      currentStatus: statusInformation.status,
+      statusMessage: messagePerStep.get(statusInformation.status) || "",
+      steps,
+      title: "Estado inscripción tesis de maestría",
+    };
+
+    return <TabStatus general={generalInformationProps} status={statusProps} />;
+  }
 }
 
 /**
@@ -124,27 +159,27 @@ function getSections(statusInformation: StatusInformation) {
   return [
     {
       title: "Semestre de inicio",
-      description: statusInformation.semester,
+      description: `${statusInformation.thesis.period.year}-${statusInformation.thesis.period.semester}`,
       icon: <Calendar className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Tema del proyecto",
-      description: statusInformation.projectTitle,
+      description: statusInformation.thesis.title,
       icon: <FileText className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Asesor",
-      description: statusInformation.advisor,
+      description: statusInformation.thesis.professor.user.name,
       icon: <User className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Estudiante",
-      description: statusInformation.student,
+      description: statusInformation.student.user.name,
       icon: <User className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Correo del estudiante",
-      description: statusInformation.studentEmail,
+      description: statusInformation.student.user.email,
       icon: <Mail className="h-5 w-5 text-core mt-1" />,
     },
     {

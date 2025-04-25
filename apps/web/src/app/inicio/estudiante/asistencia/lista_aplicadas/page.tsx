@@ -33,6 +33,8 @@ import Link from "next/link";
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { getAssistanceApplications } from "@/app/services/assistance.service";
+import { useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 /**
  * Column definitions for the AssistanceAppliedList table
@@ -106,11 +108,14 @@ export default function AssistanceAppliedList() {
   const [data, setData] = React.useState<StatusInformation[]>([]);
   const [selectedSemester, setSelectedSemester] = React.useState<string>("");
 
-  React.useEffect(() => {
+  const { user, isLoading: isAuthLoading } = useAuth();
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        const tempStudentID = "Document 3";
-        const assistanceData = await getAssistanceApplications(tempStudentID);
+        if (!user?.id) return;
+        const userDocument = user?.id;
+        const assistanceData = await getAssistanceApplications(userDocument);
         setData(assistanceData);
       } catch (error) {
         console.error("Error fetching assistance data:", error);
@@ -118,8 +123,11 @@ export default function AssistanceAppliedList() {
         setIsLoading(false);
       }
     };
-    fetchData();
-  }, []);
+
+    if (!isAuthLoading) {
+      fetchData();
+    }
+  }, [isAuthLoading, user]);
 
   const filteredData = React.useMemo(() => {
     if (!selectedSemester) return data;

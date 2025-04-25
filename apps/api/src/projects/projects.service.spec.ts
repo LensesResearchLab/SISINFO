@@ -9,7 +9,7 @@ import { PeriodsService } from '../periods/periods.service';
 describe('ProjectService', () => {
   let service: ProjectsService;
   let professorService: ProfessorsService;
-  let periodsService: PeriodsService
+  let periodsService: PeriodsService;
   let projecRepository: Repository<Project>;
 
   beforeEach(async () => {

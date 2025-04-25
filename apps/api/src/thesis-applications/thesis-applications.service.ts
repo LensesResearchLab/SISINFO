@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateThesisApplicationDto } from './dto/create-thesis-application.dto';
 import { UpdateThesisApplicationDto } from './dto/update-thesis-application.dto';
 import { ThesisApplication } from './entities/thesis-application.entity';
@@ -20,16 +20,45 @@ export class ThesisApplicationsService {
     return `This action returns all thesisApplications`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} thesisApplication`;
-  }
+  async findOne(studentDocument: string) {
+    const application = await this.thesisApplicationRepository.findOne({
+      where: {
+        student: {
+          document: studentDocument,
+        },
+      },
+      relations: {
+        student: {
+          user: true,
+        },
+        thesis: {
+          period: true,
+          professor: {
+            user: true,
+          },
+          tags: true,
+        },
+      },
+    });
 
-  update(id: number, updateThesisApplicationDto: UpdateThesisApplicationDto) {
-    return `This action updates a #${id} thesisApplication`;
-  }
+    if (!application) {
+      throw new NotFoundException(
+        `Thesis application with doc ${studentDocument} not found`,
+      );
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} thesisApplication`;
+    if (application.student?.user) {
+      const { password, ...userWithoutPassword } = application.student.user;
+      application.student.user = userWithoutPassword as any;
+    }
+
+    if (application.thesis?.professor?.user) {
+      const { password, ...userWithoutPassword } =
+        application.thesis.professor.user;
+      application.thesis.professor.user = userWithoutPassword as any;
+    }
+
+    return application;
   }
 
   async getThesisApplicationsReport() {

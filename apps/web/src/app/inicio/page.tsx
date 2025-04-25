@@ -9,6 +9,7 @@ import RoleTab from "@/components/shared/role-tab";
 import SupportFeatures from "./components/support-features";
 import { getUserInfo } from "../auth/auth-service";
 import SpinnerPage from "@/components/shared/spinner-page";
+import GraduateStudentFeatures from "./components/graduate-student-features";
 
 const roleMap = new Map<string, React.ReactNode>([
   [
@@ -17,7 +18,18 @@ const roleMap = new Map<string, React.ReactNode>([
       <SupportFeatures />
     </StudentFeatures>,
   ],
-  ["profesor", <ProfessorFeatures key={"profesor"} />],
+  [
+    "estudiante_maestria",
+    <GraduateStudentFeatures key={"estudiante_maestria"}>
+      <SupportFeatures />,
+    </GraduateStudentFeatures>,
+  ],
+  [
+    "profesor",
+    <ProfessorFeatures key={"profesor"}>
+      <SupportFeatures />,
+    </ProfessorFeatures>,
+  ],
   ["coordinador", <CoordinatorFeatures key={"coordinador"} />],
 ]);
 
@@ -52,8 +64,7 @@ export default function Home() {
     }
   }, [setRoles]);
 
-  if (loading) return (<SpinnerPage />);
-  
+  if (loading) return <SpinnerPage />;
 
   if (roles.length === 0) return null;
   if (roles.length === 1) return roleMap.get(roles[0]);
