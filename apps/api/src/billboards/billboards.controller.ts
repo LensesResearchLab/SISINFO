@@ -1,14 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { BillboardsService } from './billboards.service';
-import { UpdateBillboardDto } from './dto/update-billboard.dto';
 import { CreateSectionDto } from '../sections/dto/create-section.dto';
 
 @Controller('billboards')
@@ -28,14 +19,6 @@ export class BillboardsController {
   @Get(':period')
   findOne(@Param('period') period: string) {
     return this.billboardsService.findOne(period);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateBillboardDto: UpdateBillboardDto,
-  ) {
-    return this.billboardsService.update(+id, updateBillboardDto);
   }
 
   @Delete(':id')

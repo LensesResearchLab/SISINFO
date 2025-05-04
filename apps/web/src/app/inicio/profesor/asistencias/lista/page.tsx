@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AssistanceList from "@/app/inicio/estudiante/asistencia/lista/page";
 import { getUserInfo } from "@/app/auth/auth-service";
+import { AssistanceList } from "@/components/shared/assistance-list";
 
 export default function ProfessorAssistanceList() {
   const [currentUser, setCurrentUser] = useState({

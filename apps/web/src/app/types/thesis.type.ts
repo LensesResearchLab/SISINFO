@@ -1,5 +1,7 @@
+import { Professor } from "./graduated-assistance.type";
 import { Period } from "./period.type";
 import { Student } from "./student.type";
+import { ThesisApplication } from "./thesis-application.type";
 
 export interface Thesis {
   id: string;
@@ -11,64 +13,7 @@ export interface Thesis {
   period: Period;
   professor: Professor;
   tags: string[];
+  students?: Student[];
 }
 
-export interface ThesisApplication {
-  id: string;
-  status: string;
-  grade: string;
-}
 
-export interface Professor {
-  document: string;
-  isActive: boolean;
-  user: {
-    document: string;
-    name: string;
-    email: string;
-  };
-}
-
-export interface StatusInformation {
-  id: string;
-  status: string;
-  grade: string;
-  student: Student;
-  period: Period;
-  professor: Professor;
-  thesis: Thesis;
-}
-
-/*
-export interface StudentDetail {
-  id: string;
-  name: string;
-  status: string;
-  date: string;
-}
-
-export interface StatusInformation {
-  semester: string;
-  projectTitle: string;
-  advisor: string;
-  student: string;
-  studentEmail: string;
-  grade: string;
-  lastStep: string;
-} */
-
-export interface ThesisReport {
-  student_code: string;
-  student_name: string;
-  student_email: string;
-  professor_name: string;
-  professor_email: string;
-  thesis_investigation_subarea: string;
-  thesis_title: string;
-  status: string;
-  thesis_grade: string;
-  thesis_period: {
-    year: string;
-    period: string;
-  };
-}

@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
-import { getThesisByProfessorId } from "@/app/services/thesis.service";
+import { getThesisByProfessor } from "@/app/services/thesis.service";
 import { useProfessorThesisListStore } from "./store";
 import { Thesis } from "@/app/types/thesis.type";
 import SpinnerPage from "@/components/shared/spinner-page";
@@ -30,7 +30,7 @@ export default function ThesisProjects() {
   );
   useEffect(() => {
     return reset;
-  }, []);
+  }, [reset]);
   const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
 
   const {
@@ -39,13 +39,13 @@ export default function ThesisProjects() {
     error,
   } = useQuery({
     queryKey: ["professor-thesis-projects"],
-    queryFn: () => getThesisByProfessorId(1),
+    queryFn: () => getThesisByProfessor(),
   });
 
   if (isFetching) return <SpinnerPage />;
   if (error || !thesisList) return <ThesisListNotFound />;
 
-  const sortedThesisList = thesisList.sort(
+  const sortedThesisList: Thesis[] = thesisList.sort(
     (a, b) => a.title.localeCompare(b.title) * sortDirection
   );
 
@@ -151,7 +151,7 @@ function TableRow({ thesis }: { thesis: Thesis }) {
     <div key={thesis.id}>
       <div className="grid grid-cols-12 p-1 items-center text-primary border-b ">
         <div className="col-span-4">{thesis.title}</div>
-        <div className="col-span-2">{thesis.category}</div>
+        <div className="col-span-2">{thesis.description}</div>
         <div className="col-span-3">
           <Button
             variant="ghost"
@@ -198,12 +198,12 @@ function TableRowDetail({ thesis }: { thesis: Thesis }) {
         <div className="col-span-4 font-medium">Estado</div>
         <div className="col-span-4 font-medium">Fecha de la solicitud</div>
       </div>
-      {thesis.students.map((student) => (
-        <div key={student.id} className="bg-subtable  text-primary border-b">
+      {thesis.students?.map((student) => (
+        <div key={student.user.id} className="bg-subtable  text-primary border-b">
           <div className="grid grid-cols-12 py-2 px-3">
-            <div className="col-span-4">{student.name}</div>
-            <div className="col-span-4">{student.status}</div>
-            <div className="col-span-4">{student.date}</div>
+            <div className="col-span-4">{student.user.name}</div>
+            <div className="col-span-4">{student.user.name}</div>
+            <div className="col-span-4">{student.user.name}</div>
           </div>
           <div className="px-3 border-t border-gray-100">
             <StudentActionButtons />

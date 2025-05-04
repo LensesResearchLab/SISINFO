@@ -23,9 +23,9 @@ export class StudentsService implements RoleService {
     return this.studentRepository.find();
   }
 
-  async findOne(document: string) {
+  async findOne(id: string) {
     return this.studentRepository.findOne({
-      where: { document },
+      where: { id },
     });
   }
 
@@ -35,8 +35,8 @@ export class StudentsService implements RoleService {
     });
   }
 
-  async update(document: string, updateStudentDto: UpdateStudentDto) {
-    const student = await this.studentRepository.findOneBy({ document });
+  async update(id: string, updateStudentDto: UpdateStudentDto) {
+    const student = await this.studentRepository.findOneBy({ id });
     if (!student) return null;
     Object.assign(student, updateStudentDto);
     await this.studentRepository.save(student);
@@ -52,7 +52,7 @@ export class StudentsService implements RoleService {
     roleInfo: CreateStudentDto,
   ): Promise<void> {
     let student = await this.studentRepository.findOne({
-      where: { document: user.document },
+      where: { id: user.id },
     });
     if (!student) {
       student = this.studentRepository.create({

@@ -42,7 +42,7 @@ export default function EditAssistancePage() {
     requirements: [],
     professor: {
       user: {
-        document: "",
+        id: "",
         name: "",
         email: "",
       },
@@ -61,7 +61,7 @@ export default function EditAssistancePage() {
       }
     };
     fetchData();
-  }, []);
+  }, [id]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

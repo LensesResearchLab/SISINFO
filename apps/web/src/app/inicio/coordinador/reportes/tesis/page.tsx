@@ -1,6 +1,7 @@
 "use client";
 import { getThesisApplicationsReport } from "@/app/services/thesis.service";
-import { ThesisReport } from "@/app/types/thesis.type";
+import { ThesisReport } from "@/app/types/thesis-report.type";
+
 import SpinnerPage from "@/components/shared/spinner-page";
 import { Button } from "@/components/ui/button";
 import {

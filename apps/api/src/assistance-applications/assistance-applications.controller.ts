@@ -37,12 +37,12 @@ export class AssistanceApplicationsController {
       }),
     )
     file: Express.Multer.File,
-    @Query('studentDocument') studentDocument: string,
+    @Query('studentId') studentId: string,
     @Query('graduatedAssistanceId') graduatedAssistanceId: string,
   ) {
     await this.assistanceApplicationsService.create(
       createAssistanceApplicationDto,
-      studentDocument,
+      studentId,
       graduatedAssistanceId,
       file,
     );
@@ -57,10 +57,10 @@ export class AssistanceApplicationsController {
     return this.assistanceApplicationsService.findAll();
   }
 
-  @Get('student/:document')
-  findAllByStudentDocument(@Param('document') document: string) {
+  @Get('student/:studentId')
+  findAllByStudentId(@Param('studentId') studentId: string) {
     return this.assistanceApplicationsService.findAllByStudentDocument(
-      document,
+      studentId,
     );
   }
 

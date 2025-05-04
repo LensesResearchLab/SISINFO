@@ -1,8 +1,8 @@
 "use client";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useEffect, useState } from "react";
 import { getTutorials } from "@/app/services/support.service";
-import { Tutorial } from "@/app/types/support.types";
+import { Tutorial } from "@/app/types/tutorial.types";
+import { useQuery } from "@tanstack/react-query";
 /**
  * VideoPlayer Component
  *
@@ -24,21 +24,13 @@ function VideoPlayer({ src }: { src: string }) {
 }
 
 export default function Tutorials() {
-  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: tutorials, isLoading, error } = useQuery<Tutorial[]>({
+    queryKey: ["tutorials"],
+    queryFn: getTutorials,
+  });
 
-  /**
-   * Fetches tutorials from the backend service.
-   *
-   * This hook runs when the component mounts, fetching the list of tutorials
-   * and updating the state once the data is received.
-   */
-  useEffect(() => {
-    getTutorials().then((data) => {
-      setTutorials(data);
-      setLoading(false);
-    });
-  }, []);
+  if (isLoading) return <div>Cargando tutoriales...</div>;
+  if (error || !tutorials) return <div>Error al cargar los tutoriales</div>;
 
   return (
     <div className="columns-1 min-h-full min-w-full sm:gap-8 sm:columns-2 p-4 space-y-4">
@@ -48,9 +40,7 @@ export default function Tutorials() {
             <h2 className="text-xl font-bold text-core-highlight mb-4">
               {tutorial.title}
             </h2>
-            <p className="text-lg text-foreground-soft">
-              {tutorial.description}
-            </p>
+            <p className="text-lg text-foreground-soft">{tutorial.description}</p>
           </CardHeader>
           <CardContent>
             <VideoPlayer src={tutorial.link} />

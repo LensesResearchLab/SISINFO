@@ -1,11 +1,9 @@
 import { GraduatedAssistanceApplication } from "./graduated-assistance-application.type";
+import { Student } from "./student.type";
+import { User } from "./user.type";
 
 export interface Professor {
-  user: {
-    document: string;
-    name: string;
-    email: string;
-  };
+  user: User;
 }
 
 export interface Requirement {
@@ -28,28 +26,6 @@ export interface GraduatedAssistance {
 export interface StatusInformation {
   id: string;
   status: string;
-  student: {
-    isUndergraduate: boolean;
-    code: string;
-    user: {
-      document: string;
-      name: string;
-      email: string;
-    }
-  };
-  graduatedAssistance: {
-    id: string;
-    title: string;
-    category: string;
-    description: string;
-    startDate: string;
-    endDate: string;
-    professor: {
-      user: {
-        document: string;
-        name: string;
-        email: string;
-      };
-    };
-  };
+  student: Student;
+  graduatedAssistance: GraduatedAssistance;
 }

@@ -7,7 +7,7 @@ function createValidIncidenceDto(
   overrides: Partial<CreateIncidenceDto> = {},
 ): CreateIncidenceDto {
   const dto = new CreateIncidenceDto();
-  dto.type = IncidenceEnum.ERROR;
+  dto.type = IncidenceEnum.TECHNICAL_FAILURE;
   dto.description = 'Error loading theses';
   return Object.assign(dto, overrides);
 }

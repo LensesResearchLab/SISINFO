@@ -1,23 +1,5 @@
-import { Coordinator, Tutorial } from "@/app/types/support.types";
-
-const coordinators: Coordinator[] = [
-  {
-    id: 1,
-    name: "Juan Pablo Fernandez",
-    office: "ML-70",
-    email: "pregisis@uniandes.edu.co",
-    extension: "2873",
-    image: "/juan_fernandez.jpg",
-  },
-  {
-    id: 2,
-    name: "Natalia Franco Tamara",
-    office: "ML-79",
-    email: "magitn@uniandes.edu.co",
-    extension: "3745",
-    image: "/natalia_franco.jpg",
-  },
-];
+import { Tutorial } from "@/app/types/tutorial.types";
+import { API_ROUTES } from "../routes";
 
 const tutoriales: Tutorial[] = [
   {
@@ -34,19 +16,23 @@ const tutoriales: Tutorial[] = [
   },
 ];
 
+
 export async function getCoordinators() {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return coordinators;
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.COORDINATORS}`;
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+        'Content-Type': 'application/json'
+        }
+    });
+    alert(JSON.stringify(response));
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Error buscando los coordinadores: ${response.statusText}`, { cause: errorData });
+    }
+    return response.json();
 }
 
-export async function getCoordinatorById(id: number) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  const coordinator = coordinators.find((coord) => coord.id === id);
-  if (coordinator) {
-    return coordinator;
-  }
-  throw new Error("Coordinator not found.");
-}
 
 export async function getTutorials() {
   await new Promise((resolve) => setTimeout(resolve, 1000));

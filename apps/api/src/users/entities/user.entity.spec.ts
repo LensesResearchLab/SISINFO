@@ -8,13 +8,13 @@ import { Student } from '../../students/entities/student.entity';
 describe('User Entity', () => {
   it('should create a User with all properties', () => {
     const user = new User();
-    user.document = '123456789';
+    user.id = '123456789';
     user.name = 'John Doe';
     user.email = 'john.doe@example.com';
     user.password = 'securepassword123';
 
     expect(user).toBeInstanceOf(User);
-    expect(user.document).toBe('123456789');
+    expect(user.id).toBe('123456789');
     expect(user.name).toBe('John Doe');
     expect(user.email).toBe('john.doe@example.com');
     expect(user.password).toBe('securepassword123');

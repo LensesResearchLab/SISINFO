@@ -44,7 +44,7 @@ import { useAuth } from "@/hooks/use-auth";
  *
  * @type {ColumnDef<StatusInformation>[]}
  */
-export const columns: ColumnDef<StatusInformation>[] = [
+const columns: ColumnDef<StatusInformation>[] = [
   {
     id: "title",
     accessorKey: "graduatedAssistance.title",
@@ -114,8 +114,8 @@ export default function AssistanceAppliedList() {
     const fetchData = async () => {
       try {
         if (!user?.id) return;
-        const userDocument = user?.id;
-        const assistanceData = await getAssistanceApplications(userDocument);
+        const userId = user?.id;
+        const assistanceData = await getAssistanceApplications(userId);
         setData(assistanceData);
       } catch (error) {
         console.error("Error fetching assistance data:", error);
@@ -132,10 +132,11 @@ export default function AssistanceAppliedList() {
   const filteredData = React.useMemo(() => {
     if (!selectedSemester) return data;
 
-    /* Filter to select the semester based on the period, so for 2025-01 corresponds to months 1 to 6, else is 2025-02 */
     return data.filter((item) => {
-      const [year, month] = item.graduatedAssistance.startDate.split("-");
-      const semester = parseInt(month) <= 6 ? "01" : "02";
+      const date = new Date(item.graduatedAssistance.startDate);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const semester = month <= 6 ? "01" : "02";
       const formattedSemester = `${year}-${semester}`;
 
       return formattedSemester === selectedSemester;

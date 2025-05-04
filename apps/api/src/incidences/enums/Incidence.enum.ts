@@ -1,5 +1,5 @@
 export enum IncidenceEnum {
-  ERROR = 'Error',
-  FAIL = 'Fail',
-  OTHER = 'Other',
+  SYSTEM_ERROR = 'Error en el sistema',
+  TECHNICAL_FAILURE = 'Falla técnica',
+  OTHER = 'Otro',
 }

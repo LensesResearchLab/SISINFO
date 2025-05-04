@@ -1,12 +1,11 @@
 "use client";
 import { Calendar, FileText, Mail, Star, User } from "lucide-react";
 import { getPostgraduateThesisStatus } from "@/app/services/thesis.service";
-import { StatusInformation } from "@/app/types/thesis.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import TabStatus from "@/components/shared/tab-status";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { ThesisApplication } from "@/app/types/thesis-application.type";
 
 /**
  * ThesisStatus Component
@@ -36,67 +35,34 @@ import { useAuth } from "@/hooks/use-auth";
  *
  * @returns {JSX.Element} A tabbed interface showing thesis status and information
  */
-export default function ThesisStatus({}) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<StatusInformation[]>([]);
-
+export default function ThesisStatus() {
   const { user, isLoading: isAuthLoading } = useAuth();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (!user?.id) return;
-        const userDocument = user?.id;
-        const statusData = await getPostgraduateThesisStatus(userDocument);
-        setData(statusData);
-      } catch (error) {
-        console.error("Error fetching assistance data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const { data: statusInformation, isFetching, error } = useQuery({
+    queryKey: ["student-thesis-status", user?.id],
+    queryFn: () => getPostgraduateThesisStatus(user?.id),
+    enabled: !!user && !isAuthLoading,
+  });
 
-    // Only fetch data if auth is not loading
-    if (!isAuthLoading) {
-      fetchData();
-    }
-  }, [isAuthLoading, user]);
+  if (isFetching) return <SpinnerPage />;
+  if (error || !statusInformation) return <ThesisNotFound />;
 
-  {
-    const {
-      data: statusInformation,
-      isFetching,
-      error,
-    } = useQuery({
-      queryKey: ["student-thesis-status", user?.id],
-      queryFn: () => getPostgraduateThesisStatus(user?.id),
-    });
+  const sections = getSections(statusInformation);
+  const steps = ["Postulado", "Aceptado", "Inscrito", "Informe", "Finalizado"];
+  const messagePerStep = getMessagesPerStep();
 
-    if (isFetching) return <SpinnerPage />;
-    if (error || !statusInformation) return <ThesisNotFound />;
+  const generalInformationProps = {
+    title: "Información de inscripción de tesis de maestría",
+    sections,
+  };
+  const statusProps = {
+    currentStatus: statusInformation.status,
+    statusMessage: messagePerStep.get(statusInformation.status) || "",
+    steps,
+    title: "Estado inscripción tesis de maestría",
+  };
 
-    const sections = getSections(statusInformation);
-    const steps = [
-      "Postulado",
-      "Aceptado",
-      "Inscrito",
-      "Informe",
-      "Finalizado",
-    ];
-    const messagePerStep = getMessagesPerStep();
-    const generalInformationProps = {
-      title: "Información de inscripción de tesis de maestría",
-      sections,
-    };
-    const statusProps = {
-      currentStatus: statusInformation.status,
-      statusMessage: messagePerStep.get(statusInformation.status) || "",
-      steps,
-      title: "Estado inscripción tesis de maestría",
-    };
-
-    return <TabStatus general={generalInformationProps} status={statusProps} />;
-  }
+  return <TabStatus general={generalInformationProps} status={statusProps} />;
 }
 
 /**
@@ -155,7 +121,7 @@ function ThesisNotFound() {
  *
  * Icons are styled consistently with sky blue color and small size
  */
-function getSections(statusInformation: StatusInformation) {
+function getSections(statusInformation: ThesisApplication) {
   return [
     {
       title: "Semestre de inicio",

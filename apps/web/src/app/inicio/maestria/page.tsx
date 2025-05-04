@@ -3,9 +3,10 @@ import { useEffect, useState } from "react"
 import { Tabs, TabsContent} from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { StudentTabList, ProfileTab } from "../profesor/maestria/lista/[id]/page"
 import type { Course, Student } from "../../types/student-profile.type"
 import { getStudentbyId } from "@/app/services/master.service"
+import { ProfileTab } from "@/components/shared/profile-tab"
+import { StudentTabList } from "@/components/shared/student-tab-list"
 
 export default function StudyPlanForm() {
   const [courses, setCourses] = useState<Course[]>([])

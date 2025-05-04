@@ -136,15 +136,15 @@ function ThesisApplying({ thesis }: { thesis: Thesis }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const thesisId = thesis.id;
-    const userDocument = user?.id;
-    console.log(userDocument);
+    const userId = user?.id;
+    console.log(userId);
 
-    if (!thesisId || !userDocument) {
-      console.log("Error: Missing thesis ID or user document.");
+    if (!thesisId || !userId) {
+      console.log("Error: Missing thesis ID or user ID.");
       return;
     }
 
-    postThesisApplication(thesisId, userDocument);
+    postThesisApplication(thesisId, userId);
     alert("Aplicación enviada con éxito");
   };
 

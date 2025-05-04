@@ -96,4 +96,17 @@ export class SeedController {
   executeTaskAndTas() {
     return this.seedService.executeTaskAndTas();
   }
+
+  @Get('all')
+  @ApiOperation({
+    summary: 'Generates all fake data.',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Fake data generated successfully. Returns the value of `SEED_EXECUTED`.',
+  })
+  executeAll() {
+    return this.seedService.executeAll();
+  }
 }

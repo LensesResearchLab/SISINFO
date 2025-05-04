@@ -1,13 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProjectApplicationDto } from './dto/create-project-application.dto';
-import { UpdateProjectApplicationDto } from './dto/update-project-application.dto';
-import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectApplication } from './entities/project-application.entity';
 import { ProjectsService } from '../projects/projects.service';
 import { StudentsService } from '../students/students.service';
-import { Student } from '../students/entities/student.entity';
-import { Project } from '../projects/entities/project.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProjectApplicationsService {
@@ -23,14 +20,10 @@ export class ProjectApplicationsService {
     projectId: string,
     studentDocument: string,
   ): Promise<ProjectApplication> {
-    return this.projectApplicationRepository.manager.transaction(
-      async (transactionalEntityManager: EntityManager) => {
-        const student = await transactionalEntityManager
-          .getRepository(Student)
-          .findOne({ where: { document: studentDocument } });
-        const project = await transactionalEntityManager
-          .getRepository(Project)
-          .findOne({ where: { id: projectId } });
+    const result = await this.projectApplicationRepository.manager.transaction(
+      async (manager) => {
+        const student = await this.studentsService.findOne(studentDocument);
+        const project = await this.projectsService.findOne(projectId);
 
         if (!student || !project) {
           throw new NotFoundException(
@@ -40,18 +33,17 @@ export class ProjectApplicationsService {
           );
         }
 
-        const projectApplication = transactionalEntityManager.create(
-          ProjectApplication,
-          {
-            ...createProjectApplicationDto,
-            project,
-            student,
-          },
-        );
+        const projectApplication = manager.create(ProjectApplication, {
+          ...createProjectApplicationDto,
+          project,
+          student,
+        });
 
-        return transactionalEntityManager.save(projectApplication);
+        return await manager.save(projectApplication);
       },
     );
+
+    return result;
   }
 
   findAll() {
@@ -60,14 +52,6 @@ export class ProjectApplicationsService {
 
   findOne(id: number) {
     return `This action returns a #${id} projectApplication`;
-  }
-
-  update(id: number, updateProjectApplicationDto: UpdateProjectApplicationDto) {
-    return `This action updates a #${id} projectApplication`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} projectApplication`;
   }
 
   async getProjectApplicationsReport() {

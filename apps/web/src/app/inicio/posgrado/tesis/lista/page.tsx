@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Search } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { getPostgraduateThesis } from "@/app/services/thesis.service";
 import { Thesis } from "@/app/types/thesis.type";
@@ -58,9 +58,7 @@ export default function ThesisList() {
   const searchCategory = useThesisListStore((state) => state.searchCategory);
   const searchTerm = useThesisListStore((state) => state.searchTerm);
   const sortDirection = useThesisListStore((state) => state.sortDirection);
-  const setSortDirection = useThesisListStore(
-    (state) => state.setSortDirection
-  );
+  const setSortDirection = useThesisListStore((state) => state.setSortDirection);
   const setOrder = useThesisListStore((state) => state.setOrder);
 
   const { data: thesisList, isFetching: isFetchingThesis } = useQuery({
@@ -73,52 +71,55 @@ export default function ThesisList() {
     queryFn: getPeriods,
   });
 
-  let filteredThesisList = Array.isArray(thesisList)
-    ? thesisList.filter(
-        (thesis) =>
-          !searchTerm ||
-          `${thesis.period.year}${thesis.period.period}` === searchTerm
-      )
-    : [];
+  // Filtrar la lista de tesis por semestre
+  const filteredThesisList = useMemo(() => {
+    return Array.isArray(thesisList)
+      ? thesisList.filter(
+          (thesis) =>
+            !searchTerm ||
+            `${thesis.period.year}${thesis.period.period}` === searchTerm
+        )
+      : [];
+  }, [thesisList, searchTerm]);
 
-  let groupedByProfessor: { [professor: string]: Thesis[] } = {};
-  let groupedByArea: { [area: string]: Thesis[] } = {};
-  if (Array.isArray(filteredThesisList)) {
-    groupedByProfessor = filteredThesisList.reduce(
-      (acc, thesis) => {
-        const profName =
-          thesis.professor?.user?.name &&
-          typeof thesis.professor.user.name === "string"
-            ? thesis.professor.user.name
-            : "Sin profesor";
-        if (!acc[profName]) acc[profName] = [];
-        acc[profName].push(thesis);
-        return acc;
-      },
-      {} as { [professor: string]: Thesis[] }
-    );
+  // Agrupar tesis por profesor
+  const groupedByProfessor = useMemo(() => {
+    return filteredThesisList.reduce((acc, thesis) => {
+      const profName =
+        thesis.professor?.user?.name &&
+        typeof thesis.professor.user.name === "string"
+          ? thesis.professor.user.name
+          : "Sin profesor";
+      if (!acc[profName]) acc[profName] = [];
+      acc[profName].push(thesis);
+      return acc;
+    }, {} as { [professor: string]: Thesis[] });
+  }, [filteredThesisList]);
 
-    groupedByArea = filteredThesisList.reduce(
-      (acc, thesis) => {
-        const area = thesis.investigationSubarea;
-        if (!acc[area]) acc[area] = [];
-        acc[area].push(thesis);
-        return acc;
-      },
-      {} as { [area: string]: Thesis[] }
-    );
-  }
+  // Agrupar tesis por área de investigación
+  const groupedByArea = useMemo(() => {
+    return filteredThesisList.reduce((acc, thesis) => {
+      const area = thesis.investigationSubarea;
+      if (!acc[area]) acc[area] = [];
+      acc[area].push(thesis);
+      return acc;
+    }, {} as { [area: string]: Thesis[] });
+  }, [filteredThesisList]);
 
+  // Calcular el orden usando useMemo
+  const order = useMemo(() => {
+    const keys =
+      searchCategory === "investigation_subarea"
+        ? Object.keys(groupedByArea)
+        : Object.keys(groupedByProfessor);
+    return keys.sort((a, b) => sortDirection * a.localeCompare(b));
+  }, [groupedByArea, groupedByProfessor, searchCategory, sortDirection]);
+
+  // Actualizar el estado global con el orden calculado
   useEffect(() => {
-    let keys: string[] = [];
-    if (searchCategory === "investigation_subarea") {
-      keys = Object.keys(groupedByArea);
-    } else {
-      keys = Object.keys(groupedByProfessor);
-    }
-    const sortedOrder = keys.sort((a, b) => sortDirection * a.localeCompare(b));
-    setOrder(sortedOrder);
-  }, [thesisList, sortDirection, searchCategory]);
+    setOrder(order);
+  }, [order, setOrder]);
+
   if (isLoadingSemesters) return <SpinnerPage />;
 
   return (
@@ -136,7 +137,6 @@ export default function ThesisList() {
               className="w-full sm:w-auto"
             />
           </div>
-
           <AlphabeticSortButton
             onclick={() => setSortDirection(sortDirection * -1)}
             sortDirection={sortDirection}

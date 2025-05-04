@@ -1,6 +1,6 @@
 import { Thesis } from "@/app/types/thesis.type";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { Tag, Calendar, Users, Mail } from "lucide-react";
+import { Tag, Calendar, Mail } from "lucide-react";
 import { CategoryTagStatic } from "./category-tag";
 
 export function ThesisDetailCard({
@@ -91,6 +91,8 @@ function MainInformation({ thesis }: { thesis: Thesis }) {
       </h3>
       <h3 className="font-semibold text-lg mt-4">Descripción:</h3>
       <p className="text-foreground-soft">{thesis.description}</p>
+      <h3 className="font-semibold text-lg mt-4">Areas de interes:</h3>
+      <Tags tags={thesis.tags} />
     </div>
   );
 }
@@ -110,15 +112,13 @@ function MainInformation({ thesis }: { thesis: Thesis }) {
  *
  * @returns {JSX.Element} Section with heading and area badges
  */
-function AreasOfInterest({ areas }: { areas: string | string[] | any[] }) {
-  const areaArray = typeof areas === "string" ? [areas] : areas;
-
+function Tags({ tags }: { tags: string[] }) {
   return (
     <div>
       <h3 className="font-semibold text-lg">Áreas de interés:</h3>
       <div className="flex flex-wrap gap-2 mt-2">
-        {areaArray && areaArray.length > 0 ? (
-          areaArray.map((area) => <CategoryTagStatic tag={area} key={area} />)
+        {tags && tags.length > 0 ? (
+          tags.map((area) => <CategoryTagStatic tag={area} key={area} />)
         ) : (
           <span className="text-gray-500">
             No hay áreas de interés especificadas

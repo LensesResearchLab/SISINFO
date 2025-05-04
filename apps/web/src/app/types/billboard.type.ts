@@ -1,6 +1,7 @@
 import { Period } from "./period.type"
 import { TeachingAssistantship } from "./teachingAssistantship.type";
 import { Student } from "./student.type";
+import { User } from "./user.type";
 
 export interface Billboard {
     id?: string;
@@ -31,11 +32,7 @@ export interface Professor {
   user: User;
 }
 
-export interface User {
-  document: string;
-  email: string;
-  name: string;
-}
+
 
 export interface Section {
   id: string;

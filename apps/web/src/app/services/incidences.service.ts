@@ -1,0 +1,36 @@
+import { API_ROUTES } from "../routes";
+import { Incidence } from "../types/incidence.type";
+
+
+export async function createIncidence(incidence: Incidence): Promise<Incidence> {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.INCIDENCES}`;
+    console.log("URL a la que se va a enviar la incidencia:", url);
+  console.log("Incidencia a enviar:", JSON.stringify(incidence));
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(incidence)
+    });
+
+    if (!response.ok) {
+      let errorData = {};
+      try {
+        errorData = await response.json();
+      } catch (parseError) {
+        console.error("No se pudo parsear el error:", parseError);
+      }
+      throw new Error(
+        `Error reporting incidence: ${response.status} ${response.statusText}`,
+        { cause: errorData }
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error al enviar la petición:", error);
+    throw error;
+  }
+}

@@ -8,12 +8,12 @@ import {
   import { cn } from "@/lib/utils"
 import { Check } from "lucide-react";
   
-  interface GeneralProps {
+  export interface GeneralProps {
     title: string
     sections: SectionProps[]
   }
   
-  interface SectionProps {
+  export interface SectionProps {
     title: string
     description: string
     icon: React.ReactNode

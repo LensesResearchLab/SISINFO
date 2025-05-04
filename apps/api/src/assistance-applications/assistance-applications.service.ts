@@ -53,9 +53,9 @@ export class AssistanceApplicationsService {
     return 'This action returns all assistanceApplications';
   }
 
-  async findAllByStudentDocument(studentDocument: string) {
+  async findAllByStudentDocument(studentId: string) {
     const results = await this.assistanceApplicationRepository.find({
-      where: { student: { document: studentDocument } },
+      where: { student: { id: studentId } },
       relations: {
         graduatedAssistance: {
           professor: true,

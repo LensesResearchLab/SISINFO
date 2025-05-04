@@ -1,5 +1,4 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { JSX, useState } from "react";
 /**
  * select Component
  * 
@@ -7,7 +6,6 @@ import { JSX, useState } from "react";
  * 
  * @returns {JSX.Element} The select component
  */
-
 
 interface SelectListProps {
     list: string[];

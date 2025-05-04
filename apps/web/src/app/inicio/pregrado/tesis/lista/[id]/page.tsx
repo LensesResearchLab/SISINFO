@@ -50,7 +50,7 @@ export default function ThesisInscription({
 
   useEffect(() => {
     reset();
-  }, [id]);
+  }, [id, reset]);
 
   if (isFetching) return <SpinnerPage />;
   if (error || !thesis) return <ThesisNotFound />;
@@ -246,14 +246,14 @@ function ProfessorInformation({ thesis }: { thesis: Thesis }) {
       <div className="flex flex-col space-y-1">
         <h2 className="text-lg font-semibold">
           Profesor:{" "}
-          <span className="text-gray-900 font-normal">{thesis.professor}</span>
+          <span className="text-gray-900 font-normal">{thesis.professor.user.name}</span>
         </h2>
         <a
-          href={`mailto:${thesis.email}`}
+          href={`mailto:${thesis.professor.user.email}`}
           className="text-core-highlight hover:underline inline-flex items-center gap-2"
         >
           <Mail className="h-4 w-4" />
-          {thesis.email}
+          {thesis.professor.user.email}
         </a>
       </div>
     </div>
