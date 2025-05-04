@@ -28,7 +28,9 @@ export class CoordinatorsService implements RoleService {
 
   async findOne(id: string) {
     const coordinator = await this.coordinatorRepository.findOne({
-      where: { id },
+      where: {
+        id,
+      },
     });
     if (!coordinator) return null;
     return coordinator;
@@ -36,7 +38,7 @@ export class CoordinatorsService implements RoleService {
 
   async update(id: string, updateCoordinatorDto: UpdateCoordinatorDto) {
     const coordinator = await this.coordinatorRepository.findOneBy({
-      id: id,
+      id,
     });
     if (!coordinator) return null;
     Object.assign(coordinator, updateCoordinatorDto);
@@ -53,7 +55,9 @@ export class CoordinatorsService implements RoleService {
     roleInfo: CreateCoordinatorDto,
   ): Promise<void> {
     let coordinator = await this.coordinatorRepository.findOne({
-      where: { id: user.id },
+      where: {
+        id: user.id,
+      },
     });
     if (!coordinator) {
       coordinator = this.coordinatorRepository.create({

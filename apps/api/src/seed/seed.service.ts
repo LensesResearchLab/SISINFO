@@ -99,7 +99,11 @@ export class SeedService {
     }
 
     for (const user of sampleUser) {
-      await this.usersService.create(user);
+      const userWithPassword = {
+        ...user,
+        password: user.password || faker.internet.password({ length: 20 }),
+      };
+      await this.usersService.create(userWithPassword);
     }
     for (const student of sampleStudent) {
       await this.studentsService.create(student);
@@ -186,16 +190,15 @@ export class SeedService {
 
   async seedProfessors() {
     const professorsData = Array.from({ length: this.PROFESSORS_NUMBER }).map(
-      (_, idx) => {
-        const id = `Document ${idx}`;
+      () => {
         const professor: CreateProfessorDto = {
-          id,
+          id: '',
           isActive: faker.datatype.boolean(),
         };
         const user: CreateUserDto = {
           name: faker.person.fullName(),
           email: faker.internet.email(),
-          password: faker.internet.password(),
+          password: faker.internet.password({ length: 20 }),
         };
         return { professor, user };
       },
@@ -203,14 +206,11 @@ export class SeedService {
 
     const insertPromises = professorsData.map(async ({ professor, user }) => {
       const createdUser = await this.usersService.create(user);
-      await this.usersService.assignRole<CreateProfessorDto>(
-        createdUser,
-        'professor',
-        {
-          isActive: professor.isActive,
-          id: createdUser.id,
-        },
-      );
+      professor.id = createdUser.id;
+      await this.professorsService.addRole(createdUser, {
+        isActive: professor.isActive,
+        id: createdUser.id,
+      });
       return await this.professorsService.create(professor);
     });
     await Promise.all(insertPromises);
@@ -248,6 +248,7 @@ export class SeedService {
   }
 
   async seedTheses() {
+    const users = await this.usersService.findAll();
     const insertPromises: Promise<Thesis>[] = [];
     for (let i = 0; i < this.PROFESSORS_NUMBER; i++) {
       for (
@@ -263,7 +264,7 @@ export class SeedService {
               isEnded: faker.datatype.boolean(),
               investigationSubarea: faker.lorem.word(),
             },
-            `Document ${i}`,
+            users[i].id,
           ),
         );
       }
@@ -286,7 +287,7 @@ export class SeedService {
             wasContacted: faker.datatype.boolean(),
           },
           randomProject.id,
-          student.id,
+          student.user.id,
         ),
       );
     }
@@ -297,6 +298,7 @@ export class SeedService {
   async seedProjects() {
     const categories = ['Investigación', 'Proyecto aplicado a empresas'];
     const periods = await this.periodsService.findAll();
+    const users = await this.usersService.findAll();
     const insertPromises: Promise<Project>[] = [];
     for (let i = 0; i < this.PROFESSORS_NUMBER; i++) {
       for (
@@ -317,7 +319,7 @@ export class SeedService {
               category:
                 categories[Math.floor(Math.random() * categories.length)],
             },
-            `Document ${i}`,
+            users[i].id,
             periods[Math.floor(Math.random() * periods.length)].id,
           ),
         );
@@ -340,7 +342,7 @@ export class SeedService {
             wasContacted: faker.datatype.boolean(),
           },
           randomThesis.id,
-          student.id,
+          student.user.id,
         ),
       );
     }
@@ -385,7 +387,7 @@ export class SeedService {
         professors[Math.floor(Math.random() * professors.length)];
       return this.graduatedAssistancesService.create(
         graduatedAssistance,
-        randomProfessor.id,
+        randomProfessor.user.id,
       );
     });
 
@@ -426,7 +428,7 @@ export class SeedService {
 
         await this.graduatedAssistanceApplicationsService.create(
           {},
-          randomStudent.id,
+          randomStudent.user.id,
           randomGraduatedAssistance.id,
           file,
         );
@@ -440,22 +442,29 @@ export class SeedService {
   }
 
   async seedCoordinator() {
-    const coordinators: CreateCoordinatorDto[] = Array(this.COORDINATORS_NUMBER)
-      .fill(null)
-      .map((_, idx) => ({
+    const insertPromises: Promise<void>[] = [];
+
+    for (let i = 0; i < this.COORDINATORS_NUMBER; i++) {
+      const userDto: CreateUserDto = {
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        id: `Document ${this.PROFESSORS_NUMBER + this.STUDENTS_NUMBER + idx}`,
+        password: faker.internet.password({ length: 20 }),
+      };
+      const createdUser = await this.usersService.create(userDto);
+
+      const coordinatorDto: CreateCoordinatorDto = {
+        id: createdUser.id,
         office: faker.lorem.word(),
         extension: faker.string.numeric(5),
         isActive: faker.datatype.boolean(),
         photo:
           'https://sistemasproyectos.uniandes.edu.co/informe-actividades/wp-content/uploads/2015/12/jp.fernandez29.jpg',
-      }));
-    const insertPromises: Promise<CreateCoordinatorDto>[] = [];
-    coordinators.forEach((coordinator) => {
-      insertPromises.push(this.coordinatorsService.create(coordinator));
-    });
+      };
+
+      insertPromises.push(
+        this.coordinatorsService.addRole(createdUser, coordinatorDto),
+      );
+    }
     await Promise.all(insertPromises);
     return true;
   }
@@ -485,11 +494,10 @@ export class SeedService {
   async seedUsers() {
     const users: CreateUserDto[] = Array(this.TOTAL_USERS)
       .fill(null)
-      .map((_, idx) => ({
-        id: `Document ${idx}`,
+      .map(() => ({
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        password: faker.internet.password(),
+        password: faker.internet.password({ length: 20 }),
       }));
 
     const insertPromises: Promise<User>[] = [];
@@ -502,7 +510,6 @@ export class SeedService {
 
   async seedAdmin() {
     const adminRaw = {
-      id: 'admin',
       name: 'admin',
       email: 'admin@admin.com',
       password: 'admin',
@@ -512,14 +519,14 @@ export class SeedService {
       code: 'admin',
       isActive: true,
       isUndergraduate: true,
-      id: 'admin',
+      id: admin.id,
     });
     await this.usersService.assignRole<CreateCoordinatorDto>(
       admin,
       'coordinator',
       {
         isActive: true,
-        id: 'admin',
+        id: admin.id,
         office: 'admin',
         extension: 'admin',
         photo:
@@ -528,13 +535,13 @@ export class SeedService {
     );
     await this.usersService.assignRole<CreateProfessorDto>(admin, 'professor', {
       isActive: true,
-      id: 'admin',
+      id: admin.id,
     });
     await this.usersService.assignRole<CreateAdministratorDto>(
       admin,
       'administrator',
       {
-        id: 'admin',
+        id: admin.id,
         isActive: true,
       },
     );
@@ -542,21 +549,28 @@ export class SeedService {
   }
 
   async seedStudents() {
-    const students: CreateStudentDto[] = Array(this.STUDENTS_NUMBER)
-      .fill(null)
-      .map((_, idx) => ({
-        id: `Document ${this.PROFESSORS_NUMBER + idx}`,
-        code: faker.string.uuid(),
-        semester: faker.number.int({ min: 1, max: 2 }),
-        isUndergraduate: faker.datatype.boolean(),
-        isTeachingAssistant: faker.datatype.boolean(),
-        isActive: faker.datatype.boolean(),
-      }));
+    const insertPromises: Promise<void>[] = [];
 
-    const insertPromises: Promise<CreateStudentDto>[] = [];
-    students.forEach((student) => {
-      insertPromises.push(this.studentsService.create(student));
-    });
+    for (let i = 0; i < this.STUDENTS_NUMBER; i++) {
+      const userDto: CreateUserDto = {
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        password: faker.internet.password({ length: 20 }),
+      };
+      const createdUser = await this.usersService.create(userDto);
+
+      const studentDto: CreateStudentDto = {
+        id: createdUser.id,
+        code: faker.string.uuid(),
+        isUndergraduate: faker.datatype.boolean(),
+        isActive: faker.datatype.boolean(),
+      };
+
+      insertPromises.push(
+        this.studentsService.addRole(createdUser, studentDto),
+      );
+    }
+
     await Promise.all(insertPromises);
     return true;
   }

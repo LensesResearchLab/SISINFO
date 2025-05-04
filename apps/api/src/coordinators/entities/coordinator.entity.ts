@@ -14,8 +14,11 @@ export class Coordinator extends Role {
   @Column()
   photo: string;
 
-  @OneToOne(() => User, (user) => user.coordinator, { eager: true })
-  @JoinColumn({ name: 'document' })
+  @OneToOne(() => User, (user) => user.coordinator, {
+    eager: true,
+    cascade: true,
+  })
+  @JoinColumn({ name: 'id' })
   user: User;
 
   @OneToMany(() => Task, (task) => task.coordinator)

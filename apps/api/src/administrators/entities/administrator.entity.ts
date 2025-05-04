@@ -4,7 +4,10 @@ import { Entity, JoinColumn, OneToOne } from 'typeorm';
 
 @Entity()
 export class Administrator extends Role {
-  @OneToOne(() => User, (user) => user.administrator, { eager: true })
+  @OneToOne(() => User, (user) => user.administrator, {
+    eager: true,
+    cascade: true,
+  })
   @JoinColumn({ name: 'id' })
   user: User;
 }

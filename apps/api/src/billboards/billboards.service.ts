@@ -73,13 +73,17 @@ export class BillboardsService {
             if (searchProfessor) {
               if (/\(01\)/.test(prof)) {
                 if (
-                  !findedProfessors.find((p) => p.id === searchProfessor.id)
+                  !findedProfessors.find(
+                    (p) => p.user.id === searchProfessor.user.id,
+                  )
                 ) {
                   findedProfessors.push(searchProfessor);
                 }
               } else if (/\(02\)/.test(prof)) {
                 if (
-                  !supportProfessors.find((p) => p.id === searchProfessor.id)
+                  !supportProfessors.find(
+                    (p) => p.user.id === searchProfessor.user.id,
+                  )
                 ) {
                   supportProfessors.push(searchProfessor);
                 }

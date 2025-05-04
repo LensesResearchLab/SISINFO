@@ -35,7 +35,9 @@ export class ProfessorsService implements RoleService {
     }
 
     const professor = await this.professorRepository.findOne({
-      where: { id },
+      where: {
+        id,
+      },
       relations: [
         'sections',
         'sections.course',
@@ -71,7 +73,7 @@ export class ProfessorsService implements RoleService {
 
   async update(id: string, updateProfessorDto: UpdateProfessorDto) {
     const professor = await this.professorRepository.findOneBy({
-      id: id,
+      id,
     });
     if (!professor) return null;
     Object.assign(professor, updateProfessorDto);

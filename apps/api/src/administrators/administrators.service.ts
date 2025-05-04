@@ -29,7 +29,9 @@ export class AdministratorsService implements RoleService {
 
   async findOne(id: string) {
     const administrator = await this.administratorRepository.findOne({
-      where: { id },
+      where: {
+        id,
+      },
       relations: ['user'],
     });
     if (!administrator) {
@@ -49,7 +51,11 @@ export class AdministratorsService implements RoleService {
     roleInfo: CreateAdministratorDto,
   ): Promise<void> {
     let administrator = await this.administratorRepository.findOne({
-      where: { id: user.id },
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
     });
     if (!administrator) {
       administrator = this.administratorRepository.create({

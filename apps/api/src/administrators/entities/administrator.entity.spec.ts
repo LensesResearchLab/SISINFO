@@ -9,12 +9,12 @@ describe('Administrator Entity', () => {
     const mockUser = new User();
     const admin = new Administrator();
 
-    admin.id = mockId;
-    admin.isActive = mockIsActive;
     admin.user = mockUser;
+    admin.user.id = mockId;
+    admin.isActive = mockIsActive;
     expect(admin).toBeInstanceOf(Administrator);
     expect(admin.user).toBeInstanceOf(User);
-    expect(admin.id).toBe(mockId);
+    expect(admin.user.id).toBe(mockId);
     expect(admin.isActive).toBe(mockIsActive);
   });
 });

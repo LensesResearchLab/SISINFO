@@ -58,9 +58,7 @@ export class ThesisApplicationsService {
   async findOne(studentId: string) {
     const application = await this.thesisApplicationRepository.findOne({
       where: {
-        student: {
-          id: studentId,
-        },
+        student: { id: studentId },
       },
       relations: {
         student: {
