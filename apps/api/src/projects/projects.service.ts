@@ -68,30 +68,37 @@ export class ProjectsService {
     });
   }
 
-  async findByProfessor(professorDocument: string) {
+  async findByProfessor(professorId: string) {
     const period = await this.periodsService.findCurrentPeriod();
     const projects = await this.projectRepository.find({
-      where: { professor: { document: professorDocument }, period },
+      where: { professor: { id: professorId }, period },
     });
     if (!projects) {
       throw new NotFoundException(
-        `Projects with professor document ${professorDocument} not found in period ${period.period}`,
+        `Projects with professor id ${professorId} not found in period ${period.period}`,
       );
     }
     return projects;
   }
 
   async findOne(id: string) {
-    return this.projectRepository.findOne({
+    const project = await this.projectRepository.findOne({
       where: { id },
     });
+    if (!project) {
+      throw new NotFoundException(`Project with id ${id} not found`);
+    }
+    return project;
   }
 
-  update(id: string, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  async update(id: string, updateProjectDto: UpdateProjectDto) {
+    const project = await this.findOne(id);
+    Object.assign(project, updateProjectDto);
+    return this.projectRepository.save(project);
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} project`;
+  async remove(id: string) {
+    const project = await this.findOne(id);
+    return this.projectRepository.remove(project);
   }
 }

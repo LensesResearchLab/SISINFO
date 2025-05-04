@@ -1,22 +1,16 @@
 "use client";
 
 import {
-  TriangleAlert,
   Search,
   ChevronDown,
   ChevronUp,
-  ArrowUpDown,
-  Upload,
-  Download,
-  Calendar,
-  Circle,
   Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery } from "@tanstack/react-query";
-import { getThesisByProfessorId } from "@/app/services/thesis.service";
+import { getThesisByProfessor } from "@/app/services/thesis.service";
 import { useProfessorThesisListStore } from "./store";
 import { Thesis } from "@/app/types/thesis.type";
 import SpinnerPage from "@/components/shared/spinner-page";
@@ -32,7 +26,7 @@ export default function ThesisProjects() {
   );
   useEffect(() => {
     return reset;
-  }, []);
+  }, [reset]);
   const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
 
   const {
@@ -41,7 +35,7 @@ export default function ThesisProjects() {
     error,
   } = useQuery({
     queryKey: ["professor-thesis-projects"],
-    queryFn: () => getThesisByProfessorId(1),
+    queryFn: () => getThesisByProfessor(),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -150,8 +144,8 @@ function TableRow({ thesis }: { thesis: Thesis }) {
           <Checkbox />
         </div>
         <div className="col-span-3">{thesis.title}</div>
-        <div className="col-span-3">{thesis.category}</div>
-        <div className="col-span-2">{thesis.professor}</div>
+        <div className="col-span-3">{thesis.title}</div>
+        <div className="col-span-2">{thesis.professor.user.name}</div>
         <div className="col-span-2">{2025 - 10}</div>
         <div className="col-span-1 flex justify-center">
           <Button
@@ -187,15 +181,15 @@ function TableRowDetail({ thesis }: { thesis: Thesis }) {
         <div className="col-span-3 font-medium">Fecha de la solicitud</div>
         <div className="col-span-3 font-medium">Ver</div>
       </div>
-      {thesis.students.map((student) => (
-        <div key={student.id} className="bg-subtable  text-primary border-b">
+      {thesis.students?.map((student) => (
+        <div key={student.user.id} className="bg-subtable  text-primary border-b">
           <div className="grid grid-cols-12 py-2 px-3 ">
-            <div className="col-span-3">{student.name}</div>
-            <div className="col-span-3">{student.status}</div>
-            <div className="col-span-3">{student.date}</div>
+            <div className="col-span-3">{student.user.name}</div>
+            <div className="col-span-3">{student.user.name}</div>
+            <div className="col-span-3">{student.user.name}</div>
             <Eye
               className="col-span-3 cursor-pointer"
-              onClick={() => handleClickEye(student.id)}
+              onClick={() => handleClickEye(student.user.id)}
             ></Eye>
           </div>
         </div>

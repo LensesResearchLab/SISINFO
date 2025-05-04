@@ -1,15 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { ThesisApplicationsService } from './thesis-applications.service';
 import { CreateThesisApplicationDto } from './dto/create-thesis-application.dto';
-import { UpdateThesisApplicationDto } from './dto/update-thesis-application.dto';
 
 @Controller('thesis-applications')
 export class ThesisApplicationsController {
@@ -17,14 +8,14 @@ export class ThesisApplicationsController {
     private readonly thesisApplicationsService: ThesisApplicationsService,
   ) {}
 
-  @Post(':studentDocument')
+  @Post(':studentId')
   create(
-    @Param('studentDocument') studentDocument: string,
+    @Param('studentId') studentId: string,
     @Body() createThesisApplicationDto: CreateThesisApplicationDto,
   ) {
     return this.thesisApplicationsService.create({
       ...createThesisApplicationDto,
-      studentDocument,
+      studentId,
     });
   }
 
@@ -38,26 +29,8 @@ export class ThesisApplicationsController {
     return this.thesisApplicationsService.getThesisApplicationsReport();
   }
 
-  @Get(':studentDocument')
-  findOne(@Param('studentDocument') studentDocument: string) {
-    return this.thesisApplicationsService.findOne(studentDocument);
+  @Get(':studentId')
+  findOne(@Param('studentId') studentId: string) {
+    return this.thesisApplicationsService.findOne(studentId);
   }
-
-  /*
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateThesisApplicationDto: UpdateThesisApplicationDto,
-  ) {
-    return this.thesisApplicationsService.update(
-      +id,
-      updateThesisApplicationDto,
-    );
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.thesisApplicationsService.remove(+id);
-  }
-    */
 }

@@ -1,12 +1,13 @@
 "use client";
 import { getThesisApplicationsReport } from "@/app/services/thesis.service";
-import { ThesisReport } from "@/app/types/thesis.type";
+
 import SpinnerPage from "@/components/shared/spinner-page";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
+import { ThesisReport } from "@/app/types/thesis-report.type";
 
 export default function ThesisDetailedReport() {
   return (

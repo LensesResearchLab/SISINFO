@@ -49,6 +49,7 @@ export default function CourseReportTable({
   }
 
   const downloadExcel = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const exportData = data.map(({ id, ...rest }) => rest);
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     XLSX.utils.sheet_add_aoa(

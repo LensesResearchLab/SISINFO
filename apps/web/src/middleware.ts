@@ -38,7 +38,7 @@ async function decryptSession(token: string | undefined) {
     });
     return payload;
   } catch (error) {
-    console.error("Failed to verify session in middleware");
+    console.error(`Error decrypting session: ${error}`);
     return null;
   }
 }

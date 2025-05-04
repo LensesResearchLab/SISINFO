@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardTitle,
 } from "@/components/ui/card";
-import { FileText, Users, GraduationCap, ClipboardList } from "lucide-react";
+import { Users, GraduationCap, ClipboardList } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Reports() {

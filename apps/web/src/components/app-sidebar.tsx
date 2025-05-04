@@ -24,6 +24,7 @@ import { getUserInfo } from "@/app/auth/auth-service";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const roles = useHomeStore((state) => state.roles);
+  const setRoles = useHomeStore((state) => state.setRoles);
   const [currentUser, setCurrentUser] = useState({
     name: "Cargando...",
     email: "",
@@ -40,6 +41,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             email: userInfo.user.email,
             avatar: "/public/student-cap.svg",
           });
+          setRoles(userInfo.user.roles);
         }
       } catch (error) {
         console.error(error);
@@ -47,7 +49,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
 
     fetchUserData();
-  }, []);
+  }, [setRoles]);
 
   const roleNavMainMap = new Map([
     ["coordinador", coordinatorData],

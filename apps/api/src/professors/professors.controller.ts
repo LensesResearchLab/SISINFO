@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   Query,
 } from '@nestjs/common';
 import { ProfessorsService } from './professors.service';
@@ -26,29 +25,21 @@ export class ProfessorsController {
     return this.professorsService.findAll();
   }
 
-  @Get(':document')
-  findOne(@Param('document') document: string) {
-    return this.professorsService.findOne(document);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.professorsService.findOne(id);
   }
 
-  @Get(':document/teaching-assistances')
-  findOneTAS(
-    @Param('document') document: string,
-    @Query('period') period: string,
-  ) {
-    return this.professorsService.findWithTasByPeriod(period, document);
+  @Get(':id/teaching-assistances')
+  findOneTAS(@Param('id') id: string, @Query('period') period: string) {
+    return this.professorsService.findWithTasByPeriod(period, id);
   }
 
-  @Patch(':document')
+  @Patch(':id')
   update(
-    @Param('document') document: string,
+    @Param('id') id: string,
     @Body() updateProfessorDto: UpdateProfessorDto,
   ) {
-    return this.professorsService.update(document, updateProfessorDto);
-  }
-
-  @Delete(':document')
-  remove(@Param('document') document: string) {
-    return this.professorsService.remove(document);
+    return this.professorsService.update(id, updateProfessorDto);
   }
 }

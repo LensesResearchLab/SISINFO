@@ -2,7 +2,7 @@
 import { Calendar, FileText, Mail, User } from "lucide-react";
 import { use, useEffect, useState } from "react";
 import { StatusInformation } from "@/app/types/graduated-assistance.type";
-import TabStatus from "@/components/shared/tab-status";
+import TabStatus, { SectionProps } from "@/components/shared/tab-status";
 import { useRouter } from "next/navigation";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { getAssistanceStatusById } from "@/app/services/assistance.service";
@@ -46,11 +46,12 @@ export default function AssistanceStatus({
         title: "",
         category: "",
         description: "",
-        startDate: "",
-        endDate: "",
+        requirements: [],
+        startDate: new Date(),
+        endDate: new Date(),
         professor: {
           user: {
-            document: "",
+            id: "",
             name: "",
             email: "",
           },
@@ -59,7 +60,7 @@ export default function AssistanceStatus({
       status: "",
       student: {
         user: {
-          document: "",
+          id: "",
           name: "",
           email: "",
         },
@@ -82,9 +83,9 @@ export default function AssistanceStatus({
     };
 
     fetchData();
-  }, [id]);
+  }, [id, router]);
 
-  const sections = getSections(statusInformation);
+  const sections: SectionProps[] = getSections(statusInformation);
   const steps = ["Postulado", "Aceptado", "Inscrito"];
   const messagePerStep = getMessagesPerStep();
 
@@ -133,11 +134,18 @@ export default function AssistanceStatus({
  *
  * All icons use consistent styling (sky blue color, small size)
  */
-function getSections(statusInformation: StatusInformation) {
+function getSections(statusInformation: StatusInformation)  {
   return [
     {
       title: "Semestre de inicio",
-      description: statusInformation.graduatedAssistance.startDate,
+      description: statusInformation.graduatedAssistance.startDate.toLocaleDateString(
+        "es-CO",
+        {
+          year: "numeric",
+          month: "long",
+          day: "2-digit",
+        }
+      ),
       icon: <Calendar className="h-5 w-5 text-core mt-1" />,
     },
     {

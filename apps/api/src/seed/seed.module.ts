@@ -21,7 +21,7 @@ import { ThesisApplicationsModule } from '../thesis-applications/thesis-applicat
 import { AssistanceApplicationsModule } from '../assistance-applications/assistance-applications.module';
 import { UsersModule } from '../users/users.module';
 import { DocumentsModule } from '../documents/documents.module';
-import { ImportantDatesModule } from 'src/important-dates/important-dates.module';
+import { ImportantDatesModule } from '../important-dates/important-dates.module';
 
 @Module({
   controllers: [SeedController],

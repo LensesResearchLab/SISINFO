@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateThesisApplicationDto } from './dto/create-thesis-application.dto';
-import { UpdateThesisApplicationDto } from './dto/update-thesis-application.dto';
 import { ThesisApplication } from './entities/thesis-application.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Student } from 'src/students/entities/student.entity';
-import { Thesis } from 'src/theses/entities/thesis.entity';
+import { Student } from '../students/entities/student.entity';
+import { Thesis } from '../theses/entities/thesis.entity';
+import { User } from '../users/entities/user.entity';
+import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 
 @Injectable()
 export class ThesisApplicationsService {
@@ -21,15 +22,15 @@ export class ThesisApplicationsService {
   async create(
     createThesisApplicationDto: CreateThesisApplicationDto,
   ): Promise<ThesisApplication> {
-    const { studentDocument, thesisId, ...rest } = createThesisApplicationDto;
+    const { studentId, thesisId, ...rest } = createThesisApplicationDto;
 
     const student = await this.studentRepository.findOne({
-      where: { document: studentDocument },
+      where: { id: studentId },
     });
 
     if (!student) {
       throw new NotFoundException(
-        `Student with document ${studentDocument} not found`,
+        `Student with studentId ${studentId} not found`,
       );
     }
 
@@ -54,11 +55,11 @@ export class ThesisApplicationsService {
     return `This action returns all thesisApplications`;
   }
 
-  async findOne(studentDocument: string) {
+  async findOne(studentId: string) {
     const application = await this.thesisApplicationRepository.findOne({
       where: {
         student: {
-          document: studentDocument,
+          id: studentId,
         },
       },
       relations: {
@@ -77,19 +78,20 @@ export class ThesisApplicationsService {
 
     if (!application) {
       throw new NotFoundException(
-        `Thesis application with doc ${studentDocument} not found`,
+        `Thesis application with doc ${studentId} not found`,
       );
     }
 
     if (application.student?.user) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...userWithoutPassword } = application.student.user;
-      application.student.user = userWithoutPassword as any;
+      application.student.user = userWithoutPassword as unknown as User;
     }
 
     if (application.thesis?.professor?.user) {
-      const { password, ...userWithoutPassword } =
-        application.thesis.professor.user;
-      application.thesis.professor.user = userWithoutPassword as any;
+      application.thesis.professor.user = deletePasswordFromUser(
+        application.thesis.professor.user,
+      );
     }
 
     return application;

@@ -25,7 +25,7 @@ export class ProfessorsService implements RoleService {
     return this.professorRepository.find();
   }
 
-  async findWithTasByPeriod(periodStr: string, document: string) {
+  async findWithTasByPeriod(periodStr: string, id: string) {
     const period =
       await this.periodsService.findOneByPeriodAndYearString(periodStr);
     if (!period) {
@@ -35,7 +35,7 @@ export class ProfessorsService implements RoleService {
     }
 
     const professor = await this.professorRepository.findOne({
-      where: { document },
+      where: { id },
       relations: [
         'sections',
         'sections.course',
@@ -47,9 +47,7 @@ export class ProfessorsService implements RoleService {
     });
 
     if (!professor) {
-      throw new NotFoundException(
-        `No se encontró el profesor con documento: ${document}`,
-      );
+      throw new NotFoundException(`No se encontró el profesor con id: ${id}`);
     }
 
     const filteredSections = professor.sections.filter(
@@ -59,8 +57,8 @@ export class ProfessorsService implements RoleService {
     return filteredSections;
   }
 
-  findOne(document: string) {
-    return this.professorRepository.findOne({ where: { document } });
+  findOne(id: string) {
+    return this.professorRepository.findOne({ where: { id } });
   }
 
   findByName(name: string) {
@@ -71,9 +69,9 @@ export class ProfessorsService implements RoleService {
       .getOne();
   }
 
-  async update(document: string, updateProfessorDto: UpdateProfessorDto) {
+  async update(id: string, updateProfessorDto: UpdateProfessorDto) {
     const professor = await this.professorRepository.findOneBy({
-      document: document,
+      id: id,
     });
     if (!professor) return null;
     Object.assign(professor, updateProfessorDto);
@@ -81,12 +79,9 @@ export class ProfessorsService implements RoleService {
     return professor;
   }
 
-  remove(document: string) {
-    return `This action removes a #${document} professor`;
-  }
   async addRole<T>(user: User, roleInfo: T): Promise<void> {
     let professor = await this.professorRepository.findOne({
-      where: { document: user.document },
+      where: { id: user.id },
     });
     if (!professor) {
       professor = this.professorRepository.create({

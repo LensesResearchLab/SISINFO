@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
   }
 }
 /* GET user authentication status and roles */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     /* Get the JWT token from the cookies and decrypt it */
     const token = (await cookies()).get("auth-token")?.value;

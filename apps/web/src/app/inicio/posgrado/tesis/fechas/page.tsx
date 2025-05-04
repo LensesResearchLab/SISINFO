@@ -48,14 +48,13 @@ export default function ThesisDates() {
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
       <div className="w-full bg-card shadow-lg rounded-xl p-5 h-full space-y-4">
-        {dates.map((date: any) => (
+        {dates.map((date: ThesisDatesInterface) => (
           <DateTable key={date.id} title={date.sectionTitle} dates={[date]} />
         ))}
       </div>
     </div>
   );
 }
-
 /**
  * DateTable Component
  *

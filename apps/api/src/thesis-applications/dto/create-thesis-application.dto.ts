@@ -8,7 +8,7 @@ export class CreateThesisApplicationDto {
 
   @IsString()
   @IsNotEmpty()
-  studentDocument: string;
+  studentId: string;
 
   @IsString()
   @IsNotEmpty()

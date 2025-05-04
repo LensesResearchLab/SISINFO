@@ -4,10 +4,9 @@ const API_URL_APPLICATION = "http://localhost:8000/api/assistance-applications";
 
 export async function createGraduatedAssistance(
   data: object,
-  professorDocument: string
 ) {
   const response = await fetch(
-    `${API_URL}?professorDocument=${professorDocument}`,
+    `${API_URL}`,
     {
       method: "POST",
       headers: {

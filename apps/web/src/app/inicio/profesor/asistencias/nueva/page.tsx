@@ -23,15 +23,14 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { ROUTES } from "@/app/routes";
 import { createGraduatedAssistance } from "../../../../services/assistance.service";
-import { addDays, format } from "date-fns";
+import { addDays } from "date-fns";
 import DateRangePicker from "@/components/shared/datepicker";
 import { mapStringtoPeriod } from "@/app/mappers/period.mapper";
-import { getUserInfo } from "@/app/auth/auth-service";
 
 const thesisSchema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres"),
@@ -52,17 +51,6 @@ const thesisSchema = z.object({
 });
 
 export default function GraduateAssistanceForm() {
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      const response = await getUserInfo();
-      if (response.success) {
-        setUser(response.user);
-      }
-    };
-    fetchUserInfo();
-  }, []);
   const form = useForm<z.infer<typeof thesisSchema>>({
     resolver: zodResolver(thesisSchema),
     defaultValues: {
@@ -106,7 +94,7 @@ export default function GraduateAssistanceForm() {
       startDate: data.dateRange.from.toISOString(),
       endDate: data.dateRange.to.toISOString(),
     };
-    createGraduatedAssistance(payload, user.id)
+    createGraduatedAssistance(payload)
       .then(() => {
         setIsModalOpen(false);
         console.log("Assistance created");

@@ -3,7 +3,7 @@ import { ProfessorsService } from './professors.service';
 import { ProfessorsController } from './professors.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Professor } from './entities/professor.entity';
-import { PeriodsModule } from 'src/periods/periods.module';
+import { PeriodsModule } from '../periods/periods.module';
 
 @Module({
   controllers: [ProfessorsController],

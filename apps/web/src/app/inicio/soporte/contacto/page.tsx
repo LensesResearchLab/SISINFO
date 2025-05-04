@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCoordinators } from "@/app/services/support.service";
-import { Coordinator } from "@/app/types/support.types";
 import Image from "next/image";
+import { Coordinator } from "@/app/types/coordinator.type";
 
 /**
  * AcademicCoordinators Component
@@ -45,21 +45,21 @@ export default function AcademicCoordinators() {
               className="flex items-center p-6 w-96 shadow-lg rounded-lg border-none"
             >
               <Image
-                src={coordinator.image}
+                src={coordinator.photo}
                 height={96}
                 width={96}
-                alt={coordinator.name}
+                alt={coordinator.user.name}
                 className="w-24 h-24 rounded-full object-cover mr-6"
               />
               <CardContent className="text-left">
                 <h3 className="text-xl font-semibold text-core-highlight mb-2 p-2">
-                  {coordinator.name}
+                  {coordinator.user.name}
                 </h3>
                 <p className="text-lg text-foreground-soft mb-1">
                   Oficina: {coordinator.office}
                 </p>
                 <p className="text-lg text-foreground-soft mb-1">
-                  Correo: {coordinator.email}
+                  Correo: {coordinator.user.email}
                 </p>
                 <p className="text-lg text-foreground-soft">
                   Extensión: {coordinator.extension}
@@ -76,7 +76,7 @@ export default function AcademicCoordinators() {
             alt="Bookeau"
             className="w-64 mb-4"
           />
-          <Button className="px-6 py-2 rounded-md text-lg">
+          <Button className="px-6 py-2 rounded-md text-lg" onClick={() => window.open("https://encuentrosconingenieria.bookeau.com/#/reservas", "_blank")}>
             Reserva tu cita
           </Button>
         </div>

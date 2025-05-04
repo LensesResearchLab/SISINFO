@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateThesisDto } from './dto/create-thesis.dto';
-import { UpdateThesisDto } from './dto/update-thesis.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Thesis } from './entities/thesis.entity';
 import { ProfessorsService } from '../professors/professors.service';
+import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 
 @Injectable()
 export class ThesesService {
@@ -12,12 +12,12 @@ export class ThesesService {
     private readonly professorService: ProfessorsService,
     @InjectRepository(Thesis) private thesisRepository: Repository<Thesis>,
   ) {}
-  async create(createThesisDto: CreateThesisDto, professorDocument: string) {
-    const professor = await this.professorService.findOne(professorDocument);
+  async create(createThesisDto: CreateThesisDto, professorId: string) {
+    const professor = await this.professorService.findOne(professorId);
 
     if (!professor) {
       throw new NotFoundException(
-        `Professor with document ${professorDocument} not found`,
+        `Professor with professorId ${professorId} not found`,
       );
     }
 
@@ -43,8 +43,7 @@ export class ThesesService {
 
     thesisData.forEach((thesis) => {
       if (thesis.professor?.user) {
-        const { password, ...userWithoutPassword } = thesis.professor.user;
-        thesis.professor.user = userWithoutPassword as any;
+        thesis.professor.user = deletePasswordFromUser(thesis.professor.user);
       }
     });
 
@@ -68,18 +67,9 @@ export class ThesesService {
     }
 
     if (thesis.professor?.user) {
-      const { password, ...userWithoutPassword } = thesis.professor.user;
-      thesis.professor.user = userWithoutPassword as any;
+      thesis.professor.user = deletePasswordFromUser(thesis.professor.user);
     }
 
     return thesis;
-  }
-
-  update(id: number, updateThesisDto: UpdateThesisDto) {
-    return `This action updates a #${id} thesis`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} thesis`;
   }
 }

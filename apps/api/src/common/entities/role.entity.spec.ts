@@ -9,11 +9,11 @@ describe('Role Entity', () => {
     const mockIsActive = true;
 
     const role = new RoleTest();
-    role.document = mockDocument;
+    role.id = mockDocument;
     role.isActive = mockIsActive;
 
     expect(role).toBeInstanceOf(Role);
-    expect(role.document).toBe(mockDocument);
+    expect(role.id).toBe(mockDocument);
     expect(role.isActive).toBe(mockIsActive);
   });
 });

@@ -1,10 +1,11 @@
 "use client";
 import { Calendar, FileText, Mail, Star, User } from "lucide-react";
-//import { getThesisStatusInformation } from "@/app/services/thesis.service";
-import { StatusInformation } from "@/app/types/thesis.type";
+import { getThesisStatusInformation } from "@/app/services/thesis.service";
+
 import SpinnerPage from "@/components/shared/spinner-page";
 import TabStatus from "@/components/shared/tab-status";
 import { useQuery } from "@tanstack/react-query";
+import { StatusInformation } from "@/app/types/statusInformation.type";
 
 /**
  * ThesisStatus Component
@@ -41,7 +42,7 @@ export default function ThesisStatus() {
     error,
   } = useQuery({
     queryKey: ["student-thesis-status"],
-    queryFn: getThesisStatusInformation,
+    queryFn: () => getThesisStatusInformation("1"),
   });
 
   if (isFetching) return <SpinnerPage />;
@@ -124,27 +125,27 @@ function getSections(statusInformation: StatusInformation) {
   return [
     {
       title: "Semestre de inicio",
-      description: statusInformation.semester,
+      description: statusInformation.professor.user.name,
       icon: <Calendar className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Tema del proyecto",
-      description: statusInformation.projectTitle,
+      description: statusInformation.professor.user.name,
       icon: <FileText className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Asesor",
-      description: statusInformation.advisor,
+      description: statusInformation.professor.user.name,
       icon: <User className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Estudiante",
-      description: statusInformation.student,
+      description: statusInformation.student.user.name,
       icon: <User className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Correo del estudiante",
-      description: statusInformation.studentEmail,
+      description: statusInformation.professor.user.name,
       icon: <Mail className="h-5 w-5 text-core mt-1" />,
     },
     {

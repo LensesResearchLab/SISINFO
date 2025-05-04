@@ -5,7 +5,7 @@ import { ThesisApplication } from './entities/thesis-application.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProfessorsModule } from '../professors/professors.module';
 import { ThesesModule } from '../theses/theses.module';
-import { StudentsModule } from 'src/students/students.module';
+import { StudentsModule } from '../students/students.module';
 
 @Module({
   controllers: [ThesisApplicationsController],

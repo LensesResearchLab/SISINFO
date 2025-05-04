@@ -2,17 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Download } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useParams, useRouter } from "next/navigation";
-import { getCourseWithDocument } from "@/app/services/billboard.service";
-import { useProgramsStore } from "../store";
 
-export default function ApplicationDetail({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+import { useProgramsStore } from "../store";
+import { getCourseWithDocument } from "@/app/services/billboard.service";
+
+export default function ApplicationDetail() {
   const { id } = useParams();
   const router = useRouter();
 
