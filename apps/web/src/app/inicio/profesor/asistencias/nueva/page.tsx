@@ -222,7 +222,7 @@ export default function GraduateAssistanceForm() {
                       />
                     </FormControl>
                     <FormMessage>
-                      {form.formState.errors.dateRange?.from?.message ||
+                      {form.formState.errors.dateRange?.from?.message ??
                         form.formState.errors.dateRange?.to?.message}
                     </FormMessage>
                   </FormItem>

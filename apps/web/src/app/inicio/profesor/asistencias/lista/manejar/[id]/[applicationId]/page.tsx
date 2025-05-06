@@ -43,7 +43,7 @@ export default function ApplicationDetail({
       <div className="col-span-1">
         {!error && (
           <StudentProfileCard
-            pdfUrl={pdfUrl || "#"}
+            pdfUrl={pdfUrl ?? "#"}
             name={application?.student?.name}
             email={application?.student?.email}
           />

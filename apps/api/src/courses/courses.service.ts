@@ -13,8 +13,8 @@ import { Document } from '../documents/entities/document.entity';
 @Injectable()
 export class CoursesService {
   constructor(
-    @InjectRepository(Course) private courseRepository: Repository<Course>,
-    private periodsService: PeriodsService,
+    @InjectRepository(Course) private readonly courseRepository: Repository<Course>,
+    private readonly periodsService: PeriodsService,
   ) {}
 
   async create(createCourseDto: CreateCourseDto, section: Section) {
@@ -76,22 +76,22 @@ export class CoursesService {
     throw new Error('Course not found');
   }
 
-  async updateMainProfessor(id:string, professor:Professor){
+  async updateMainProfessor(id: string, professor: Professor) {
     const course = await this.courseRepository.findOne({ where: { id } });
     if (course) {
-      course.mainProfessor=professor;
+      course.mainProfessor = professor;
       return await this.courseRepository.save(course);
     }
-    throw new Error('Course not found')
+    throw new Error('Course not found');
   }
 
-  async updateProgram(id:string, program:Document){
+  async updateProgram(id: string, program: Document) {
     const course = await this.courseRepository.findOne({ where: { id } });
     if (course) {
-      course.program=program;
+      course.program = program;
       return await this.courseRepository.save(course);
     }
-    throw new Error('Course not found')
+    throw new Error('Course not found');
   }
 
   updateSections(section: Section, course: Course) {

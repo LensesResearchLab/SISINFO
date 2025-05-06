@@ -57,7 +57,7 @@ export default function ThesisStatus() {
   };
   const statusProps = {
     currentStatus: statusInformation.lastStep,
-    statusMessage: messagePerStep.get(statusInformation.lastStep) || "",
+    statusMessage: messagePerStep.get(statusInformation.lastStep) ?? "",
     steps,
     title: "Estado inscripción proyecto de grado",
   };

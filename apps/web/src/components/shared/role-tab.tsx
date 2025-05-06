@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
  * @param {Object} props - Component props
  * @returns {JSX.Element} A tabbed interface with role-specific content
  */
-export default function RoleTab({ children }: { children: React.ReactNode }) {
+export default function RoleTab({ children }: { readonly children: React.ReactNode }) {
   const roles = useHomeStore((state) => state.roles);
   return (
     <Tabs defaultValue={roles[0]} className="w-full">

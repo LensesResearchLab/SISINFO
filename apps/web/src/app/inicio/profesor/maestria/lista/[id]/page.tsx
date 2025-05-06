@@ -70,7 +70,7 @@ export default function StudentDetail() {
 
 
 
-function PlanDetailsTab({others, courses}: {others: Course[], courses: Course[]}) {
+function PlanDetailsTab({others, courses}: {readonly others: Course[], readonly courses: Course[]}) {
   return (
     <TabsContent value="detail" className="flex justify-center flex-col items-center p-2">
       <Card className="w-3xl border-none">

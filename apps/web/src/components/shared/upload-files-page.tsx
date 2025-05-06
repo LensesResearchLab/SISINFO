@@ -8,12 +8,12 @@ import { Button } from "../ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 interface UploadFilePageProps {
-  title: string
-  handlePeriodChange: (value: string) => void;
-  handleDownload: () => void;
-  handleUploadCsv: (data: Record<string, string | number | boolean | null>[]) => void;
-  dialogText: DialogTextProps;
-  children?: React.ReactNode;
+  readonly title: string
+  readonly handlePeriodChange: (value: string) => void;
+  readonly handleDownload: () => void;
+  readonly handleUploadCsv: (data: Record<string, string | number | boolean | null>[]) => void;
+  readonly dialogText: DialogTextProps;
+  readonly children?: React.ReactNode;
 }
 
 export function UploadFilePage({

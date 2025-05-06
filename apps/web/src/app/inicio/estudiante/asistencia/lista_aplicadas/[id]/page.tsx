@@ -95,7 +95,7 @@ export default function AssistanceStatus({
   };
   const statusProps = {
     currentStatus: statusInformation.status,
-    statusMessage: messagePerStep.get(statusInformation.status) || "",
+    statusMessage: messagePerStep.get(statusInformation.status) ?? "",
     steps: statusInformation.status === "Rechazado" ? [] : steps,
     title: "Estado inscripción proyecto de grado",
   };

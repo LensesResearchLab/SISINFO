@@ -7,8 +7,8 @@ export function ThesisDetailCard({
   thesis,
   children,
 }: {
-  thesis: Thesis;
-  children?: React.ReactElement;
+  readonly thesis: Thesis;
+  readonly children?: React.ReactElement;
 }) {
   return (
     <Card className="w-full mx-auto shadow-lg border-none">

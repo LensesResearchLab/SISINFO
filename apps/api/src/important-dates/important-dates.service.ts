@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class ImportantDatesService {
   constructor(
     @InjectRepository(ImportantDate)
-    private importantDateRepository: Repository<ImportantDate>,
+    private readonly importantDateRepository: Repository<ImportantDate>,
   ) {}
 
   async create(

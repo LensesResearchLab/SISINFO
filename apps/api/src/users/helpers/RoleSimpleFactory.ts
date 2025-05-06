@@ -7,7 +7,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class RoleSimpleFactory {
-  private strategies: Record<string, RoleService>;
+  private readonly strategies: Record<string, RoleService>;
 
   constructor(
     professorService: ProfessorsService,

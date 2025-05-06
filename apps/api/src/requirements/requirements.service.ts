@@ -10,10 +10,10 @@ import { GraduatedAssistance } from '../graduated-assistances/entities/graduated
 export class RequirementsService {
   constructor(
     @InjectRepository(Requirement)
-    private requirementRepository: Repository<Requirement>,
+    private readonly requirementRepository: Repository<Requirement>,
 
     @InjectRepository(GraduatedAssistance)
-    private graduatedAssistanceRepository: Repository<GraduatedAssistance>,
+    private readonly graduatedAssistanceRepository: Repository<GraduatedAssistance>,
   ) {}
 
   async create(createRequirementDto: CreateRequirementDto) {

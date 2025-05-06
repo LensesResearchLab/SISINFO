@@ -11,7 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class AdministratorsService implements RoleService {
   constructor(
     @InjectRepository(Administrator)
-    private administratorRepository: Repository<Administrator>,
+    private readonly administratorRepository: Repository<Administrator>,
   ) {}
 
   create(createAdministratorDto: CreateAdministratorDto) {

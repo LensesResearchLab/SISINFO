@@ -11,7 +11,7 @@ import { User } from '../users/entities/user.entity';
 export class CoordinatorsService implements RoleService {
   constructor(
     @InjectRepository(Coordinator)
-    private coordinatorRepository: Repository<Coordinator>,
+    private readonly coordinatorRepository: Repository<Coordinator>,
   ) {}
 
   async create(createCoordinatorDto: CreateCoordinatorDto) {

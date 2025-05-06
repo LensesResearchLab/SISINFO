@@ -9,21 +9,21 @@ import {
 import { Check } from "lucide-react";
   
   export interface GeneralProps {
-    title: string
-    sections: SectionProps[]
+    readonly title: string
+    readonly sections: SectionProps[]
   }
   
   export interface SectionProps {
-    title: string
-    description: string
-    icon: React.ReactNode
+    readonly title: string
+    readonly description: string
+    readonly icon: React.ReactNode
   }
   
   interface StatusProps {
-    title: string
-    currentStatus: string
-    statusMessage: string
-    steps: string[]
+    readonly title: string
+    readonly currentStatus: string
+    readonly statusMessage: string
+    readonly steps: string[]
   }
   
   /**
@@ -37,7 +37,7 @@ import { Check } from "lucide-react";
    * @param {React.ReactNode} props.children - Optional child elements
    * @returns {JSX.Element} A tabbed interface with general and status information
    */
-  export default function TabStatus({general, status, children}: {general: GeneralProps, status: StatusProps, children?: React.ReactNode}) {
+  export default function TabStatus({general, status, children}: {readonly general: GeneralProps, readonly status: StatusProps, readonly children?: React.ReactNode}) {
     return (
       <div className="max-w-3xl mx-auto p-4">
         <Tabs defaultValue="general">

@@ -11,7 +11,8 @@ import { CreateSimpleSectionDto } from './dto/create-simple-section.dto';
 @Injectable()
 export class SectionsService {
   constructor(
-    @InjectRepository(Section) private sectionRepository: Repository<Section>,
+    @InjectRepository(Section)
+    private readonly sectionRepository: Repository<Section>,
   ) {}
 
   async create(

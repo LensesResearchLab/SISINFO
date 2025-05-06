@@ -48,7 +48,7 @@ export default function DateRangePicker({
               initialFocus
               mode="range"
               selected={value}
-              onSelect={(range) => onChange(range ? { from: range.from || new Date(), to: range.to || new Date() } : undefined)}
+              onSelect={(range) => onChange(range ? { from: range.from ?? new Date(), to: range.to ?? new Date() } : undefined)}
               numberOfMonths={2}
             />
           </PopoverContent>

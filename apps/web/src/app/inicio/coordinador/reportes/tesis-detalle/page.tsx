@@ -291,7 +291,7 @@ function ThesisDetailedCards() {
                     <div>
                       <p className="text-gray-500 text-sm">Calificación:</p>
                       <p className="font-medium">
-                        {thesis.thesis_grade || "No disponible"}
+                        {thesis.thesis_grade ?? "No disponible"}
                       </p>
                     </div>
                   </div>

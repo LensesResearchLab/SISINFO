@@ -12,7 +12,7 @@ export class ProjectApplicationsService {
     private readonly studentsService: StudentsService,
     private readonly projectsService: ProjectsService,
     @InjectRepository(ProjectApplication)
-    private projectApplicationRepository: Repository<ProjectApplication>,
+    private readonly projectApplicationRepository: Repository<ProjectApplication>,
   ) {}
 
   async create(

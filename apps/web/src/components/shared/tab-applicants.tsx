@@ -27,22 +27,22 @@ import { GraduatedAssistanceApplication } from "@/app/types/graduated-assistance
 import { updateAssistanceApplication } from "@/app/services/assistance.service";
 
 interface Section {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
+  readonly title: string;
+  readonly description: string;
+  readonly icon: React.ReactNode;
 }
 
 
 interface TabStatusProps {
-  general: {
-    title: string;
-    sections: Section[];
+  readonly general: {
+    readonly title: string;
+    readonly sections: Section[];
   };
-  status: {
-    title: string;
-    applicants: GraduatedAssistanceApplication[];
+  readonly status: {
+    readonly title: string;
+    readonly applicants: GraduatedAssistanceApplication[];
   };
-  children?: React.ReactNode;
+  readonly children?: React.ReactNode;
   handleDetails?: (id: string) => void;
 }
 

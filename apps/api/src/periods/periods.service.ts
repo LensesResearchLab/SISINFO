@@ -9,7 +9,8 @@ import { Not, In } from 'typeorm';
 @Injectable()
 export class PeriodsService {
   constructor(
-    @InjectRepository(Period) private periodRepository: Repository<Period>,
+    @InjectRepository(Period)
+    private readonly periodRepository: Repository<Period>,
   ) {}
   async create(createPeriodDto: CreatePeriodDto) {
     const existingPeriod = await this.periodRepository.findOne({

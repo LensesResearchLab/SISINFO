@@ -116,7 +116,7 @@ export default function EditAssistancePage() {
             console.log(id);
             const newRequirement =
               await createRequirimentForGraduatedAssistance(
-                id as string,
+                id,
                 requirement.description
               );
             return { ...requirement, id: newRequirement.id };

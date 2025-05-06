@@ -51,8 +51,8 @@ export default function ThesisProjects() {
 
   const filteredProjects = searchQuery
     ? sortedThesisList.filter((thesis) =>
-        thesis.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      thesis.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : sortedThesisList;
 
   return (
@@ -239,7 +239,7 @@ function StudentActionButtons() {
       >
         <span className="w-5 h-5 bg-gray-200 rounded-full flex items-center justify-center text-[11px] font-medium">
           30
-        </span>
+        </span> {' '}
         30%
       </Button>
 

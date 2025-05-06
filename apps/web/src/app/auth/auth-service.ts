@@ -24,7 +24,7 @@ export async function loginUser(email: string, password: string) {
     if (!response.ok) {
       return {
         success: false,
-        message: data.message || "Invalid credentials",
+        message: data.message ?? "Invalid credentials",
       };
     }
 
@@ -55,7 +55,7 @@ export async function getUserInfo() {
     if (!response.ok) {
       return {
         success: false,
-        message: data.message || "Failed to get user information",
+        message: data.message ?? "Failed to get user information",
       };
     }
 
@@ -84,7 +84,7 @@ export async function logoutUser() {
     if (!response.ok) {
       return {
         success: false,
-        message: data.message || "Failed to logout",
+        message: data.message ?? "Failed to logout",
       };
     }
     return {
