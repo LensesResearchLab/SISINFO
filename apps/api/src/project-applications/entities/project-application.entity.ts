@@ -3,6 +3,7 @@ import { ProjecStatusEnum } from '../enums/project_status.enum';
 import { Student } from '../../students/entities/student.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Base } from '../../common/entities/base.entity';
+import { Task } from 'src/tasks/entities/task.entity';
 
 @Entity()
 export class ProjectApplication extends Base {

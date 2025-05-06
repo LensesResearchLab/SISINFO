@@ -2,34 +2,23 @@ import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { TaskType } from './enums/taskType';
 
 @Controller('tasks')
 export class TasksController {
+  tasksService: any;
   constructor(private readonly tasks: TasksService) {}
 
   @Post()
-  create(@Body() dto: CreateTaskDto) {
-    return this.tasks.create(dto);
+  create(@Body() body: { type: TaskType; comment?: string }) {
+    return this.tasksService.createTask(body.type, {
+      comment: body.comment,
+    });
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tasks.findOne(id);
-  }
-
-  @Get('student/:studentId/pending')
-  findPendingForStudent(@Param('studentId') studentId: string) {
-    return this.tasks.findPendingForStudent(studentId);
-  }
-  
-  @Get('professor/:professorId/pending')
-  findPendingForProfessor(@Param('professorId') professorId:string){
-    return this.tasks.findPendingForProfessor(professorId);
-  }
-
-  @Patch(':id/complete')
-  complete(@Param('id') id: string) {
-    return this.tasks.completeTask(id);
   }
 
   @Patch(':id')

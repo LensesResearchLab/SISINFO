@@ -57,6 +57,7 @@ import { ImportantDate } from '../important-dates/entities/important-date.entity
 import { CreateImportantDateDto } from '../important-dates/dto/create-important-date.dto';
 import { TaskType } from 'src/tasks/enums/taskType';
 import { TaskState } from 'src/tasks/enums/taskState';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class SeedService {
@@ -472,18 +473,16 @@ export class SeedService {
   }
 
   async seedTasks(): Promise<void> {
-    // 1. Carga los IDs ya existentes
-    const students   = await this.studentsService.findAll();     // [{ id, ... }]
+    const students   = await this.studentsService.findAll();
     const professors = await this.professorsService.findAll();
 
     const types  = Object.values(TaskType)  as TaskType[];
     const states = Object.values(TaskState) as TaskState[];
 
-    // 2. Vamos a crear las tareas *secuencialmente* para poder referir previousTaskId
-    const createdTasks: { id: string }[] = [];
+    const createdTasks: UUID[] = [];
 
     for (let i = 0; i < 10; i++) {
-      const dto: CreateTaskDto & { previousTaskId?: string } = {
+      const dto: CreateTaskDto & { previousTaskId?: UUID } = {
         type: faker.helpers.arrayElement(types),
         state: faker.helpers.arrayElement(states),
         studentId:     faker.helpers.arrayElement(students).id,
@@ -494,14 +493,14 @@ export class SeedService {
         },
       };
       if (createdTasks.length > 0) {
-        dto.previousTaskId = faker.helpers.arrayElement(createdTasks).id;
+        dto.previousTaskId = faker.helpers.arrayElement(createdTasks);
       }
 
-      // Crea la tarea y guarda su ID
       const created = await this.tasksService.create(dto);
-      createdTasks.push({ id: created.id });
+      createdTasks.push(created.id as UUID);
     }
   }
+  
   async seedAreasOfInterest() {
     const areasOfInterest: CreateAreasOfInterestDto[] = sampleAreasOfInterest;
     const insertPromises: Promise<CreateAreasOfInterestDto>[] = [];
