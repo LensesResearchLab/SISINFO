@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
+import { Slot, SlotProps } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
 
@@ -406,7 +406,7 @@ function SidebarGroupLabel({
         "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
         className
       )}
-      {...props}
+      {...(props as SlotProps)}
     />
   )
 }
@@ -429,7 +429,7 @@ function SidebarGroupAction({
         "group-data-[collapsible=icon]:hidden",
         className
       )}
-      {...props}
+      {...(props as SlotProps)}
     />
   )
 }
@@ -515,7 +515,7 @@ function SidebarMenuButton({
       data-size={size}
       data-active={isActive}
       className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
-      {...props}
+      {...(props as SlotProps)}
     />
   )
 
@@ -569,7 +569,7 @@ function SidebarMenuAction({
           "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
         className
       )}
-      {...props}
+      {...(props as SlotProps)}
     />
   )
 }
@@ -690,7 +690,7 @@ function SidebarMenuSubButton({
         "group-data-[collapsible=icon]:hidden",
         className
       )}
-      {...props}
+      {...(props as SlotProps)}
     />
   )
 }

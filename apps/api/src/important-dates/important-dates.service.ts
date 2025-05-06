@@ -1,15 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { CreateImportantDateDto } from './dto/create-important-date.dto';
 import { UpdateImportantDateDto } from './dto/update-important-date.dto';
+import { Repository } from 'typeorm/repository/Repository';
+import { ImportantDate } from './entities/important-date.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ImportantDatesService {
-  create(createImportantDateDto: CreateImportantDateDto) {
-    return 'This action adds a new importantDate';
+  constructor(
+    @InjectRepository(ImportantDate)
+    private importantDateRepository: Repository<ImportantDate>,
+  ) {}
+
+  async create(
+    createImportantDateDto: CreateImportantDateDto,
+  ): Promise<ImportantDate> {
+    const importantDate = this.importantDateRepository.create(
+      createImportantDateDto,
+    );
+    return await this.importantDateRepository.save(importantDate);
   }
 
-  findAll() {
-    return `This action returns all importantDates`;
+  async findAll() {
+    return await this.importantDateRepository.find();
   }
 
   findOne(id: number) {

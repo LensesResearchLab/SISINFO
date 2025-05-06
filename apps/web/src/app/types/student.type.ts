@@ -1,9 +1,7 @@
+import { User } from "./user.type";
+
 export interface Student {
-    user:{
-        document: string;
-        name: string;
-        email: string;
-    }
+    user: User;
     isUndergraduate: boolean;
     code: string;
 }

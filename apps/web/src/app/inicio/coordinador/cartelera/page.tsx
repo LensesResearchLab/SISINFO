@@ -11,7 +11,7 @@ import { AlertDialogError } from "@/components/shared/alert-dialog-error";
 
 
 export default function UploadBillboard() {
-  const headers: (keyof Billboard)[] = [
+  const headers = React.useMemo<(keyof Billboard)[]>(() => [
     "NRC",
     "code",
     "name",
@@ -20,7 +20,8 @@ export default function UploadBillboard() {
     "section",
     "period",
     "professors",
-  ];
+  ], []);
+  
   const [csvData, setCsvData] = useState<Billboard[]>([]);
   const [coursesData, setCoursesData] = useState<Course[]>([]);
   const [loadError, setLoadError] = useState(false);
@@ -45,7 +46,7 @@ export default function UploadBillboard() {
     return csv.join("\n");
   };
 
-  const csvContent = useMemo(() => convertToCSV(headers, csvData), [csvData]);
+  const csvContent = React.useMemo(() => convertToCSV(headers, csvData), [csvData, headers]);
 
   const handleDownload = () => {
     const encodedUri = encodeURI(`data:text/csv;charset=utf-8,${csvContent}`);
@@ -110,6 +111,9 @@ function UploadedBillboard({ classesData, loadError }: { classesData: Course[], 
         a.name.localeCompare(b.name) * (sortDesc ? -1 : 1)
       );
   }, [searchTerm, sortDesc, classesData]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, sortDesc]);
 
   const rowsPerPage = 10;
   const totalPages = Math.ceil(filteredClasses.length / rowsPerPage);
@@ -119,9 +123,11 @@ function UploadedBillboard({ classesData, loadError }: { classesData: Course[], 
     return filteredClasses.slice(startIndex, startIndex + rowsPerPage);
   }, [filteredClasses, currentPage]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, sortDesc]);
+  if (loadError) {
+    return (
+      <BillboardNotFound />
+    );
+  }
 
   return (
     <div className="min-h-full min-w-full">
@@ -151,6 +157,17 @@ function UploadedBillboard({ classesData, loadError }: { classesData: Course[], 
       </div>
     </div>
   );
+}
+
+function BillboardNotFound() {
+  return (
+      <div className="min-h-full min-w-full">
+        <div className="bg-card rounded-lg shadow-lg p-6">
+          <h2 className="text-2xl font-bold mb-4 text-primary text-center">Error al cargar la cartelera</h2>
+          <p className="text-primary text-center">No se pudo cargar la cartelera. Por favor, intenta nuevamente.</p>
+        </div>
+      </div>
+  )
 }
 
 function BillboardTable({

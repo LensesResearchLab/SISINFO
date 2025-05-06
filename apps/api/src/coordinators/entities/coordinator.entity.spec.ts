@@ -11,12 +11,12 @@ describe('Coordinator Entity', () => {
     const mockTask2 = new Task();
 
     const coordinator = new Coordinator();
-    coordinator.document = mockDocument;
+    coordinator.id = mockDocument;
     coordinator.user = mockUser;
     coordinator.tasks = [mockTask1, mockTask2];
 
     expect(coordinator).toBeInstanceOf(Coordinator);
-    expect(coordinator.document).toBe(mockDocument);
+    expect(coordinator.id).toBe(mockDocument);
     expect(coordinator.user).toBeInstanceOf(User);
     expect(coordinator.tasks).toHaveLength(2);
     expect(coordinator.tasks[0]).toBeInstanceOf(Task);

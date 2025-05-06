@@ -68,7 +68,7 @@ export default function AssistanceDetails() {
     requirements: [],
     professor: {
       user: {
-        document: "",
+        id: "",
         name: "",
         email: "",
       },
@@ -91,7 +91,7 @@ export default function AssistanceDetails() {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, router]);
 
   if (isLoading) {
     return <SpinnerPage />;
@@ -355,7 +355,7 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
       return;
     }
   
-    const studentDocument = "Document 10";
+    const studentId = "Document 10";
     const graduatedAssistanceId = id;
   
     const formData = new FormData();
@@ -364,7 +364,7 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
   
     try {
       const response = await fetch(
-        `${API_ROUTES.BASE}/${API_ROUTES.ASSISTANCE_APPLICATIONS}?studentDocument=${studentDocument}&graduatedAssistanceId=${graduatedAssistanceId}`,
+        `${API_ROUTES.BASE}/${API_ROUTES.ASSISTANCE_APPLICATIONS}?studentId=${studentId}&graduatedAssistanceId=${graduatedAssistanceId}`,
         {
           method: "POST",
           body: formData,
@@ -471,7 +471,7 @@ function ButtonBack({
  * @param {Object} props Component props
  * @returns {JSX.Element} File upload section
  */
-function UploadCV({ assistance, setFile }: { 
+function UploadCV({ setFile }: { 
   assistance: GraduatedAssistance; 
   setFile: (file: File | null) => void; 
 }) {

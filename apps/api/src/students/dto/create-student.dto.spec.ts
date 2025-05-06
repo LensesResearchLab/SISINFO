@@ -9,7 +9,7 @@ describe('CreateStudentDto validation', () => {
     const dto = new CreateStudentDto();
     dto.isUndergraduate = true;
     dto.code = '202210720';
-    dto.document = 'Document 1';
+    dto.id = 'Document 1';
     return Object.assign(dto, overrides);
   };
 

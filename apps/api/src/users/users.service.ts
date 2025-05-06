@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { RoleSimpleFactory } from './helpers/RoleSimpleFactory';
+import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 
 @Injectable()
 export class UsersService {
@@ -26,20 +26,15 @@ export class UsersService {
     });
   }
 
-  async findOne(document: string) {
+  async findOne(id: string) {
     const user = await this.userRepository.findOne({
-      where: { document },
+      where: { id },
       relations: ['coordinator', 'professor', 'student'],
     });
 
     if (!user) return null;
-
-    const roles: string[] = [];
-    if (user.coordinator) roles.push('coordinador');
-    if (user.professor) roles.push('profesor');
-    if (user.student) roles.push('estudiante');
-    const { password, ...result } = user;
-    return { ...result, roles };
+    const roles: string[] = this.getUserRoles(user);
+    return deletePasswordFromUser(user, roles);
   }
 
   async findByEmail(email: string) {
@@ -47,14 +42,23 @@ export class UsersService {
       where: { email },
       relations: ['coordinator', 'professor', 'student'],
     });
-
     if (!user) return null;
+    const roles: string[] = this.getUserRoles(user);
+    return { ...user, roles };
+  }
 
+  getUserRoles(user: User) {
     const roles: string[] = [];
     if (user.coordinator) roles.push('coordinador');
     if (user.professor) roles.push('profesor');
-    if (user.student) roles.push('estudiante');
-    return { ...user, roles };
+    if (user.student) {
+      if (user.student.isUndergraduate) {
+        roles.push('estudiante');
+      } else {
+        roles.push('estudiante_maestria');
+      }
+    }
+    return roles;
   }
 
   async hashPassword(plainPassword: string): Promise<string> {
@@ -78,14 +82,6 @@ export class UsersService {
       console.error('Error verifying password:', error);
       return false;
     }
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 
   async assignRole<T>(user: User, roleType: string, roleInfo: T) {

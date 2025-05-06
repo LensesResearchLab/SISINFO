@@ -4,7 +4,7 @@ import { IncidenceEnum } from '../enums/Incidence.enum';
 
 describe('Incidence Entity', () => {
   it('should create an Incidence with expected properties', () => {
-    const mockType = IncidenceEnum.ERROR;
+    const mockType = IncidenceEnum.SYSTEM_ERROR;
     const mockDescription = 'An error occurred during the process';
 
     const incidence = new Incidence();

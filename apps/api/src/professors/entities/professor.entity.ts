@@ -17,8 +17,11 @@ import { Role } from '../../common/entities/role.entity';
 
 @Entity()
 export class Professor extends Role {
-  @OneToOne(() => User, (user) => user.professor, { eager: true })
-  @JoinColumn({ name: 'document' })
+  @OneToOne(() => User, (user) => user.professor, {
+    eager: true,
+    cascade: true,
+  })
+  @JoinColumn({ name: 'id' })
   user: User;
 
   @OneToMany(() => GraduatedAssistance, (assistance) => assistance.professor)

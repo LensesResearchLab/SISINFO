@@ -17,12 +17,14 @@ import {
   professorData,
   coordinatorData,
   supportData,
+  graduateData,
 } from "@/components/links-per-group";
 import { useHomeStore } from "@/app/inicio/home.store";
 import { getUserInfo } from "@/app/auth/auth-service";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const roles = useHomeStore((state) => state.roles);
+  const setRoles = useHomeStore((state) => state.setRoles);
   const [currentUser, setCurrentUser] = useState({
     name: "Cargando...",
     email: "",
@@ -39,6 +41,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             email: userInfo.user.email,
             avatar: "/public/student-cap.svg",
           });
+          setRoles(userInfo.user.roles);
         }
       } catch (error) {
         console.error(error);
@@ -46,12 +49,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
 
     fetchUserData();
-  }, []);
+  }, [setRoles]);
 
   const roleNavMainMap = new Map([
     ["coordinador", coordinatorData],
     ["profesor", professorData],
     ["estudiante", undergraduateData],
+    ["estudiante_maestria", graduateData],
   ]);
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -63,7 +67,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavMain
             key={role}
             items={roleNavMainMap.get(role) ?? []}
-            title={role[0].toUpperCase() + role.slice(1)}
+            title={
+              role === "estudiante_maestria"
+                ? "Estudiante Maestria"
+                : role[0].toUpperCase() + role.slice(1)
+            }
           />
         ))}
         <NavMain items={supportData} title="Soporte" />

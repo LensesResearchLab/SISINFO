@@ -17,12 +17,13 @@ import { AlertDialogError } from "@/components/shared/alert-dialog-error"
 
 export default function ProgramsList() {
   const router = useRouter()
-  const { period, setPeriod, ids, setIds } = useProgramsStore()
+  const period =  useProgramsStore((state) => state.period);
+  const setPeriod = useProgramsStore((state) => state.setPeriod);
+  const setIds = useProgramsStore((state) => state.setIds);
   const [periods, setPeriods] = useState<string[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [search, setSearch] = useState("")
   const [sortDesc, setSortDesc] = useState(false)
-  const [expanded, setExpanded] = useState<Record<number, boolean>>({})
   const [loadError, setLoadError] = useState(false);
   const [page, setPage] = useState(1)
   const perPage = 10
@@ -74,7 +75,6 @@ export default function ProgramsList() {
     return filtered.slice(start, start + perPage)
   }, [filtered, page])
 
-  const toggle = (i: number) => setExpanded(prev => ({ ...prev, [i]: !prev[i] }))
   const handleDetail = (id: string) =>{ 
     const currentPath=window.location.pathname;
     router.push(`${currentPath}/${id}`)}
@@ -123,9 +123,9 @@ export default function ProgramsList() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {visible.map((c, idx) => (
+                {visible.map((c) => (
                   <React.Fragment key={c.id}>
-                    <TableRow className="border-b cursor-pointer" onClick={() => toggle(idx)}>
+                    <TableRow className="border-b cursor-pointer">
                       <TableCell className="py-2 px-3 font-semibold text-primary">{c.name}</TableCell>
                       <TableCell className="py-2 px-3 text-primary">{c.code}</TableCell>
                       <TableCell className="py-2 px-3 text-primary">{c?.program ? 'Cargado' : 'Pendiente'}</TableCell>

@@ -1,16 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { ThesesService } from './theses.service';
 import { CreateThesisDto } from './dto/create-thesis.dto';
-import { UpdateThesisDto } from './dto/update-thesis.dto';
 
 @Controller('theses')
 export class ThesesController {
@@ -19,9 +9,9 @@ export class ThesesController {
   @Post()
   create(
     @Body() createThesisDto: CreateThesisDto,
-    @Query('studentDocument') studentDocument: string,
+    @Query('studentId') studentId: string,
   ) {
-    return this.thesesService.create(createThesisDto, studentDocument);
+    return this.thesesService.create(createThesisDto, studentId);
   }
 
   @Get()
@@ -31,16 +21,6 @@ export class ThesesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.thesesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateThesisDto: UpdateThesisDto) {
-    return this.thesesService.update(+id, updateThesisDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.thesesService.remove(+id);
+    return this.thesesService.findOne(id);
   }
 }

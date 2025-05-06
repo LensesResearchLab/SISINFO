@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateThesisDto } from './dto/create-thesis.dto';
-import { UpdateThesisDto } from './dto/update-thesis.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Thesis } from './entities/thesis.entity';
 import { ProfessorsService } from '../professors/professors.service';
+import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 
 @Injectable()
 export class ThesesService {
@@ -12,12 +12,12 @@ export class ThesesService {
     private readonly professorService: ProfessorsService,
     @InjectRepository(Thesis) private thesisRepository: Repository<Thesis>,
   ) {}
-  async create(createThesisDto: CreateThesisDto, professorDocument: string) {
-    const professor = await this.professorService.findOne(professorDocument);
+  async create(createThesisDto: CreateThesisDto, professorId: string) {
+    const professor = await this.professorService.findOne(professorId);
 
     if (!professor) {
       throw new NotFoundException(
-        `Professor with document ${professorDocument} not found`,
+        `Professor with professorId ${professorId} not found`,
       );
     }
 
@@ -31,23 +31,45 @@ export class ThesesService {
   }
 
   async findAll() {
-    return this.thesisRepository.find({
+    const thesisData = await this.thesisRepository.find({
       relations: {
-        professor: true,
+        professor: {
+          user: true,
+        },
         tags: true,
+        period: true,
       },
     });
+
+    thesisData.forEach((thesis) => {
+      if (thesis.professor?.user) {
+        thesis.professor.user = deletePasswordFromUser(thesis.professor.user);
+      }
+    });
+
+    return thesisData;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} thesis`;
-  }
+  async findOne(id: string) {
+    const thesis = await this.thesisRepository.findOne({
+      where: { id },
+      relations: {
+        professor: {
+          user: true,
+        },
+        tags: true,
+        period: true,
+      },
+    });
 
-  update(id: number, updateThesisDto: UpdateThesisDto) {
-    return `This action updates a #${id} thesis`;
-  }
+    if (!thesis) {
+      throw new NotFoundException(`Thesis with id ${id} not found`);
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} thesis`;
+    if (thesis.professor?.user) {
+      thesis.professor.user = deletePasswordFromUser(thesis.professor.user);
+    }
+
+    return thesis;
   }
 }

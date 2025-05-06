@@ -14,12 +14,14 @@
   },
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.26",
+    "@playwright/test": "^1.52.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/multer": "^1.4.12",
+    "@types/node": "^22.15.3",
     "eslint-plugin-jest-dom": "^5.5.0",
     "eslint-plugin-testing-library": "^7.1.1",
     "jest": "^29.7.0",
@@ -27,7 +29,7 @@
     "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
     "turbo": "^2.4.4",
-    "typescript": "5.8.2"
+    "typescript": "^5.8.3"
   },
   "engines": {
     "node": ">=18"
@@ -51,11 +53,17 @@
     "dotenv": "^16.4.7",
     "eslint": "^9.23.0",
     "framer-motion": "^12.5.0",
+    "gremlins-ts": "^0.2.4",
+    "gremlins.js": "^2.2.0",
+    "html2canvas": "^1.4.1",
+    "html2canvas-pro": "^1.5.8",
     "jose": "^6.0.10",
+    "jspdf": "^3.0.1",
     "kill-port": "^2.0.1",
     "papaparse": "^5.5.2",
     "react-hook-form": "^7.54.2",
     "ts-jest": "^29.2.6",
+    "xlsx": "^0.18.5",
     "zod": "^3.24.2"
   }
 }

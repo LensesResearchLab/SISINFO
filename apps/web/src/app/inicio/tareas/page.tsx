@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ChevronDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -42,14 +42,14 @@ export default function Tasks() {
   const roles = useHomeStore((state) => state.roles)
   if (roles.length === 0) return null
   if (roles.length === 1) return roleMap.get(roles[0])
-    
+
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
       <div className="w-full bg-card shadow-lg rounded-xl p-5 h-full space-y-4">
         <h2 className="text-xl font-semibold text-core m-0">Tareas</h2>
         {roles.length === 1 ? roleMap.get(roles[0]) :
           <RoleTab>
-            <RoleInformation/>
+            <RoleInformation />
           </RoleTab>
         }
       </div>
@@ -58,24 +58,22 @@ export default function Tasks() {
 }
 
 function TasksList() {
-  return <DataTableDemo/>
+  return <DataTableDemo />
 }
 
-const roleMap = new Map<string, React.ReactNode>([
-  ["estudiante", <TasksList /> as React.ReactNode],
-  ["profesor", <TasksList /> as React.ReactNode],
-  ["coordinador", <TasksList /> as React.ReactNode]
+const roleMap = new Map<string, React.JSX.Element>([
+  ["estudiante", <TasksList key="tasks-estudiante" />],
+  ["profesor", <TasksList key="tasks-profesor" />],
+  ["coordinador", <TasksList key="tasks-coordinador" />],
 ])
 
 function RoleInformation() {
   const roles = useHomeStore((state) => state.roles)
   return (
     <div>
-      {roles.map((role) =>{ 
-        const node = roleMap.get(role)!
-        return(
-        <TabsContent key={role} value={role}>
-          <>{node}</>
+      {roles.map((role, index) => (
+        <TabsContent key={`${role}-${index}`} value={role}>
+          {roleMap.get(role)}
         </TabsContent>
       )}
       )}
@@ -91,7 +89,7 @@ interface Task {
   date: Date
 }
 
-export const columns: ColumnDef<Task>[] = [
+const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "title",
     header: "Título",

@@ -1,8 +1,8 @@
-import { PrimaryColumn, Column } from 'typeorm';
+import { Column, PrimaryColumn } from 'typeorm';
 
 export abstract class Role {
-  @PrimaryColumn()
-  document: string;
+  @PrimaryColumn({ type: 'uuid' })
+  id: string;
 
   @Column('boolean', { default: true })
   isActive: boolean;

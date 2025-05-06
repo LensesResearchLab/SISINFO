@@ -19,9 +19,6 @@ import {
 import { Search } from "lucide-react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  getUndergraduateThesis,
-} from "@/app/services/thesis.service";
 import { Thesis } from "@/app/types/thesis.type";
 
 import {
@@ -41,6 +38,7 @@ import { cn } from "@/lib/utils";
 import { ROUTES } from "@/app/routes";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
 import { getPeriods } from "@/app/services/period.service";
+import { getUndergraduateThesis } from "@/app/services/thesis.service";
 
 /**
  * ThesisList Component
@@ -208,10 +206,8 @@ function AccordionListSimpleFactory({
 }) {
   const category = useThesisListStore((state) => state.searchCategory);
   if (category === "areas_of_interest")
-    return (
-      <AreaOfInterestAccordionList thesisList={thesisList}/>
-    );
-  return <ProfessorAccordionList thesisList={thesisList}/>;
+    return <AreaOfInterestAccordionList thesisList={thesisList} />;
+  return <ProfessorAccordionList thesisList={thesisList} />;
 }
 
 /**
@@ -336,7 +332,7 @@ function ElementAccordion({
  */
 function ElementThesisTable({ thesisList }: { thesisList: Thesis[] }) {
   const router = useRouter();
-  const handleClick = (id: number) => {
+  const handleClick = (id: string) => {
     router.push(`${ROUTES.HOME}/${ROUTES.UNDERGRADUATE_THESIS_LIST}/${id}`);
   };
   return (
@@ -361,9 +357,9 @@ function ElementThesisTable({ thesisList }: { thesisList: Thesis[] }) {
         {thesisList.map((project, index) => (
           <TableRow key={index}>
             <TableCell className="font-medium">{project.title}</TableCell>
-            <TableCell className="font-medium">{project.category}</TableCell>
+            <TableCell className="font-medium">{project.title}</TableCell>
             <TableCell className="font-medium">
-              {project.students.length}
+              {project.students?.length}
             </TableCell>
             <TableCell className="font-medium">
               <Button

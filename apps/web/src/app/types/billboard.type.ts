@@ -1,5 +1,8 @@
 import { Period } from "./period.type"
 import { TeachingAssistantship } from "./teachingAssistantship.type";
+import { Student } from "./student.type";
+import { User } from "./user.type";
+
 export interface Billboard {
     id?: string;
     NRC: string;
@@ -11,32 +14,57 @@ export interface Billboard {
     period: string;
     professors: string[];
     publicated: boolean;
-  }
+}
   
+
 export interface Course {
-    id: string;
-    name: string;
-    code: string;
-    sections: Section[];
-    credits: number;
-    mainProfessor: Professor;
-    program: string
+  id: string;
+  name: string;
+  code: string;
+  sections: Section[];
+  credits: number;
+  mainProfessor: Professor;
+  program: string;
 }
+
 export interface Professor {
-    id: string;
-    user:User;
+  id: string;
+  user: User;
 }
-export interface User{
-    document:string;
-    email:string;
-    name:string;
-}
+
+
+
 export interface Section {
-    id: string;
-    NRC: number;
-    section: number;
-    professors:Professor[];
-    teachingAssistances: TeachingAssistantship[];
-    course: Course,
-    period: Period,
+  id: string;
+  NRC: number;
+  section: number;
+  professors:Professor[];
+  teachingAssistances: TeachingAssistantship[];
+  course: Course,
+  period: Period,
 }
+
+export interface TeachingAssistance {
+  id: string;
+  task: string;
+  status: string;
+  periodTypeDescription: string;
+  finalDate: Date;
+  initialDate: Date;
+  weeklyHours: number;
+  description: string;
+  grade: number;
+  student: Student;
+}
+
+export interface CourseReports {
+  id: string;
+  crn: string;
+  section: string;
+  courseCode: string;
+  courseName: string;
+  professorName: string;
+  professorEmail: string;
+}
+
+

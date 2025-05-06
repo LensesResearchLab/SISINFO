@@ -86,7 +86,7 @@ export default function TeachingAssistantList() {
       });
       setOrder(sortedOrder);
     }
-  }, [mappedTASList, sortDirection]);
+  }, [mappedTASList, setOrder, sortDirection]);
 
   if (isLoadingSemesters) return <SpinnerPage />;
 

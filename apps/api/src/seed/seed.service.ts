@@ -52,6 +52,9 @@ import { sampleCourse } from './sample-data/course.sample';
 import { sampleSection } from './sample-data/section.sample';
 import { Professor } from '../professors/entities/professor.entity';
 import { Section } from '../sections/entities/section.entity';
+import { ImportantDatesService } from '../important-dates/important-dates.service';
+import { ImportantDate } from '../important-dates/entities/important-date.entity';
+import { CreateImportantDateDto } from '../important-dates/dto/create-important-date.dto';
 import { TaskType } from 'src/tasks/enums/taskType';
 import { TaskState } from 'src/tasks/enums/taskState';
 
@@ -78,6 +81,7 @@ export class SeedService {
     private readonly studentsService: StudentsService,
     private readonly documentsService: DocumentsService,
     private readonly usersService: UsersService,
+    private readonly importantDatesService: ImportantDatesService,
   ) {}
 
   STUDENTS_NUMBER = 10;
@@ -97,7 +101,11 @@ export class SeedService {
     }
 
     for (const user of sampleUser) {
-      await this.usersService.create(user);
+      const userWithPassword = {
+        ...user,
+        password: user.password || faker.internet.password({ length: 20 }),
+      };
+      await this.usersService.create(userWithPassword);
     }
     for (const student of sampleStudent) {
       await this.studentsService.create(student);
@@ -184,17 +192,15 @@ export class SeedService {
 
   async seedProfessors() {
     const professorsData = Array.from({ length: this.PROFESSORS_NUMBER }).map(
-      (_, idx) => {
-        const document = `Document ${idx}`;
+      () => {
         const professor: CreateProfessorDto = {
-          document,
+          id: '',
           isActive: faker.datatype.boolean(),
         };
         const user: CreateUserDto = {
-          document,
           name: faker.person.fullName(),
           email: faker.internet.email(),
-          password: faker.internet.password(),
+          password: faker.internet.password({ length: 20 }),
         };
         return { professor, user };
       },
@@ -202,14 +208,11 @@ export class SeedService {
 
     const insertPromises = professorsData.map(async ({ professor, user }) => {
       const createdUser = await this.usersService.create(user);
-      await this.usersService.assignRole<CreateProfessorDto>(
-        createdUser,
-        'professor',
-        {
-          isActive: professor.isActive,
-          document: createdUser.document,
-        },
-      );
+      professor.id = createdUser.id;
+      await this.professorsService.addRole(createdUser, {
+        isActive: professor.isActive,
+        id: createdUser.id,
+      });
       return await this.professorsService.create(professor);
     });
     await Promise.all(insertPromises);
@@ -247,6 +250,7 @@ export class SeedService {
   }
 
   async seedTheses() {
+    const users = await this.usersService.findAll();
     const insertPromises: Promise<Thesis>[] = [];
     for (let i = 0; i < this.PROFESSORS_NUMBER; i++) {
       for (
@@ -262,7 +266,7 @@ export class SeedService {
               isEnded: faker.datatype.boolean(),
               investigationSubarea: faker.lorem.word(),
             },
-            `Document ${i}`,
+            users[i].id,
           ),
         );
       }
@@ -285,7 +289,7 @@ export class SeedService {
             wasContacted: faker.datatype.boolean(),
           },
           randomProject.id,
-          student.document,
+          student.user.id,
         ),
       );
     }
@@ -296,6 +300,7 @@ export class SeedService {
   async seedProjects() {
     const categories = ['Investigación', 'Proyecto aplicado a empresas'];
     const periods = await this.periodsService.findAll();
+    const users = await this.usersService.findAll();
     const insertPromises: Promise<Project>[] = [];
     for (let i = 0; i < this.PROFESSORS_NUMBER; i++) {
       for (
@@ -316,7 +321,7 @@ export class SeedService {
               category:
                 categories[Math.floor(Math.random() * categories.length)],
             },
-            `Document ${i}`,
+            users[i].id,
             periods[Math.floor(Math.random() * periods.length)].id,
           ),
         );
@@ -339,7 +344,7 @@ export class SeedService {
             wasContacted: faker.datatype.boolean(),
           },
           randomThesis.id,
-          student.document,
+          student.user.id,
         ),
       );
     }
@@ -384,7 +389,7 @@ export class SeedService {
         professors[Math.floor(Math.random() * professors.length)];
       return this.graduatedAssistancesService.create(
         graduatedAssistance,
-        randomProfessor.document,
+        randomProfessor.user.id,
       );
     });
 
@@ -425,7 +430,7 @@ export class SeedService {
 
         await this.graduatedAssistanceApplicationsService.create(
           {},
-          randomStudent.document,
+          randomStudent.user.id,
           randomGraduatedAssistance.id,
           file,
         );
@@ -439,18 +444,29 @@ export class SeedService {
   }
 
   async seedCoordinator() {
-    const coordinators: CreateCoordinatorDto[] = Array(this.COORDINATORS_NUMBER)
-      .fill(null)
-      .map((_, idx) => ({
+    const insertPromises: Promise<void>[] = [];
+
+    for (let i = 0; i < this.COORDINATORS_NUMBER; i++) {
+      const userDto: CreateUserDto = {
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        document: `Document ${this.PROFESSORS_NUMBER + this.STUDENTS_NUMBER + idx}`,
+        password: faker.internet.password({ length: 20 }),
+      };
+      const createdUser = await this.usersService.create(userDto);
+
+      const coordinatorDto: CreateCoordinatorDto = {
+        id: createdUser.id,
+        office: faker.lorem.word(),
+        extension: faker.string.numeric(5),
         isActive: faker.datatype.boolean(),
-      }));
-    const insertPromises: Promise<CreateCoordinatorDto>[] = [];
-    coordinators.forEach((coordinator) => {
-      insertPromises.push(this.coordinatorsService.create(coordinator));
-    });
+        photo:
+          'https://sistemasproyectos.uniandes.edu.co/informe-actividades/wp-content/uploads/2015/12/jp.fernandez29.jpg',
+      };
+
+      insertPromises.push(
+        this.coordinatorsService.addRole(createdUser, coordinatorDto),
+      );
+    }
     await Promise.all(insertPromises);
     return true;
   }
@@ -499,11 +515,10 @@ export class SeedService {
   async seedUsers() {
     const users: CreateUserDto[] = Array(this.TOTAL_USERS)
       .fill(null)
-      .map((_, idx) => ({
-        document: `Document ${idx}`,
+      .map(() => ({
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        password: faker.internet.password(),
+        password: faker.internet.password({ length: 20 }),
       }));
 
     const insertPromises: Promise<User>[] = [];
@@ -516,7 +531,6 @@ export class SeedService {
 
   async seedAdmin() {
     const adminRaw = {
-      document: 'admin',
       name: 'admin',
       email: 'admin@admin.com',
       password: 'admin',
@@ -526,25 +540,29 @@ export class SeedService {
       code: 'admin',
       isActive: true,
       isUndergraduate: true,
-      document: 'admin',
+      id: admin.id,
     });
     await this.usersService.assignRole<CreateCoordinatorDto>(
       admin,
       'coordinator',
       {
         isActive: true,
-        document: 'admin',
+        id: admin.id,
+        office: 'admin',
+        extension: 'admin',
+        photo:
+          'https://sistemasproyectos.uniandes.edu.co/informe-actividades/wp-content/uploads/2015/12/jp.fernandez29.jpg',
       },
     );
     await this.usersService.assignRole<CreateProfessorDto>(admin, 'professor', {
       isActive: true,
-      document: 'admin',
+      id: admin.id,
     });
     await this.usersService.assignRole<CreateAdministratorDto>(
       admin,
       'administrator',
       {
-        document: 'admin',
+        id: admin.id,
         isActive: true,
       },
     );
@@ -552,21 +570,49 @@ export class SeedService {
   }
 
   async seedStudents() {
-    const students: CreateStudentDto[] = Array(this.STUDENTS_NUMBER)
-      .fill(null)
-      .map((_, idx) => ({
-        document: `Document ${this.PROFESSORS_NUMBER + idx}`,
-        code: faker.string.uuid(),
-        semester: faker.number.int({ min: 1, max: 2 }),
-        isUndergraduate: faker.datatype.boolean(),
-        isTeachingAssistant: faker.datatype.boolean(),
-        isActive: faker.datatype.boolean(),
-      }));
+    const insertPromises: Promise<void>[] = [];
 
-    const insertPromises: Promise<CreateStudentDto>[] = [];
-    students.forEach((student) => {
-      insertPromises.push(this.studentsService.create(student));
+    for (let i = 0; i < this.STUDENTS_NUMBER; i++) {
+      const userDto: CreateUserDto = {
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        password: faker.internet.password({ length: 20 }),
+      };
+      const createdUser = await this.usersService.create(userDto);
+
+      const studentDto: CreateStudentDto = {
+        id: createdUser.id,
+        code: faker.string.uuid(),
+        isUndergraduate: faker.datatype.boolean(),
+        isActive: faker.datatype.boolean(),
+      };
+
+      insertPromises.push(
+        this.studentsService.addRole(createdUser, studentDto),
+      );
+    }
+
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedImportantDates() {
+    const periods = await this.periodsService.findAll();
+    const insertPromises: Promise<ImportantDate>[] = [];
+    const importantDates: CreateImportantDateDto[] = Array.from({
+      length: 10,
+    }).map(() => ({
+      description: faker.lorem.sentence(),
+      date: faker.date.future(),
+      sectionTitle: faker.lorem.word(),
+      type: faker.helpers.arrayElement(['type1', 'type2', 'type3']),
+      period: periods[Math.floor(Math.random() * periods.length)].id,
+    }));
+
+    importantDates.forEach((importantDate) => {
+      insertPromises.push(this.importantDatesService.create(importantDate));
     });
+
     await Promise.all(insertPromises);
     return true;
   }
@@ -576,6 +622,8 @@ export class SeedService {
     await this.seedRequirements();
     await this.seedTags();
     await this.seedAreasOfInterest();
+    await this.seedImportantDates();
+
     return 'SEED_EXECUTED';
   }
 
@@ -614,6 +662,17 @@ export class SeedService {
   async executeTaskAndTas() {
     await this.seedTasks();
     await this.seedSampleTASEntities();
+    return 'SEED_EXECUTED';
+  }
+
+  async executeAll() {
+    await this.executeSeedStatic();
+    await this.executeSeedUsers();
+    await this.executeSeedGraduatedAssistance();
+    await this.executeSeedProjects();
+    await this.executeSeedThesis();
+    await this.executeSeedCourses();
+    await this.executeTaskAndTas();
     return 'SEED_EXECUTED';
   }
 }

@@ -24,8 +24,8 @@ import { Role } from '../../common/entities/role.entity';
 
 @Entity()
 export class Student extends Role {
-  @OneToOne(() => User, (user) => user.student, { eager: true })
-  @JoinColumn({ name: 'document' })
+  @OneToOne(() => User, (user) => user.student, { eager: true, cascade: true })
+  @JoinColumn({ name: 'id' })
   user: User;
 
   @Column('boolean')

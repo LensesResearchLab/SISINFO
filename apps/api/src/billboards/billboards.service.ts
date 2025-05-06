@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBillboardDto } from './dto/create-billboard.dto';
-import { UpdateBillboardDto } from './dto/update-billboard.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Billboard } from './entities/billboard.entity';
 import { Repository } from 'typeorm';
@@ -76,7 +74,7 @@ export class BillboardsService {
               if (/\(01\)/.test(prof)) {
                 if (
                   !findedProfessors.find(
-                    (p) => p.document === searchProfessor.document,
+                    (p) => p.user.id === searchProfessor.user.id,
                   )
                 ) {
                   findedProfessors.push(searchProfessor);
@@ -84,7 +82,7 @@ export class BillboardsService {
               } else if (/\(02\)/.test(prof)) {
                 if (
                   !supportProfessors.find(
-                    (p) => p.document === searchProfessor.document,
+                    (p) => p.user.id === searchProfessor.user.id,
                   )
                 ) {
                   supportProfessors.push(searchProfessor);
@@ -169,7 +167,9 @@ export class BillboardsService {
       billboard.period.year + billboard.period.period,
     );
     if (billboardExisting) {
-      billboardExisting.courses = billboardExisting.courses.concat(billboard.courses);
+      billboardExisting.courses = billboardExisting.courses.concat(
+        billboard.courses,
+      );
       billboardExisting.period = billboard.period;
       billboardExisting.publicated = true;
       await this.billboardRepository.save(billboardExisting);
@@ -180,7 +180,7 @@ export class BillboardsService {
   }
 
   async findAll() {
-    const response= await this.billboardRepository.find({
+    const response = await this.billboardRepository.find({
       relations: [
         'courses',
         'courses.mainProfessor',
@@ -189,7 +189,7 @@ export class BillboardsService {
         'courses.sections.period',
       ],
     });
-    return response
+    return response;
   }
 
   async findOne(period: string) {
@@ -213,10 +213,6 @@ export class BillboardsService {
       ],
     });
     return billboard;
-  }
-
-  update(id: number, updateBillboardDto: UpdateBillboardDto) {
-    return `This action updates a #${id} billboard`;
   }
 
   remove(id: string) {

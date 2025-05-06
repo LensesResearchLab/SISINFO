@@ -35,7 +35,7 @@ export default function AssistanceManagePage() {
       }
     };
     fetchData();
-  }, []);
+  }, [id]);
 
   const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST}`;
   const dialogTextAccepted = {

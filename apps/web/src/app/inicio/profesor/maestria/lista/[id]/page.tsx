@@ -4,17 +4,19 @@ import {getStudentbyId } from "@/app/services/master.service";
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, CircleAlert } from "lucide-react";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Course, Student } from "../../../../../types/student-profile.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useParams } from "next/navigation";
+import { ProfileTab } from "@/components/shared/profile-tab";
+import { StudentTabList } from "@/components/shared/student-tab-list";
+import { RenderFields } from "@/components/shared/render-fields";
 
 /**
  * StudentDetail Component
@@ -46,7 +48,7 @@ export default function StudentDetail() {
       setCourses(data.courses)
     } );
     setIsLoading(false);
-  }, []);
+  }, [id]);
   if (isLoading) return <SpinnerPage />;
 
   if (!student) return <p>student not found</p>
@@ -63,86 +65,12 @@ export default function StudentDetail() {
   );
 }
 
-/**
- * RenderFields Component
- *
- * A reusable field to display student profile information in a read-only format.
- *
- * @param {Object} props
- * @param {string} props.label - The label for the field.
- * @param {string} [props.value] - The value to be displayed in the field.
- *
- * @returns {JSX.Element} A styled input field with a label.
- */
-function RenderFields({
-  label,
-  value,
-  className,
-}: {
-  label: string;
-  value?: string;
-  className?: string;
-}) {
-  return (
-    <div className={`flex gap-3 ${className}`}>
-      <div className="w-full">
-        <h3 className="font-medium text-core-highlight">
-          {label}
-        </h3>
-        <p>{value}</p>
-        <hr className="bg-gray-300 h-[1px] w-full my-2 border-0" />
-      </div>
-    </div>
-  );
-}
 
 
-export function StudentTabList() {
-  return (
-    <TabsList
-      className="grid w-full grid-cols-2 bg-core text-white"
-    >
-      <TabsTrigger
-        value="profile"
-      >
-        Perfil
-      </TabsTrigger>
-      <TabsTrigger
-        value="detail"
-      >
-        Detalle plan de estudio
-      </TabsTrigger>
-    </TabsList>
-  )
-}
 
-export function ProfileTab({student}: {student:Student}) {
-  return (
-    <TabsContent value="profile" className="flex justify-center flex-col items-center p-2">
-      <Card className="flex justify-center flex-col items-center border-none w-3xl">
-        <CardHeader className="text-core">
-          <CardTitle className="text-2xl">
-            Detalle de inscripción a perfil
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 w-full">
-          <RenderFields label="Estudiante" value={student?.name} />
-          <RenderFields label="Correo estudiante" value={student?.email} />
-          <RenderFields label="Perfil" value={student?.profile} />
-          <RenderFields label="Asesor de tesis" value={student?.thesis2?.professor} />
-          <RenderFields label="Semestre inicio tesis 1" value={student?.thesis1?.semester} />
-          <RenderFields label="Semestre inicio tesis 2" value={student?.thesis2?.semester} />
-        </CardContent>
-        <CardFooter className="flex justify-center flex-col space-y-3">
-          <CircleAlert className="text-core"/>
-          <Label className="text-core">Estado: {student?.state}</Label>
-        </CardFooter>
-      </Card>
-    </TabsContent>
-  )
-}
 
-export function PlanDetailsTab({others, courses}: {others: Course[], courses: Course[]}) {
+
+function PlanDetailsTab({others, courses}: {others: Course[], courses: Course[]}) {
   return (
     <TabsContent value="detail" className="flex justify-center flex-col items-center p-2">
       <Card className="w-3xl border-none">

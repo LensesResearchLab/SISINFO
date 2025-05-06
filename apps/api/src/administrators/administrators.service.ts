@@ -15,23 +15,35 @@ export class AdministratorsService implements RoleService {
   ) {}
 
   create(createAdministratorDto: CreateAdministratorDto) {
-    return 'This action adds a new administrator';
+    const administrator = this.administratorRepository.create(
+      createAdministratorDto,
+    );
+    return this.administratorRepository.save(administrator);
   }
 
   findAll() {
-    return `This action returns all administrators`;
+    return this.administratorRepository.find({
+      relations: ['user'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} administrator`;
+  async findOne(id: string) {
+    const administrator = await this.administratorRepository.findOne({
+      where: {
+        id,
+      },
+      relations: ['user'],
+    });
+    if (!administrator) {
+      throw new Error('Administrator not found');
+    }
+    return administrator;
   }
 
-  update(id: number, updateAdministratorDto: UpdateAdministratorDto) {
-    return `This action updates a #${id} administrator`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} administrator`;
+  async update(id: string, updateAdministratorDto: UpdateAdministratorDto) {
+    const administrator = await this.findOne(id);
+    Object.assign(administrator, updateAdministratorDto);
+    return this.administratorRepository.save(administrator);
   }
 
   async addRole<CreateAdministratorDto>(
@@ -39,7 +51,11 @@ export class AdministratorsService implements RoleService {
     roleInfo: CreateAdministratorDto,
   ): Promise<void> {
     let administrator = await this.administratorRepository.findOne({
-      where: { document: user.document },
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
     });
     if (!administrator) {
       administrator = this.administratorRepository.create({

@@ -7,7 +7,7 @@ export class Incidence extends Base {
   @Column({
     type: 'enum',
     enum: IncidenceEnum,
-    default: IncidenceEnum.ERROR,
+    default: IncidenceEnum.SYSTEM_ERROR,
   })
   type: IncidenceEnum;
 
