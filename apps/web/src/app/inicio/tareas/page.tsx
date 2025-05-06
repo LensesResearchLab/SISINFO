@@ -62,20 +62,23 @@ function TasksList() {
 }
 
 const roleMap = new Map<string, React.ReactNode>([
-  ["estudiante", <TasksList />],
-  ["profesor", <TasksList />],
-  ["coordinador", <TasksList />]
+  ["estudiante", <TasksList /> as React.ReactNode],
+  ["profesor", <TasksList /> as React.ReactNode],
+  ["coordinador", <TasksList /> as React.ReactNode]
 ])
 
 function RoleInformation() {
   const roles = useHomeStore((state) => state.roles)
   return (
     <div>
-      {roles.map((role) => (
+      {roles.map((role) =>{ 
+        const node = roleMap.get(role)!
+        return(
         <TabsContent key={role} value={role}>
-          {roleMap.get(role)}
+          <>{node}</>
         </TabsContent>
-      ))}
+      )}
+      )}
     </div>
   )
 }

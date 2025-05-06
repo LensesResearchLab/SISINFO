@@ -1,0 +1,7 @@
+export enum TaskType {
+  UPLOAD_FILE       = 'UPLOAD_FILE',       
+  UPDATE_STATUS     = 'UPDATE_STATUS',
+  GRADE_SUBMISSION  = 'GRADE_SUBMISSION',
+  SEND_NOTE         = 'SEND_NOTE',
+  NOTIFY_GRADED     = 'NOTIFY_GRADED',
+}

@@ -70,6 +70,7 @@ export const API_ROUTES: Record<string, string> = {
   ASSISTANCE_APPLICATIONS: 'assistance-applications',
   COURSES:'courses',
   COORDINATOR_BILLBOARD:'billboards',
+  TASKS:'tasks',
 
   TEACHING_ASSISTANTS: 'teaching-assistances',
   PROFESSORS: 'professors',

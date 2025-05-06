@@ -52,6 +52,8 @@ import { sampleCourse } from './sample-data/course.sample';
 import { sampleSection } from './sample-data/section.sample';
 import { Professor } from '../professors/entities/professor.entity';
 import { Section } from '../sections/entities/section.entity';
+import { TaskType } from 'src/tasks/enums/taskType';
+import { TaskState } from 'src/tasks/enums/taskState';
 
 @Injectable()
 export class SeedService {
@@ -453,18 +455,37 @@ export class SeedService {
     return true;
   }
 
-  async seedTask() {
-    const taskList: CreateTaskDto[] = Array.from({ length: 10 }).map(() => ({
-      completed: faker.datatype.boolean(),
-    }));
-    const insertPromises: Promise<CreateTaskDto>[] = [];
-    taskList.forEach((task) => {
-      insertPromises.push(this.tasksService.create(task));
-    });
-    await Promise.all(insertPromises);
-    return true;
-  }
+  async seedTasks(): Promise<void> {
+    // 1. Carga los IDs ya existentes
+    const students   = await this.studentsService.findAll();     // [{ id, ... }]
+    const professors = await this.professorsService.findAll();
 
+    const types  = Object.values(TaskType)  as TaskType[];
+    const states = Object.values(TaskState) as TaskState[];
+
+    // 2. Vamos a crear las tareas *secuencialmente* para poder referir previousTaskId
+    const createdTasks: { id: string }[] = [];
+
+    for (let i = 0; i < 10; i++) {
+      const dto: CreateTaskDto & { previousTaskId?: string } = {
+        type: faker.helpers.arrayElement(types),
+        state: faker.helpers.arrayElement(states),
+        studentId:     faker.helpers.arrayElement(students).document,
+        professorId:   faker.helpers.arrayElement(professors).document,
+        payload: {
+          note: faker.lorem.sentence(),
+          answeredYes: faker.datatype.boolean(),
+        },
+      };
+      if (createdTasks.length > 0) {
+        dto.previousTaskId = faker.helpers.arrayElement(createdTasks).id;
+      }
+
+      // Crea la tarea y guarda su ID
+      const created = await this.tasksService.create(dto);
+      createdTasks.push({ id: created.id });
+    }
+  }
   async seedAreasOfInterest() {
     const areasOfInterest: CreateAreasOfInterestDto[] = sampleAreasOfInterest;
     const insertPromises: Promise<CreateAreasOfInterestDto>[] = [];
@@ -591,7 +612,7 @@ export class SeedService {
   }
 
   async executeTaskAndTas() {
-    await this.seedTask();
+    await this.seedTasks();
     await this.seedSampleTASEntities();
     return 'SEED_EXECUTED';
   }

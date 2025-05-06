@@ -1,35 +1,65 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, IsNull } from 'typeorm';
+import { Task} from './entities/task.entity';
+import { TaskState } from './enums/taskState';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Task } from './entities/task.entity';
 
 @Injectable()
 export class TasksService {
   constructor(
-    @InjectRepository(Task) private taskRepository: Repository<Task>,
+    @InjectRepository(Task)
+    private readonly repo: Repository<Task>,
   ) {}
 
-  async create(createTaskDto: CreateTaskDto) {
-    const task = this.taskRepository.create(createTaskDto);
-    await this.taskRepository.save(task);
+  async create(createDto: CreateTaskDto): Promise<Task> {
+    const task = this.repo.create(createDto);
+    return this.repo.save(task);
+  }
+
+  async findOne(id: string): Promise<Task> {
+    const task = await this.repo.findOne({where:{id}, 
+      relations: ['previousTask', 'nextTasks', 'student', 'professor']});
+    if (!task) throw new NotFoundException(`Task ${id} not found`);
     return task;
   }
 
-  findAll() {
-    return `This action returns all task`;
+  async findPendingForStudent(studentId: string): Promise<Task[]> {
+    return this.repo
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.previousTask', 'prev')
+      .where('task.studentId = :stu', { stu: studentId })
+      .andWhere('task.state = :pending', { pending: TaskState.PENDING })
+      .andWhere(
+        '(task.previousTaskId IS NULL OR prev.state = :done)',
+        { done: TaskState.COMPLETED },
+      )
+      .getMany();
+  }
+  async findPendingForProfessor(professorId: string): Promise<Task[]> {
+    return this.repo
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.previousTask', 'prev')
+      .where('task.professorId = :prof', { prof: professorId })
+      .andWhere('task.state = :pending', { pending: TaskState.PENDING })
+      .andWhere(
+        '(task.previousTaskId IS NULL OR prev.state = :done)',
+        { done: TaskState.COMPLETED },
+      )
+      .getMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async completeTask(id: string): Promise<Task[]> {
+    const task = await this.repo.findOne({where:{id}, relations: ['nextTasks'] });
+    if (!task) throw new NotFoundException(`Task ${id} not found`);
+    task.state = TaskState.COMPLETED;
+    await this.repo.save(task);
+    return task.nextTasks || [];
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async update(id: string, dto: UpdateTaskDto): Promise<Task> {
+    await this.repo.update(id, dto);
+    return this.findOne(id);
   }
 }
