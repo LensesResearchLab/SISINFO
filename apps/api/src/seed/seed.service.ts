@@ -486,8 +486,8 @@ export class SeedService {
       const dto: CreateTaskDto & { previousTaskId?: string } = {
         type: faker.helpers.arrayElement(types),
         state: faker.helpers.arrayElement(states),
-        studentId:     faker.helpers.arrayElement(students).document,
-        professorId:   faker.helpers.arrayElement(professors).document,
+        studentId:     faker.helpers.arrayElement(students).id,
+        professorId:   faker.helpers.arrayElement(professors).id,
         payload: {
           note: faker.lorem.sentence(),
           answeredYes: faker.datatype.boolean(),

@@ -75,8 +75,7 @@ function RoleInformation() {
         <TabsContent key={`${role}-${index}`} value={role}>
           {roleMap.get(role)}
         </TabsContent>
-      )}
-      )}
+      ))}
     </div>
   )
 }
