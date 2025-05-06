@@ -6,7 +6,7 @@ import { coordinatorData } from "@/components/links-per-group";
 export default function CoordinatorFeatures({
   children,
 }: {
-  children?: React.ReactNode;
+  readonly children?: React.ReactNode;
 }) {
   const coordinatorFeatures = [
     "Configuración del semestre",

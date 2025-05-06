@@ -25,14 +25,14 @@ import {
 } from "@/app/types/graduated-assistance.type";
 
 interface AssistanceProps {
-  assistance: GraduatedAssistance;
-  setIsApplying: (value: boolean) => void;
+  readonly assistance: GraduatedAssistance;
+  readonly setIsApplying: (value: boolean) => void;
 }
 
 interface InfoItemProps {
-  icon: React.ReactNode;
-  title: string;
-  content: string;
+  readonly icon: React.ReactNode;
+  readonly title: string;
+  readonly content: string;
 }
 
 /**
@@ -207,7 +207,7 @@ function InfoItem({ icon, title, content }: InfoItemProps) {
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing main position information
  */
-function MainInformation({ assistance }: { assistance: GraduatedAssistance }) {
+function MainInformation({ assistance }: { readonly assistance: GraduatedAssistance }) {
   return (
     <div className="space-y-12">
       <div className="space-y-6">
@@ -253,7 +253,7 @@ function MainInformation({ assistance }: { assistance: GraduatedAssistance }) {
  * @param {Object} props Component props
  * @returns {JSX.Element} List of position requirements
  */
-function Requisites({ requisites }: { requisites?: Requirement[] }) {
+function Requisites({ requisites }: { readonly requisites?: Requirement[] }) {
   if (!requisites || requisites.length === 0) {
     return <p className="text-gray-500">No hay requisitos disponibles.</p>;
   }

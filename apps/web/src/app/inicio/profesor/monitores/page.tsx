@@ -134,8 +134,8 @@ function SelectSemester({
   semesters,
   className,
 }: {
-  semesters: string[];
-  className?: string;
+  readonly semesters: string[];
+  readonly className?: string;
 }) {
   const setSearchTerm = useTeachingAssistantListStore((state) => state.setSearchTerm);
   const handleClick = (category: string) => {
@@ -215,9 +215,9 @@ function SectionAccordion({
   children,
   icon,
 }: {
-  element: string;
-  children?: React.ReactNode;
-  icon?: React.ReactNode;
+  readonly element: string;
+  readonly children?: React.ReactNode;
+  readonly icon?: React.ReactNode;
 }) {
   return (
     <AccordionItem value={element}>
