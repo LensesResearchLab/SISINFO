@@ -50,7 +50,6 @@ export default function Home() {
             setRoles(userInfo.user.roles);
           } else {
             console.log("ERROR: User info fetched but no roles found");
-            //console.log(userInfo);
           }
         } catch (error) {
           console.error("Failed to fetch user roles:", error);

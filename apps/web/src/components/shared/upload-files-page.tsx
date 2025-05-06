@@ -42,7 +42,7 @@ export function UploadFilePage({
     )
   }
 
-function TermCard({handlePeriodChange, footer}: {handlePeriodChange: (period: string) => void, footer: string}) {
+function TermCard({handlePeriodChange, footer}: {readonly handlePeriodChange: (period: string) => void, readonly footer: string}) {
   const [periods, setPeriods] = useState<string[]>([]);
   useEffect(() => {
     getPeriods()
@@ -73,7 +73,14 @@ function TermCard({handlePeriodChange, footer}: {handlePeriodChange: (period: st
   )
 }
 
-function TemplateCard({handleDownload, title, description, footer} : {handleDownload : () => void, title: string, description: string, footer: string}) {
+interface TemplateCardProps {
+  readonly handleDownload : () => void, 
+  readonly title: string, 
+  readonly description: string, 
+  readonly footer: string
+}
+
+function TemplateCard({handleDownload, title, description, footer} : TemplateCardProps) {
   return (
     <Card className="border-none">
       <CardHeader>

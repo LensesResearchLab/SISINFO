@@ -9,7 +9,7 @@ import { useHomeStore } from "./home.store";
 import RingBell from "@/components/shared/ring-bell";
 
 
-export default function Layout({children}: {children: React.ReactNode}) {
+export default function Layout({children}: {readonly children: React.ReactNode}) {
   const tasks = useHomeStore((state) => state.tasks);
 
   return (

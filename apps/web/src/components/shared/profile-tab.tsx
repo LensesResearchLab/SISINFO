@@ -5,7 +5,7 @@ import { TabsContent } from "../ui/tabs";
 import { Label } from "../ui/label";
 import { RenderFields } from "./render-fields";
 
-export function ProfileTab({student}: {student:Student}) {
+export function ProfileTab({student}: { readonly student:Student }) {
   return (
     <TabsContent value="profile" className="flex justify-center flex-col items-center p-2">
       <Card className="flex justify-center flex-col items-center border-none w-3xl">

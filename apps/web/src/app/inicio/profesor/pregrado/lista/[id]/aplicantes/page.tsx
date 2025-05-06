@@ -103,7 +103,7 @@ export default function ProjectDetail() {
 }
 
   
-function DataTableDemo({data}: {data: Application[]}) {
+function DataTableDemo({data}: {readonly data: Application[]}) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})

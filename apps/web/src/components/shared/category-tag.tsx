@@ -5,8 +5,8 @@ export function CategoryTag({
   tag,
   onClic,
 }: {
-  tag: string;
-  onClic: () => void;
+  readonly tag: string;
+  readonly onClic: () => void;
 }) {
   return (
     <Badge
@@ -26,7 +26,7 @@ export function CategoryTag({
   );
 }
 
-export function CategoryTagStatic({ tag }: { tag: string }) {
+export function CategoryTagStatic({ tag }: { readonly tag: string }) {
   return (
     <Badge
       key={tag}

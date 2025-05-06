@@ -33,7 +33,7 @@ import { getAssistanceStatusById } from "@/app/services/assistance.service";
 export default function AssistanceStatus({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  readonly params: Promise<{ id: string }>;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();

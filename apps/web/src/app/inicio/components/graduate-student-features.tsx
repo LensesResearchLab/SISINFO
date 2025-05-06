@@ -1,11 +1,10 @@
-import InformationSection from "@/app/inicio/components/information-section";
 import { graduateData } from "@/components/links-per-group";
-import { InformationSectionProps } from "@/app/inicio/components/information-section";
+import InformationSection, { InformationSectionProps } from "@/app/inicio/components/information-section";
 
 export default function GraduateStudentFeatures({
   children,
 }: {
-  children?: React.ReactNode;
+  readonly children?: React.ReactNode;
 }) {
   const gradStudentFeatures = ["Tesis de posgrado", "Asistencia graduada"];
 

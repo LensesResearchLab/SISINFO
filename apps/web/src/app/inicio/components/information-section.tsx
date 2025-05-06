@@ -4,17 +4,17 @@ import { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface InformationCardProps {
-  Icon: LucideIcon
-  title: string
-  description: string
-  url: string
+  readonly Icon: LucideIcon
+  readonly title: string
+  readonly description: string
+  readonly url: string
 }
 
 export interface InformationSectionProps {
-  title: string
-  features: InformationCardProps[]
-  background?: string
-  className?: string
+  readonly title: string
+  readonly features: InformationCardProps[]
+  readonly background?: string
+  readonly className?: string
 }
 
 export default function InformationSection({

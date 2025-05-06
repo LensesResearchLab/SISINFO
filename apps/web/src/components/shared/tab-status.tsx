@@ -69,7 +69,7 @@ import { Check } from "lucide-react";
    * @param {React.ReactNode} props.children - Optional child elements
    * @returns {JSX.Element} A card with title and information sections
    */
-  function TabGeneralCard({title, sections, children}: {title:string, sections: SectionProps[], children?: React.ReactNode}) {
+  function TabGeneralCard({title, sections, children}: { readonly title:string, readonly sections: SectionProps[], readonly children?: React.ReactNode}) {
     return (
       <Card className="max-w-3xl border-none">
         <CardHeader>
@@ -98,7 +98,7 @@ import { Check } from "lucide-react";
    * @param {React.ReactNode} props.icon - Icon element to display
    * @returns {JSX.Element} A section with icon, title and description
    */
-  function InformationSection({title, description, icon}: {title: string, description: string, icon: React.ReactNode}) {
+  function InformationSection({title, description, icon}: { readonly title: string, readonly description: string, readonly icon: React.ReactNode}) {
     return (
       <div className="flex gap-3">
         {icon}
@@ -120,7 +120,7 @@ import { Check } from "lucide-react";
  * @param {StatusProps} props.status - Status information including current step and messages
  * @returns {JSX.Element} A card showing progress steps and status message
  */
-export function TabStatusCard({ status }: { status: StatusProps }) {
+export function TabStatusCard({ status }: { readonly status: StatusProps }) {
   let found = false
   const stepsStatus = status.steps.map((step) => {
     if (step === status.currentStatus) {
@@ -154,9 +154,9 @@ export function TabStatusCard({ status }: { status: StatusProps }) {
 }
 
 interface StepSphereProps {
-  name: string
-  completed: boolean
-  current: boolean
+  readonly name: string
+  readonly completed: boolean
+  readonly current: boolean
 }
 
 function StepSphere({ name, completed, current }: StepSphereProps) {

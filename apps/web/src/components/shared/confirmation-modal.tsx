@@ -37,10 +37,10 @@ import {
    * @returns {JSX.Element} A confirmation dialog or success modal
    */
   export function ConfirmationModal({ dialogText, onConfirm, open, setIsOpen}: { 
-    dialogText: DialogTextProps, 
-    onConfirm: (e: React.MouseEvent<HTMLButtonElement>) => void , 
-    open: boolean,
-    setIsOpen: (open: boolean) => void
+    readonly dialogText: DialogTextProps, 
+    readonly onConfirm: (e: React.MouseEvent<HTMLButtonElement>) => void , 
+    readonly open: boolean,
+    readonly setIsOpen: (open: boolean) => void
   }) {
     const [isConfirmed, setIsConfirmed] = useState(false);
     if (isConfirmed) {
@@ -83,7 +83,7 @@ import {
    * @param {string} props.url - URL to navigate to when modal is closed
    * @returns {JSX.Element} A success message modal
    */
-  function SuccessModal({successTitle, successText, url}: { successTitle: string, successText: string, url: string }) {
+  function SuccessModal({successTitle, successText, url}: { readonly successTitle: string, readonly successText: string, readonly url: string }) {
     const router = useRouter();
     return (
       <Dialog open={true} onOpenChange={() => {router.push(url);}}>

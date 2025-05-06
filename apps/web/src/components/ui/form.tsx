@@ -90,7 +90,7 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 function FormLabel({
   className,
   ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+}: Readonly<React.ComponentProps<typeof LabelPrimitive.Root>>) {
   const { error, formItemId } = useFormField()
 
   return (
@@ -104,7 +104,7 @@ function FormLabel({
   )
 }
 
-function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
+function FormControl({ ...props }: Readonly<React.ComponentProps<typeof Slot>>) {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
   return (

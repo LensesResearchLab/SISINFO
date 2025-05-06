@@ -43,7 +43,7 @@ interface TabStatusProps {
     readonly applicants: GraduatedAssistanceApplication[];
   };
   readonly children?: React.ReactNode;
-  handleDetails?: (id: string) => void;
+  readonly handleDetails?: (id: string) => void;
 }
 
 const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST}`;
@@ -114,7 +114,7 @@ export default function TabStatus({
   );
 }
 
-function ApplicantsTable({ applicants, handleDetails }: { applicants: GraduatedAssistanceApplication[], handleDetails?: (id:string) => void }) {
+function ApplicantsTable({ applicants, handleDetails }: { readonly applicants: GraduatedAssistanceApplication[], readonly handleDetails?: (id:string) => void }) {
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAscending, setSortAscending] = useState(true);

@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
  * @param {string} src - The URL of the video to be embedded in the iframe.
  * @returns {JSX.Element} An iframe element that displays the video.
  */
-function VideoPlayer({ src }: { src: string }) {
+function VideoPlayer({ src }: { readonly src: string }) {
   return (
     <iframe
       className="w-full h-96"

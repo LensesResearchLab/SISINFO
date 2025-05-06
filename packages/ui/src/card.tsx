@@ -6,10 +6,10 @@ export function Card({
   children,
   href,
 }: {
-  className?: string;
-  title: string;
-  children: React.ReactNode;
-  href: string;
+  readonly className?: string;
+  readonly title: string;
+  readonly children: React.ReactNode;
+  readonly href: string;
 }): JSX.Element {
   return (
     <a

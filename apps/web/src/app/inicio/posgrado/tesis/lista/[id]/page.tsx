@@ -39,7 +39,7 @@ import { useAuth } from "@/hooks/use-auth";
 export default function ThesisInscription({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  readonly params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
   const reset = useThesisInscriptionStore((state) => state.reset);
@@ -57,14 +57,14 @@ export default function ThesisInscription({
 
   useEffect(() => {
     reset();
-  }, [id]);
+  }, [id, reset]);
 
   if (isFetching) return <SpinnerPage />;
   if (error || !thesis) return <ThesisNotFound />;
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
-      {!isApplying && <ThesisDetails thesis={thesis!} />}
-      {isApplying && <ThesisApplying thesis={thesis!} />}
+      {!isApplying && <ThesisDetails thesis={thesis} />}
+      {isApplying && <ThesisApplying thesis={thesis} />}
     </div>
   );
 }
@@ -85,7 +85,7 @@ export default function ThesisInscription({
  *
  * @returns {JSX.Element} Card with formatted thesis information
  */
-function ThesisDetails({ thesis }: { thesis: Thesis }) {
+function ThesisDetails({ thesis }: { readonly thesis: Thesis }) {
   const setIsApplying = useThesisInscriptionStore(
     (state) => state.setIsApplying
   );
@@ -119,7 +119,7 @@ function ThesisDetails({ thesis }: { thesis: Thesis }) {
  *
  * @returns {JSX.Element} Card containing the application form interface
  */
-function ThesisApplying({ thesis }: { thesis: Thesis }) {
+function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
   const setIsApplying = useThesisInscriptionStore(
     (state) => state.setIsApplying
   );
@@ -214,7 +214,7 @@ function ThesisApplying({ thesis }: { thesis: Thesis }) {
 function ButtonBack({
   setIsApplying,
 }: {
-  setIsApplying: (value: boolean) => void;
+  readonly setIsApplying: (value: boolean) => void;
 }) {
   return (
     <Button
@@ -246,7 +246,7 @@ function ButtonBack({
  *
  * @returns {JSX.Element} Section with formatted professor information
  */
-function ProfessorInformation({ thesis }: { thesis: Thesis }) {
+function ProfessorInformation({ thesis }: { readonly thesis: Thesis }) {
   return (
     <div className="space-y-2">
       <div className="flex flex-col space-y-1">
@@ -290,8 +290,8 @@ function MotivationTextArea({
   motivation,
   setMotivation,
 }: {
-  motivation: string;
-  setMotivation: (value: string) => void;
+  readonly motivation: string;
+  readonly setMotivation: (value: string) => void;
 }) {
   return (
     <div className="space-y-2">
@@ -331,8 +331,8 @@ function ContactedCheckbox({
   contacted,
   setContacted,
 }: {
-  contacted: boolean;
-  setContacted: (value: boolean) => void;
+  readonly contacted: boolean;
+  readonly setContacted: (value: boolean) => void;
 }) {
   return (
     <div className="flex items-center space-x-2">

@@ -15,7 +15,6 @@ export default function ProfessorAssistanceList() {
     async function fetchUserData() {
       try {
         const userInfo = await getUserInfo();
-        //console.log(userInfo.user.name);
         if (userInfo.success && userInfo.user) {
           setCurrentUser({
             name: userInfo.user.name,

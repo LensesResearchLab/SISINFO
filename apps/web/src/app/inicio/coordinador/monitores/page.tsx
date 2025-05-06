@@ -54,7 +54,7 @@ export default function UploadTeachingAssistants() {
 
 
 
-function TeachingAssistantsTable({teachingAssistantships}: {teachingAssistantships: TeachingAssistantship[]}) {
+function TeachingAssistantsTable({teachingAssistantships}: {readonly teachingAssistantships: TeachingAssistantship[]}) {
 
 
   return (

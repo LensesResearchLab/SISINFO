@@ -8,7 +8,7 @@ import { use } from "react";
 export default function ProjectDetail({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  readonly params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
   const {

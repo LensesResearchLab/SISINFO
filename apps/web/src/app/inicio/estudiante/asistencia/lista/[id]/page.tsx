@@ -136,8 +136,8 @@ function AssistanceInscription({
   assistance,
   setIsApplying,
 }: {
-  assistance: GraduatedAssistance;
-  setIsApplying: (value: boolean) => void;
+  readonly assistance: GraduatedAssistance;
+  readonly setIsApplying: (value: boolean) => void;
 }) {
   return (
     <Card className="max-w-3xl  mx-auto shadow-lg">
@@ -291,7 +291,7 @@ function Requisites({ requisites }: { readonly requisites?: Requirement[] }) {
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing contact information
  */
-function ContactInfo({ assistance }: { assistance: GraduatedAssistance }) {
+function ContactInfo({ assistance }: { readonly assistance: GraduatedAssistance }) {
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-2xl text-core-highlight">
@@ -436,7 +436,7 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
 function ButtonBack({
   setIsApplying,
 }: {
-  setIsApplying: (value: boolean) => void;
+  readonly setIsApplying: (value: boolean) => void;
 }) {
   return (
     <Button
@@ -472,8 +472,8 @@ function ButtonBack({
  * @returns {JSX.Element} File upload section
  */
 function UploadCV({ setFile }: { 
-  assistance: GraduatedAssistance; 
-  setFile: (file: File | null) => void; 
+  readonly assistance: GraduatedAssistance; 
+  readonly setFile: (file: File | null) => void; 
 }) {
   const [uploadedFile, setUploadedFile] = useState<{ name: string; url: string } | null>(null);
 

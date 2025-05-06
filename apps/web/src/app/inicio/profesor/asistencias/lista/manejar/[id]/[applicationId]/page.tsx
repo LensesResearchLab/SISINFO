@@ -9,7 +9,7 @@ import SpinnerPage from "@/components/shared/spinner-page";
 export default function ApplicationDetail({
   params,
 }: {
-  params: Promise<{ id: string; applicationId: string }>;
+  readonly params: Promise<{ id: string; applicationId: string }>;
 }) {
   const { applicationId } = use(params);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -53,7 +53,7 @@ export default function ApplicationDetail({
   );
 }
 
-function PdfViewer({ pdfUrl }: { pdfUrl: string | null }) {
+function PdfViewer({ pdfUrl }: { readonly pdfUrl: string | null }) {
   if (!pdfUrl)
     return <p className="text-red-500">Error al cargar el documento</p>;
 
@@ -71,13 +71,13 @@ function PdfViewer({ pdfUrl }: { pdfUrl: string | null }) {
 }
 
 interface StudentProfileProps {
-  name?: string;
-  email?: string;
-  pdfUrl?: string;
-  onAccept?: () => void;
-  onReject?: () => void;
-  onPrevious?: () => void;
-  onNext?: () => void;
+  readonly name?: string;
+  readonly email?: string;
+  readonly pdfUrl?: string;
+  readonly onAccept?: () => void;
+  readonly onReject?: () => void;
+  readonly onPrevious?: () => void;
+  readonly onNext?: () => void;
 }
 
 function StudentProfileCard({

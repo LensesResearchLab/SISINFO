@@ -176,7 +176,7 @@ function SelectSemester({
 function SectionAccordionList({
   sectionsList,
 }: {
-  sectionsList: TeachingAssistantshipProfessorSection;
+  readonly sectionsList: TeachingAssistantshipProfessorSection;
 }) {
   const order = useTeachingAssistantListStore((state) => state.order);
 
@@ -247,7 +247,7 @@ function SectionAccordion({
  * @param {Thesis[]} props.thesisList - Array of thesis projects to display
  * @returns {JSX.Element} Thesis data table
  */
-function TeachingAssistantTable({ teachingAssistantList }: { teachingAssistantList: ProfessorTA[] }) {
+function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAssistantList: ProfessorTA[] }) {
   const [gradingId, setGradingId] = useState<string | null>(null);
   const [grade, setGrade] = useState('');
   const [description, setDescription] = useState('');

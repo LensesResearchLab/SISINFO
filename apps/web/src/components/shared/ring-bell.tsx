@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ROUTES } from "@/app/routes";
 
-export default function RingBell({tasks}: {tasks: number}) {
+export default function RingBell({tasks}: { readonly tasks: number }) {
   return (
     <div className="relative">
       <Link href={`${ROUTES.HOME}/${ROUTES.TASK_LIST}`}>

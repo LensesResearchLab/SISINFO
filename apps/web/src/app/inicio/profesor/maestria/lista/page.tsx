@@ -104,7 +104,7 @@ function ProfessorActionButtons() {
   );
 }
 
-function ThesisTable({ filteredProjects }: { filteredProjects: Thesis[] }) {
+function ThesisTable({ filteredProjects }: { readonly filteredProjects: Thesis[] }) {
   return (
     <div className="border rounded-md overflow-hidden">
       <TableHeaders />
@@ -130,7 +130,7 @@ function TableHeaders() {
   );
 }
 
-function TableRow({ thesis }: { thesis: Thesis }) {
+function TableRow({ thesis }: { readonly thesis: Thesis }) {
   const expandedProject = useProfessorThesisListStore(
     (state) => state.expandedProject
   );
@@ -166,7 +166,7 @@ function TableRow({ thesis }: { thesis: Thesis }) {
   );
 }
 
-function TableRowDetail({ thesis }: { thesis: Thesis }) {
+function TableRowDetail({ thesis }: { readonly thesis: Thesis }) {
   const router = useRouter();
   const handleClickEye = (id: string) => {
     router.push(

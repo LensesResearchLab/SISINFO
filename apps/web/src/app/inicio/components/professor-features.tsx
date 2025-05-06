@@ -2,7 +2,7 @@ import InformationSection, { InformationSectionProps } from "@/app/inicio/compon
 import { professorData } from "@/components/links-per-group";
 
 
-export default function ProfessorFeatures({children}: {children?: React.ReactNode}) {
+export default function ProfessorFeatures({children}: {readonly children?: React.ReactNode}) {
   const professorFeatures = ["Proyecto de pregrado", "Asistencia graduada", "Asistencias graduadas", "Monitores"];
 
   const informationPerFeature = new Map<string, InformationSectionProps>()

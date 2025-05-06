@@ -98,7 +98,7 @@ export default function UploadBillboard() {
 }
 
 
-function UploadedBillboard({ classesData, loadError }: { classesData: Course[], loadError: boolean }) {
+function UploadedBillboard({ classesData, loadError }: { readonly classesData: Course[], readonly loadError: boolean }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortDesc, setSortDesc] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -176,10 +176,10 @@ function BillboardTable({
   setCurrentPage,
   totalPages,
 }: {
-  displayedClasses: Course[];
-  currentPage: number;
-  setCurrentPage: (page: number) => void;
-  totalPages: number;
+  readonly displayedClasses: Course[];
+  readonly currentPage: number;
+  readonly setCurrentPage: (page: number) => void;
+  readonly totalPages: number;
 }) {
   const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({});
   const toggleRow = (idx: number) => {

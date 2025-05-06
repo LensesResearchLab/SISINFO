@@ -54,10 +54,8 @@ export function ThesisNotFound() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
-          <>
-            La tesis que buscas no se encuentra en el sistema. Por favor
-            verifica la URL o intenta de nuevo más tarde.
-          </>
+          La tesis que buscas no se encuentra en el sistema. Por favor
+          verifica la URL o intenta de nuevo más tarde.
         </CardContent>
       </Card>
     </div>
@@ -79,7 +77,7 @@ export function ThesisNotFound() {
  *
  * @returns {JSX.Element} Section with formatted title and description
  */
-function MainInformation({ thesis }: { thesis: Thesis }) {
+function MainInformation({ thesis }: { readonly thesis: Thesis }) {
   return (
     <div>
       <h3 className="font-semibold text-lg">
@@ -112,7 +110,7 @@ function MainInformation({ thesis }: { thesis: Thesis }) {
  *
  * @returns {JSX.Element} Section with heading and area badges
  */
-function Tags({ tags }: { tags: string[] }) {
+function Tags({ tags }: { readonly tags: string[] }) {
   return (
     <div>
       <h3 className="font-semibold text-lg">Áreas de interés:</h3>
@@ -145,7 +143,7 @@ function Tags({ tags }: { tags: string[] }) {
  *
  * @returns {JSX.Element} Section with formatted category and semester information
  */
-function CategoryAndSemesterInfo({ thesis }: { thesis: Thesis }) {
+function CategoryAndSemesterInfo({ thesis }: { readonly thesis: Thesis }) {
   return (
     <div className="space-y-6">
       <div className="flex items-start gap-2">
@@ -183,7 +181,7 @@ function CategoryAndSemesterInfo({ thesis }: { thesis: Thesis }) {
  *
  * @returns {JSX.Element} Section with formatted student capacity and contact information
  */
-function StudentsAndContactInfo({ thesis }: { thesis: Thesis }) {
+function StudentsAndContactInfo({ thesis }: { readonly thesis: Thesis }) {
   return (
     <div className="space-y-6">
       {/* Student capacity section - commented out until we have the data
