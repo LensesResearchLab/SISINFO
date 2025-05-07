@@ -1,4 +1,4 @@
-import { Thesis } from "./thesis.type";
+import { Thesis } from "./entities/thesis.type";
 
 export interface Student {
     id: number;

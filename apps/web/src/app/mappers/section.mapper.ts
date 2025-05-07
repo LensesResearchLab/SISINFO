@@ -1,4 +1,4 @@
-import { Section } from "../types/billboard.type";
+import { Section } from "../types/entities/billboard.type";
 import { TeachingAssistantshipProfessorSection } from "../types/teachingAssistantshipProfessorSection";
 
 export function mapSectionsToProfessorTable(

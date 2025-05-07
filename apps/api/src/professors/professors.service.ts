@@ -12,8 +12,8 @@ import { PeriodsService } from '../periods/periods.service';
 export class ProfessorsService implements RoleService {
   constructor(
     @InjectRepository(Professor)
-    private professorRepository: Repository<Professor>,
-    private periodsService: PeriodsService,
+    private readonly professorRepository: Repository<Professor>,
+    private readonly periodsService: PeriodsService,
   ) {}
   async create(createProfessorDto: CreateProfessorDto) {
     const professor = this.professorRepository.create(createProfessorDto);

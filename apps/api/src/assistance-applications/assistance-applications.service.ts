@@ -15,7 +15,7 @@ export class AssistanceApplicationsService {
     private readonly studentsService: StudentsService,
     private readonly documentsService: DocumentsService,
     @InjectRepository(AssistanceApplication)
-    private assistanceApplicationRepository: Repository<AssistanceApplication>,
+    private readonly assistanceApplicationRepository: Repository<AssistanceApplication>,
   ) {}
 
   async create(

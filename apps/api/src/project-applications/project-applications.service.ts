@@ -22,7 +22,7 @@ export class ProjectApplicationsService {
     private readonly factory: TaskFactory,
     private readonly dataSource: DataSource,
     @InjectRepository(ProjectApplication)
-    private projectApplicationRepository: Repository<ProjectApplication>,
+    private readonly projectApplicationRepository: Repository<ProjectApplication>,
   ) {}
 
   async create(

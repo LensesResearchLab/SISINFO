@@ -101,7 +101,7 @@ export class SeedService {
     for (const user of sampleUser) {
       const userWithPassword = {
         ...user,
-        password: user.password || faker.internet.password({ length: 20 }),
+        password: user.password ?? faker.internet.password({ length: 20 }),
       };
       await this.usersService.create(userWithPassword);
     }

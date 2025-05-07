@@ -13,9 +13,9 @@ export default function DateRangePicker({
     onChange,
     className,
   }: {
-    value: { from: Date; to: Date } | undefined;
-    onChange: (value: { from: Date; to: Date } | undefined) => void;
-    className?: string;
+    readonly value: { from: Date; to: Date } | undefined;
+    readonly onChange: (value: { from: Date; to: Date } | undefined) => void;
+    readonly className?: string;
   }) {
     return (
       <div className={cn("grid gap-2", className)}>
@@ -48,7 +48,7 @@ export default function DateRangePicker({
               initialFocus
               mode="range"
               selected={value}
-              onSelect={(range) => onChange(range ? { from: range.from || new Date(), to: range.to || new Date() } : undefined)}
+              onSelect={(range) => onChange(range ? { from: range.from ?? new Date(), to: range.to ?? new Date() } : undefined)}
               numberOfMonths={2}
             />
           </PopoverContent>

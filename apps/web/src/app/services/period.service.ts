@@ -1,5 +1,5 @@
 import { mapPeriodsToStringList } from "../mappers/period.mapper"
-import { Period } from "../types/period.type"
+import { Period } from "../types/entities/period.type"
 import { API_ROUTES } from "../routes"
 
 export async function getPeriods() {

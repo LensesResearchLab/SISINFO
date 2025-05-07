@@ -24,17 +24,17 @@ export function NavMain({
   items,
   title
 }: {
-  items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
-    items?: {
-      title: string
-      url: string
+  readonly items: {
+    readonly title: string
+    readonly url: string
+    readonly icon?: LucideIcon
+    readonly isActive?: boolean
+    readonly items?: {
+      readonly title: string
+      readonly url: string
     }[]
   }[],
-  title: string
+  readonly title: string
 }) {
   return (
     <SidebarGroup>

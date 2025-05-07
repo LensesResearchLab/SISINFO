@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 export class AreasOfInterestService {
   constructor(
     @InjectRepository(AreasOfInterest)
-    private areasOfInterestRepository: Repository<AreasOfInterest>,
+    private readonly areasOfInterestRepository: Repository<AreasOfInterest>,
   ) {}
 
   async create(createAreasOfInterestDto: CreateAreasOfInterestDto) {

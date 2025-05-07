@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery } from "@tanstack/react-query";
 import { getThesisByProfessor } from "@/app/services/thesis.service";
 import { useProfessorThesisListStore } from "./store";
-import { Thesis } from "@/app/types/thesis.type";
+import { Thesis } from "@/app/types/entities/thesis.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useEffect } from "react";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
@@ -104,7 +104,7 @@ function ProfessorActionButtons() {
   );
 }
 
-function ThesisTable({ filteredProjects }: { filteredProjects: Thesis[] }) {
+function ThesisTable({ filteredProjects }: { readonly filteredProjects: Thesis[] }) {
   return (
     <div className="border rounded-md overflow-hidden">
       <TableHeaders />
@@ -130,7 +130,7 @@ function TableHeaders() {
   );
 }
 
-function TableRow({ thesis }: { thesis: Thesis }) {
+function TableRow({ thesis }: { readonly thesis: Thesis }) {
   const expandedProject = useProfessorThesisListStore(
     (state) => state.expandedProject
   );
@@ -166,7 +166,7 @@ function TableRow({ thesis }: { thesis: Thesis }) {
   );
 }
 
-function TableRowDetail({ thesis }: { thesis: Thesis }) {
+function TableRowDetail({ thesis }: { readonly thesis: Thesis }) {
   const router = useRouter();
   const handleClickEye = (id: string) => {
     router.push(

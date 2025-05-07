@@ -25,7 +25,7 @@ const roleRoutes = {
 };
 
 /* Key for decryption */
-const secretKey = process.env.JWT_SECRET || "your-secret-key";
+const secretKey = process.env.JWT_SECRET ?? "your-secret-key";
 const encodedKey = new TextEncoder().encode(secretKey);
 
 /* Middleware decryption */
@@ -47,7 +47,7 @@ async function decryptSession(token: string | undefined) {
 function hasRoleAccess(path: string, userRoles: string[]) {
   if (path === "/inicio") return true;
   for (const role of userRoles) {
-    const allowedPaths = roleRoutes[role as keyof typeof roleRoutes] || [];
+    const allowedPaths = roleRoutes[role as keyof typeof roleRoutes] ?? [];
     if (allowedPaths.some((allowedPath) => path.startsWith(allowedPath))) {
       return true;
     }

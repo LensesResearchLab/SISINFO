@@ -24,7 +24,7 @@ export async function loginUser(email: string, password: string) {
     if (!response.ok) {
       return {
         success: false,
-        message: data.message || "Invalid credentials",
+        message: data.message ?? "Invalid credentials",
       };
     }
 
@@ -55,7 +55,7 @@ export async function getUserInfo() {
     if (!response.ok) {
       return {
         success: false,
-        message: data.message || "Failed to get user information",
+        message: data.message ?? "Failed to get user information",
       };
     }
 
@@ -84,7 +84,7 @@ export async function logoutUser() {
     if (!response.ok) {
       return {
         success: false,
-        message: data.message || "Failed to logout",
+        message: data.message ?? "Failed to logout",
       };
     }
     return {
@@ -97,5 +97,26 @@ export async function logoutUser() {
       success: false,
       message: "An error occurred during logout",
     };
+  }
+}
+
+
+export async function fetchUserRoles(
+  setRoles: (roles: string[]) => void,
+  setLoading: (loading: boolean) => void,
+  fetchedRef: { current: boolean }
+): Promise<void> {
+  try {
+    const userInfo = await getUserInfo();
+    if (userInfo.success && userInfo.user?.roles) {
+      setRoles(userInfo.user.roles);
+    } else {
+      console.error("ERROR: User info fetched but no roles found");
+    }
+  } catch (error) {
+    console.error("Failed to fetch user roles:", error);
+  } finally {
+    setLoading(false);
+    fetchedRef.current = true;
   }
 }

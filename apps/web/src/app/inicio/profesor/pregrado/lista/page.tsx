@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { getThesisByProfessor } from "@/app/services/thesis.service";
 import { useProfessorThesisListStore } from "./store";
-import { Thesis } from "@/app/types/thesis.type";
+import { Thesis } from "@/app/types/entities/thesis.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useEffect } from "react";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
@@ -51,8 +51,8 @@ export default function ThesisProjects() {
 
   const filteredProjects = searchQuery
     ? sortedThesisList.filter((thesis) =>
-        thesis.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      thesis.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : sortedThesisList;
 
   return (
@@ -107,7 +107,7 @@ function TableActionButtons() {
   );
 }
 
-function ThesisTable({ filteredProjects }: { filteredProjects: Thesis[] }) {
+function ThesisTable({ filteredProjects }: { readonly filteredProjects: Thesis[] }) {
   return (
     <div className="border-x border-t rounded-md overflow-hidden">
       <TableHeaders />
@@ -129,7 +129,7 @@ function TableHeaders() {
   );
 }
 
-function TableRow({ thesis }: { thesis: Thesis }) {
+function TableRow({ thesis }: { readonly thesis: Thesis }) {
   const router = useRouter();
   const expandedProject = useProfessorThesisListStore(
     (state) => state.expandedProject
@@ -190,7 +190,7 @@ function TableRow({ thesis }: { thesis: Thesis }) {
   );
 }
 
-function TableRowDetail({ thesis }: { thesis: Thesis }) {
+function TableRowDetail({ thesis }: { readonly thesis: Thesis }) {
   return (
     <div>
       <div className="grid grid-cols-12 border-b px-3 text-primary">
@@ -239,7 +239,7 @@ function StudentActionButtons() {
       >
         <span className="w-5 h-5 bg-gray-200 rounded-full flex items-center justify-center text-[11px] font-medium">
           30
-        </span>
+        </span> {' '}
         30%
       </Button>
 

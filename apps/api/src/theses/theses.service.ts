@@ -10,7 +10,8 @@ import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 export class ThesesService {
   constructor(
     private readonly professorService: ProfessorsService,
-    @InjectRepository(Thesis) private thesisRepository: Repository<Thesis>,
+    @InjectRepository(Thesis)
+    private readonly thesisRepository: Repository<Thesis>,
   ) {}
   async create(createThesisDto: CreateThesisDto, professorId: string) {
     const professor = await this.professorService.findOne(professorId);

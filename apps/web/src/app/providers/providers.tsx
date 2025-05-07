@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import DarkMode from './darkmode.context';
 
-export default function Provider({ children }: { children: ReactNode }) {
+export default function Provider({ children }: { readonly children: ReactNode }) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {

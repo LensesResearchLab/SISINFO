@@ -8,9 +8,9 @@ import Papa, { ParseResult } from "papaparse"
 import { ConfirmationModal, DialogTextProps } from "./confirmation-modal"
 
 interface UploadFilesProps {
-  title: string;
-  handleUploadCsv: (data: Record<string, string | number | boolean | null>[]) => void;
-  dialogText: DialogTextProps;
+  readonly title: string;
+  readonly handleUploadCsv: (data: Record<string, string | number | boolean | null>[]) => void;
+  readonly dialogText: DialogTextProps;
 }
 
 export default function UploadFiles({

@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect, Fragment } from "react";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { Billboard, Course } from "@/app/types/billboard.type";
+import { Billboard, Course } from "@/app/types/entities/billboard.type";
 import { createBillboard, getBillboard } from "@/app/services/billboard.service";
 import { ROUTES } from "@/app/routes";
 import { UploadFilePage } from "@/components/shared/upload-files-page";
@@ -98,7 +98,7 @@ export default function UploadBillboard() {
 }
 
 
-function UploadedBillboard({ classesData, loadError }: { classesData: Course[], loadError: boolean }) {
+function UploadedBillboard({ classesData, loadError }: { readonly classesData: Course[], readonly loadError: boolean }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortDesc, setSortDesc] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -176,10 +176,10 @@ function BillboardTable({
   setCurrentPage,
   totalPages,
 }: {
-  displayedClasses: Course[];
-  currentPage: number;
-  setCurrentPage: (page: number) => void;
-  totalPages: number;
+  readonly displayedClasses: Course[];
+  readonly currentPage: number;
+  readonly setCurrentPage: (page: number) => void;
+  readonly totalPages: number;
 }) {
   const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({});
   const toggleRow = (idx: number) => {

@@ -1,4 +1,4 @@
-import { GraduatedAssistanceApplication } from "../types/graduated-assistance-application.type";
+import { GraduatedAssistanceApplication } from "../types/entities/graduated-assistance-application.type";
 
 export function mapGraduatedAssistanceApplicationsToRowValues(applications: GraduatedAssistanceApplication[]) {
   return applications.map(mapGraduatedAssistanceApplicationToRowValue);

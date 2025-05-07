@@ -23,8 +23,8 @@ import { useState } from "react"
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
 
 interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    readonly columns: ColumnDef<TData, TValue>[]
+    readonly data: TData[]
 }
 
 export function DataTable<TData, TValue>({

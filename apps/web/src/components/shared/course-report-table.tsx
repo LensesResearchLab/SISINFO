@@ -1,5 +1,5 @@
 "use client";
-import { CourseReports } from "@/app/types/billboard.type";
+import { CourseReports } from "@/app/types/entities/billboard.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,10 +15,10 @@ import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 
 interface CourseReportTableProps {
-  title: string;
-  fetchData: () => Promise<CourseReports[]>;
-  excelFileName: string;
-  excelSheetName: string;
+  readonly title: string;
+  readonly fetchData: () => Promise<CourseReports[]>;
+  readonly excelFileName: string;
+  readonly excelSheetName: string;
 }
 
 export default function CourseReportTable({

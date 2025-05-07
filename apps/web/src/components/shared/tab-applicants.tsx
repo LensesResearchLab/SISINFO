@@ -23,27 +23,27 @@ import { ChevronDown, MoreVertical, Search } from "lucide-react";
 import { useState } from "react";
 import { ConfirmationModal } from "./confirmation-modal";
 import { ROUTES } from "@/app/routes";
-import { GraduatedAssistanceApplication } from "@/app/types/graduated-assistance-application.type";
+import { GraduatedAssistanceApplication } from "@/app/types/entities/graduated-assistance-application.type";
 import { updateAssistanceApplication } from "@/app/services/assistance.service";
 
 interface Section {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
+  readonly title: string;
+  readonly description: string;
+  readonly icon: React.ReactNode;
 }
 
 
 interface TabStatusProps {
-  general: {
-    title: string;
-    sections: Section[];
+  readonly general: {
+    readonly title: string;
+    readonly sections: Section[];
   };
-  status: {
-    title: string;
-    applicants: GraduatedAssistanceApplication[];
+  readonly status: {
+    readonly title: string;
+    readonly applicants: GraduatedAssistanceApplication[];
   };
-  children?: React.ReactNode;
-  handleDetails?: (id: string) => void;
+  readonly children?: React.ReactNode;
+  readonly handleDetails?: (id: string) => void;
 }
 
 const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST}`;
@@ -114,7 +114,7 @@ export default function TabStatus({
   );
 }
 
-function ApplicantsTable({ applicants, handleDetails }: { applicants: GraduatedAssistanceApplication[], handleDetails?: (id:string) => void }) {
+function ApplicantsTable({ applicants, handleDetails }: { readonly applicants: GraduatedAssistanceApplication[], readonly handleDetails?: (id:string) => void }) {
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAscending, setSortAscending] = useState(true);

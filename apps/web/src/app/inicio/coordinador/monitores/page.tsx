@@ -5,7 +5,7 @@ import { UploadFilePage } from '@/components/shared/upload-files-page';
 import { CreateTeachingAssistance } from '../../../types/createTeachingAssistance.type';
 import { useState } from 'react';
 import { getTeachingAssistants, uploadTeachingAssistantsFile } from '@/app/services/teaching-assistantship.service';
-import { TeachingAssistantship } from '@/app/types/teachingAssistantship.type';
+import { TeachingAssistantship } from '@/app/types/entities/teachingAssistantship.type';
 import { DataTable } from '@/components/data-table';
 import { mapCswRowTwoCreateTeachingAssistance, mapTeachingAssistantshipsToCoordinatorTable } from '@/app/mappers/teaching-assistantships-mapper';
 import { columns } from './TableColumns';
@@ -54,7 +54,7 @@ export default function UploadTeachingAssistants() {
 
 
 
-function TeachingAssistantsTable({teachingAssistantships}: {teachingAssistantships: TeachingAssistantship[]}) {
+function TeachingAssistantsTable({teachingAssistantships}: {readonly teachingAssistantships: TeachingAssistantship[]}) {
 
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 import { getProjectApplicationsReport } from "@/app/services/project-application.service";
-import { ProjectReport } from "@/app/types/project.type";
+import { ProjectReport } from "@/app/types/project-report.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { Button } from "@/components/ui/button";
 import {

@@ -6,8 +6,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { File, User } from "lucide-react";
-
 import {
   Table,
   TableBody,
@@ -16,11 +14,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search } from "lucide-react";
+import { File, User, Search } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { getPostgraduateThesis } from "@/app/services/thesis.service";
-import { Thesis } from "@/app/types/thesis.type";
+import { Thesis } from "@/app/types/entities/thesis.type";
 
 import {
   Select,
@@ -168,8 +166,8 @@ function SelectSemester({
   semesters,
   className,
 }: {
-  semesters: string[];
-  className?: string;
+  readonly semesters: string[];
+  readonly className?: string;
 }) {
   const setSearchTerm = useThesisListStore((state) => state.setSearchTerm);
   const handleClick = (term: string) => {
@@ -205,7 +203,7 @@ function SelectSemester({
  *
  * @returns {JSX.Element} Search category selection dropdown
  */
-function SelectSearchCategory({ className }: { className?: string }) {
+function SelectSearchCategory({ className }: { readonly className?: string }) {
   const setSearchCategory = useThesisListStore(
     (state) => state.setSearchCategory
   );
@@ -242,7 +240,7 @@ function SelectSearchCategory({ className }: { className?: string }) {
 function AreaOfInterestAccordionList({
   thesisList,
 }: {
-  thesisList: { [field: string]: Thesis[] };
+  readonly thesisList: { [field: string]: Thesis[] };
 }) {
   const order = useThesisListStore((state) => state.order);
   return (
@@ -278,7 +276,7 @@ function AreaOfInterestAccordionList({
 function ProfessorAccordionList({
   thesisList,
 }: {
-  thesisList: { [professor: string]: Thesis[] };
+  readonly thesisList: { [professor: string]: Thesis[] };
 }) {
   const order = useThesisListStore((state) => state.order);
   return (
@@ -316,9 +314,9 @@ function ElementAccordion({
   children,
   icon,
 }: {
-  element: string;
-  children?: React.ReactNode;
-  icon?: React.ReactNode;
+  readonly element: string;
+  readonly children?: React.ReactNode;
+  readonly icon?: React.ReactNode;
 }) {
   return (
     <AccordionItem value={element}>
@@ -348,7 +346,7 @@ function ElementAccordion({
  * @param {Thesis[]} props.thesisList - Array of thesis projects to display
  * @returns {JSX.Element} Thesis data table
  */
-function ElementThesisTable({ thesisList }: { thesisList: Thesis[] }) {
+function ElementThesisTable({ thesisList }: { readonly thesisList: Thesis[] }) {
   const router = useRouter();
   const handleClick = (id: string) => {
     router.push(`${ROUTES.HOME}/${ROUTES.POSTGRADUATE_THESIS_LIST}/${id}`);

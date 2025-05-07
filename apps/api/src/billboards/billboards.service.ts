@@ -16,12 +16,12 @@ import { Professor } from '../professors/entities/professor.entity';
 export class BillboardsService {
   constructor(
     @InjectRepository(Billboard)
-    private billboardRepository: Repository<Billboard>,
+    private readonly billboardRepository: Repository<Billboard>,
 
-    private periodsService: PeriodsService,
-    private courseService: CoursesService,
-    private sectionService: SectionsService,
-    private professorService: ProfessorsService,
+    private readonly periodsService: PeriodsService,
+    private readonly courseService: CoursesService,
+    private readonly sectionService: SectionsService,
+    private readonly professorService: ProfessorsService,
   ) {}
 
   async create(sectionsDto: CreateSectionDto[]) {

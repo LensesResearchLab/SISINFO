@@ -41,20 +41,20 @@ const semesters = [
 ] as const;
 
 interface AssistanceListProps {
-  professorName?: string;
-  role: "estudiante" | "profesor";
+  readonly professorName?: string;
+  readonly role: "estudiante" | "profesor";
 }
 
 interface FilterBarProps {
-  selectedSemester: string;
-  setSelectedSemester: (value: string) => void;
-  nameFilter: string;
-  setNameFilter: (value: string) => void;
-  showOnlyMyAssistance: boolean;
-  setShowOnlyMyAssistance: (value: boolean) => void;
-  role: "estudiante" | "profesor";
-  sorting: { id: string; desc: boolean }[];
-  setSorting: React.Dispatch<
+  readonly selectedSemester: string;
+  readonly setSelectedSemester: (value: string) => void;
+  readonly nameFilter: string;
+  readonly setNameFilter: (value: string) => void;
+  readonly showOnlyMyAssistance: boolean;
+  readonly setShowOnlyMyAssistance: (value: boolean) => void;
+  readonly role: "estudiante" | "profesor";
+  readonly sorting: { id: string; desc: boolean }[];
+  readonly setSorting: React.Dispatch<
     React.SetStateAction<{ id: string; desc: boolean }[]>
   >;
 }

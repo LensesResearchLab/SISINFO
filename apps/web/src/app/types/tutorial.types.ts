@@ -1,5 +1,5 @@
 export interface Tutorial {
-    id: number;
+    id: string;
     title: string;
     description: string;
     link: string;

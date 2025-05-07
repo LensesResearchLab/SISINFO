@@ -16,10 +16,10 @@ import { StudentsService } from '../students/students.service';
 export class TeachingAssistancesService {
   constructor(
     @InjectRepository(TeachingAssistance)
-    private teachingAssistanceRepository: Repository<TeachingAssistance>,
-    private periodsService: PeriodsService,
-    private sectionsService: SectionsService,
-    private studentsService: StudentsService,
+    private readonly teachingAssistanceRepository: Repository<TeachingAssistance>,
+    private readonly periodsService: PeriodsService,
+    private readonly sectionsService: SectionsService,
+    private readonly studentsService: StudentsService,
   ) {}
 
   async create(

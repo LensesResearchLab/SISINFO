@@ -15,6 +15,7 @@ node_modules
 # Documentation
 documentation
 documentation/
+.scannerwork
 
 # Database
 postgres/

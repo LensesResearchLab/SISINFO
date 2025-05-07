@@ -6,7 +6,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { File, User } from "lucide-react";
 
 import {
   Table,
@@ -16,11 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search } from "lucide-react";
+import { File, User, Search } from "lucide-react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Thesis } from "@/app/types/thesis.type";
-
 import {
   Select,
   SelectContent,
@@ -38,7 +35,9 @@ import { cn } from "@/lib/utils";
 import { ROUTES } from "@/app/routes";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
 import { getPeriods } from "@/app/services/period.service";
-import { getUndergraduateThesis } from "@/app/services/thesis.service";
+import { getUndergraduateThesis } from "@/app/services/project.service";
+import { ProjectsStudentTable, ProjectsStudentTableRow } from "@/app/types/projects-by-professor.type";
+
 
 /**
  * ThesisList Component
@@ -68,7 +67,7 @@ export default function ThesisList() {
     queryFn: () =>
       getUndergraduateThesis({
         category: searchCategory,
-        semester: searchTerm,
+        period: searchTerm,
       }),
   });
   const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
@@ -83,7 +82,7 @@ export default function ThesisList() {
       });
       setOrder(sortedOrder);
     }
-  }, [thesisList, sortDirection]);
+  }, [thesisList, sortDirection, setOrder]);
 
   if (isLoadingSemesters) return <SpinnerPage />;
 
@@ -111,7 +110,7 @@ export default function ThesisList() {
         {isFetchingThesis ? (
           <SkeletonAccordion />
         ) : (
-          <AccordionListSimpleFactory thesisList={thesisList ?? {}} />
+          <AccordionList thesisList={thesisList ?? {}} />
         )}
       </Accordion>
     </div>
@@ -132,8 +131,8 @@ function SelectSemester({
   semesters,
   className,
 }: {
-  semesters: string[];
-  className?: string;
+  readonly semesters: string[];
+  readonly className?: string;
 }) {
   const setSearchTerm = useThesisListStore((state) => state.setSearchTerm);
   const handleClick = (term: string) => {
@@ -166,7 +165,7 @@ function SelectSemester({
  *
  * @returns {JSX.Element} Search category selection dropdown
  */
-function SelectSearchCategory({ className }: { className?: string }) {
+function SelectSearchCategory({ className }: { readonly className?: string }) {
   const setSearchCategory = useThesisListStore(
     (state) => state.setSearchCategory
   );
@@ -189,26 +188,6 @@ function SelectSearchCategory({ className }: { className?: string }) {
   );
 }
 
-/**
- * AccordionListSimpleFactory Component
- *
- * Factory component that renders appropriate accordion list based on selected category.
- * Switches between professor-based and area-of-interest-based views.
- *
- * @param {Object} props - Component properties
- * @param {Object} props.thesisList - Grouped thesis data by professor or area
- * @returns {JSX.Element} Appropriate accordion list component
- */
-function AccordionListSimpleFactory({
-  thesisList,
-}: {
-  thesisList: { [professor: string]: Thesis[] };
-}) {
-  const category = useThesisListStore((state) => state.searchCategory);
-  if (category === "areas_of_interest")
-    return <AreaOfInterestAccordionList thesisList={thesisList} />;
-  return <ProfessorAccordionList thesisList={thesisList} />;
-}
 
 /**
  * AreaOfInterestAccordionList Component
@@ -221,10 +200,10 @@ function AccordionListSimpleFactory({
  * @param {string[]} props.order - Sorted order of fields
  * @returns {JSX.Element} Area of interest based accordion list
  */
-function AreaOfInterestAccordionList({
+function AccordionList({
   thesisList,
 }: {
-  thesisList: { [field: string]: Thesis[] };
+  readonly thesisList: ProjectsStudentTable;
 }) {
   const order = useThesisListStore((state) => state.order);
   return (
@@ -245,43 +224,6 @@ function AreaOfInterestAccordionList({
     </>
   );
 }
-
-/**
- * ProfessorAccordionList Component
- *
- * Renders an accordion list grouped by professors.
- * Each section displays theses supervised by a specific professor.
- *
- * @param {Object} props - Component properties
- * @param {Object} props.thesisList - Thesis data grouped by professor
- * @param {string[]} props.order - Sorted order of professors
- * @returns {JSX.Element} Professor based accordion list
- */
-function ProfessorAccordionList({
-  thesisList,
-}: {
-  thesisList: { [professor: string]: Thesis[] };
-}) {
-  const order = useThesisListStore((state) => state.order);
-  return (
-    <>
-      {order.map((professor) => (
-        <ElementAccordion
-          element={professor}
-          key={professor}
-          icon={<User className="mr-2 h-5 w-5 text-core-highlight" />}
-        >
-          {professor in thesisList ? (
-            <ElementThesisTable thesisList={thesisList[professor]} />
-          ) : (
-            <SkeletonAccordion />
-          )}
-        </ElementAccordion>
-      ))}
-    </>
-  );
-}
-
 /**
  * ElementAccordion Component
  *
@@ -298,9 +240,9 @@ function ElementAccordion({
   children,
   icon,
 }: {
-  element: string;
-  children?: React.ReactNode;
-  icon?: React.ReactNode;
+  readonly element: string;
+  readonly children?: React.ReactNode;
+  readonly icon?: React.ReactNode;
 }) {
   return (
     <AccordionItem value={element}>
@@ -327,10 +269,10 @@ function ElementAccordion({
  * - Responsive table layout
  *
  * @param {Object} props - Component properties
- * @param {Thesis[]} props.thesisList - Array of thesis projects to display
+ * @param {ProjectsStudentTableRow[]} props.thesisList - Array of thesis projects to display
  * @returns {JSX.Element} Thesis data table
  */
-function ElementThesisTable({ thesisList }: { thesisList: Thesis[] }) {
+function ElementThesisTable({ thesisList }: { readonly thesisList: ProjectsStudentTableRow[] }) {
   const router = useRouter();
   const handleClick = (id: string) => {
     router.push(`${ROUTES.HOME}/${ROUTES.UNDERGRADUATE_THESIS_LIST}/${id}`);
@@ -357,9 +299,9 @@ function ElementThesisTable({ thesisList }: { thesisList: Thesis[] }) {
         {thesisList.map((project, index) => (
           <TableRow key={index}>
             <TableCell className="font-medium">{project.title}</TableCell>
-            <TableCell className="font-medium">{project.title}</TableCell>
+            <TableCell className="font-medium">{project.category}</TableCell>
             <TableCell className="font-medium">
-              {project.students?.length}
+              {project.maxStudents}
             </TableCell>
             <TableCell className="font-medium">
               <Button

@@ -8,12 +8,12 @@ import { Button } from "../ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 interface UploadFilePageProps {
-  title: string
-  handlePeriodChange: (value: string) => void;
-  handleDownload: () => void;
-  handleUploadCsv: (data: Record<string, string | number | boolean | null>[]) => void;
-  dialogText: DialogTextProps;
-  children?: React.ReactNode;
+  readonly title: string
+  readonly handlePeriodChange: (value: string) => void;
+  readonly handleDownload: () => void;
+  readonly handleUploadCsv: (data: Record<string, string | number | boolean | null>[]) => void;
+  readonly dialogText: DialogTextProps;
+  readonly children?: React.ReactNode;
 }
 
 export function UploadFilePage({
@@ -42,7 +42,7 @@ export function UploadFilePage({
     )
   }
 
-function TermCard({handlePeriodChange, footer}: {handlePeriodChange: (period: string) => void, footer: string}) {
+function TermCard({handlePeriodChange, footer}: {readonly handlePeriodChange: (period: string) => void, readonly footer: string}) {
   const [periods, setPeriods] = useState<string[]>([]);
   useEffect(() => {
     getPeriods()
@@ -73,7 +73,14 @@ function TermCard({handlePeriodChange, footer}: {handlePeriodChange: (period: st
   )
 }
 
-function TemplateCard({handleDownload, title, description, footer} : {handleDownload : () => void, title: string, description: string, footer: string}) {
+interface TemplateCardProps {
+  readonly handleDownload : () => void, 
+  readonly title: string, 
+  readonly description: string, 
+  readonly footer: string
+}
+
+function TemplateCard({handleDownload, title, description, footer} : TemplateCardProps) {
   return (
     <Card className="border-none">
       <CardHeader>

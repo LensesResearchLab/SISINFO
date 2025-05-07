@@ -13,7 +13,8 @@ export class ProjectsService {
   constructor(
     private readonly periodsService: PeriodsService,
     private readonly professorsService: ProfessorsService,
-    @InjectRepository(Project) private projectRepository: Repository<Project>,
+    @InjectRepository(Project)
+    private readonly projectRepository: Repository<Project>,
   ) {}
   async create(
     createProjectDto: CreateProjectDto,

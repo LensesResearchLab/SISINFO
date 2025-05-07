@@ -11,7 +11,8 @@ import { CreateSimpleSectionDto } from './dto/create-simple-section.dto';
 @Injectable()
 export class SectionsService {
   constructor(
-    @InjectRepository(Section) private sectionRepository: Repository<Section>,
+    @InjectRepository(Section)
+    private readonly sectionRepository: Repository<Section>,
   ) {}
 
   async create(
@@ -61,15 +62,16 @@ export class SectionsService {
     return `This action returns a #${id} section`;
   }
 
-
   async getReport(reportType: 'program' | 'partial' | 'final') {
+    const getField = (reportType: string) => {
+      if (reportType === 'program') {
+        return reportType;
+      }
+      return reportType === 'partial' ? 'partialGrades' : 'finalGrades';
+    };
+
     /* Type of report to check */
-    const fieldToCheck =
-      reportType === 'program'
-        ? 'program'
-        : reportType === 'partial'
-          ? 'partialGrades'
-          : 'finalGrades';
+    const fieldToCheck = getField(reportType);
 
     const sections = await this.sectionRepository.find({
       where: {
@@ -134,7 +136,6 @@ export class SectionsService {
       },
       relations: ['course'],
     });
-
   }
 
   update(id: number, updateSectionDto: UpdateSectionDto) {
@@ -164,7 +165,7 @@ export class SectionsService {
     } else {
       section.professors = professors;
     }
-    let sectionUpdated = await this.sectionRepository.save(section);
+    const sectionUpdated = await this.sectionRepository.save(section);
     return sectionUpdated;
   }
 

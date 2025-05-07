@@ -33,7 +33,7 @@ import { getAssistanceStatusById } from "@/app/services/assistance.service";
 export default function AssistanceStatus({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  readonly params: Promise<{ id: string }>;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -95,7 +95,7 @@ export default function AssistanceStatus({
   };
   const statusProps = {
     currentStatus: statusInformation.status,
-    statusMessage: messagePerStep.get(statusInformation.status) || "",
+    statusMessage: messagePerStep.get(statusInformation.status) ?? "",
     steps: statusInformation.status === "Rechazado" ? [] : steps,
     title: "Estado inscripción proyecto de grado",
   };

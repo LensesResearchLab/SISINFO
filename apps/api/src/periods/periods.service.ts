@@ -2,14 +2,14 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { Period } from './entities/period.entity';
-import { Not, In } from 'typeorm';
+import { Not, In, Repository } from 'typeorm';
 
 @Injectable()
 export class PeriodsService {
   constructor(
-    @InjectRepository(Period) private periodRepository: Repository<Period>,
+    @InjectRepository(Period)
+    private readonly periodRepository: Repository<Period>,
   ) {}
   async create(createPeriodDto: CreatePeriodDto) {
     const existingPeriod = await this.periodRepository.findOne({

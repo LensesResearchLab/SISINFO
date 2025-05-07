@@ -134,8 +134,8 @@ function SelectSemester({
   semesters,
   className,
 }: {
-  semesters: string[];
-  className?: string;
+  readonly semesters: string[];
+  readonly className?: string;
 }) {
   const setSearchTerm = useTeachingAssistantListStore((state) => state.setSearchTerm);
   const handleClick = (category: string) => {
@@ -176,7 +176,7 @@ function SelectSemester({
 function SectionAccordionList({
   sectionsList,
 }: {
-  sectionsList: TeachingAssistantshipProfessorSection;
+  readonly sectionsList: TeachingAssistantshipProfessorSection;
 }) {
   const order = useTeachingAssistantListStore((state) => state.order);
 
@@ -215,9 +215,9 @@ function SectionAccordion({
   children,
   icon,
 }: {
-  element: string;
-  children?: React.ReactNode;
-  icon?: React.ReactNode;
+  readonly element: string;
+  readonly children?: React.ReactNode;
+  readonly icon?: React.ReactNode;
 }) {
   return (
     <AccordionItem value={element}>
@@ -247,7 +247,7 @@ function SectionAccordion({
  * @param {Thesis[]} props.thesisList - Array of thesis projects to display
  * @returns {JSX.Element} Thesis data table
  */
-function TeachingAssistantTable({ teachingAssistantList }: { teachingAssistantList: ProfessorTA[] }) {
+function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAssistantList: ProfessorTA[] }) {
   const [gradingId, setGradingId] = useState<string | null>(null);
   const [grade, setGrade] = useState('');
   const [description, setDescription] = useState('');

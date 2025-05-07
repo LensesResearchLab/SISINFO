@@ -1,10 +1,8 @@
-import InformationSection from "@/app/inicio/components/information-section";
+import InformationSection, { InformationSectionProps } from "@/app/inicio/components/information-section";
 import { undergraduateData } from "@/components/links-per-group";
-import { InformationSectionProps } from "@/app/inicio/components/information-section";
 
 
-
-export default function StudentFeatures({children}: {children?: React.ReactNode}) {
+export default function StudentFeatures({children}: {readonly children?: React.ReactNode}) {
   const studentFeatures = ["Tesis de pregrado", "Asistencia graduada" ];
 
   const informationPerFeature = new Map<string, InformationSectionProps>()

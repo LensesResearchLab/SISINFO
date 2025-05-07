@@ -11,7 +11,7 @@ import {
 export class CreateCourseDto {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^[0-9]{4}$/)
+  @Matches(/^d{4}$/)
   code: string;
 
   @IsString()

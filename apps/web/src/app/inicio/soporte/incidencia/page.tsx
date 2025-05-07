@@ -2,28 +2,29 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { TriangleAlert } from 'lucide-react'
+import { TriangleAlert } from "lucide-react"
 import { createIncidence } from "@/app/services/incidences.service"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ConfirmationModal } from "@/components/shared/confirmation-modal"
 
 export default function IncidentReportForm() {
   const [incidentType, setIncidentType] = useState("")
   const [incidentDescription, setIncidentDescription] = useState("")
+  const [modalOpen, setModalOpen] = useState(false)
 
-  const handleSubmit = async () => {
+  const handleConfirm = async () => {
     try {
       await createIncidence({
         type: incidentType,
         description: incidentDescription,
       })
-      alert("Incident report submitted successfully")
       setIncidentDescription("")
       setIncidentType("")
     } catch (error) {
       console.error("Error submitting incidence:", error)
-      alert("Failed to submit incident report")
     }
+    setModalOpen(false)
   }
 
   const options = ["Error en el sistema", "Falla técnica", "Otro"]
@@ -65,11 +66,27 @@ export default function IncidentReportForm() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-center">
-          <Button className="px-6 py-3 rounded-md text-lg" onClick={handleSubmit}>
+          <Button
+            className="px-6 py-3 rounded-md text-lg"
+            onClick={() => setModalOpen(true)}
+            disabled={!incidentType || !incidentDescription.trim()}
+          >
             Publicar
           </Button>
         </CardFooter>
       </Card>
+      <ConfirmationModal 
+        dialogText={{
+          buttonText: 'Confirmar',
+          title: "Confirmación de envío",
+          description: "¿Desea enviar la incidencia?",
+          successTitle: "¡Éxito!",
+          successText: "La incidencia se ha enviado exitosamente.",
+        }}
+        onConfirm={handleConfirm}
+        open={modalOpen}
+        setIsOpen={setModalOpen}
+      />
     </div>
   )
 }

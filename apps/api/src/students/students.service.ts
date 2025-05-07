@@ -10,7 +10,8 @@ import { RoleService } from '../common/interfaces/role.service';
 @Injectable()
 export class StudentsService implements RoleService {
   constructor(
-    @InjectRepository(Student) private studentRepository: Repository<Student>,
+    @InjectRepository(Student)
+    private readonly studentRepository: Repository<Student>,
   ) {}
 
   async create(createStudentDto: CreateStudentDto) {

@@ -1,7 +1,7 @@
 import { Professor } from "./graduated-assistance.type";
-import { Period } from "./period.type";
-import { Student } from "./student.type";
-import { Thesis } from "./thesis.type";
+import { Period } from "./entities/period.type";
+import { Student } from "./entities/student.type";
+import { Thesis } from "./entities/thesis.type";
 
 export interface StatusInformation {
   id: string;

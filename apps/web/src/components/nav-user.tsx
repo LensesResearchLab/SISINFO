@@ -24,10 +24,10 @@ import { useRouter } from "next/navigation";
 export function NavUser({
   user,
 }: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
+  readonly user: {
+    readonly name: string;
+    readonly email: string;
+    readonly avatar: string;
   };
 }) {
   const { isMobile } = useSidebar();

@@ -3,11 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { CircleCheck, ClipboardList, FileText, User2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TabApplicants from "@/components/shared/tab-applicants";
 import { ROUTES } from "@/app/routes";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
-import React from "react";
 import {
   deleteGraduatedAssistance,
   getGraduatedAssistanceById,
@@ -21,9 +20,9 @@ export default function AssistanceManagePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [assistance, setAssistanceDetail] =
-    React.useState<GraduatedAssistance | null>(null);
+  useState<GraduatedAssistance | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const assistanceData = await getGraduatedAssistanceById(id);
@@ -51,17 +50,17 @@ export default function AssistanceManagePage() {
   const sections = [
     {
       title: "Nombre",
-      description: assistance?.title || "No title available",
+      description: assistance?.title ?? "No title available",
       icon: <FileText className="h-8 w-8 text-core-highlight" />,
     },
     {
       title: "Clasificación",
-      description: assistance?.category || "No title available",
+      description: assistance?.category ?? "No title available",
       icon: <User2 className="h-8 w-8 text-core-highlight" />,
     },
     {
       title: "Descripción",
-      description: assistance?.description || "No title available",
+      description: assistance?.description ?? "No title available",
       icon: <ClipboardList className="h-8 w-8 text-core-highlight" />,
     },
   ];
@@ -73,7 +72,7 @@ export default function AssistanceManagePage() {
 
   const statusProps = {
     title: "Aplicantes",
-    applicants: assistance?.assistanceApplications || [],
+    applicants: assistance?.assistanceApplications ?? [],
   };
 
   const handleDetails = (id: string) => {

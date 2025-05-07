@@ -76,8 +76,8 @@ function DateTable({
   title,
   dates,
 }: {
-  title: string;
-  dates: ThesisDatesInterface[];
+  readonly title: string;
+  readonly dates: ThesisDatesInterface[];
 }) {
   console.log("Rendering DateTable with dates:", dates);
   return (

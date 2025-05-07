@@ -12,11 +12,11 @@ import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 export class ThesisApplicationsService {
   constructor(
     @InjectRepository(ThesisApplication)
-    private thesisApplicationRepository: Repository<ThesisApplication>,
+    private readonly thesisApplicationRepository: Repository<ThesisApplication>,
     @InjectRepository(Student)
-    private studentRepository: Repository<Student>,
+    private readonly studentRepository: Repository<Student>,
     @InjectRepository(Thesis)
-    private thesisRepository: Repository<Thesis>,
+    private readonly thesisRepository: Repository<Thesis>,
   ) {}
 
   async create(

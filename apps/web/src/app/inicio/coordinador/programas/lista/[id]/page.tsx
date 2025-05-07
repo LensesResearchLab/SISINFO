@@ -63,16 +63,16 @@ export default function ApplicationDetail() {
           <div className="bg-white rounded-3xl shadow-lg p-6 space-y-4">
             <div>
               <p className="text-sm font-medium text-gray-500">Periodo:</p>
-              <p className="text-lg font-semibold text-foreground">{period || "—"}</p>
+              <p className="text-lg font-semibold text-foreground">{period ?? "—"}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Clase:</p>
-              <p className="text-lg font-semibold text-foreground">{course?.name || "—"}</p>
+              <p className="text-lg font-semibold text-foreground">{course?.name ?? "—"}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Profesor:</p>
               <p className="text-lg font-semibold text-foreground">
-                {course?.mainProfessor?.user?.name || "—"}
+                {course?.mainProfessor?.user?.name ?? "—"}
               </p>
             </div>
             <div>

@@ -1,5 +1,5 @@
 import { API_ROUTES } from "../routes";
-import { Billboard } from "../types/billboard.type";
+import { Billboard } from "../types/entities/billboard.type";
 
 export async function getBillboard(periodId: string) {
   const response = await fetch(

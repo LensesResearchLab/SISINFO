@@ -9,7 +9,7 @@ import { Document } from './entities/document.entity';
 export class DocumentsService {
   constructor(
     @InjectRepository(Document)
-    private documentRepository: Repository<Document>,
+    private readonly documentRepository: Repository<Document>,
   ) {}
 
   async create(createDocumentDto: CreateDocumentDto) {

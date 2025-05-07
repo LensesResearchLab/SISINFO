@@ -14,9 +14,9 @@ export function RenderFields({
   value,
   className,
 }: {
-  label: string;
-  value?: string;
-  className?: string;
+  readonly label: string;
+  readonly value?: string;
+  readonly className?: string;
 }) {
   return (
     <div className={`flex gap-3 ${className}`}>

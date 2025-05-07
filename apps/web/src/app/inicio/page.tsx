@@ -7,7 +7,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { useHomeStore } from "./home.store";
 import RoleTab from "@/components/shared/role-tab";
 import SupportFeatures from "./components/support-features";
-import { getUserInfo } from "../auth/auth-service";
+import { fetchUserRoles } from "../auth/auth-service";
 import SpinnerPage from "@/components/shared/spinner-page";
 import GraduateStudentFeatures from "./components/graduate-student-features";
 
@@ -43,24 +43,7 @@ export default function Home() {
   /* Fetch the user role to display the correct view based on his role*/
   useEffect(() => {
     if (!fetchedRef.current) {
-      async function fetchUserRoles() {
-        try {
-          const userInfo = await getUserInfo();
-          if (userInfo.success && userInfo.user?.roles) {
-            setRoles(userInfo.user.roles);
-          } else {
-            console.log("ERROR: User info fetched but no roles found");
-            //console.log(userInfo);
-          }
-        } catch (error) {
-          console.error("Failed to fetch user roles:", error);
-        } finally {
-          setLoading(false);
-          fetchedRef.current = true;
-        }
-      }
-
-      fetchUserRoles();
+      fetchUserRoles(setRoles, setLoading, fetchedRef);
     }
   }, [setRoles]);
 

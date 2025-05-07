@@ -9,9 +9,9 @@ import {
   } from "@/components/ui/alert-dialog"
   
   interface AlertDialogErrorProps {
-    open: boolean
-    onOpenChange: (open: boolean) => void
-    message?: string
+    readonly open: boolean
+    readonly onOpenChange: (open: boolean) => void
+    readonly message?: string
   }
   
   export function AlertDialogError({ open, onOpenChange, message }: AlertDialogErrorProps) {

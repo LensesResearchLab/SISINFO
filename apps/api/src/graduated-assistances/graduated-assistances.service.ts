@@ -15,17 +15,17 @@ import { AssistanceApplication } from '../assistance-applications/entities/assis
 export class GraduatedAssistancesService {
   constructor(
     @InjectRepository(GraduatedAssistance)
-    private graduatedAssistanceRepository: Repository<GraduatedAssistance>,
+    private readonly graduatedAssistanceRepository: Repository<GraduatedAssistance>,
 
     @InjectRepository(Requirement)
-    private requirementRepository: Repository<Requirement>,
+    private readonly requirementRepository: Repository<Requirement>,
 
     @InjectRepository(AssistanceApplication)
-    private applicationRepository: Repository<AssistanceApplication>,
+    private readonly applicationRepository: Repository<AssistanceApplication>,
 
-    private periodsService: PeriodsService,
-    private requirementsService: RequirementsService,
-    private professorsService: ProfessorsService,
+    private readonly periodsService: PeriodsService,
+    private readonly requirementsService: RequirementsService,
+    private readonly professorsService: ProfessorsService,
   ) {}
 
   async create(

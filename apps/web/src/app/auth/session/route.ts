@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const error = await response.json();
       return NextResponse.json(
-        { message: error.message || "Invalid credentials" },
+        { message: error.message ?? "Invalid credentials" },
         { status: 401 }
       );
     }
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const userData = await response.json();
 
     /* Create a JWT token for handling authorization */
-    const secretKey = process.env.JWT_SECRET || "your-secret-key";
+    const secretKey = process.env.JWT_SECRET ?? "your-secret-key";
     const token = jwt.sign(
       {
         id: userData.id,
@@ -86,7 +86,7 @@ export async function GET() {
         { status: 401 }
       );
     }
-    const secretKey = process.env.JWT_SECRET || "your-secret-key";
+    const secretKey = process.env.JWT_SECRET ?? "your-secret-key";
     const decoded = jwt.verify(token, secretKey) as {
       id: string;
       name: string;
