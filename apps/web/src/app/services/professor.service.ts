@@ -1,5 +1,5 @@
 import { API_ROUTES } from "../routes";
-import { Section } from "../types/billboard.type";
+import { Section } from "../types/entities/billboard.type";
 
 export async function getTeachingAssistants(period: string): Promise<Section[]> {
     const url = `${API_ROUTES.BASE}/${API_ROUTES.PROFESSORS}/PROFESSOR1/${API_ROUTES.TEACHING_ASSISTANTS}?period=${encodeURIComponent(period)}`;

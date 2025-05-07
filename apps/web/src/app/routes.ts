@@ -82,4 +82,5 @@ export const API_ROUTES: Record<string, string> = {
   PROFESSORS: "professors",
   INCIDENCES: "incidences",
   COORDINATORS: "coordinators",
+  PROJECTS: "projects",
 };

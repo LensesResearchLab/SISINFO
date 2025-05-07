@@ -7,7 +7,7 @@ import {
   getPostgraduateThesisById,
   postThesisApplication,
 } from "@/app/services/thesis.service";
-import { Thesis } from "@/app/types/thesis.type";
+import { Thesis } from "@/app/types/entities/thesis.type";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";

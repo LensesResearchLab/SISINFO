@@ -18,7 +18,7 @@ import { File, User, Search } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { getPostgraduateThesis } from "@/app/services/thesis.service";
-import { Thesis } from "@/app/types/thesis.type";
+import { Thesis } from "@/app/types/entities/thesis.type";
 
 import {
   Select,

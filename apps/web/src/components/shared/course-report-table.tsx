@@ -1,5 +1,5 @@
 "use client";
-import { CourseReports } from "@/app/types/billboard.type";
+import { CourseReports } from "@/app/types/entities/billboard.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { Button } from "@/components/ui/button";
 import {

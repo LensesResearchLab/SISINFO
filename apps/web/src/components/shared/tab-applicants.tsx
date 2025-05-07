@@ -23,7 +23,7 @@ import { ChevronDown, MoreVertical, Search } from "lucide-react";
 import { useState } from "react";
 import { ConfirmationModal } from "./confirmation-modal";
 import { ROUTES } from "@/app/routes";
-import { GraduatedAssistanceApplication } from "@/app/types/graduated-assistance-application.type";
+import { GraduatedAssistanceApplication } from "@/app/types/entities/graduated-assistance-application.type";
 import { updateAssistanceApplication } from "@/app/services/assistance.service";
 
 interface Section {

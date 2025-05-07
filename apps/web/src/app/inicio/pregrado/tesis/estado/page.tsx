@@ -5,7 +5,7 @@ import { getThesisStatusInformation } from "@/app/services/thesis.service";
 import SpinnerPage from "@/components/shared/spinner-page";
 import TabStatus from "@/components/shared/tab-status";
 import { useQuery } from "@tanstack/react-query";
-import { StatusInformation } from "@/app/types/statusInformation.type";
+import { StatusInformation } from "@/app/types/status-information.type";
 
 /**
  * ThesisStatus Component

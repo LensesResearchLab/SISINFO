@@ -1,6 +1,6 @@
 import { CreateTeachingAssistance } from '../types/createTeachingAssistance.type';
 import { CsvTASRow } from '../types/Csv-TAS-row';
-import { TeachingAssistantship } from '../types/teachingAssistantship.type';
+import { TeachingAssistantship } from '../types/entities/teachingAssistantship.type';
 import { TeachingAssistantshipRow } from '../types/teachingAssistantshipRow.type';
 export function mapTeachingAssistantshipsToCoordinatorTable(
   teachingAssistantships: TeachingAssistantship[],

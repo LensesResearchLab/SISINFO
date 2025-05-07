@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery } from "@tanstack/react-query";
 import { getThesisByProfessor } from "@/app/services/thesis.service";
 import { useProfessorThesisListStore } from "./store";
-import { Thesis } from "@/app/types/thesis.type";
+import { Thesis } from "@/app/types/entities/thesis.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useEffect } from "react";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";

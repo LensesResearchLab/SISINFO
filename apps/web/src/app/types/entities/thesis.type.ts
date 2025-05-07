@@ -1,3 +1,4 @@
+
 import { Professor } from "./graduated-assistance.type";
 import { Period } from "./period.type";
 import { Student } from "./student.type";

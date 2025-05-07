@@ -1,4 +1,4 @@
-import type { Period } from '@/app/types/period.type';
+import type { Period } from '@/app/types/entities/period.type';
 
 export function mapPeriodsToStringList(
   periods: Period[],

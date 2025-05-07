@@ -1,5 +1,5 @@
 import { API_ROUTES } from "../routes";
-import { Incidence } from "../types/incidence.type";
+import { Incidence } from "../types/entities/incidence.type";
 
 
 export async function createIncidence(incidence: Incidence): Promise<Incidence> {

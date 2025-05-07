@@ -5,7 +5,7 @@ import SpinnerPage from "@/components/shared/spinner-page";
 import TabStatus from "@/components/shared/tab-status";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { ThesisApplication } from "@/app/types/thesis-application.type";
+import { ThesisApplication } from "@/app/types/entities/thesis-application.type";
 
 /**
  * ThesisStatus Component

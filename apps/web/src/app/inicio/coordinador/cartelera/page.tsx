@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect, Fragment } from "react";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { Billboard, Course } from "@/app/types/billboard.type";
+import { Billboard, Course } from "@/app/types/entities/billboard.type";
 import { createBillboard, getBillboard } from "@/app/services/billboard.service";
 import { ROUTES } from "@/app/routes";
 import { UploadFilePage } from "@/components/shared/upload-files-page";
