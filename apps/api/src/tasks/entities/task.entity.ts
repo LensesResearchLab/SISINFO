@@ -12,6 +12,8 @@ import {
 import { TaskType } from '../enums/taskType';
 import { Project } from 'src/projects/entities/project.entity';
 import { ProjectApplication } from 'src/project-applications/entities/project-application.entity';
+import { Student } from 'src/students/entities/student.entity';
+import { Professor } from 'src/professors/entities/professor.entity';
 
 @Entity('tasks')
 export class Task extends Base {
@@ -36,6 +38,12 @@ export class Task extends Base {
   })
   @JoinColumn()
   document?: Document;
+
+  @ManyToOne(()=>Student, (s)=>s.tasks)
+  student: Student;
+
+  @ManyToOne(()=>Professor, (s)=>s.tasks)
+  professor: Professor;
 
   @OneToMany(()=>ProjectApplication, (p) => p.previousTasks)
   @JoinColumn({ name: 'projectApplicationId' })

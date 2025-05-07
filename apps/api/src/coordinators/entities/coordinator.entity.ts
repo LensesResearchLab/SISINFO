@@ -20,7 +20,4 @@ export class Coordinator extends Role {
   })
   @JoinColumn({ name: 'id' })
   user: User;
-
-  @OneToMany(() => Task, (task) => task.coordinator)
-  tasks: Task[];
 }

@@ -55,9 +55,6 @@ import { Section } from '../sections/entities/section.entity';
 import { ImportantDatesService } from '../important-dates/important-dates.service';
 import { ImportantDate } from '../important-dates/entities/important-date.entity';
 import { CreateImportantDateDto } from '../important-dates/dto/create-important-date.dto';
-import { TaskType } from 'src/tasks/enums/taskType';
-import { TaskState } from 'src/tasks/enums/taskState';
-import { UUID } from 'crypto';
 
 @Injectable()
 export class SeedService {
@@ -471,35 +468,6 @@ export class SeedService {
     await Promise.all(insertPromises);
     return true;
   }
-
-  async seedTasks(): Promise<void> {
-    const students   = await this.studentsService.findAll();
-    const professors = await this.professorsService.findAll();
-
-    const types  = Object.values(TaskType)  as TaskType[];
-    const states = Object.values(TaskState) as TaskState[];
-
-    const createdTasks: UUID[] = [];
-
-    for (let i = 0; i < 10; i++) {
-      const dto: CreateTaskDto & { previousTaskId?: UUID } = {
-        type: faker.helpers.arrayElement(types),
-        state: faker.helpers.arrayElement(states),
-        studentId:     faker.helpers.arrayElement(students).id,
-        professorId:   faker.helpers.arrayElement(professors).id,
-        payload: {
-          note: faker.lorem.sentence(),
-          answeredYes: faker.datatype.boolean(),
-        },
-      };
-      if (createdTasks.length > 0) {
-        dto.previousTaskId = faker.helpers.arrayElement(createdTasks);
-      }
-
-      const created = await this.tasksService.create(dto);
-      createdTasks.push(created.id as UUID);
-    }
-  }
   
   async seedAreasOfInterest() {
     const areasOfInterest: CreateAreasOfInterestDto[] = sampleAreasOfInterest;
@@ -659,7 +627,6 @@ export class SeedService {
   }
 
   async executeTaskAndTas() {
-    await this.seedTasks();
     await this.seedSampleTASEntities();
     return 'SEED_EXECUTED';
   }

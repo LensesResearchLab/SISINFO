@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { ProfessorsService } from '../professors/professors.service';
 import { PeriodsService } from '../periods/periods.service';
+import { Student } from 'src/students/entities/student.entity';
 
 @Injectable()
 export class ProjectsService {
@@ -83,7 +84,7 @@ export class ProjectsService {
 
   async findOne(id: string) {
     const project = await this.projectRepository.findOne({
-      where: { id },
+      where: { id }, relations:["projectApplications"]
     });
     if (!project) {
       throw new NotFoundException(`Project with id ${id} not found`);
@@ -95,6 +96,19 @@ export class ProjectsService {
     const project = await this.findOne(id);
     Object.assign(project, updateProjectDto);
     return this.projectRepository.save(project);
+  }
+
+  async updateStudents(id:string, student: Student){
+    const project = await this.projectRepository.findOne({ 
+      where: { id }, 
+      relations: ['students'],
+    });
+    if (!project) return
+    
+    if (!project.students.some(existingStudent => existingStudent.id === student.id)) {
+      project.students.push(student);
+  }
+    return await this.projectRepository.save(project);
   }
 
   async remove(id: string) {

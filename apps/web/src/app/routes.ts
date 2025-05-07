@@ -79,6 +79,8 @@ export const API_ROUTES: Record<string, string> = {
   COORDINATOR_BILLBOARD:'billboards',
   TASKS:'tasks',
 
+  PROJECTS:'projects',
+
   TEACHING_ASSISTANTS: 'teaching-assistances',
   PROFESSORS: 'professors',
   SECTIONS_REPORTS: "sections",

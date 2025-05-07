@@ -18,7 +18,13 @@ export class CreateTaskDto {
   @IsOptional()
   @IsString()
   flow?:string;
-  
+
   @IsOptional()
   projectApplicationId?: string;
+
+  @IsOptional()
+  professorId?: string;
+
+  @IsOptional()
+  studentId?: string;
 }

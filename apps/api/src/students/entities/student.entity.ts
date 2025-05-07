@@ -20,6 +20,7 @@ import { Thesis } from '../../theses/entities/thesis.entity';
 import { ProjectApplication } from '../../project-applications/entities/project-application.entity';
 import { AssistanceApplication } from '../../assistance-applications/entities/assistance-application.entity';
 import { Role } from '../../common/entities/role.entity';
+import { Task } from 'src/tasks/entities/task.entity';
 
 @Entity()
 export class Student extends Role {
@@ -85,6 +86,9 @@ export class Student extends Role {
     { nullable: true },
   )
   teachingAssistances: TeachingAssistance[];
+
+  @OneToMany(()=>Task, (t)=>t.student)
+  tasks: Task[];
 
   @OneToMany(
     () => AssistanceApplication,

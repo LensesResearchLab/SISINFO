@@ -11,6 +11,7 @@ import { TasksService } from 'src/tasks/tasks.service';
 import { flows } from 'src/tasks/flows/tasksFlows';
 import { TaskFactory } from 'src/tasks/factory/tasks.factory';
 import { DataSource } from 'typeorm';
+import { ProjecStatusEnum } from './enums/project_status.enum';
 
 @Injectable()
 export class ProjectApplicationsService {
@@ -56,18 +57,23 @@ export class ProjectApplicationsService {
   }
 
   async update(id: string, updateProjectApplicationDto: UpdateProjectApplicationDto,){
-    const project = await this.projectApplicationRepository.findOneBy({
-      id,
+    const projectApplication = await this.projectApplicationRepository.findOne({
+      where:{id}, relations:["student"]
     });
-    if (!project) {
+    if (!projectApplication) {
       throw new NotFoundException(
         `Graduated project with ID ${id} not found`,
       );
     }
-    const task = await this.tasksService.create(TaskType.UPLOAD_FILE, {flow:'proyectoPregrado'});
-    Object.assign(project, updateProjectApplicationDto);
-    project.actualTask=task;
-    return this.projectApplicationRepository.save(project);
+
+    if(updateProjectApplicationDto.status==ProjecStatusEnum.ENROLLED){
+      this.projectsService.updateStudents(projectApplication.project.id, projectApplication.student)
+    }
+
+    const task = await this.tasksService.create(TaskType.UPLOAD_FILE, {flow:'proyectoPregrado', projectApplicationId:projectApplication.id});
+    Object.assign(projectApplication, updateProjectApplicationDto);
+    projectApplication.actualTask=task;
+    return this.projectApplicationRepository.save(projectApplication);
   }
 
   findAll() {
@@ -110,21 +116,21 @@ export class ProjectApplicationsService {
 
   async completeAndAdvance(projectId: string): Promise<ProjectApplication> {
     return this.dataSource.transaction(async (manager) => {
-      const projectAplication = await manager.getRepository(ProjectApplication).findOne({
+      const projectApplication = await manager.getRepository(ProjectApplication).findOne({
         where: { id: projectId },
-        relations: ['previousTasks', 'actualTask'],
+        relations: ['previousTasks', 'actualTask', 'student', 'project'],
       });
-      if (!projectAplication) throw new NotFoundException();
+      if (!projectApplication) throw new NotFoundException();
 
-      const actualTask    = projectAplication.actualTask;
-      const previousTasks = projectAplication.previousTasks;
+      const actualTask    = projectApplication.actualTask;
+      const previousTasks = projectApplication.previousTasks;
       const actualIndex = previousTasks.length;
 
       const steps = flows[actualTask.flow][actualIndex + 1];
       if (!steps) throw new BadRequestException(`Flujo desconocido: ${actualTask.flow}`);
       
       const nextType    = steps[actualIndex + 1];
-      if (!nextType) return projectAplication;
+      if (!nextType) return projectApplication;
 
       let documentId: string | undefined;
       if (
@@ -135,14 +141,17 @@ export class ProjectApplicationsService {
         documentId = previousTasks[actualIndex].document.id;
       }
 
-      projectAplication.previousTasks.push(actualTask);
+      projectApplication.previousTasks.push(actualTask);
       const next = await this.tasksService.create(nextType, {
         documentId,
         flow: actualTask.flow,
-        projectApplicationId: projectAplication.id,
+        projectApplicationId: projectApplication.id,
+        ...(nextType.assignee === 'student'
+          ? { studentId: projectApplication.student.id }
+          : { professorId: projectApplication.project.professor.id }),
       });
 
-      return manager.getRepository(ProjectApplication).save(projectAplication);
+      return manager.getRepository(ProjectApplication).save(projectApplication);
     });
   }
 }

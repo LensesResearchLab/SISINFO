@@ -43,4 +43,7 @@ export class Professor extends Role {
   @ManyToMany(() => Section, (section) => section.supportProfessors)
   @JoinTable({ name: 'section_support_professors' })
   supportSections: Section[];
+
+  @OneToMany(()=>Task, (s)=>s.professor)
+    tasks: Task[];
 }

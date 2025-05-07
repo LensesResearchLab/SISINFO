@@ -8,14 +8,16 @@ export interface FactoryParams {
   comment?: string;
   approved?: boolean;
   documentId?: string;
-  projectApplicationId?: string; 
   flow?: string;
+  projectApplicationId?: string;
+  studentId?: string;
+  professorId?: string;
 }
 
 @Injectable()
 export class TaskFactory {
   create(params: FactoryParams): CreateTaskDto {
-    const { type, comment, approved, documentId, flow, projectApplicationId } = params;
+    const { type, comment, approved, documentId, flow, projectApplicationId, studentId, professorId } = params;
 
     // Base común
     const dto: CreateTaskDto = {
@@ -25,23 +27,21 @@ export class TaskFactory {
       documentId,
       flow,
       projectApplicationId,
+      studentId,
+      professorId
     };
 
     switch (type) {
       case TaskType.UPLOAD_FILE:
-        // Tarea de subir archivo: comentario genérico, no aprobar automático
-        dto.comment = dto.comment || 'Por favor sube tu archivo';
-        dto.approved = false;
+        dto.documentId="";
         return dto;
 
       case TaskType.SEND_COMMENTS:
         // Tarea de enviar comentarios: arranca aprobado en false
         dto.comment = dto.comment || 'Envía tus comentarios aquí';
-        dto.approved = false;
         return dto;
 
       case TaskType.SEND_APPROVE:
-        dto.comment = dto.comment || '';
         dto.approved = dto.approved!;
         return dto;
 
