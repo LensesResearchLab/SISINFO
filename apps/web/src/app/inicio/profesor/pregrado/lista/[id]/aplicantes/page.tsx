@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Eye } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getProjectById } from "@/app/services/project.service"; // Asegúrate de que esté importado correctamente
+import { getUndergraduateThesisById } from "@/app/services/project.service"; // Asegúrate de que esté importado correctamente
 import { updateProjectApplication } from "@/app/services/project-application.service";  // Asegúrate de que esté importado correctamente
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { Application } from "@/app/types/project-application.type";
@@ -20,7 +20,7 @@ export default function ProjectDetail({ id }: { id: string }) {
   const [newStatus, setNewStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    getProjectById(id).then((data) => {
+    getUndergraduateThesisById(id).then((data) => {
       setData(data.projectApplications);
     });
   }, [id]);

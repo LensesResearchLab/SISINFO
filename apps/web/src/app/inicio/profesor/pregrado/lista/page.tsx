@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
-import { getThesisByProfessor } from "@/app/services/thesis.service";
+import { getThesisByProfessor } from "@/app/services/project.service";
 import { useProfessorThesisListStore } from "./store";
 import { Thesis } from "@/app/types/entities/thesis.type";
 import SpinnerPage from "@/components/shared/spinner-page";

@@ -1,5 +1,5 @@
 "use client";
-import { getUndergraduateThesisById } from "@/app/services/thesis.service";
+import { getUndergraduateThesisById } from "@/app/services/project.service";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { ThesisDetailCard, ThesisNotFound } from "@/components/shared/thesis-detail-card";
 import { useQuery } from "@tanstack/react-query";

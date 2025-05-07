@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Mail, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getUndergraduateThesisById } from "@/app/services/thesis.service";
+import { getUndergraduateThesisById } from "@/app/services/project.service";
 import { Thesis } from "@/app/types/entities/thesis.type";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
