@@ -7,7 +7,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { useHomeStore } from "./home.store";
 import RoleTab from "@/components/shared/role-tab";
 import SupportFeatures from "./components/support-features";
-import { fetchUserRoles, getUserInfo } from "../auth/auth-service";
+import { fetchUserRoles } from "../auth/auth-service";
 import SpinnerPage from "@/components/shared/spinner-page";
 import GraduateStudentFeatures from "./components/graduate-student-features";
 

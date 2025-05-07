@@ -25,7 +25,6 @@ export default function GraduateStudentFeatures({
             key={feature}
             title={information.title}
             features={information.features}
-            background="bg-destructive"
           />
         );
       })}
