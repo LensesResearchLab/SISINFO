@@ -99,3 +99,24 @@ export async function logoutUser() {
     };
   }
 }
+
+
+export async function fetchUserRoles(
+  setRoles: (roles: string[]) => void,
+  setLoading: (loading: boolean) => void,
+  fetchedRef: { current: boolean }
+): Promise<void> {
+  try {
+    const userInfo = await getUserInfo();
+    if (userInfo.success && userInfo.user?.roles) {
+      setRoles(userInfo.user.roles);
+    } else {
+      console.error("ERROR: User info fetched but no roles found");
+    }
+  } catch (error) {
+    console.error("Failed to fetch user roles:", error);
+  } finally {
+    setLoading(false);
+    fetchedRef.current = true;
+  }
+}

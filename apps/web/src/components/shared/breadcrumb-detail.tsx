@@ -34,6 +34,7 @@ const EXCLUDED_ROUTES = undergraduateData
     "administrador",
     "aplicantes",
     "manejar",
+    "programas"
   ]);
 
 function getBreadcrumbText(pathname: string) {

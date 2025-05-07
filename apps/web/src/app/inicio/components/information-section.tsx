@@ -8,6 +8,7 @@ interface InformationCardProps {
   readonly title: string
   readonly description: string
   readonly url: string
+  readonly opensWindow?: boolean
 }
 
 export interface InformationSectionProps {
@@ -40,14 +41,16 @@ export default function InformationSection({
   )
 }
 
-function InformationCard({ Icon, title, description, url }: InformationCardProps) {
+export function InformationCard({ Icon, title, description, url, opensWindow = false }: InformationCardProps) {
   return (
     <Link
-      href={`/inicio/${url}`}
+      href={opensWindow ? url : `/inicio/${url}`}
       className="block group focus:outline-none"
       aria-label={`Ir a ${title}`}
+      target={opensWindow ? "_blank" : "_self"}
+      rel={opensWindow ? "noopener noreferrer" : undefined}
     >
-      <Card className="transition-all duration-300 ease-in-out  hover:shadow-lg group-hover:-translate-y-1 group-focus:ring-2 group-focus:ring-primary w-full">
+      <Card className="transition-all duration-300 ease-in-out hover:shadow-lg group-hover:-translate-y-1 w-full">
         <CardContent className="px-6 py-2 h-full">
           <div className="flex items-start gap-4 h-full">
             <div className="p-2 rounded-full bg-core-soft">

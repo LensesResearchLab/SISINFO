@@ -1,51 +1,80 @@
 "use client";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { getTutorials } from "@/app/services/support.service";
+
+import { useEffect, useState, useRef } from "react";
+import { TabsContent } from "@/components/ui/tabs";
+import { FileVideo } from "lucide-react";
+import RoleTab from "@/components/shared/role-tab";
+import { fetchUserRoles } from "@/app/auth/auth-service";
+import { useTutorialStore } from "./tutorial.store";
 import { Tutorial } from "@/app/types/tutorial.types";
-import { useQuery } from "@tanstack/react-query";
-/**
- * VideoPlayer Component
- *
- * Embeds a video using an iframe from a provided source URL.
- *
- * @param {string} src - The URL of the video to be embedded in the iframe.
- * @returns {JSX.Element} An iframe element that displays the video.
- */
-function VideoPlayer({ src }: { readonly src: string }) {
+import { coordinatorVideos } from "./coordinator";
+import { postgraduateVideos } from "./postgraduate";
+import { undergraduateVideos } from "./undergraduate";
+import { professorVideos } from "./professor";
+import { InformationCard } from "../../components/information-section";
+import SpinnerPage from "@/components/shared/spinner-page";
+
+const roleMap: Record<string, React.ReactNode> = {
+  estudiante: <UndergraduateTutorials key="estudiante" />,
+  estudiante_maestria: <PostgraduateTutorials key="estudiante_maestria" />,
+  profesor: <ProfessorTutorials key="profesor" />,
+  coordinador: <CoordinatorTutorials key="coordinador" />,
+};
+
+export default function Tutorials() {
+  const roles = useTutorialStore((state) => state.roles);
+  const setRoles = useTutorialStore((state) => state.setRoles);
+  const [loading, setLoading] = useState(true);
+  const fetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (!fetchedRef.current) {
+      fetchUserRoles(setRoles, setLoading, fetchedRef);
+    }
+  }, [setRoles]);
+  if (loading) return <SpinnerPage />;
+  if (roles.length === 0) return null;
+  if (roles.length === 1) return <>{roleMap[roles[0]]}</>;
+
   return (
-    <iframe
-      className="w-full h-96"
-      src={src}
-      title="YouTube video player"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
-    ></iframe>
+    <RoleTab>
+      {roles.map((role) => (
+        <TabsContent key={role} value={role}>
+          {roleMap[role]}
+        </TabsContent>
+      ))}
+    </RoleTab>
   );
 }
 
-export default function Tutorials() {
-  const { data: tutorials, isLoading, error } = useQuery<Tutorial[]>({
-    queryKey: ["tutorials"],
-    queryFn: getTutorials,
-  });
+function CoordinatorTutorials() {
+  return <TutorialsGrid tutorials={coordinatorVideos} />;
+}
 
-  if (isLoading) return <div>Cargando tutoriales...</div>;
-  if (error || !tutorials) return <div>Error al cargar los tutoriales</div>;
+function ProfessorTutorials() {
+  return <TutorialsGrid tutorials={professorVideos} />;
+}
 
+function PostgraduateTutorials() {
+  return <TutorialsGrid tutorials={postgraduateVideos} />;
+}
+
+function UndergraduateTutorials() {
+  return <TutorialsGrid tutorials={undergraduateVideos} />;
+}
+
+function TutorialsGrid({ tutorials }: { tutorials: Tutorial[] }) {
   return (
-    <div className="columns-1 min-h-full min-w-full sm:gap-8 sm:columns-2 p-4 space-y-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4">
       {tutorials.map((tutorial, index) => (
-        <Card key={index} className="p-4 border-none">
-          <CardHeader>
-            <h2 className="text-xl font-bold text-core-highlight mb-4">
-              {tutorial.title}
-            </h2>
-            <p className="text-lg text-foreground-soft">{tutorial.description}</p>
-          </CardHeader>
-          <CardContent>
-            <VideoPlayer src={tutorial.link} />
-          </CardContent>
-        </Card>
+        <InformationCard
+          key={index}
+          Icon={FileVideo}
+          title={tutorial.title}
+          description={tutorial.description}
+          url={tutorial.link}
+          opensWindow={true}
+        />
       ))}
     </div>
   );
