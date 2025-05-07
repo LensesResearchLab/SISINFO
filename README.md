@@ -77,6 +77,13 @@ Asegúrate de tener instalado lo siguiente:
     ```
 9. Abre tu navegador y visita el enlace a continuación para cargar los datos de prueba (generados de forma aleatoria).
 - http://localhost:8000/api/seed/all
+- http://localhost:8000/api/seed/static
+- http://localhost:8000/api/seed/users
+- http://localhost:8000/api/seed/projects
+- http://localhost:8000/api/seed/theses
+- http://localhost:8000/api/seed/graduated-assistances
+- http://localhost:8000/api/seed/courses
+- http://localhost:8000/api/seed/other
 10. Visita http://localhost:3000 para ver la aplicación en funcionamiento.
 
 11. Ingresa con alguno de los usuarios generados. Asimismo, puedes ingresar con las siguientes credenciales de prueba:
