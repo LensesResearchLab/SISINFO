@@ -1,16 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProjectApplicationDto } from './dto/create-project-application.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectApplication } from './entities/project-application.entity';
 import { ProjectsService } from '../projects/projects.service';
 import { StudentsService } from '../students/students.service';
 import { Repository } from 'typeorm';
+import { UpdateProjectApplicationDto } from './dto/update-project-application.dto';
+import { TaskType } from 'src/tasks/enums/taskType';
+import { TasksService } from 'src/tasks/tasks.service';
+import { flows } from 'src/tasks/flows/tasksFlows';
+import { TaskFactory } from 'src/tasks/factory/tasks.factory';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class ProjectApplicationsService {
   constructor(
     private readonly studentsService: StudentsService,
     private readonly projectsService: ProjectsService,
+    private readonly tasksService: TasksService,
+    private readonly factory: TaskFactory,
+    private readonly dataSource: DataSource,
     @InjectRepository(ProjectApplication)
     private projectApplicationRepository: Repository<ProjectApplication>,
   ) {}
@@ -44,6 +53,21 @@ export class ProjectApplicationsService {
     );
 
     return result;
+  }
+
+  async update(id: string, updateProjectApplicationDto: UpdateProjectApplicationDto,){
+    const project = await this.projectApplicationRepository.findOneBy({
+      id,
+    });
+    if (!project) {
+      throw new NotFoundException(
+        `Graduated project with ID ${id} not found`,
+      );
+    }
+    const task = await this.tasksService.create(TaskType.UPLOAD_FILE, {flow:'proyectoPregrado'});
+    Object.assign(project, updateProjectApplicationDto);
+    project.actualTask=task;
+    return this.projectApplicationRepository.save(project);
   }
 
   findAll() {
@@ -82,5 +106,43 @@ export class ProjectApplicationsService {
       project_title: app.project.title,
       status: app.status,
     }));
+  }
+
+  async completeAndAdvance(projectId: string): Promise<ProjectApplication> {
+    return this.dataSource.transaction(async (manager) => {
+      const projectAplication = await manager.getRepository(ProjectApplication).findOne({
+        where: { id: projectId },
+        relations: ['previousTasks', 'actualTask'],
+      });
+      if (!projectAplication) throw new NotFoundException();
+
+      const actualTask    = projectAplication.actualTask;
+      const previousTasks = projectAplication.previousTasks;
+      const actualIndex = previousTasks.length;
+
+      const steps = flows[actualTask.flow][actualIndex + 1];
+      if (!steps) throw new BadRequestException(`Flujo desconocido: ${actualTask.flow}`);
+      
+      const nextType    = steps[actualIndex + 1];
+      if (!nextType) return projectAplication;
+
+      let documentId: string | undefined;
+      if (
+        actualTask.flow === 'proyectoPregrado' &&
+        actualIndex === 1 &&
+        previousTasks[actualIndex].document?.id
+      ) {
+        documentId = previousTasks[actualIndex].document.id;
+      }
+
+      projectAplication.previousTasks.push(actualTask);
+      const next = await this.tasksService.create(nextType, {
+        documentId,
+        flow: actualTask.flow,
+        projectApplicationId: projectAplication.id,
+      });
+
+      return manager.getRepository(ProjectApplication).save(projectAplication);
+    });
   }
 }

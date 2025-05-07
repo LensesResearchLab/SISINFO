@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { TaskType } from '../enums/taskType';
 import { Project } from 'src/projects/entities/project.entity';
+import { ProjectApplication } from 'src/project-applications/entities/project-application.entity';
 
 @Entity('tasks')
 export class Task extends Base {
@@ -22,6 +23,9 @@ export class Task extends Base {
 
   @Column()
   approved: Boolean;
+
+  @Column()
+  flow: string;
   
   @ManyToOne(() => ImportantDate, (d) => d.tasks, { nullable: true })
   date?: ImportantDate;
@@ -33,9 +37,10 @@ export class Task extends Base {
   @JoinColumn()
   document?: Document;
 
-  @OneToMany(()=>Project, (p) => p.previousTasks)
-  projectPreviousTasks: Project;
+  @OneToMany(()=>ProjectApplication, (p) => p.previousTasks)
+  @JoinColumn({ name: 'projectApplicationId' })
+  projectPreviousTasks: ProjectApplication;
 
-  @OneToOne(()=>Project, (p)=>p.actualTask)
-  projectActualTask: Project;
+  @OneToOne(()=>ProjectApplication, (p)=>p.actualTask)
+  projectActualTask: ProjectApplication;
 }

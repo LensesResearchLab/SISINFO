@@ -13,8 +13,12 @@ export class CreateTaskDto {
   approved?: boolean;
 
   @IsOptional()
-  dateId?: string;
+  documentId?: string;
 
   @IsOptional()
-  documentId?: string;
+  @IsString()
+  flow?:string;
+  
+  @IsOptional()
+  projectApplicationId?: string;
 }

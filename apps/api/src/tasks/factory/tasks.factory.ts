@@ -7,25 +7,24 @@ export interface FactoryParams {
   type: TaskType;
   comment?: string;
   approved?: boolean;
-  dateId?: string;
   documentId?: string;
+  projectApplicationId?: string; 
+  flow?: string;
 }
 
 @Injectable()
 export class TaskFactory {
-  /**
-   * Crea un CreateTaskDto ya completo con defaults según el tipo
-   */
   create(params: FactoryParams): CreateTaskDto {
-    const { type, comment, approved, dateId, documentId } = params;
+    const { type, comment, approved, documentId, flow, projectApplicationId } = params;
 
     // Base común
     const dto: CreateTaskDto = {
       type,
       comment: comment ?? '',
       approved: approved ?? false,
-      dateId,
       documentId,
+      flow,
+      projectApplicationId,
     };
 
     switch (type) {
@@ -41,9 +40,7 @@ export class TaskFactory {
         dto.approved = false;
         return dto;
 
-      case TaskType.SEND_BOOLEAN:
-        // Tarea de respuesta sí/no: podría arrancar en approved = null,
-        // pero aquí lo inicializamos en false
+      case TaskType.SEND_APPROVE:
         dto.comment = dto.comment || '';
         dto.approved = dto.approved!;
         return dto;

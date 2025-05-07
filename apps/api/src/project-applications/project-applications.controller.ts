@@ -1,12 +1,13 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Patch } from '@nestjs/common';
 import { ProjectApplicationsService } from './project-applications.service';
 import { CreateProjectApplicationDto } from './dto/create-project-application.dto';
+import { UpdateProjectApplicationDto } from './dto/update-project-application.dto';
 
 @Controller('project-applications')
 export class ProjectApplicationsController {
   constructor(
     private readonly projectApplicationsService: ProjectApplicationsService,
-  ) {}
+  ) { }
 
   @Post()
   create(
@@ -35,4 +36,23 @@ export class ProjectApplicationsController {
   findOne(@Param('id') id: string) {
     return this.projectApplicationsService.findOne(+id);
   }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateProjectApplicationDto: UpdateProjectApplicationDto,
+  ) {
+    return this.projectApplicationsService.update(
+      id,
+      updateProjectApplicationDto,
+    );
+  }
+
+  @Patch(':id/task')
+  async complete(@Param('id') id: string) {
+    const projectAplication = await this.projectApplicationsService.completeAndAdvance(id);
+    return { completedId: id, projectAplication };
+  }
+
+
 }

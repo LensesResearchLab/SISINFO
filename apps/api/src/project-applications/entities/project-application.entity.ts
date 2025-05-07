@@ -26,4 +26,10 @@ export class ProjectApplication extends Base {
 
   @ManyToOne(() => Project, (project) => project.projectApplications)
   project: Project;
+
+  @ManyToOne(()=>Task, (t)=>t.projectPreviousTasks)
+  previousTasks: Task[];
+
+  @OneToOne(()=>Task, (t)=>t.projectActualTask)
+  actualTask: Task;
 }

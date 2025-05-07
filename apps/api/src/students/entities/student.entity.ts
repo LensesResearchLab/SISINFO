@@ -3,7 +3,6 @@ import { User } from '../../users/entities/user.entity';
 import { Course } from '../../courses/entities/course.entity';
 import { GraduatedAssistance } from '../../graduated-assistances/entities/graduated-assistance.entity';
 import { Project } from '../../projects/entities/project.entity';
-import { Task } from '../../tasks/entities/task.entity';
 import { TeachingAssistance } from '../../teaching-assistances/entities/teaching-assistance.entity';
 
 import {
@@ -86,9 +85,6 @@ export class Student extends Role {
     { nullable: true },
   )
   teachingAssistances: TeachingAssistance[];
-
-  @OneToMany(() => Task, (task) => task.student)
-  tasks: Task[];
 
   @OneToMany(
     () => AssistanceApplication,

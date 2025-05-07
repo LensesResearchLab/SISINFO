@@ -11,9 +11,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
-  OneToOne,
 } from 'typeorm';
-import { Task } from 'src/tasks/entities/task.entity';
 
 @Entity()
 export class Project extends Base {
@@ -60,10 +58,4 @@ export class Project extends Base {
     eager: true,
   })
   students: Student[];
-  
-  @ManyToOne(()=>Task, (t)=>t.projectPreviousTasks)
-  previousTasks: Task[];
-
-  @OneToOne(()=>Task, (t)=>t.projectActualTask)
-  actualTask: Task;
 }
