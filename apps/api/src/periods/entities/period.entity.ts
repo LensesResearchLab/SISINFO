@@ -7,6 +7,7 @@ import { Project } from '../../projects/entities/project.entity';
 import { Section } from '../../sections/entities/section.entity';
 import { Thesis } from '../../theses/entities/thesis.entity';
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { ProjectApplication } from 'src/project-applications/entities/project-application.entity';
 
 @Entity()
 export class Period extends Base {
@@ -29,6 +30,12 @@ export class Period extends Base {
 
   @OneToMany(() => Thesis, (thesis) => thesis.period)
   theses: Thesis[];
+
+  @OneToMany(
+    () => ProjectApplication,
+    (projectApplication) => projectApplication.period,
+  )
+  projectApplication: ProjectApplication[];
 
   @OneToMany(() => Project, (project) => project.period)
   projects: Project[];

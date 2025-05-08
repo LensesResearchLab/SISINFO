@@ -13,4 +13,17 @@ export class CreateProjectApplicationDto {
 
   @IsBoolean()
   wasContacted: boolean;
+
+  @IsString()
+  @IsNotEmpty()
+  projectId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  grade?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  studentId: string;
 }

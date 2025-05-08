@@ -5,12 +5,14 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { StudentsService } from '../students/students.service';
 import { ProjectsService } from '../projects/projects.service';
+import { PeriodsService } from 'src/periods/periods.service';
 
 describe('ProjectApplicationsService', () => {
   let service: ProjectApplicationsService;
   let projectApplicationsRepository: Repository<ProjectApplication>;
   let studentsService: StudentsService;
   let projectsService: ProjectsService;
+  let periodsService: PeriodsService;
 
   beforeEach(async () => {
     const repositoryMock = {
@@ -23,6 +25,9 @@ describe('ProjectApplicationsService', () => {
       findOne: jest.fn(),
     };
     const projectsServiceMock = {
+      findOne: jest.fn(),
+    };
+    const periodsServiceMock = {
       findOne: jest.fn(),
     };
     const module: TestingModule = await Test.createTestingModule({
@@ -39,6 +44,10 @@ describe('ProjectApplicationsService', () => {
         {
           provide: ProjectsService,
           useValue: projectsServiceMock,
+        },
+        {
+          provide: PeriodsService,
+          useValue: periodsServiceMock,
         },
       ],
     }).compile();

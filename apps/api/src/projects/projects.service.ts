@@ -17,15 +17,15 @@ export class ProjectsService {
   ) {}
   async create(
     createProjectDto: CreateProjectDto,
-    professorDocument: string,
+    professorId: string,
     periodId: string,
   ) {
-    const professor = await this.professorsService.findOne(professorDocument);
+    const professor = await this.professorsService.findOne(professorId);
     const period = await this.periodsService.findOne(periodId);
 
     if (!professor) {
       throw new NotFoundException(
-        `Professor with document ${professorDocument} not found`,
+        `Professor with document ${professorId} not found`,
       );
     }
     if (!period) {
@@ -85,6 +85,7 @@ export class ProjectsService {
   async findOne(id: string) {
     const project = await this.projectRepository.findOne({
       where: { id },
+      relations: ['professor'],
     });
     if (!project) {
       throw new NotFoundException(`Project with id ${id} not found`);

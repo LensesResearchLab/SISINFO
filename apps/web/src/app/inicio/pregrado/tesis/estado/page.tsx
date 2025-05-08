@@ -1,97 +1,78 @@
 "use client";
-import { Calendar, FileText, Mail, Star, User } from "lucide-react";
-import { getThesisStatusInformation } from "@/app/services/thesis.service";
 
+import { Calendar, FileText, Mail, Star, User } from "lucide-react";
+import { getUndergraduateThesisStatusInformation } from "@/app/services/project.service";
 import SpinnerPage from "@/components/shared/spinner-page";
 import TabStatus from "@/components/shared/tab-status";
 import { useQuery } from "@tanstack/react-query";
-import { StatusInformation } from "@/app/types/status-information.type";
+import { ProjectStatusInformation } from "@/app/types/status-information.type";
+import { getUserInfo } from "@/app/auth/auth-service";
+import { ProjectApplicationToProjectStatusInformation } from "@/app/mappers/project-status-information";
+import { mapPeriodToString } from "@/app/mappers/period.mapper";
 
 /**
- * ThesisStatus Component
+ * ProjectStatus Component
  *
- * This component displays the status and information of a student's undergraduate thesis.
- * It fetches thesis status data and displays it in a tabbed interface.
+ * Displays the registration status and details of a student's undergraduate thesis.
+ * Uses React Query to fetch and cache the status information.
  *
- * States:
- * - statusInformation: Object containing thesis status details like semester, title, advisor, etc.
- * - isFetching: Boolean indicating if data is being fetched
- * - error: Any error that occurred during data fetching
+ * - While loading, shows a spinner.
+ * - If an error occurs or no data is available, shows an error component.
+ * - Displays the information in two tabs: general info and status info.
  *
- * Features:
- * - Uses React Query for data fetching and caching
- * - Shows loading spinner while data is being fetched
- * - Displays thesis information in two tabs:
- *   1. General information (semester, title, advisor, student details)
- *   2. Status information (current step in thesis process)
- * - Tracks thesis progress through defined steps
- * - Shows relevant status messages based on current step
- *
- * Layout:
- * - Tabbed interface with general info and status tabs
- * - Loading spinner during data fetch
- * - Error state handling
- * - Organized sections of thesis information
- *
- * @returns {JSX.Element} A tabbed interface showing thesis status and information
+ * @returns {JSX.Element} Tabbed interface with thesis status and details.
  */
-export default function ThesisStatus() {
+export default function ProjectStatus() {
   const {
-    data: statusInformation,
+    data: statusInfo,
     isFetching,
     error,
   } = useQuery({
     queryKey: ["student-thesis-status"],
-    queryFn: () => getThesisStatusInformation("1"),
+    queryFn: async () => {
+      const userData = await getUserInfo();
+      const thesisStatus = await getUndergraduateThesisStatusInformation(userData.user.id);
+      return ProjectApplicationToProjectStatusInformation(thesisStatus);
+    },
   });
 
   if (isFetching) return <SpinnerPage />;
-  if (error || !statusInformation) return <ThesisNotFound />;
+  if (error || !statusInfo) return <ProjectNotFound />;
 
-  const sections = getSections(statusInformation);
-  const steps = ["Postulado", "Aceptado", "Inscrito", "Informe", "Finalizado"];
-  const messagePerStep = getMessagesPerStep();
-  const generalInformationProps = {
-    title: "Información de inscripción proyecto de grado",
-    sections,
+  const infoSections = createStatusSections(statusInfo);
+  const processSteps = ["Postulado", "Pendiente", "Aceptado", "Inscrito"];
+  const stepMessages = createStepMessages();
+
+  const generalInfoProps = {
+    title: "Información de inscripción del proyecto de grado",
+    sections: infoSections,
   };
-  const statusProps = {
-    currentStatus: statusInformation.lastStep,
-    statusMessage: messagePerStep.get(statusInformation.lastStep) ?? "",
-    steps,
-    title: "Estado inscripción proyecto de grado",
+  const statusTabProps = {
+    currentStatus: statusInfo.lastStep,
+    statusMessage: stepMessages.get(statusInfo.lastStep) ?? "",
+    steps: processSteps,
+    title: "Estado de inscripción del proyecto de grado",
   };
 
-  return <TabStatus general={generalInformationProps} status={statusProps} />;
+  return <TabStatus general={generalInfoProps} status={statusTabProps} />;
 }
 
 /**
- * ThesisNotFound Component
+ * ProjectNotFound Component
  *
- * Displays an error message when thesis information cannot be found.
+ * Renders a message when thesis registration data is not found.
  *
- * Layout:
- * - Centered container with max width
- * - White background card with shadow
- * - Error heading and descriptive message
- *
- * Styling:
- * - Uses Tailwind classes for spacing, colors and layout
- * - Responsive container with padding
- * - Rounded corners and shadow for card
- *
- * @returns {JSX.Element} Error message component
+ * @returns {JSX.Element} Not found message.
  */
-function ThesisNotFound() {
+function ProjectNotFound() {
   return (
     <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[900px]">
       <div className="w-full bg-white shadow-lg rounded-xl p-5 h-full space-y-4">
-        <h2 className="text-xl font-bold ext-foreground-soft">
-          No se encontró información de inscripción
+        <h2 className="text-xl font-bold text-foreground-soft">
+          Información de inscripción no encontrada
         </h2>
         <p className="text-foreground-soft">
-          No se pudo encontrar información de inscripción para el proyecto de
-          grado
+          No se pudo encontrar información de inscripción para el proyecto de grado.
         </p>
       </div>
     </div>
@@ -99,101 +80,61 @@ function ThesisNotFound() {
 }
 
 /**
- * getSections Function
+ * createStatusSections
  *
- * Creates an array of section objects containing thesis information for display.
- * Each section represents a piece of thesis information with consistent styling.
+ * Generates an array of objects representing the sections of thesis registration data.
+ * Each section includes a title, description, and an icon.
  *
- * @param {StatusInformation} statusInformation - Object containing thesis details
- *
- * @returns {Array} Array of section objects with:
- * - title: Section label
- * - description: Value from statusInformation
- * - icon: React component icon
- *
- * Section Types:
- * 1. Starting semester (Calendar icon)
- * 2. Project title (FileText icon)
- * 3. Advisor name (User icon)
- * 4. Student name (User icon)
- * 5. Student email (Mail icon)
- * 6. Grade (Star icon)
- *
- * Icons are styled consistently with sky blue color and small size
+ * @param {ProjectStatusInformation} statusInfo - Object with thesis status details.
+ * @returns {Array} Array of section objects.
  */
-function getSections(statusInformation: StatusInformation) {
+function createStatusSections(statusInfo: ProjectStatusInformation) {
   return [
     {
       title: "Semestre de inicio",
-      description: statusInformation.professor.user.name,
+      description: mapPeriodToString(statusInfo.period),
       icon: <Calendar className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Tema del proyecto",
-      description: statusInformation.professor.user.name,
+      description: statusInfo.project.title,
       icon: <FileText className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Asesor",
-      description: statusInformation.professor.user.name,
+      description: statusInfo.professor.user.name,
       icon: <User className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Estudiante",
-      description: statusInformation.student.user.name,
+      description: statusInfo.student.user.name,
       icon: <User className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Correo del estudiante",
-      description: statusInformation.professor.user.name,
+      description: statusInfo.student.user.email,
       icon: <Mail className="h-5 w-5 text-core mt-1" />,
     },
     {
       title: "Calificación",
-      description: statusInformation.grade,
+      description: statusInfo.grade,
       icon: <Star className="h-5 w-5 text-core mt-1" />,
     },
   ];
 }
 
 /**
- * getMessagesPerStep Function
+ * createStepMessages
  *
- * Creates a mapping between thesis process steps and their corresponding status messages.
- * Used to display appropriate feedback based on the current thesis stage.
+ * Returns a Map that relates each thesis process step with a corresponding status message.
  *
- * @returns {Map<string, string>} Map where:
- * - Key: Step name in Spanish
- * - Value: Descriptive status message
- *
- * Steps and Messages:
- * 1. "Postulado" (Submitted) - Project submitted and under review
- * 2. "Aceptado" (Accepted) - Project accepted and under review
- * 3. "Inscrito" (Enrolled) - Registration accepted and under review
- * 4. "Informe" (Report) - Final report submitted and under review
- * 5. "Finalizado" (Finished) - Project completed and under review
+ * @returns {Map<string, string>} Mapping of process steps to messages.
  */
-function getMessagesPerStep() {
-  const messagePerStep = new Map<string, string>();
-  messagePerStep.set(
-    "Postulado",
-    "Tu proyecto ha sido postulado y se encuentra en proceso de revisión"
-  );
-  messagePerStep.set(
-    "Aceptado",
-    "Tu proyecto ha sido aceptado y se encuentra en proceso de revisión"
-  );
-  messagePerStep.set(
-    "Inscrito",
-    "Tu inscripción ha sido aceptada y se encuentra en proceso de revisión"
-  );
-  messagePerStep.set(
-    "Informe",
-    "Tu informe final ha sido entregado y se encuentra en proceso de revisión"
-  );
-  messagePerStep.set(
-    "Finalizado",
-    "Tu proyecto ha sido finalizado y se encuentra en proceso de revisión"
-  );
-  return messagePerStep;
+function createStepMessages() {
+  const messages = new Map<string, string>();
+  messages.set("Postulado", "Tu proyecto ha sido postulado y se encuentra en proceso de revisión.");
+  messages.set("Pendiente", "Tu proyecto está pendiente de revisión, por favor espera la respuesta.");
+  messages.set("Aceptado", "Tu proyecto ha sido aceptado.");
+  messages.set("Inscrito", "Tu inscripción ha sido completada.");
+  return messages;
 }

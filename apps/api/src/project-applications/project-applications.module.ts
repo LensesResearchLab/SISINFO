@@ -5,6 +5,7 @@ import { ProjectApplication } from './entities/project-application.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectsModule } from '../projects/projects.module';
 import { StudentsModule } from '../students/students.module';
+import { PeriodsModule } from 'src/periods/periods.module';
 
 @Module({
   controllers: [ProjectApplicationsController],
@@ -12,6 +13,7 @@ import { StudentsModule } from '../students/students.module';
   imports: [
     ProjectsModule,
     StudentsModule,
+    PeriodsModule,
     TypeOrmModule.forFeature([ProjectApplication]),
   ],
   exports: [TypeOrmModule, ProjectApplicationsService],
