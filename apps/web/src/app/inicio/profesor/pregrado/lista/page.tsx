@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
-import { getThesisByProfessor } from "@/app/services/thesis.service";
+import { getProjectsByProfessor } from "@/app/services/project.service";
 import { useProfessorThesisListStore } from "./store";
 import { Thesis } from "@/app/types/entities/thesis.type";
 import SpinnerPage from "@/components/shared/spinner-page";
@@ -22,9 +22,12 @@ import { useEffect } from "react";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/app/routes";
+import { Project } from "@/app/types/entities/project.type";
+import { getUserInfo } from "@/app/auth/auth-service";
 
 export default function ThesisProjects() {
   const reset = useProfessorThesisListStore((state) => state.reset);
+  let userId:string;
   const sortDirection = useProfessorThesisListStore(
     (state) => state.sortDirection
   );
@@ -32,6 +35,11 @@ export default function ThesisProjects() {
     return reset;
   }, [reset]);
   const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
+  useEffect(()=>{
+    getUserInfo().then((data)=>{
+      userId=data.user.id
+      console.log(data)})
+  })
 
   const {
     data: thesisList,
@@ -39,13 +47,13 @@ export default function ThesisProjects() {
     error,
   } = useQuery({
     queryKey: ["professor-thesis-projects"],
-    queryFn: () => getThesisByProfessor(),
+    queryFn: () => getProjectsByProfessor(userId),
   });
 
   if (isFetching) return <SpinnerPage />;
   if (error || !thesisList) return <ThesisListNotFound />;
 
-  const sortedThesisList: Thesis[] = thesisList.sort(
+  const sortedThesisList: Project[] = thesisList.sort(
     (a, b) => a.title.localeCompare(b.title) * sortDirection
   );
 
@@ -107,7 +115,7 @@ function TableActionButtons() {
   );
 }
 
-function ThesisTable({ filteredProjects }: { readonly filteredProjects: Thesis[] }) {
+function ThesisTable({ filteredProjects }: { readonly filteredProjects: Project[] }) {
   return (
     <div className="border-x border-t rounded-md overflow-hidden">
       <TableHeaders />
@@ -129,7 +137,7 @@ function TableHeaders() {
   );
 }
 
-function TableRow({ thesis }: { readonly thesis: Thesis }) {
+function TableRow({ thesis }: { readonly thesis: Project }) {
   const router = useRouter();
   const expandedProject = useProfessorThesisListStore(
     (state) => state.expandedProject
@@ -190,7 +198,7 @@ function TableRow({ thesis }: { readonly thesis: Thesis }) {
   );
 }
 
-function TableRowDetail({ thesis }: { readonly thesis: Thesis }) {
+function TableRowDetail({ thesis }: { readonly thesis: Project }) {
   return (
     <div>
       <div className="grid grid-cols-12 border-b px-3 text-primary">

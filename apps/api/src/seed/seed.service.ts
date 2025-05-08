@@ -464,19 +464,7 @@ export class SeedService {
     await Promise.all(insertPromises);
     return true;
   }
-
-  async seedTask() {
-    const taskList: CreateTaskDto[] = Array.from({ length: 10 }).map(() => ({
-      completed: faker.datatype.boolean(),
-    }));
-    const insertPromises: Promise<CreateTaskDto>[] = [];
-    taskList.forEach((task) => {
-      insertPromises.push(this.tasksService.create(task));
-    });
-    await Promise.all(insertPromises);
-    return true;
-  }
-
+  
   async seedAreasOfInterest() {
     const areasOfInterest: CreateAreasOfInterestDto[] = sampleAreasOfInterest;
     const insertPromises: Promise<CreateAreasOfInterestDto>[] = [];
@@ -619,7 +607,7 @@ export class SeedService {
 
   async executeSeedProjects() {
     await this.seedProjects();
-    await this.seedProjectApplications();
+    //await this.seedProjectApplications();
     return 'SEED_EXECUTED';
   }
 
@@ -635,7 +623,6 @@ export class SeedService {
   }
 
   async executeTaskAndTas() {
-    await this.seedTask();
     await this.seedSampleTASEntities();
     return 'SEED_EXECUTED';
   }

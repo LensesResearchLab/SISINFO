@@ -74,14 +74,17 @@ export const ROUTES: Record<string, string> = {
 export const API_ROUTES: Record<string, string> = {
   BASE: "http://localhost:8000/api",
   PERIODS: "periods",
-  ASSISTANCE_APPLICATIONS: "assistance-applications",
-  COURSES: "courses",
-  COORDINATOR_BILLBOARD: "billboards",
+  ASSISTANCE_APPLICATIONS: 'assistance-applications',
+  COURSES:'courses',
+  COORDINATOR_BILLBOARD:'billboards',
+  TASKS:'tasks',
+
+  PROJECTS:'projects',
+
+  TEACHING_ASSISTANTS: 'teaching-assistances',
+  PROFESSORS: 'professors',
   SECTIONS_REPORTS: "sections",
-  TEACHING_ASSISTANTS: "teaching-assistances",
-  PROFESSORS: "professors",
   INCIDENCES: "incidences",
   COORDINATORS: "coordinators",
-  PROJECTS: "projects",
   PROJECT_APPLICATIONS: "project-applications"
 };

@@ -18,13 +18,7 @@ interface HomeState {
 
 export const useHomeStore = create<HomeState>((set) => ({
   roles: [],
-  tasks: Array.from({ length: 20 }, () => ({
-    id: "1",
-    title: "Tarea 1",
-    description: "Descripción de la tarea 1",
-    status: "pendiente",
-    date: new Date(),
-  })),
+  tasks: [],
 
   setRoles: (roles: string[]) => set({ roles }),
   setTasks: (tasks: Task[]) => set({ tasks }),

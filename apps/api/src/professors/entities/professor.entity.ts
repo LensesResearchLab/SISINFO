@@ -36,9 +36,6 @@ export class Professor extends Role {
   @OneToMany(() => Course, (course) => course.mainProfessor)
   directedCourses: Course[];
 
-  @OneToMany(() => Task, (task) => task.professor)
-  tasks: Task[];
-
   @ManyToMany(() => Section, (section) => section.professors)
   @JoinTable({ name: 'section_professors' })
   sections: Section[];
@@ -46,4 +43,7 @@ export class Professor extends Role {
   @ManyToMany(() => Section, (section) => section.supportProfessors)
   @JoinTable({ name: 'section_support_professors' })
   supportSections: Section[];
+
+  @OneToMany(()=>Task, (s)=>s.professor)
+    tasks: Task[];
 }

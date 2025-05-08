@@ -3,6 +3,7 @@ import { ProjecStatusEnum } from '../enums/project_status.enum';
 import { Student } from '../../students/entities/student.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Base } from '../../common/entities/base.entity';
+import { Task } from 'src/tasks/entities/task.entity';
 import { Period } from '../../periods/entities/period.entity';
 
 @Entity()
@@ -32,4 +33,11 @@ export class ProjectApplication extends Base {
 
   @ManyToOne(() => Project, (project) => project.projectApplications)
   project: Project;
+
+  @ManyToOne(()=>Task, (t)=>t.projectPreviousTasks)
+  previousTasks: Task[];
+
+  @OneToOne(()=>Task, (t)=>t.projectActualTask,{nullable:true})
+  @JoinColumn({ name: 'actual_task_id' })
+  actualTask: Task;
 }

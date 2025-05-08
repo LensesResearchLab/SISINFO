@@ -67,6 +67,19 @@ export async function createProjectApplication(
   return await response.json();
 }
 
+export async function getThesisStatusInformation(id:string) {
+    const url = `${API_ROUTES.BASE}/${id}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch thesis data.");
+    }
+    return await response.json();
+  }
 
 // TODO
 export async function getUndergraduateThesisStatusInformation(studentId: string){
@@ -101,8 +114,8 @@ export async function getUndergraduateThesisDates() {
 
 
 // TODO
-export async function getThesisByProfessor(): Promise<Project[]> {
-  const url = `${API_ROUTES.BASE}/`;
+export async function getProjectsByProfessor(userId:string): Promise<Project[]> {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}/professor/${userId}`;
   const response = await fetch(url, {
     method: "GET",
     headers: {

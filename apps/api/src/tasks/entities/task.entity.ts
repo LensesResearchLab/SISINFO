@@ -1,33 +1,54 @@
 import { Base } from '../../common/entities/base.entity';
 import { ImportantDate } from '../../important-dates/entities/important-date.entity';
 import { Document } from '../../documents/entities/document.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  OneToMany,
+} from 'typeorm';
+import { TaskType } from '../enums/taskType';
+import { Project } from 'src/projects/entities/project.entity';
+import { ProjectApplication } from 'src/project-applications/entities/project-application.entity';
+import { Student } from 'src/students/entities/student.entity';
+import { Professor } from 'src/professors/entities/professor.entity';
 
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
-import { Professor } from '../../professors/entities/professor.entity';
-import { Coordinator } from '../../coordinators/entities/coordinator.entity';
-import { Student } from '../../students/entities/student.entity';
-
-@Entity()
+@Entity('tasks')
 export class Task extends Base {
-  @Column('boolean', { default: false })
-  completed: boolean;
+  @Column({ type: 'enum', enum: TaskType })
+  type: TaskType;
 
-  @OneToOne(() => Document, (document) => document.task, {
+  @Column()
+  comment: String;
+
+  @Column()
+  approved: Boolean;
+
+  @Column()
+  flow: string;
+  
+  @ManyToOne(() => ImportantDate, (d) => d.tasks, { nullable: true })
+  date?: ImportantDate;
+
+  @OneToOne(() => Document, (doc) => doc.task, {
     nullable: true,
     eager: true,
   })
   @JoinColumn()
-  document: Document;
+  document?: Document;
 
-  @ManyToOne(() => ImportantDate, (importantDate) => importantDate.tasks)
-  date: ImportantDate;
+  @ManyToOne(()=>Student, (s)=>s.tasks)
+  student: Student;
 
-  @ManyToOne(() => Professor, (professor) => professor.tasks)
+  @ManyToOne(()=>Professor, (s)=>s.tasks)
   professor: Professor;
 
-  @ManyToOne(() => Coordinator, (coordinator) => coordinator.tasks)
-  coordinator: Coordinator;
+  @OneToMany(()=>ProjectApplication, (p) => p.previousTasks)
+  @JoinColumn({ name: 'projectApplicationId' })
+  projectPreviousTasks: ProjectApplication;
 
-  @ManyToOne(() => Student, (student) => student.tasks)
-  student: Student;
+  @OneToOne(()=>ProjectApplication, (p)=>p.actualTask)
+  projectActualTask: ProjectApplication;
 }
