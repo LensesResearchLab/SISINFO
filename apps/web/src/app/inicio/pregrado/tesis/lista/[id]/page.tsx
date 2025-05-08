@@ -1,19 +1,19 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { Mail, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getUndergraduateThesisById } from "@/app/services/project.service";
-import { Thesis } from "@/app/types/entities/thesis.type";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { use, useEffect, useState } from "react";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useQuery } from "@tanstack/react-query";
-import { useThesisInscriptionStore } from "./store";
+import { useProjectInscriptionStore } from "./store";
 import { ROUTES } from "@/app/routes";
-import { ThesisDetailCard, ThesisNotFound } from "@/components/shared/thesis-detail-card";
+import { ProjectDetailCard, ProjectNotFound } from "@/components/shared/project-detail-card";
+import { createProjectApplication, getUndergraduateThesisById } from "@/app/services/project.service";
+import { Project } from "@/app/types/entities/project.type";
+import { getUserInfo } from "@/app/auth/auth-service";
 
 /**
  * ThesisInscription Component
@@ -35,29 +35,29 @@ export default function ThesisInscription({
   readonly params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const reset = useThesisInscriptionStore((state) => state.reset);
+  const reset = useProjectInscriptionStore((state) => state.reset);
 
   const {
-    data: thesis,
+    data: project,
     isFetching,
     error,
   } = useQuery({
-    queryKey: ["student-thesis-application", id],
+    queryKey: ["student-project-application", id],
     queryFn: () => getUndergraduateThesisById(id),
   });
 
-  const isApplying = useThesisInscriptionStore((state) => state.isApplying);
+  const isApplying = useProjectInscriptionStore((state) => state.isApplying);
 
   useEffect(() => {
     reset();
   }, [id, reset]);
 
   if (isFetching) return <SpinnerPage />;
-  if (error || !thesis) return <ThesisNotFound />;
+  if (error || !project) return <ProjectNotFound />;
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
-      {!isApplying && <ThesisDetails thesis={thesis} />}
-      {isApplying && <ThesisApplying thesis={thesis} />}
+      {!isApplying && <ProjectDetails project={project} />}
+      {isApplying && <ProjectApplying project={project} />}
     </div>
   );
 }
@@ -65,9 +65,9 @@ export default function ThesisInscription({
 
 
 /**
- * ThesisDetails Component
+ * ProjectDetails Component
  *
- * Displays comprehensive information about a thesis project in a structured card layout.
+ * Displays comprehensive information about a project project in a structured card layout.
  * Shows title, description, areas of interest, and other metadata.
  *
  * Features:
@@ -76,23 +76,23 @@ export default function ThesisInscription({
  * - Apply button to initiate the application process
  *
  * @param {Object} props - Component props
- * @param {Thesis} props.thesis - The thesis object containing all project details
+ * @param {Project} props.project - The project object containing all project details
  *
- * @returns {JSX.Element} Card with formatted thesis information
+ * @returns {JSX.Element} Card with formatted project information
  */
-function ThesisDetails({ thesis }: { readonly thesis: Thesis }) {
-  const setIsApplying = useThesisInscriptionStore(
+function ProjectDetails({ project }: { readonly project: Project }) {
+  const setIsApplying = useProjectInscriptionStore(
     (state) => state.setIsApplying
   );
   return (
-    <ThesisDetailCard thesis={thesis} >
+    <ProjectDetailCard project={project} >
       <Button
         className="w-40 mx-auto block"
         onClick={() => setIsApplying(true)}
       >
         Aplicar
       </Button>
-    </ThesisDetailCard>
+    </ProjectDetailCard>
   );
 }
 
@@ -102,44 +102,40 @@ function ThesisDetails({ thesis }: { readonly thesis: Thesis }) {
 
 
 /**
- * ThesisApplying Component
+ * ProjectApplying Component
  *
- * Handles the thesis application process with a form interface.
+ * Handles the project application process with a form interface.
  * Allows students to submit their motivation and indicate contact status.
  *
  * Features:
  * - Form with text area for motivation statement
  * - Contact status checkbox
  * - Confirmation modal before submission
- * - Navigation back to thesis details
+ * - Navigation back to project details
  * - Success feedback after submission
  *
  * @param {Object} props - Component props
- * @param {Thesis} props.thesis - The thesis object containing project details
+ * @param {Project} props.project - The project object containing project details
  *
  * @returns {JSX.Element} Card containing the application form interface
  */
-function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
-  const setIsApplying = useThesisInscriptionStore(
+function ProjectApplying({ project }: { readonly project: Project }) {
+  const setIsApplying = useProjectInscriptionStore(
     (state) => state.setIsApplying
   );
-  const motivation = useThesisInscriptionStore((state) => state.motivation);
-  const setMotivation = useThesisInscriptionStore(
+  const motivation = useProjectInscriptionStore((state) => state.motivation);
+  const setMotivation = useProjectInscriptionStore(
     (state) => state.setMotivation
   );
-  const contacted = useThesisInscriptionStore((state) => state.contacted);
-  const setContacted = useThesisInscriptionStore((state) => state.setContacted);
+  const contacted = useProjectInscriptionStore((state) => state.contacted);
+  const setContacted = useProjectInscriptionStore((state) => state.setContacted);
 
   const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert(
-      "Aplicación enviada con exito, motivación: " +
-        motivation +
-        ", contacto: " +
-        contacted
-    );
+    const user = (await getUserInfo()).user;
+    await createProjectApplication(motivation, contacted, project.id, user.id)
   };
 
   const modalProps = {
@@ -155,13 +151,13 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
     <Card className="w-full mx-auto shadow-lg border-none">
       <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <CardTitle className="text-2xl font-medium text-core-highlight">
-          {thesis.title}
+          {project.title}
         </CardTitle>
         <ButtonBack setIsApplying={setIsApplying} />
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <ProfessorInformation thesis={thesis} />
+          <ProfessorInformation project={project} />
           <MotivationTextArea
             motivation={motivation}
             setMotivation={setMotivation}
@@ -191,7 +187,7 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
 /**
  * ButtonBack Component
  *
- * Renders a button that allows users to return to the thesis details view.
+ * Renders a button that allows users to return to the project details view.
  * Provides visual feedback through icon and styling.
  *
  * Features:
@@ -203,7 +199,7 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
  * @param {Object} props - Component props
  * @param {Function} props.setIsApplying - Function to toggle application form visibility
  *
- * @returns {JSX.Element} Styled button for returning to thesis details
+ * @returns {JSX.Element} Styled button for returning to project details
  */
 function ButtonBack({
   setIsApplying,
@@ -226,7 +222,7 @@ function ButtonBack({
 /**
  * ProfessorInformation Component
  *
- * Displays the professor's contact information for the thesis project.
+ * Displays the professor's contact information for the project project.
  * Includes name and interactive email link.
  *
  * Features:
@@ -236,24 +232,24 @@ function ButtonBack({
  * - Semantic grouping of related information
  *
  * @param {Object} props - Component props
- * @param {Thesis} props.thesis - The thesis object containing professor details
+ * @param {Project} props.project - The project object containing professor details
  *
  * @returns {JSX.Element} Section with formatted professor information
  */
-function ProfessorInformation({ thesis }: { readonly thesis: Thesis }) {
+function ProfessorInformation({ project }: { readonly project: Project }) {
   return (
     <div className="space-y-2">
       <div className="flex flex-col space-y-1">
         <h2 className="text-lg font-semibold">
           Profesor:{" "}
-          <span className="text-gray-900 font-normal">{thesis.professor.user.name}</span>
+          <span className="text-gray-900 font-normal">{project.professor?.user.name ?? "Profesor no encontrado"}</span>
         </h2>
         <a
-          href={`mailto:${thesis.professor.user.email}`}
+          href={`mailto:${project.professor?.user.email ?? "Email no encontrado"}`}
           className="text-core-highlight hover:underline inline-flex items-center gap-2"
         >
           <Mail className="h-4 w-4" />
-          {thesis.professor.user.email}
+          {project.professor?.user.email ?? "Email no encontrado"}
         </a>
       </div>
     </div>

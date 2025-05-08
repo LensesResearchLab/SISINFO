@@ -7,6 +7,6 @@ export class CreateStudentDto extends CreateRoleDto {
 
   @IsString()
   @IsNotEmpty()
-  @Matches(/^d{9}$/)
+  @Matches(/^\d{9}$/)
   code: string;
 }

@@ -12,7 +12,7 @@ export interface Project {
   isEnded: boolean;
   projectApplications?: ProjectApplication[];
   areasOfInterest?: AreasOfInterest[];
-  professor?: Professor;
+  professor: Professor;
   period?: Period;
   students?: Student[];
 }

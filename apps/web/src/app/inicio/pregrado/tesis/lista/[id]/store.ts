@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-interface ThesisInscriptionState {
+interface ProjectInscriptionState {
     isApplying: boolean;
     motivation: string;
     contacted: boolean;
@@ -11,7 +11,7 @@ interface ThesisInscriptionState {
     reset(): void;
 }
 
-export const useThesisInscriptionStore = create<ThesisInscriptionState>((set) => ({
+export const useProjectInscriptionStore = create<ProjectInscriptionState>((set) => ({
     isApplying: false,
     motivation: "",
     contacted: false,

@@ -7,6 +7,7 @@ import { ProjectsModule } from '../projects/projects.module';
 import { StudentsModule } from '../students/students.module';
 import { TasksModule } from 'src/tasks/tasks.module';
 import { TaskFactory } from 'src/tasks/factory/tasks.factory';
+import { PeriodsModule } from '../periods/periods.module';
 
 @Module({
   controllers: [ProjectApplicationsController],
@@ -15,6 +16,7 @@ import { TaskFactory } from 'src/tasks/factory/tasks.factory';
     ProjectsModule,
     StudentsModule,
     TasksModule,
+    PeriodsModule,
     TypeOrmModule.forFeature([ProjectApplication]),
   ],
   exports: [TypeOrmModule, ProjectApplicationsService],

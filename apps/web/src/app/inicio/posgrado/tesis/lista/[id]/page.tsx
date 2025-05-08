@@ -19,7 +19,7 @@ import { ROUTES } from "@/app/routes";
 import {
   ThesisDetailCard,
   ThesisNotFound,
-} from "@/components/shared/thesis-detail-card";
+} from "@/components/shared/project-detail-card";
 import { useAuth } from "@/hooks/use-auth";
 
 /**

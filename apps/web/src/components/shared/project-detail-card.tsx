@@ -1,13 +1,15 @@
-import { Thesis } from "@/app/types/entities/thesis.type";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { Tag, Calendar, Mail } from "lucide-react";
+import { Tag, Calendar, Mail, Users } from "lucide-react";
 import { CategoryTagStatic } from "./category-tag";
+import { Project } from "@/app/types/entities/project.type";
+import { mapPeriodToString } from "@/app/mappers/period.mapper";
 
-export function ThesisDetailCard({
-  thesis,
+
+export function ProjectDetailCard({
+  project,
   children,
 }: {
-  readonly thesis: Thesis;
+  readonly project: Project;
   readonly children?: React.ReactElement;
 }) {
   return (
@@ -19,11 +21,10 @@ export function ThesisDetailCard({
       </CardHeader>
       <CardContent className="pt-6 space-y-6">
         <div className="space-y-4">
-          <MainInformation thesis={thesis} />
-          {/*<AreasOfInterest areas={thesis.investigationSubarea} /> */}
+          <MainInformation project={project} />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <CategoryAndSemesterInfo thesis={thesis} />
-            <StudentsAndContactInfo thesis={thesis} />
+            <CategoryAndSemesterInfo project={project} />
+            <StudentsAndContactInfo project={project} />
           </div>
         </div>
         {children}
@@ -32,19 +33,19 @@ export function ThesisDetailCard({
   );
 }
 /**
- * ThesisNotFound Component
+ * ProjectNotFound Component
  *
- * Displays a message when a thesis is not found in the system.
- * Provides a button to navigate back to the thesis list page.
+ * Displays a message when a project is not found in the system.
+ * Provides a button to navigate back to the project list page.
  *
  * Features:
  * - Clear error message
- * - Navigation button to return to thesis list
+ * - Navigation button to return to project list
  * - Consistent styling with the main application
  *
  * @returns {JSX.Element} Error card with navigation button
  */
-export function ThesisNotFound() {
+export function ProjectNotFound() {
   return (
     <div className="min-h-full max-w-[900px] container mx-auto p-4 space-y-8">
       <Card className="w-full mx-auto shadow-lg border-none">
@@ -65,7 +66,7 @@ export function ThesisNotFound() {
 /**
  * MainInformation Component
  *
- * Displays the primary information of a thesis project including title and description.
+ * Displays the primary information of a project project including title and description.
  *
  * Features:
  * - Clear labeling for project title
@@ -73,23 +74,23 @@ export function ThesisNotFound() {
  * - Visual hierarchy through font styling
  *
  * @param {Object} props - Component props
- * @param {Thesis} props.thesis - The thesis object containing project details
+ * @param {Project} props.project - The project object containing project details
  *
  * @returns {JSX.Element} Section with formatted title and description
  */
-function MainInformation({ thesis }: { readonly thesis: Thesis }) {
+function MainInformation({ project }: { readonly project: Project }) {
   return (
     <div>
       <h3 className="font-semibold text-lg">
         Nombre del proyecto:{" "}
         <span className="text-foreground-soft font-normal">
           {" "}
-          {thesis.title}
+          {project.title}
         </span>
       </h3>
       <h3 className="font-semibold text-lg mt-4">Descripción:</h3>
-      <p className="text-foreground-soft">{thesis.description}</p>
-      <Tags tags={thesis.tags} />
+      <p className="text-foreground-soft">{project.description}</p>
+      <Tags tags={project.areasOfInterest?.map(area => area.description) ?? []} />
     </div>
   );
 }
@@ -97,7 +98,7 @@ function MainInformation({ thesis }: { readonly thesis: Thesis }) {
 /**
  * AreasOfInterest Component
  *
- * Displays a collection of interest areas related to the thesis as interactive badges.
+ * Displays a collection of interest areas related to the project as interactive badges.
  *
  * Features:
  * - Flexible layout that wraps on smaller screens
@@ -129,7 +130,7 @@ function Tags({ tags }: { readonly tags: string[] }) {
 /**
  * CategoryAndSemesterInfo Component
  *
- * Displays metadata about the thesis category and academic semester.
+ * Displays metadata about the project category and academic semester.
  * Uses icons to enhance visual understanding of the information.
  *
  * Features:
@@ -138,18 +139,18 @@ function Tags({ tags }: { readonly tags: string[] }) {
  * - Semantic grouping of related information
  *
  * @param {Object} props - Component props
- * @param {Thesis} props.thesis - The thesis object containing category and semester data
+ * @param {Project} props.project - The project object containing category and semester data
  *
  * @returns {JSX.Element} Section with formatted category and semester information
  */
-function CategoryAndSemesterInfo({ thesis }: { readonly thesis: Thesis }) {
+function CategoryAndSemesterInfo({ project }: { readonly project: Project }) {
   return (
     <div className="space-y-6">
       <div className="flex items-start gap-2">
         <Tag className="h-5 w-5 text-core-highlight mt-1" />
         <div>
           <h3 className="font-semibold">Categoría:</h3>
-          <p className="text-foreground-soft">{thesis.investigationSubarea}</p>
+          <p className="text-foreground-soft">{project.category}</p>
         </div>
       </div>
 
@@ -157,7 +158,11 @@ function CategoryAndSemesterInfo({ thesis }: { readonly thesis: Thesis }) {
         <Calendar className="h-5 w-5 text-core-highlight mt-1" />
         <div>
           <h3 className="font-semibold">Periodo:</h3>
-          <p className="text-foreground-soft">{thesis.period.semester}</p>
+          <p className="text-foreground-soft">
+            {project.period?.semester
+              ? mapPeriodToString(project.period)
+              : "Periodo no especificado"}
+          </p>
         </div>
       </div>
     </div>
@@ -176,34 +181,32 @@ function CategoryAndSemesterInfo({ thesis }: { readonly thesis: Thesis }) {
  * - Organized layout with consistent spacing
  *
  * @param {Object} props - Component props
- * @param {Thesis} props.thesis - The thesis object containing student capacity and contact information
+ * @param {Project} props.project - The project object containing student capacity and contact information
  *
  * @returns {JSX.Element} Section with formatted student capacity and contact information
  */
-function StudentsAndContactInfo({ thesis }: { readonly thesis: Thesis }) {
+function StudentsAndContactInfo({ project }: { readonly project: Project }) {
   return (
     <div className="space-y-6">
-      {/* Student capacity section - commented out until we have the data
       <div className="flex items-start gap-2">
         <Users className="h-5 w-5 text-core-highlight mt-1" />
         <div>
           <h3 className="font-semibold">Numero maximo de estudiantes:</h3>
           <p className="text-foreground-soft">
-            {thesis.maxStudents} estudiantes
+            {project.maxStudents} estudiantes
           </p>
         </div>
       </div>
-      */}
       <div className="flex items-start gap-2">
         <Mail className="h-5 w-5 text-core-highlight mt-1" />
         <div>
           <h3 className="font-semibold">Contacto:</h3>
-          <p className="text-foreground-soft">{thesis.professor.user.name}</p>
+          <p className="text-foreground-soft">{project.professor?.user.name ?? "Profesor no encontrado"}</p>
           <a
-            href={`mailto:${thesis.professor.user.email}`}
+            href={`mailto:${project.professor?.user.email ?? "correo no encontrado"}`}
             className="text-core-highlight hover:underline"
           >
-            {thesis.professor.user.email}
+            {project.professor?.user.email ?? "correo no encontrado"}
           </a>
         </div>
       </div>

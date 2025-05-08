@@ -58,7 +58,6 @@ export async function getUserInfo() {
         message: data.message ?? "Failed to get user information",
       };
     }
-
     return {
       success: true,
       user: data.user,

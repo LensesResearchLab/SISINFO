@@ -10,16 +10,8 @@ export class ProjectApplicationsController {
   ) { }
 
   @Post()
-  create(
-    @Body() createProjectApplicationDto: CreateProjectApplicationDto,
-    @Query('projectId') projectId: string,
-    @Query('studentDocument') studentDocument: string,
-  ) {
-    return this.projectApplicationsService.create(
-      createProjectApplicationDto,
-      projectId,
-      studentDocument,
-    );
+  create(@Body() createProjectApplicationDto: CreateProjectApplicationDto) {
+    return this.projectApplicationsService.create(createProjectApplicationDto);
   }
 
   @Get()
@@ -34,7 +26,12 @@ export class ProjectApplicationsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.projectApplicationsService.findOne(+id);
+    return this.projectApplicationsService.findOne(id);
+  }
+
+  @Get('student/:id')
+  findByStudentId(@Param('id') id: string) {
+    return this.projectApplicationsService.findByStudent(id);
   }
 
   @Patch(':id')

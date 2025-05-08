@@ -1,14 +1,14 @@
-import { Professor } from "./graduated-assistance.type";
+import { Professor } from "./entities/graduated-assistance.type";
 import { Period } from "./entities/period.type";
 import { Student } from "./entities/student.type";
-import { Thesis } from "./entities/thesis.type";
+import { Project } from "./entities/project.type";
 
-export interface StatusInformation {
+export interface ProjectStatusInformation {
   id: string;
-  status: string;
+  lastStep: string;
   grade: string;
   student: Student;
   period: Period;
   professor: Professor;
-  thesis: Thesis;
+  project: Project;
 }

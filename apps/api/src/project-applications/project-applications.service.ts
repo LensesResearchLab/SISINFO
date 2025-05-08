@@ -12,6 +12,7 @@ import { flows } from 'src/tasks/flows/tasksFlows';
 import { TaskFactory } from 'src/tasks/factory/tasks.factory';
 import { DataSource } from 'typeorm';
 import { ProjecStatusEnum } from './enums/project_status.enum';
+import { PeriodsService } from '../periods/periods.service';
 
 @Injectable()
 export class ProjectApplicationsService {
@@ -21,32 +22,40 @@ export class ProjectApplicationsService {
     private readonly tasksService: TasksService,
     private readonly factory: TaskFactory,
     private readonly dataSource: DataSource,
+    private readonly periodsService: PeriodsService,
     @InjectRepository(ProjectApplication)
     private readonly projectApplicationRepository: Repository<ProjectApplication>,
   ) {}
 
   async create(
     createProjectApplicationDto: CreateProjectApplicationDto,
-    projectId: string,
-    studentDocument: string,
   ): Promise<ProjectApplication> {
+    const { studentId, projectId } = createProjectApplicationDto;
     const result = await this.projectApplicationRepository.manager.transaction(
       async (manager) => {
-        const student = await this.studentsService.findOne(studentDocument);
-        const project = await this.projectsService.findOne(projectId);
-
-        if (!student || !project) {
+        const [student, project, period] = await Promise.all([
+          this.studentsService.findOne(studentId),
+          this.projectsService.findOne(projectId),
+          this.periodsService.findCurrentPeriod(),
+        ]);
+        if (!student) {
           throw new NotFoundException(
-            !student
-              ? `Estudiante con documento ${studentDocument} no encontrado`
-              : `Proyecto con ID ${projectId} no encontrado`,
+            `Estudiante con documento ${studentId} no encontrado`,
           );
         }
-
+        if (!project) {
+          throw new NotFoundException(
+            `Proyecto con ID ${projectId} no encontrado`,
+          );
+        }
+        if (!period) {
+          throw new NotFoundException(`Periodo actual no encontrado`);
+        }
         const projectApplication = manager.create(ProjectApplication, {
           ...createProjectApplicationDto,
           project,
           student,
+          period,
         });
 
         return await manager.save(projectApplication);
@@ -80,8 +89,30 @@ export class ProjectApplicationsService {
     return `This action returns all projectApplications`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} projectApplication`;
+  findOne(id: string) {
+    return `This action returns a projectApplication with id ${id}`;
+  }
+
+  async findByStudent(studentId: string): Promise<ProjectApplication> {
+    const period = await this.periodsService.findCurrentPeriod();
+    const application = await this.projectApplicationRepository.findOne({
+      where: {
+        student: { id: studentId },
+        period: { id: period.id },
+      },
+      relations: {
+        student: { user: true },
+        project: { professor: { user: true } },
+        period: true,
+      },
+    });
+
+    if (!application) {
+      throw new NotFoundException(
+        `No se encontró una aplicación de proyecto para el estudiante con id ${studentId} en el periodo actual.`,
+      );
+    }
+    return application;
   }
 
   async getProjectApplicationsReport() {
