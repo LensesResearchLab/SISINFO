@@ -45,7 +45,7 @@ export class TasksService {
         entity.professor = professor
       }
     }
-    return this.repo.save(entity);
+    return await this.repo.save(entity);
   }
 
   async findOne(id: string): Promise<Task> {

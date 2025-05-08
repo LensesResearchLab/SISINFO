@@ -607,7 +607,7 @@ export class SeedService {
 
   async executeSeedProjects() {
     await this.seedProjects();
-    await this.seedProjectApplications();
+    //await this.seedProjectApplications();
     return 'SEED_EXECUTED';
   }
 

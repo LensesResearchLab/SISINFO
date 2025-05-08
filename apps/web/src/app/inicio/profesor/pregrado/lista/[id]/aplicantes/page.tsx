@@ -6,30 +6,37 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Eye } from "lucide-react";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { getUndergraduateThesisById } from "@/app/services/project.service"; // Asegúrate de que esté importado correctamente
 import { updateProjectApplication } from "@/app/services/project-application.service";  // Asegúrate de que esté importado correctamente
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { Application } from "@/app/types/project-application.type";
 import { ROUTES } from "@/app/routes";
 
-export default function ProjectDetail({ id }: { id: string }) {
+export default function ProjectDetail({
+  params,
+}: {
+  readonly params: Promise<{ id: string }>;}) {
   const [data, setData] = useState<Application[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedApplicantIds, setSelectedApplicantIds] = useState<string[]>([]);
   const [newStatus, setNewStatus] = useState<string | null>(null);
+  const { id } = use(params);
 
   useEffect(() => {
     getUndergraduateThesisById(id).then((data) => {
       setData(data.projectApplications);
+      console.log(data);
     });
   }, [id]);
 
   const handleConfirmAccepted = async () => {
     try {
       await Promise.all(
-        selectedApplicantIds.map((id) =>
+        selectedApplicantIds.map((id) =>{
+          console.log(id);
           updateProjectApplication(id, { status: newStatus })
+        }
         )
       );
       setIsModalOpen(false);
@@ -107,7 +114,7 @@ function DataTableDemo({
       <div className="flex justify-between mb-4">
         <Button
           variant="outline"
-          onClick={() => handleOpenModal(selectedApplicantIds, "Aceptado")}
+          onClick={() => handleOpenModal(selectedApplicantIds, "Inscrito")}
           disabled={selectedApplicantIds.length === 0}
         >
           Aceptar seleccionados
@@ -146,8 +153,8 @@ function DataTableDemo({
                   }
                 />
               </TableCell>
-              <TableCell>{applicant.fullName}</TableCell>
-              <TableCell>{applicant.code}</TableCell>
+              <TableCell>{applicant.student.user.name}</TableCell>
+              <TableCell>{applicant.student.code}</TableCell>
               <TableCell>{applicant.status}</TableCell>
               <TableCell>
                 <DropdownMenu>
@@ -158,7 +165,7 @@ function DataTableDemo({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
-                      onClick={() => handleOpenModal([applicant.id], "Aceptado")}
+                      onClick={() => handleOpenModal([applicant.id], "Inscrito")}
                     >
                       Aceptar
                     </DropdownMenuItem>

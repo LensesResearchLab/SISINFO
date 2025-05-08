@@ -1,5 +1,8 @@
-import { TaskType } from "../enums/taskType";
-
+export enum TaskType {
+    UPLOAD_FILE       = 'UPLOAD_FILE',       
+    SEND_COMMENTS     = 'SEND_COMMENTS',
+    SEND_APPROVE      = 'SEND_APPROVE'
+  }
 export interface Step {
     type: TaskType;
     assignee: 'student' | 'professor';

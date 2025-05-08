@@ -71,13 +71,12 @@ export class ProjectsService {
   }
 
   async findByProfessor(professorId: string) {
-    const period = await this.periodsService.findCurrentPeriod();
     const projects = await this.projectRepository.find({
-      where: { professor: { id: professorId }, period },
+      where: { professor: { id: professorId } },
     });
     if (!projects) {
       throw new NotFoundException(
-        `Projects with professor id ${professorId} not found in period ${period.period}`,
+        `Projects with professor id ${professorId}`,
       );
     }
     return projects;
@@ -85,7 +84,7 @@ export class ProjectsService {
 
   async findOne(id: string) {
     const project = await this.projectRepository.findOne({
-      where: { id }, relations:["projectApplications", "professor", "students"]
+      where: { id }, relations:["projectApplications", "professor", "students", "projectApplications.student"]
     });
     if (!project) {
       throw new NotFoundException(`Project with id ${id} not found`);

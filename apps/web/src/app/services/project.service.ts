@@ -114,8 +114,8 @@ export async function getUndergraduateThesisDates() {
 
 
 // TODO
-export async function getThesisByProfessor(): Promise<Project[]> {
-  const url = `${API_ROUTES.BASE}/`;
+export async function getProjectsByProfessor(userId:string): Promise<Project[]> {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}/professor/${userId}`;
   const response = await fetch(url, {
     method: "GET",
     headers: {

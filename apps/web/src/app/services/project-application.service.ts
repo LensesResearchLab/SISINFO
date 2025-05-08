@@ -22,3 +22,37 @@ export async function updateProjectApplication(
   }
   return response.json();
 }
+
+export async function getPendingTasksForStudent(id: string) {
+  const url = `${API_URL}/student/tasks/${id}`;
+  
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(`Error buscando las tareas: ${response.statusText}`, { cause: errorData });
+  }
+  return response.json();
+}
+
+export async function getPendingTasksForProfessor(id: string) {
+  const url = `${API_URL}/professor/tasks/${id}`;
+  
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(`Error buscando las tareas: ${response.statusText}`, { cause: errorData });
+  }
+  return response.json();
+}

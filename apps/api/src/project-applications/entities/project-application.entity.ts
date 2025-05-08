@@ -37,6 +37,7 @@ export class ProjectApplication extends Base {
   @ManyToOne(()=>Task, (t)=>t.projectPreviousTasks)
   previousTasks: Task[];
 
-  @OneToOne(()=>Task, (t)=>t.projectActualTask)
+  @OneToOne(()=>Task, (t)=>t.projectActualTask,{nullable:true})
+  @JoinColumn({ name: 'actual_task_id' })
   actualTask: Task;
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Query, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Patch, Put } from '@nestjs/common';
 import { ProjectApplicationsService } from './project-applications.service';
 import { CreateProjectApplicationDto } from './dto/create-project-application.dto';
 import { UpdateProjectApplicationDto } from './dto/update-project-application.dto';
@@ -33,6 +33,18 @@ export class ProjectApplicationsController {
   findByStudentId(@Param('id') id: string) {
     return this.projectApplicationsService.findByStudent(id);
   }
+
+  @Get('student/tasks/:id')
+  findByTasksStudentId(@Param('id') id: string) {
+    return this.projectApplicationsService.findTasksByStudent(id);
+  }
+
+  @Get('professor/tasks/:id')
+  findByTasksProfessorId(@Param('id') id: string) {
+    return this.projectApplicationsService.findTasksByProfessor(id);
+  }
+
+  
 
   @Patch(':id')
   update(

@@ -30,9 +30,9 @@ export class ProjectController {
     return this.projectsService.findAll(period);
   }
 
-  @Get('professor/:document')
-  findByProfessor(@Param('document') document: string) {
-    return this.projectsService.findByProfessor(document);
+  @Get('professor/:id')
+  findByProfessor(@Param('id') id: string) {
+    return this.projectsService.findByProfessor(id);
   }
 
   @Get(':id')
