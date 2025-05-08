@@ -1,6 +1,6 @@
 const jwtConstants = {
-    JWT_SECRET: 'secretKey',
-    JWT_EXPIRES_IN: '2h',
+    JWT_SECRET: 'secret-key',
+    JWT_EXPIRES_IN: '8h',
 }
 
 export default jwtConstants;

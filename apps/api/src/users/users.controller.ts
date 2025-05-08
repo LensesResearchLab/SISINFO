@@ -21,7 +21,7 @@ export class UsersController {
 
   ) {}
 
-  @Post() // Esto tambien lo protejo? o se dana el seed?
+  @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
@@ -66,7 +66,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('coordinator', 'admin')
+  @Roles('coordinador', 'admin')
   @Get()
   findAll() {
     return this.usersService.findAll();
