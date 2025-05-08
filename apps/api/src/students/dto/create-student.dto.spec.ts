@@ -42,7 +42,7 @@ describe('CreateStudentDto validation', () => {
     const constraints = codeError?.constraints;
     expect(constraints).toBeDefined();
     expect(constraints).toEqual({
-      matches: 'code must match /^[0-9]{9}$/ regular expression',
+      matches: 'code must match /^\\d{9}$/ regular expression',
     });
   });
 

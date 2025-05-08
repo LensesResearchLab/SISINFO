@@ -29,7 +29,7 @@ describe('CreateCourseDto validation', () => {
     const constraints = codeError?.constraints;
     expect(constraints).toBeDefined();
     expect(constraints).toEqual({
-      matches: 'code must match /^[0-9]{4}$/ regular expression',
+      matches: 'code must match /^\\d{4}$/ regular expression',
     });
   });
 
@@ -40,7 +40,7 @@ describe('CreateCourseDto validation', () => {
     const constraints = codeError?.constraints;
     expect(constraints).toBeDefined();
     expect(constraints).toEqual({
-      matches: 'code must match /^[0-9]{4}$/ regular expression',
+      matches: 'code must match /^\\d{4}$/ regular expression',
     });
   });
 

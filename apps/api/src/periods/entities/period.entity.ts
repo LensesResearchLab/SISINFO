@@ -7,7 +7,7 @@ import { Project } from '../../projects/entities/project.entity';
 import { Section } from '../../sections/entities/section.entity';
 import { Thesis } from '../../theses/entities/thesis.entity';
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
-import { ProjectApplication } from 'src/project-applications/entities/project-application.entity';
+import { ProjectApplication } from '../../project-applications/entities/project-application.entity';
 
 @Entity()
 export class Period extends Base {

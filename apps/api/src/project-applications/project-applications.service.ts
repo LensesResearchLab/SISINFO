@@ -5,7 +5,7 @@ import { ProjectApplication } from './entities/project-application.entity';
 import { ProjectsService } from '../projects/projects.service';
 import { StudentsService } from '../students/students.service';
 import { Repository } from 'typeorm';
-import { PeriodsService } from 'src/periods/periods.service';
+import { PeriodsService } from '../periods/periods.service';
 
 @Injectable()
 export class ProjectApplicationsService {

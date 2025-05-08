@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { StudentsService } from '../students/students.service';
 import { ProjectsService } from '../projects/projects.service';
-import { PeriodsService } from 'src/periods/periods.service';
+import { PeriodsService } from '../periods/periods.service';
 
 describe('ProjectApplicationsService', () => {
   let service: ProjectApplicationsService;
