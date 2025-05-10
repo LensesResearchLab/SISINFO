@@ -5,13 +5,21 @@ import {
   Body,
   Param,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService,
+    private jwtService: JwtService,
+
+  ) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -35,23 +43,36 @@ export class UsersController {
         throw new UnauthorizedException('Invalid credentials');
       }
 
+      /* Generate JWT token sended to ./auth */
+      const payload = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        roles: user.roles,
+      };
+      
+      const token = this.jwtService.sign(payload);
+
       return {
         id: user.id,
         name: user.name,
         email: user.email,
         roles: user.roles,
+        access_token: token,
       };
     } catch (error) {
       throw new UnauthorizedException(`Invalid credentials: ${error}`);
     }
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'admin')
   @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
+  @Get(':id') // TODO: Como proteger esto??
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }

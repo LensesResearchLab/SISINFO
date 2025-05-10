@@ -25,7 +25,7 @@ const roleRoutes = {
 };
 
 /* Key for decryption */
-const secretKey = process.env.JWT_SECRET ?? "your-secret-key";
+const secretKey = process.env.JWT_SECRET ?? "secret-key";
 const encodedKey = new TextEncoder().encode(secretKey);
 
 /* Middleware decryption */

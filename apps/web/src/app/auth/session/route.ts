@@ -32,19 +32,8 @@ export async function POST(request: NextRequest) {
     }
 
     const userData = await response.json();
-
-    /* Create a JWT token for handling authorization */
-    const secretKey = process.env.JWT_SECRET ?? "your-secret-key";
-    const token = jwt.sign(
-      {
-        id: userData.id,
-        name: userData.name,
-        email: userData.email,
-        roles: userData.roles,
-      },
-      secretKey,
-      { expiresIn: "8h" } // Token expires in 8 hours
-    );
+    const token = userData.access_token; // Use the backend JWT token
+    console.log("ACCESS TOKEN" + token.toString());
 
     /* Set the token as an HTTP-only cookie */
     (await cookies()).set({
@@ -74,6 +63,8 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+
 /* GET user authentication status and roles */
 export async function GET() {
   try {
@@ -86,7 +77,7 @@ export async function GET() {
         { status: 401 }
       );
     }
-    const secretKey = process.env.JWT_SECRET ?? "your-secret-key";
+    const secretKey = process.env.JWT_SECRET ?? "secret-key";
     const decoded = jwt.verify(token, secretKey) as {
       id: string;
       name: string;
