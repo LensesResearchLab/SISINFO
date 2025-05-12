@@ -250,12 +250,14 @@ export class SeedService {
   async seedTheses() {
     const users = await this.usersService.findAll();
     const insertPromises: Promise<Thesis>[] = [];
+    const periods = await this.periodsService.findAll();
     for (let i = 0; i < this.PROFESSORS_NUMBER; i++) {
       for (
         let cnt = 0;
         cnt < this.PROFESSORS_NUMBER % (this.MAX_THESIS_PER_PROFESSOR + 1);
         cnt++
       ) {
+        const randomPeriod = periods[Math.floor(Math.random() * periods.length)];
         insertPromises.push(
           this.thesesService.create(
             {
@@ -265,6 +267,7 @@ export class SeedService {
               investigationSubarea: faker.lorem.word(),
             },
             users[i].id,
+            randomPeriod.id,
           ),
         );
       }

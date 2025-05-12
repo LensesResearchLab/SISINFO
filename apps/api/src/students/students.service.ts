@@ -24,10 +24,36 @@ export class StudentsService implements RoleService {
     return this.studentRepository.find();
   }
 
+  /* Finds one student by id and returns the user main info, courses, and thesis status */
   async findOne(id: string) {
-    return this.studentRepository.findOne({
+    const student = await this.studentRepository.findOne({
       where: { id },
+      relations: [
+        'courses',
+        'user',
+        'thesisApplication',
+        'thesisApplication.thesis',
+        'thesisApplication.thesis.professor',
+        'thesisApplication.thesis.professor.user']
     });
+
+    if (student?.user && 'password' in student.user) {
+      const { password, ...userWithoutPassword } = student.user;
+      student.user = userWithoutPassword as typeof student.user;
+    }
+
+    const professorUser = student?.thesisApplication?.thesis?.professor?.user;
+    if (professorUser && 'password' in professorUser) {
+      const { password, ...userWithoutPassword } = professorUser;
+      student.thesisApplication.thesis.professor.user = userWithoutPassword as typeof professorUser;
+    }
+
+    if (student?.thesisApplication?.thesis && 'thesisApplications' in student.thesisApplication.thesis) {
+      const { thesisApplications, ...thesisWithoutApplications } = student.thesisApplication.thesis;
+      student.thesisApplication.thesis = thesisWithoutApplications as typeof student.thesisApplication.thesis;
+    }
+
+    return student;
   }
 
   async findOneByCode(code: string) {

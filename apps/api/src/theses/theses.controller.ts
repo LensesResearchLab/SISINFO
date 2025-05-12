@@ -9,14 +9,20 @@ export class ThesesController {
   @Post()
   create(
     @Body() createThesisDto: CreateThesisDto,
-    @Query('studentId') studentId: string,
+    @Query('professorId') professorId: string,
+    @Query('period') period: string,
   ) {
-    return this.thesesService.create(createThesisDto, studentId);
+    return this.thesesService.create(createThesisDto, professorId, period);
   }
 
   @Get()
   findAll() {
     return this.thesesService.findAll();
+  }
+
+  @Get('/professor/:professorId')
+  findAllByProfessorId(@Param('professorId') professorId: string) {
+    return this.thesesService.findAllByProfessorId(professorId);
   }
 
   @Get(':id')

@@ -7,6 +7,7 @@ import { Student } from '../students/entities/student.entity';
 import { Thesis } from '../theses/entities/thesis.entity';
 import { User } from '../users/entities/user.entity';
 import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
+import { ThesisStatusEnum } from './enums/thesis_status.enum';
 
 @Injectable()
 export class ThesisApplicationsService {
@@ -42,13 +43,21 @@ export class ThesisApplicationsService {
       throw new NotFoundException(`Thesis with ID ${thesisId} not found`);
     }
 
+    /* Add application date */
+    const applicationDate = new Date();
+    
     const thesisApplication = this.thesisApplicationRepository.create({
       ...rest,
       student,
       thesis,
+      applicationDate, 
     });
 
-    return await this.thesisApplicationRepository.save(thesisApplication);
+    const savedApplication = await this.thesisApplicationRepository.save(thesisApplication);
+    student.thesisApplication = savedApplication;
+    await this.studentRepository.save(student);
+
+    return savedApplication; 
   }
 
   findAll() {
@@ -95,6 +104,47 @@ export class ThesisApplicationsService {
     return application;
   }
 
+  async findAllApplicantsByThesisId(thesisId: string) {
+    const applications = await this.thesisApplicationRepository.find({
+      relations: {
+        student: {
+          user: true,
+        },
+        thesis: {
+          period: true,
+          professor: {
+            user: true,
+          },
+          tags: true,
+        },
+      },
+      where: {
+        thesis: {
+          id: thesisId,
+        },
+      },
+    });
+
+    if (!applications) {
+      throw new NotFoundException(
+        `Thesis applications with id ${thesisId} not found`,
+      );
+    }
+
+    /* Dont return passwords */
+    applications.forEach((app) => {
+      if (app.student?.user) {
+        const { password, ...userWithoutPassword } = app.student.user;
+        app.student.user = userWithoutPassword as unknown as User;
+      }
+      if (app.thesis?.professor?.user) {
+        app.thesis.professor.user = deletePasswordFromUser(app.thesis.professor.user);
+      }
+    });
+
+    return applications;
+  }
+
   async getThesisApplicationsReport() {
     const applications = await this.thesisApplicationRepository.find({
       where: {
@@ -127,5 +177,19 @@ export class ThesisApplicationsService {
       thesis_grade: app.grade,
       thesis_period: app.thesis.period,
     }));
+  }
+
+
+  /* Update status when accepted or rejected to thesis */
+  async updateStatus(applicationId: string, status: ThesisStatusEnum) {
+    const application = await this.thesisApplicationRepository.findOne({
+      where: { id: applicationId },
+    });
+    if (!application) {
+      throw new NotFoundException(`Thesis application with id ${applicationId} not found`);
+    }
+    application.status = status;
+    await this.thesisApplicationRepository.save(application);
+    return application;
   }
 }

@@ -45,7 +45,7 @@ export const ROUTES: Record<string, string> = {
   PROFESSOR_POSTGRADUATE_THESIS_NEW: "/profesor/maestria/nuevo",
   PROFESSOR_POSTGRADUATE_THESIS_HISTORY: "/profesor/maestria/historico",
   PROFESSOR_POSTGRADUATE_THESIS_DATES: "/profesor/maestria/fechas",
-  PROFESSOR_POSTGRADUATE_THESIS_STUDENT: "/profesor/maestria/estudiante",
+  PROFESSOR_POSTGRADUATE_THESIS_STUDENT: "/profesor/maestria/lista",
 
   PROFESSOR_ASSISTANCE_LIST: "/profesor/asistencias/lista",
   PROFESSOR_ASSISTANCE_LIST_EDIT: "profesor/asistencias/lista/manejar",
@@ -80,9 +80,13 @@ export const API_ROUTES: Record<string, string> = {
   TASKS:'tasks',
 
   PROJECTS:'projects',
+  THESIS: 'theses',
+  THESIS_REPORT: 'thesis-applications/thesis-report',
+  THESIS_APPLICATIONS: 'thesis-applications',
 
   TEACHING_ASSISTANTS: 'teaching-assistances',
   PROFESSORS: 'professors',
+  STUDENTS: 'students',
   SECTIONS_REPORTS: "sections",
   INCIDENCES: "incidences",
   COORDINATORS: "coordinators",

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery } from "@tanstack/react-query";
-import { getThesisByProfessor } from "@/app/services/project.service";
+import { getApplicationsByThesisId, getThesesByProfessor } from "@/app/services/thesis.service";
 import { useProfessorThesisListStore } from "./store";
 import { Thesis } from "@/app/types/entities/thesis.type";
 import SpinnerPage from "@/components/shared/spinner-page";
@@ -18,6 +18,7 @@ import { useEffect } from "react";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/app/routes";
+import { getUserInfo } from "@/app/auth/auth-service";
 
 export default function ThesisProjects() {
   const reset = useProfessorThesisListStore((state) => state.reset);
@@ -34,9 +35,12 @@ export default function ThesisProjects() {
     isFetching,
     error,
   } = useQuery({
-    queryKey: ["professor-thesis-projects"],
-    queryFn: () => getThesisByProfessor(),
-    staleTime: 1000 * 60 * 5,
+    queryKey: ["theses-professor-list"],
+    queryFn: async () => {
+      const userData = await getUserInfo();
+      const thesesList = await getThesesByProfessor(userData.user.id);
+      return thesesList;
+    },
   });
 
   if (isFetching) return <SpinnerPage />;
@@ -117,12 +121,12 @@ function ThesisTable({ filteredProjects }: { readonly filteredProjects: Thesis[]
 
 function TableHeaders() {
   return (
-    <div className="bg-core text-white grid grid-cols-12 p-3 items-center">
+    <div className="bg-core text-white grid grid-cols-12 p-2 items-center">
       <div className="col-span-1">
         <Checkbox className="border-white data-[state=checked]:bg-white data-[state=checked]:text-core" />
       </div>
-      <div className="col-span-3 font-medium">Tema del proyecto</div>
-      <div className="col-span-3 font-medium">Subarea de investigación</div>
+      <div className="col-span-3 px-2 font-medium">Tema del proyecto</div>
+      <div className="col-span-3 px-2 font-medium">Subarea de investigación</div>
       <div className="col-span-2 font-medium">Asesor</div>
       <div className="col-span-2 font-medium">Periodo</div>
       <div className="col-span-1 font-medium">Ver estudiantes</div>
@@ -143,10 +147,10 @@ function TableRow({ thesis }: { readonly thesis: Thesis }) {
         <div className="col-span-1">
           <Checkbox />
         </div>
-        <div className="col-span-3">{thesis.title}</div>
-        <div className="col-span-3">{thesis.title}</div>
-        <div className="col-span-2">{thesis.professor.user.name}</div>
-        <div className="col-span-2">{2025 - 10}</div>
+        <div className="col-span-3 px-2 break-words">{thesis.title}</div>
+        <div className="col-span-3 px-2 break-words">{thesis.investigationSubarea}</div>
+        <div className="col-span-2 break-words">{thesis.professor.user.name}</div>
+        <div className="col-span-2">{thesis.period ? `${thesis.period.year}-${thesis.period.period}` : ""}</div>
         <div className="col-span-1 flex justify-center">
           <Button
             variant="ghost"
@@ -168,6 +172,11 @@ function TableRow({ thesis }: { readonly thesis: Thesis }) {
 
 function TableRowDetail({ thesis }: { readonly thesis: Thesis }) {
   const router = useRouter();
+  const { data: applicants, isLoading, error } = useQuery({
+    queryKey: ["thesis-applicants", thesis.id],
+    queryFn: () => getApplicationsByThesisId(thesis.id),
+    enabled: !!thesis.id,
+  });
   const handleClickEye = (id: string) => {
     router.push(
       `${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_STUDENT}/${id}`
@@ -181,19 +190,33 @@ function TableRowDetail({ thesis }: { readonly thesis: Thesis }) {
         <div className="col-span-3 font-medium">Fecha de la solicitud</div>
         <div className="col-span-3 font-medium">Ver</div>
       </div>
-      {thesis.students?.map((student) => (
-        <div key={student.user.id} className="bg-subtable  text-primary border-b">
-          <div className="grid grid-cols-12 py-2 px-3 ">
-            <div className="col-span-3">{student.user.name}</div>
-            <div className="col-span-3">{student.user.name}</div>
-            <div className="col-span-3">{student.user.name}</div>
-            <Eye
-              className="col-span-3 cursor-pointer"
-              onClick={() => handleClickEye(student.user.id)}
-            ></Eye>
+      {isLoading ? (
+        <div className="p-4 text-center">Cargando...</div>
+      ) : error ? (
+        <div className="p-4 text-center text-red-500">Error al cargar los estudiantes</div>
+      ) : (
+        applicants?.map((application: any) => (
+          <div key={application.student.user.id} className="bg-subtable text-primary border-b">
+            <div className="grid grid-cols-12 py-2 px-3 ">
+              <div className="col-span-3">{application.student.user.name}</div>
+              <div className="col-span-3">{application.status}</div>
+              <div className="col-span-3">
+                {application.applicationDate ? 
+                  new Date(application.applicationDate).toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  }).replace(/\//g, '-') : 
+                  ''}
+              </div>
+              <Eye
+                className="col-span-3 cursor-pointer"
+                onClick={() => handleClickEye(application.student.user.id)}
+              />
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 }

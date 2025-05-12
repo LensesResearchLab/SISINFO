@@ -17,6 +17,7 @@ import { useParams } from "next/navigation";
 import { ProfileTab } from "@/components/shared/profile-tab";
 import { StudentTabList } from "@/components/shared/student-tab-list";
 import { RenderFields } from "@/components/shared/render-fields";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * StudentDetail Component
@@ -33,38 +34,27 @@ import { RenderFields } from "@/components/shared/render-fields";
 export default function StudentDetail() {
   const params = useParams();
   const id = params.id as string;
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [student, setStudent] = useState<Student>();
-  const [others, setOthers] = useState<Course[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: student, isLoading, error } = useQuery({
+    queryKey: ["student-detail", id],
+    queryFn: () => getStudentbyId(id),
+    enabled: !!id,
+  });
 
-  /**
-   * useEffect hook to fetch student and course data when the component mounts.
-   */
-  useEffect(() => {
-    getStudentbyId(id).then((data)=>{
-      setStudent(data)  
-      setOthers(data.otherCourses)
-      setCourses(data.courses)
-    } );
-    setIsLoading(false);
-  }, [id]);
+  console.log(student)
+  
   if (isLoading) return <SpinnerPage />;
-
-  if (!student) return <p>student not found</p>
+  if (error || !student) return <p>student not found</p>;
 
   return (
     <div className="max-w-3xl mx-auto p-4 bg-subtable">
       <Tabs defaultValue="profile" className="w-3xl">
-
         <StudentTabList/>
         <ProfileTab student={student} />
-        <PlanDetailsTab courses={courses} others={others}/>
+        <PlanDetailsTab courses={student.courses} others={student.otherCourses}/>
       </Tabs>
     </div>
   );
 }
-
 
 
 

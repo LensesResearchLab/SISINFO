@@ -20,6 +20,8 @@ import { X } from "lucide-react"
 import { ConfirmationModal } from '@/components/shared/confirmation-modal';
 import { ROUTES } from '@/app/routes'
 import { useState } from 'react'
+import { useAuth } from '@/hooks/use-auth'
+import { postNewThesis } from '@/app/services/thesis.service'
 
 
 const thesisSchema = z.object({
@@ -32,6 +34,7 @@ const thesisSchema = z.object({
 })
 
 export default function ThesisForm() {
+  const { user } = useAuth();
   const form = useForm<z.infer<typeof thesisSchema>>({
     resolver: zodResolver(thesisSchema),
     defaultValues: {
@@ -54,8 +57,32 @@ export default function ThesisForm() {
     url: `${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_LIST}`
   }
 
-  function onSubmit(values: z.infer<typeof thesisSchema>) {
-    alert(JSON.stringify(values, null, 2))
+  async function onSubmit(values: z.infer<typeof thesisSchema>) {
+    try {
+      if (!user?.id) {
+        throw new Error("User ID not found");
+      }
+      
+      /* Transform form values to match API  */
+      const thesisData = {
+        title: values.title,
+        description: values.description,
+        maxStudents: values.students,
+        category: values.category,
+        investigationSubarea: values.tags.join(", "),
+        isEnded: false
+      };
+      
+      // Send the data to the API with the user ID and period like: 202510
+      await postNewThesis(
+        user.id, 
+        thesisData, 
+        values.lastPeriod.replace("-", "")
+      );
+      
+    } catch (error) {
+      console.error("Error submitting thesis:", error);
+    }
   }
 
   const [isModalOpen, setIsModalOpen] = useState(false)
