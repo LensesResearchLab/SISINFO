@@ -7,9 +7,14 @@ import {
   AlertTriangle,
   BookOpen,
   Calendar,
+  FileBarChart,
   FileText,
+  GraduationCap,
+  Headphones,
+  HelpCircle,
   PenSquare,
   School,
+  ScrollText,
   Settings2,
   Video,
 } from "lucide-react";
@@ -17,9 +22,9 @@ import { ROUTES } from "@/app/routes";
 
 export const undergraduateData = [
   {
-    title: "Tesis de pregrado",
+    title: "Proyecto de grado",
     url: "pregrado",
-    icon: FileText,
+    icon: GraduationCap,
     isActive: false,
     items: [
       {
@@ -72,7 +77,7 @@ export const graduateData = [
   {
     title: "Tesis de posgrado",
     url: "posgrado",
-    icon: FileText,
+    icon: ScrollText,
     isActive: false,
     items: [
       {
@@ -124,7 +129,7 @@ export const professorData = [
   {
     title: "Proyecto de pregrado",
     url: "pregrado",
-    icon: FileText,
+    icon: GraduationCap,
     items: [
       {
         Icon: FileText,
@@ -198,10 +203,10 @@ export const professorData = [
   {
     title: "Monitores",
     url: "monitores",
-    icon: FileText,
+    icon: BookOpen,
     items: [
       {
-        Icon: FileText,
+        Icon: BookOpen,
         title: "Consultar monitores",
         description:
           "Aquí puedes consultar los monitores de los distintos cursos.",
@@ -242,7 +247,7 @@ export const coordinatorData = [
   {
     title: "Alertas y reportes",
     url: "alertas",
-    icon: FileText,
+    icon: FileBarChart,
     items: [
       {
         Icon: BookOpen,
@@ -262,7 +267,7 @@ export const coordinatorData = [
   {
     title: "Monitores",
     url: "monitores",
-    icon: FileText,
+    icon: BookOpen,
     items: [
       {
         Icon: AlertTriangle,
@@ -279,7 +284,7 @@ export const supportData = [
   {
     title: "Ayuda",
     url: "soporte",
-    icon: FileText,
+    icon: HelpCircle,
     items: [
       {
         Icon: AlertTriangle,
@@ -295,7 +300,7 @@ export const supportData = [
         url: ROUTES.SUPPORT_TUTORIALS,
       },
       {
-        Icon: BookOpen,
+        Icon: Headphones,
         title: "Contactar a coordinadores",
         description:
           "Aquí puedes contactar a los coordinadores de la plataforma.",
