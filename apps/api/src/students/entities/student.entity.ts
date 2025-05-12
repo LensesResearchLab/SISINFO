@@ -61,7 +61,7 @@ export class Student extends Role {
   @OneToOne(
     () => ThesisApplication,
     (thesisApplication) => thesisApplication.student,
-    { nullable: true },
+    { nullable: true, eager: false },
   )
   @JoinColumn()
   thesisApplication: ThesisApplication;

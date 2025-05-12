@@ -22,4 +22,7 @@ export class ThesisApplication extends Base {
 
   @Column()
   grade: string;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  applicationDate: Date;
 }

@@ -180,10 +180,17 @@ export class SeedService {
 
   async seedPeriods() {
     const periods: CreatePeriodDto[] = samplePeriods;
-    const insertPromises: Promise<CreatePeriodDto>[] = [];
-    periods.forEach((period) => {
-      insertPromises.push(this.periodsService.create(period));
-    });
+    const insertPromises: Promise<CreatePeriodDto | null>[] = [];
+    for (const period of periods) {
+      const existingPeriod = await this.periodsService.findOneByPeriodAndYear(
+        period.period,
+        period.year
+      ); 
+      if (!existingPeriod) {
+        insertPromises.push(this.periodsService.create(period));
+      }
+    }
+    
     await Promise.all(insertPromises);
     return true;
   }
@@ -250,25 +257,46 @@ export class SeedService {
   async seedTheses() {
     const users = await this.usersService.findAll();
     const insertPromises: Promise<Thesis>[] = [];
+    const periods = await this.periodsService.findAll();
+    
+    // Filter periods to ensure they have valid format
+    const validPeriods = periods.filter(period => 
+      period && period.year && period.period
+    );
+    
+    if (validPeriods.length === 0) {
+      console.log('No valid periods found for thesis creation');
+      return false;
+    }
+    
     for (let i = 0; i < this.PROFESSORS_NUMBER; i++) {
       for (
         let cnt = 0;
         cnt < this.PROFESSORS_NUMBER % (this.MAX_THESIS_PER_PROFESSOR + 1);
         cnt++
       ) {
-        insertPromises.push(
-          this.thesesService.create(
-            {
-              title: faker.lorem.word(),
-              description: faker.lorem.sentence(),
-              isEnded: faker.datatype.boolean(),
-              investigationSubarea: faker.lorem.word(),
-            },
-            users[i].id,
-          ),
-        );
+        const randomPeriod = validPeriods[Math.floor(Math.random() * validPeriods.length)];
+        const periodString = `${randomPeriod.year}${Number(randomPeriod.period) < 10 ? '0' + randomPeriod.period : randomPeriod.period}`;
+        
+        try {
+          insertPromises.push(
+            this.thesesService.create(
+              {
+                title: faker.lorem.word(),
+                description: faker.lorem.sentence(),
+                isEnded: faker.datatype.boolean(),
+                investigationSubarea: faker.lorem.word(),
+              },
+              users[i].id,
+              periodString, 
+            ),
+          );
+        } catch (error) {
+          console.error(`Error creating thesis: ${error.message}`);
+        }
       }
     }
+    
     await Promise.all(insertPromises);
     return true;
   }

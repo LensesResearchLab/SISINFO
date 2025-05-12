@@ -19,7 +19,7 @@ import { ROUTES } from "@/app/routes";
 import {
   ThesisDetailCard,
   ThesisNotFound,
-} from "@/components/shared/project-detail-card";
+} from "@/components/shared/thesis-detail-card";
 import { useAuth } from "@/hooks/use-auth";
 
 /**
@@ -133,8 +133,7 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const { user } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     const thesisId = thesis.id;
     const userId = user?.id;
     console.log(userId);
@@ -145,7 +144,6 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
     }
 
     postThesisApplication(thesisId, userId);
-    alert("Aplicación enviada con éxito");
   };
 
   const modalProps = {

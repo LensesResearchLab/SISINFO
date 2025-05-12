@@ -165,12 +165,13 @@ export const professorData = [
           "Aquí puedes publicar y consultar los proyectos de grado activos.",
         url: ROUTES.PROFESSOR_POSTGRADUATE_THESIS_LIST,
       },
+      /*
       {
         Icon: PenSquare,
-        title: "Consultar histórico proyectos de grado",
-        description: "Aqui puedes ver los proyectos de grado que han existido.",
+        title: "Consultar histórico tesis de maestría",
+        description: "Aqui puedes ver las tesis de maestría que han existido.",
         url: ROUTES.PROFESSOR_POSTGRADUATE_THESIS_HISTORY,
-      },
+      }, */
       {
         Icon: Calendar,
         title: "Consultar fechas",

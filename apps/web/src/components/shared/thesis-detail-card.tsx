@@ -14,7 +14,7 @@ export function ThesisDetailCard({
     <Card className="w-full mx-auto shadow-lg border-none">
       <CardHeader>
         <CardTitle className="text-xl font-bold text-core-highlight">
-          Información del proyecto de grado
+          Información de la tesis de maestria
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6 space-y-6">
@@ -81,50 +81,18 @@ function MainInformation({ thesis }: { readonly thesis: Thesis }) {
   return (
     <div>
       <h3 className="font-semibold text-lg">
-        Nombre del proyecto:{" "}
+        Nombre de de la tesis:{" "}
         <span className="text-foreground-soft font-normal">
           {" "}
           {thesis.title}
         </span>
       </h3>
       <h3 className="font-semibold text-lg mt-4">Descripción:</h3>
-      <p className="text-foreground-soft">{thesis.description}</p>
-      <Tags tags={thesis.tags} />
+      <p className="text-foreground-soft words-break pr-8">{thesis.description}</p>
     </div>
   );
 }
 
-/**
- * AreasOfInterest Component
- *
- * Displays a collection of interest areas related to the thesis as interactive badges.
- *
- * Features:
- * - Flexible layout that wraps on smaller screens
- * - Visual representation of areas as badges
- * - Consistent styling with hover effects
- *
- * @param {Object} props - Component props
- * @param {string[]} props.areas - Array of area names to display as badges
- *
- * @returns {JSX.Element} Section with heading and area badges
- */
-function Tags({ tags }: { readonly tags: string[] }) {
-  return (
-    <div>
-      <h3 className="font-semibold text-lg">Áreas de interés:</h3>
-      <div className="flex flex-wrap gap-2 mt-2">
-        {tags && tags.length > 0 ? (
-          tags.map((area) => <CategoryTagStatic tag={area} key={area} />)
-        ) : (
-          <span className="text-gray-500">
-            No hay áreas de interés especificadas
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
 
 /**
  * CategoryAndSemesterInfo Component
@@ -148,7 +116,7 @@ function CategoryAndSemesterInfo({ thesis }: { readonly thesis: Thesis }) {
       <div className="flex items-start gap-2">
         <Tag className="h-5 w-5 text-core-highlight mt-1" />
         <div>
-          <h3 className="font-semibold">Categoría:</h3>
+          <h3 className="font-semibold">Subareas de investigación:</h3>
           <p className="text-foreground-soft">{thesis.investigationSubarea}</p>
         </div>
       </div>
@@ -157,7 +125,7 @@ function CategoryAndSemesterInfo({ thesis }: { readonly thesis: Thesis }) {
         <Calendar className="h-5 w-5 text-core-highlight mt-1" />
         <div>
           <h3 className="font-semibold">Periodo:</h3>
-          <p className="text-foreground-soft">{thesis.period.semester}</p>
+          <p className="text-foreground-soft">{thesis.period ? `${thesis.period.year}-${thesis.period.period}` : ""}</p>
         </div>
       </div>
     </div>
