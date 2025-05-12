@@ -3,7 +3,7 @@ import { undergraduateData } from "@/components/links-per-group";
 
 
 export default function StudentFeatures({children}: {readonly children?: React.ReactNode}) {
-  const studentFeatures = ["Tesis de pregrado", "Asistencia graduada" ];
+  const studentFeatures = ["Proyecto de grado", "Asistencia graduada" ];
 
   const informationPerFeature = new Map<string, InformationSectionProps>()
   undergraduateData.forEach((feature) => {
