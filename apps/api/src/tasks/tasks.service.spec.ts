@@ -3,30 +3,47 @@ import { TasksService } from './tasks.service';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
-
+import { ProfessorsService } from '../professors/professors.service';
+import { StudentsService } from '../students/students.service';
+import { TaskFactory } from './factory/tasks.factory';
 describe('TasksService', () => {
   let service: TasksService;
   let taskRepository: Repository<Task>;
+  let mockFactory: TaskFactory;
+  let mockStudentsService: StudentsService;
+  let mockProfessorsService: ProfessorsService;
 
   beforeEach(async () => {
-    const mockRepository = {
-      find: jest.fn(),
-      findOne: jest.fn(),
+    const taskRepository = {
+      create: jest.fn(),
       save: jest.fn(),
-      delete: jest.fn(),
+      update: jest.fn(),
+      findOne: jest.fn(),
     };
+
+    const mockFactory = {
+      create: jest.fn(),
+    };
+
+    const mockStudentsService = {
+      create: jest.fn(),
+    };
+
+    const mockProfessorsService = {
+      create: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TasksService,
-        {
-          provide: getRepositoryToken(Task),
-          useValue: mockRepository,
-        },
+        { provide: getRepositoryToken(Task), useValue: taskRepository },
+        { provide: TaskFactory, useValue: mockFactory },
+        { provide: StudentsService, useValue: mockStudentsService },
+        { provide: ProfessorsService, useValue: mockProfessorsService },
       ],
     }).compile();
 
     service = module.get<TasksService>(TasksService);
-    taskRepository = module.get<Repository<Task>>(getRepositoryToken(Task));
   });
 
   it('should be defined', () => {

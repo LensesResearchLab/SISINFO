@@ -14,11 +14,15 @@ export class ThesesService {
     @InjectRepository(Thesis)
     private readonly thesisRepository: Repository<Thesis>,
     private readonly periodService: PeriodsService,
-
   ) {}
-  async create(createThesisDto: CreateThesisDto, professorId: string, periodId: string) {
+  async create(
+    createThesisDto: CreateThesisDto,
+    professorId: string,
+    periodId: string,
+  ) {
     const professor = await this.professorService.findOne(professorId);
-    const period = await this.periodService.findOneByPeriodAndYearString(periodId);
+    const period =
+      await this.periodService.findOneByPeriodAndYearString(periodId);
 
     if (!professor) {
       throw new NotFoundException(
@@ -27,9 +31,7 @@ export class ThesesService {
     }
 
     if (!period) {
-      throw new NotFoundException(
-        `Period with value ${periodId} not found`,
-      );
+      throw new NotFoundException(`Period with value ${periodId} not found`);
     }
 
     const thesis = this.thesisRepository.create({
@@ -84,8 +86,6 @@ export class ThesesService {
     if (!thesis) {
       throw new NotFoundException(`Thesis with id professor ${id} not found`);
     }
-
-    
 
     return thesis;
   }

@@ -20,7 +20,7 @@ import { Thesis } from '../../theses/entities/thesis.entity';
 import { ProjectApplication } from '../../project-applications/entities/project-application.entity';
 import { AssistanceApplication } from '../../assistance-applications/entities/assistance-application.entity';
 import { Role } from '../../common/entities/role.entity';
-import { Task } from 'src/tasks/entities/task.entity';
+import { Task } from '../../tasks/entities/task.entity';
 
 @Entity()
 export class Student extends Role {

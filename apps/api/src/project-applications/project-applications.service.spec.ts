@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProjectApplicationsService } from './project-applications.service';
 import { ProjectApplication } from './entities/project-application.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { StudentsService } from '../students/students.service';
 import { ProjectsService } from '../projects/projects.service';
 import { PeriodsService } from '../periods/periods.service';
+import { TaskFactory } from '../tasks/factory/tasks.factory';
+import { TasksService } from '../tasks/tasks.service';
 
 describe('ProjectApplicationsService', () => {
   let service: ProjectApplicationsService;
@@ -13,6 +15,9 @@ describe('ProjectApplicationsService', () => {
   let studentsService: StudentsService;
   let projectsService: ProjectsService;
   let periodsService: PeriodsService;
+  let factory: TaskFactory;
+  let dataSource: DataSource;
+  let tasksService: TasksService;
 
   beforeEach(async () => {
     const repositoryMock = {
@@ -30,6 +35,9 @@ describe('ProjectApplicationsService', () => {
     const periodsServiceMock = {
       findOne: jest.fn(),
     };
+    const taskFactoryMock = {};
+    const dataSourceMock = {};
+    const tasksServiceMock = {};
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProjectApplicationsService,
@@ -48,6 +56,18 @@ describe('ProjectApplicationsService', () => {
         {
           provide: PeriodsService,
           useValue: periodsServiceMock,
+        },
+        {
+          provide: TaskFactory,
+          useValue: taskFactoryMock,
+        },
+        {
+          provide: DataSource,
+          useValue: dataSourceMock,
+        },
+        {
+          provide: TasksService,
+          useValue: tasksServiceMock,
         },
       ],
     }).compile();

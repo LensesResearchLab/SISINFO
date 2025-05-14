@@ -8,7 +8,7 @@ import { StudentsModule } from '../students/students.module';
 import { ProfessorsModule } from '../professors/professors.module';
 import { CoordinatorsModule } from '../coordinators/coordinators.module';
 import { AdministratorsModule } from '../administrators/administrators.module';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   controllers: [UsersController],

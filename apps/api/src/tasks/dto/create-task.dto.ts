@@ -17,7 +17,7 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsString()
-  flow?:string;
+  flow?: string;
 
   @IsOptional()
   projectApplicationId?: string;

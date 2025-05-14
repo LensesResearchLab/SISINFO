@@ -1,4 +1,3 @@
-// src/tasks/task.factory.ts
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateTaskDto } from '../dto/create-task.dto';
 import { TaskType } from '../enums/taskType';
@@ -17,7 +16,16 @@ export interface FactoryParams {
 @Injectable()
 export class TaskFactory {
   create(params: FactoryParams): CreateTaskDto {
-    const { type, comment, approved, documentId, flow, projectApplicationId, studentId, professorId } = params;
+    const {
+      type,
+      comment,
+      approved,
+      documentId,
+      flow,
+      projectApplicationId,
+      studentId,
+      professorId,
+    } = params;
 
     // Base común
     const dto: CreateTaskDto = {
@@ -28,12 +36,12 @@ export class TaskFactory {
       flow,
       projectApplicationId,
       studentId,
-      professorId
+      professorId,
     };
 
     switch (type) {
       case TaskType.UPLOAD_FILE:
-        dto.documentId="";
+        dto.documentId = '';
         return dto;
 
       case TaskType.SEND_COMMENTS:

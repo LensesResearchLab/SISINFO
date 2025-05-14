@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProjectApplicationDto } from './dto/create-project-application.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectApplication } from './entities/project-application.entity';
@@ -6,15 +10,14 @@ import { ProjectsService } from '../projects/projects.service';
 import { StudentsService } from '../students/students.service';
 import { Repository } from 'typeorm';
 import { UpdateProjectApplicationDto } from './dto/update-project-application.dto';
-import { TaskType } from 'src/tasks/enums/taskType';
-import { TasksService } from 'src/tasks/tasks.service';
-import { flows } from 'src/tasks/flows/tasksFlows';
-import { TaskFactory } from 'src/tasks/factory/tasks.factory';
+import { TaskType } from '../tasks/enums/taskType';
+import { TasksService } from '../tasks/tasks.service';
+import { flows } from '../tasks/flows/tasksFlows';
+import { TaskFactory } from '../tasks/factory/tasks.factory';
 import { DataSource } from 'typeorm';
 import { ProjecStatusEnum } from './enums/project_status.enum';
 import { PeriodsService } from '../periods/periods.service';
-import { Task } from 'src/tasks/entities/task.entity';
-import { ac } from '@faker-js/faker/dist/airline-CBNP41sR';
+import { Task } from '../tasks/entities/task.entity';
 
 @Injectable()
 export class ProjectApplicationsService {
@@ -67,17 +70,20 @@ export class ProjectApplicationsService {
     return result;
   }
 
-  async update(id: string, updateProjectApplicationDto: UpdateProjectApplicationDto) {
+  async update(
+    id: string,
+    updateProjectApplicationDto: UpdateProjectApplicationDto,
+  ) {
     // 1. Cargar la entidad projectApplication
     const projectApplication = await this.projectApplicationRepository.findOne({
       where: { id },
       relations: ['student', 'project'], // Asegúrate de cargar todas las relaciones necesarias
     });
-  
+
     if (!projectApplication) {
       throw new NotFoundException(`Graduated project with ID ${id} not found`);
     }
-  
+
     // 2. Lógica de negocio
     if (updateProjectApplicationDto.status === ProjecStatusEnum.ENROLLED) {
       // Solo si el estado cambia a 'ENROLLED', actualizamos
@@ -86,19 +92,16 @@ export class ProjectApplicationsService {
         projectApplication.student,
       );
     }
-  
-    // 3. Crear la tarea (task) asociada
-    const task = await this.tasksService.create(
-      TaskType.UPLOAD_FILE,
-      {
-        flow: 'proyectoPregrado',
-        projectApplicationId: id,
-        studentId: projectApplication.student.id,
-      },
-    );
 
-    console.log(task)
-  
+    // 3. Crear la tarea (task) asociada
+    const task = await this.tasksService.create(TaskType.UPLOAD_FILE, {
+      flow: 'proyectoPregrado',
+      projectApplicationId: id,
+      studentId: projectApplication.student.id,
+    });
+
+    console.log(task);
+
     // 4. Usar QueryBuilder para actualizar solo los campos específicos
     await this.projectApplicationRepository
       .createQueryBuilder()
@@ -107,17 +110,15 @@ export class ProjectApplicationsService {
         status: updateProjectApplicationDto.status,
         actualTask: task,
       })
-      .where('id = :id', { id })  // Condición para actualizar el registro correcto
+      .where('id = :id', { id }) // Condición para actualizar el registro correcto
       .execute();
-  
+
     // 5. Devolver la entidad actualizada
     return this.projectApplicationRepository.findOne({
       where: { id },
-      relations: ['student', 'project', 'actualTask'],  // Incluir 'actualTask' para obtener la relación
+      relations: ['student', 'project', 'actualTask'], // Incluir 'actualTask' para obtener la relación
     });
   }
-  
-  
 
   findAll() {
     return `This action returns all projectApplications`;
@@ -138,7 +139,7 @@ export class ProjectApplicationsService {
         student: { user: true },
         project: { professor: { user: true } },
         period: true,
-        actualTask:true
+        actualTask: true,
       },
     });
 
@@ -161,16 +162,15 @@ export class ProjectApplicationsService {
         student: { user: true },
         project: { professor: { user: true } },
         period: true,
-        actualTask:true
+        actualTask: true,
       },
     });
 
-    let actualTasks: Task[] = [];
+    const actualTasks: Task[] = [];
 
-    application.map((p)=>{
+    application.map((p) => {
       actualTasks.push(p.actualTask);
-    })
-
+    });
 
     if (!actualTasks) {
       throw new NotFoundException(
@@ -183,23 +183,22 @@ export class ProjectApplicationsService {
     const period = await this.periodsService.findCurrentPeriod();
     const application = await this.projectApplicationRepository.find({
       where: {
-        project: { professor: {id:professorId} },
+        project: { professor: { id: professorId } },
         period: { id: period.id },
       },
       relations: {
         student: { user: true },
         project: { professor: { user: true } },
         period: true,
-        actualTask:true
+        actualTask: true,
       },
     });
 
-    let actualTasks: Task[] = [];
+    const actualTasks: Task[] = [];
 
-    application.map((p)=>{
+    application.map((p) => {
       actualTasks.push(p.actualTask);
-    })
-
+    });
 
     if (!actualTasks) {
       throw new NotFoundException(
@@ -240,20 +239,23 @@ export class ProjectApplicationsService {
 
   async completeAndAdvance(projectId: string): Promise<ProjectApplication> {
     return this.dataSource.transaction(async (manager) => {
-      const projectApplication = await manager.getRepository(ProjectApplication).findOne({
-        where: { id: projectId },
-        relations: ['previousTasks', 'actualTask', 'student', 'project'],
-      });
+      const projectApplication = await manager
+        .getRepository(ProjectApplication)
+        .findOne({
+          where: { id: projectId },
+          relations: ['previousTasks', 'actualTask', 'student', 'project'],
+        });
       if (!projectApplication) throw new NotFoundException();
 
-      const actualTask    = projectApplication.actualTask;
+      const actualTask = projectApplication.actualTask;
       const previousTasks = projectApplication.previousTasks;
       const actualIndex = previousTasks.length;
 
       const steps = flows[actualTask.flow][actualIndex + 1];
-      if (!steps) throw new BadRequestException(`Flujo desconocido: ${actualTask.flow}`);
-      
-      const nextType    = steps[actualIndex + 1];
+      if (!steps)
+        throw new BadRequestException(`Flujo desconocido: ${actualTask.flow}`);
+
+      const nextType = steps[actualIndex + 1];
       if (!nextType) return projectApplication;
 
       let documentId: string | undefined;

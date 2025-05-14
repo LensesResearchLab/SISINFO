@@ -10,10 +10,9 @@ import {
   OneToMany,
 } from 'typeorm';
 import { TaskType } from '../enums/taskType';
-import { Project } from 'src/projects/entities/project.entity';
-import { ProjectApplication } from 'src/project-applications/entities/project-application.entity';
-import { Student } from 'src/students/entities/student.entity';
-import { Professor } from 'src/professors/entities/professor.entity';
+import { ProjectApplication } from '../../project-applications/entities/project-application.entity';
+import { Student } from '../../students/entities/student.entity';
+import { Professor } from '../../professors/entities/professor.entity';
 
 @Entity('tasks')
 export class Task extends Base {
@@ -21,14 +20,14 @@ export class Task extends Base {
   type: TaskType;
 
   @Column()
-  comment: String;
+  comment: string;
 
   @Column()
-  approved: Boolean;
+  approved: boolean;
 
   @Column()
   flow: string;
-  
+
   @ManyToOne(() => ImportantDate, (d) => d.tasks, { nullable: true })
   date?: ImportantDate;
 
@@ -39,16 +38,16 @@ export class Task extends Base {
   @JoinColumn()
   document?: Document;
 
-  @ManyToOne(()=>Student, (s)=>s.tasks)
+  @ManyToOne(() => Student, (s) => s.tasks)
   student: Student;
 
-  @ManyToOne(()=>Professor, (s)=>s.tasks)
+  @ManyToOne(() => Professor, (s) => s.tasks)
   professor: Professor;
 
-  @OneToMany(()=>ProjectApplication, (p) => p.previousTasks)
+  @OneToMany(() => ProjectApplication, (p) => p.previousTasks)
   @JoinColumn({ name: 'projectApplicationId' })
   projectPreviousTasks: ProjectApplication;
 
-  @OneToOne(()=>ProjectApplication, (p)=>p.actualTask)
+  @OneToOne(() => ProjectApplication, (p) => p.actualTask)
   projectActualTask: ProjectApplication;
 }

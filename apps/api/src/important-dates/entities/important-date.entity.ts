@@ -1,5 +1,5 @@
+import { ImportantSection } from '../../important-sections/entities/important-section.entity';
 import { Base } from '../../common/entities/base.entity';
-import { Period } from '../../periods/entities/period.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
@@ -17,8 +17,11 @@ export class ImportantDate extends Base {
   @Column('text')
   type: string;
 
-  @ManyToOne(() => Period, (period) => period.importantDates)
-  period: Period;
+  @ManyToOne(
+    () => ImportantSection,
+    (importantSection) => importantSection.importantDates,
+  )
+  importantSection: ImportantSection;
 
   @OneToMany(() => Task, (task) => task.date)
   tasks: Task;

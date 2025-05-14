@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import { Period } from './period.entity';
 import { Billboard } from '../../billboards/entities/billboard.entity';
-import { ImportantDate } from '../../important-dates/entities/important-date.entity';
 import { Thesis } from '../../theses/entities/thesis.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { GraduatedAssistance } from '../../graduated-assistances/entities/graduated-assistance.entity';
 import { Section } from '../../sections/entities/section.entity';
+import { ImportantSection } from '../../important-sections/entities/important-section.entity';
 
 describe('Period Entity', () => {
   it('should create a Period with expected properties and relationships', () => {
@@ -14,8 +14,8 @@ describe('Period Entity', () => {
     const mockSemester = 1;
 
     const mockBillboard = new Billboard();
-    const mockImportantDate1 = new ImportantDate();
-    const mockImportantDate2 = new ImportantDate();
+    const mockImportantSection1 = new ImportantSection();
+    const mockImportantSection2 = new ImportantSection();
     const mockThesis1 = new Thesis();
     const mockThesis2 = new Thesis();
     const mockProject1 = new Project();
@@ -30,7 +30,7 @@ describe('Period Entity', () => {
     period.year = mockYear;
     period.semester = mockSemester;
     period.billboard = mockBillboard;
-    period.importantDates = [mockImportantDate1, mockImportantDate2];
+    period.importantSections = [mockImportantSection1, mockImportantSection2];
     period.theses = [mockThesis1, mockThesis2];
     period.projects = [mockProject1, mockProject2];
     period.assistances = [mockAssistance1, mockAssistance2];
@@ -41,9 +41,9 @@ describe('Period Entity', () => {
     expect(period.year).toBe(mockYear);
     expect(period.semester).toBe(mockSemester);
     expect(period.billboard).toBeInstanceOf(Billboard);
-    expect(period.importantDates).toHaveLength(2);
-    expect(period.importantDates[0]).toBeInstanceOf(ImportantDate);
-    expect(period.importantDates[1]).toBeInstanceOf(ImportantDate);
+    expect(period.importantSections).toHaveLength(2);
+    expect(period.importantSections[0]).toBeInstanceOf(ImportantSection);
+    expect(period.importantSections[1]).toBeInstanceOf(ImportantSection);
     expect(period.theses).toHaveLength(2);
     expect(period.theses[0]).toBeInstanceOf(Thesis);
     expect(period.theses[1]).toBeInstanceOf(Thesis);

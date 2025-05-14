@@ -28,6 +28,7 @@ import { ProjectApplicationsModule } from './project-applications/project-applic
 import { UsersModule } from './users/users.module';
 import { AdministratorsModule } from './administrators/administrators.module';
 import { AuthModule } from './auth/auth.module';
+import { ImportantSectionsModule } from './important-sections/important-sections.module';
 
 @Module({
   imports: [
@@ -66,9 +67,11 @@ import { AuthModule } from './auth/auth.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true
+      synchronize: true,
+      dropSchema: true,
     }),
     AdministratorsModule,
+    ImportantSectionsModule,
   ],
   controllers: [],
   providers: [],

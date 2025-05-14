@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { ProfessorsService } from '../professors/professors.service';
 import { PeriodsService } from '../periods/periods.service';
-import { Student } from 'src/students/entities/student.entity';
+import { Student } from '../students/entities/student.entity';
 
 @Injectable()
 export class ProjectsService {
@@ -75,16 +75,20 @@ export class ProjectsService {
       where: { professor: { id: professorId } },
     });
     if (!projects) {
-      throw new NotFoundException(
-        `Projects with professor id ${professorId}`,
-      );
+      throw new NotFoundException(`Projects with professor id ${professorId}`);
     }
     return projects;
   }
 
   async findOne(id: string) {
     const project = await this.projectRepository.findOne({
-      where: { id }, relations:["projectApplications", "professor", "students", "projectApplications.student"]
+      where: { id },
+      relations: [
+        'projectApplications',
+        'professor',
+        'students',
+        'projectApplications.student',
+      ],
     });
     if (!project) {
       throw new NotFoundException(`Project with id ${id} not found`);
@@ -98,16 +102,20 @@ export class ProjectsService {
     return this.projectRepository.save(project);
   }
 
-  async updateStudents(id:string, student: Student){
-    const project = await this.projectRepository.findOne({ 
-      where: { id }, 
+  async updateStudents(id: string, student: Student) {
+    const project = await this.projectRepository.findOne({
+      where: { id },
       relations: ['students'],
     });
-    if (!project) return
-    
-    if (!project.students.some(existingStudent => existingStudent.id === student.id)) {
+    if (!project) return;
+
+    if (
+      !project.students.some(
+        (existingStudent) => existingStudent.id === student.id,
+      )
+    ) {
       project.students.push(student);
-  }
+    }
     return await this.projectRepository.save(project);
   }
 

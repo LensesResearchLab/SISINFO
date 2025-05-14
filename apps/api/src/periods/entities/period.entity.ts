@@ -2,12 +2,12 @@ import { TeachingAssistance } from '../../teaching-assistances/entities/teaching
 import { Billboard } from '../../billboards/entities/billboard.entity';
 import { Base } from '../../common/entities/base.entity';
 import { GraduatedAssistance } from '../../graduated-assistances/entities/graduated-assistance.entity';
-import { ImportantDate } from '../../important-dates/entities/important-date.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Section } from '../../sections/entities/section.entity';
 import { Thesis } from '../../theses/entities/thesis.entity';
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { ProjectApplication } from '../../project-applications/entities/project-application.entity';
+import { ImportantSection } from '../../important-sections/entities/important-section.entity';
 
 @Entity()
 export class Period extends Base {
@@ -25,8 +25,11 @@ export class Period extends Base {
   })
   billboard: Billboard;
 
-  @OneToMany(() => ImportantDate, (importantDate) => importantDate.period)
-  importantDates: ImportantDate[];
+  @OneToMany(
+    () => ImportantSection,
+    (importantSection) => importantSection.period,
+  )
+  importantSections: ImportantSection[];
 
   @OneToMany(() => Thesis, (thesis) => thesis.period)
   theses: Thesis[];
