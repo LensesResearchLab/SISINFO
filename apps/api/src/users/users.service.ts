@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -31,8 +31,9 @@ export class UsersService {
       where: { id },
       relations: ['coordinator', 'professor', 'student'],
     });
-
-    if (!user) return null;
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
     const roles: string[] = this.getUserRoles(user);
     return deletePasswordFromUser(user, roles);
   }

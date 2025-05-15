@@ -1,10 +1,9 @@
 import { API_ROUTES } from "../routes";
 import { Incidence } from "../types/entities/incidence.type";
 
-
 export async function createIncidence(incidence: Incidence): Promise<Incidence> {
   const url = `${API_ROUTES.BASE}/${API_ROUTES.INCIDENCES}`;
-    console.log("URL a la que se va a enviar la incidencia:", url);
+  console.log("URL a la que se va a enviar la incidencia:", url);
   console.log("Incidencia a enviar:", JSON.stringify(incidence));
   try {
     const response = await fetch(url, {
@@ -12,7 +11,8 @@ export async function createIncidence(incidence: Incidence): Promise<Incidence> 
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(incidence)
+      credentials: "include",
+      body: JSON.stringify(incidence),
     });
 
     if (!response.ok) {
