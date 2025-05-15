@@ -19,11 +19,12 @@ export class ProjectsService {
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
   ) {}
-  async create(
-    createProjectDto: CreateProjectDto,
-    professorId: string,
-    periodId: string,
-  ) {
+  async create(createProjectDto: CreateProjectDto, professorId: string) {
+    const period = await this.periodsService.findOneByPeriodAndYear(
+      createProjectDto.period.slice(4, 6),
+      Number(createProjectDto.period.slice(0, 4)),
+    );
+    console.log(period);
     const professor = await this.professorsService.findOne(professorId);
     const areasInterest: AreasOfInterest[] = [];
 
@@ -41,12 +42,15 @@ export class ProjectsService {
       );
     }
     if (!period) {
-      throw new NotFoundException(`Period with id ${periodId} not found`);
+      throw new NotFoundException(
+        `Period with id ${createProjectDto.period} not found`,
+      );
     }
     const project = this.projectRepository.create({
       ...createProjectDto,
       professor: professor,
       period: period,
+      areasOfInterest: areasInterest,
     });
 
     await this.projectRepository.save(project);
