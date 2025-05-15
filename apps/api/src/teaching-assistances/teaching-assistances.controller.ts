@@ -7,10 +7,13 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { TeachingAssistancesService } from './teaching-assistances.service';
 import { UpdateTeachingAssistanceDto } from './dto/update-teaching-assistance.dto';
 import { CreateAllTeachingAssistantship } from './dto/create-all-teaching-assistantship.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('teaching-assistances')
 export class TeachingAssistancesController {
@@ -38,6 +41,8 @@ export class TeachingAssistancesController {
   }
 
   @Patch(':id/grade')
+  @UseGuards(JwtAuthGuard)
+  @Roles('professor')
   updateGrade(
     @Param('id') id: string,
     @Body() body: UpdateTeachingAssistanceDto,

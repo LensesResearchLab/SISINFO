@@ -6,10 +6,14 @@ import {
   Patch,
   Param,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ProfessorsService } from './professors.service';
 import { CreateProfessorDto } from './dto/create-professor.dto';
 import { UpdateProfessorDto } from './dto/update-professor.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('professors')
 export class ProfessorsController {
@@ -25,14 +29,20 @@ export class ProfessorsController {
     return this.professorsService.findAll();
   }
 
+  @Get('teaching-assistances')
+  @UseGuards(JwtAuthGuard)
+  @Roles('professor')
+  findTASByProfessor(
+    @Req() req: Request & { user: { id: string } },
+    @Query('period') period: string,
+  ) {
+    const userId = req.user?.id;
+    return this.professorsService.findWithTasByPeriod(period, userId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.professorsService.findOne(id);
-  }
-
-  @Get(':id/teaching-assistances')
-  findOneTAS(@Param('id') id: string, @Query('period') period: string) {
-    return this.professorsService.findWithTasByPeriod(period, id);
   }
 
   @Patch(':id')

@@ -1,5 +1,4 @@
 "use client";
-import { ROUTES } from '@/app/routes';
 import { handleDownload } from './utils';
 import { UploadFilePage } from '@/components/shared/upload-files-page';
 import { CreateTeachingAssistance } from '../../../types/createTeachingAssistance.type';
@@ -21,7 +20,7 @@ export default function UploadTeachingAssistants() {
      buttonText: "Cargar monitores",
      successTitle: "Carga exitosa",
      successText: "El archivo de monitores ha sido publicada exitosamente",
-     url: `${ROUTES.HOME}/${ROUTES.UPLOAD_TAS}`,
+     url: '',
    };
  
 
@@ -60,7 +59,7 @@ function TeachingAssistantsTable({teachingAssistantships}: {readonly teachingAss
   return (
     <div className="min-h-full min-w-full">
       <div className="bg-card rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold mb-4 text-primary text-center">Monitores para el periodo</h2>
+        <h2 className="text-2xl font-bold mb-4 text-core text-center">Monitores para el periodo</h2>
         <DataTable columns={columns} data={mapTeachingAssistantshipsToCoordinatorTable(teachingAssistantships)} />
       </div>
     </div>

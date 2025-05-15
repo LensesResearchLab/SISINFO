@@ -91,39 +91,46 @@ export class SeedService {
   MAX_PROJECTS_PER_PROFESSOR = 3;
   GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER = 2;
 
-  // TODO
   async seedSampleTASEntities() {
     const period =
       await this.periodsService.findOneByPeriodAndYearString('202510');
     if (!period) {
       return 'SEED_FAILED';
     }
-
+    const createdUsers: User[] = [];
     for (const user of sampleUser) {
       const userWithPassword = {
         ...user,
         password: user.password ?? faker.internet.password({ length: 20 }),
       };
-      await this.usersService.create(userWithPassword);
+      const createdUser = await this.usersService.create(userWithPassword);
+      createdUsers.push(createdUser);
     }
-    for (const student of sampleStudent) {
+    for (let i = 0; i < sampleStudent.length; i++) {
+      const student = {
+        ...sampleStudent[i],
+        user: createdUsers[i + 2],
+      };
       await this.studentsService.create(student);
     }
     const professors: Professor[] = [];
-    for (const professor of sampleProfessor) {
-      professors.push(await this.professorsService.create(professor));
+    for (let i = 0; i < sampleProfessor.length; i++) {
+      const professor = {
+        ...sampleProfessor[i],
+        user: createdUsers[i],
+      };
+      const createdProfessor = await this.professorsService.create(professor);
+      professors.push(createdProfessor);
     }
     const sections: Section[] = [];
-
     for (const section of sampleSection) {
-      sections.push(
-        await this.sectionsService.createSimple(
-          section,
-          [],
-          professors,
-          period,
-        ),
+      const createdSection = await this.sectionsService.createSimple(
+        section,
+        [],
+        professors,
+        period,
       );
+      sections.push(createdSection);
     }
     for (let i = 0; i < sampleCourse.length; i++) {
       await this.coursesService.create(sampleCourse[i], sections[i]);

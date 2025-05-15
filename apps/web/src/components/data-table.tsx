@@ -90,7 +90,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       </div>
 
       <div className="rounded-md border overflow-x-auto">
-        <Table className="w-full table-fixed">
+        <Table className="w-full table-auto">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="bg-core hover:bg-core-highlight">

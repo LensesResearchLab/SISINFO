@@ -3,12 +3,13 @@ import { Section } from "../types/entities/billboard.type";
 import { createProject } from "../types/entities/project.type";
 
 export async function getTeachingAssistants(period: string): Promise<Section[]> {
-    const url = `${API_ROUTES.BASE}/${API_ROUTES.PROFESSORS}/PROFESSOR1/${API_ROUTES.TEACHING_ASSISTANTS}?period=${encodeURIComponent(period)}`;
+    const url = `${API_ROUTES.BASE}/${API_ROUTES.PROFESSORS}/${API_ROUTES.TEACHING_ASSISTANTS}?period=${encodeURIComponent(period)}`;
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      credentials: "include",
     });
   
     if (!response.ok) {
