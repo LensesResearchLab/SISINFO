@@ -5,12 +5,14 @@ import { Project } from './entities/project.entity';
 import { Repository } from 'typeorm';
 import { ProfessorsService } from '../professors/professors.service';
 import { PeriodsService } from '../periods/periods.service';
+import { AreasOfInterestService } from '../areas-of-interest/areas-of-interest.service';
 
 describe('ProjectService', () => {
   let service: ProjectsService;
   let professorService: ProfessorsService;
   let periodsService: PeriodsService;
   let projecRepository: Repository<Project>;
+  let areasOfInterestService: AreasOfInterestService
 
   beforeEach(async () => {
     const mockRepository = {
@@ -20,6 +22,12 @@ describe('ProjectService', () => {
       delete: jest.fn(),
     };
     const mockProfessorService = {
+      findById: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    };
+    const mockAreasOfInterestService = {
       findById: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
@@ -41,6 +49,10 @@ describe('ProjectService', () => {
           useValue: {
             findCurrentPeriod: jest.fn(),
           },
+        },
+        {
+          provide: AreasOfInterestService,
+          useValue: mockAreasOfInterestService,
         },
       ],
     }).compile();

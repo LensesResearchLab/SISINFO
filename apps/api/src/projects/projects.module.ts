@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
 import { ProfessorsModule } from '../professors/professors.module';
 import { PeriodsModule } from '../periods/periods.module';
-import { AreasOfInterestModule } from 'src/areas-of-interest/areas-of-interest.module';
+import { AreasOfInterestModule } from '../areas-of-interest/areas-of-interest.module';
 
 @Module({
   controllers: [ProjectController],

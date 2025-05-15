@@ -3,7 +3,7 @@ import { CreateIncidenceDto } from './dto/create-incidence.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Incidence } from './entities/incidence.entity';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class IncidencesService {

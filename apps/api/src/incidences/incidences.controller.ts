@@ -1,15 +1,11 @@
 import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { IncidencesService } from './incidences.service';
 import { CreateIncidenceDto } from './dto/create-incidence.dto';
-import { JwtService } from '@nestjs/jwt';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('incidences')
 export class IncidencesController {
-  constructor(
-    private jwtService: JwtService,
-    private readonly incidencesService: IncidencesService,
-  ) {}
+  constructor(private readonly incidencesService: IncidencesService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
