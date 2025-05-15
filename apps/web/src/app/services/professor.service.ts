@@ -1,5 +1,6 @@
 import { API_ROUTES } from "../routes";
 import { Section } from "../types/entities/billboard.type";
+import { createProject } from "../types/entities/project.type";
 
 export async function getTeachingAssistants(period: string): Promise<Section[]> {
     const url = `${API_ROUTES.BASE}/${API_ROUTES.PROFESSORS}/PROFESSOR1/${API_ROUTES.TEACHING_ASSISTANTS}?period=${encodeURIComponent(period)}`;
@@ -15,5 +16,23 @@ export async function getTeachingAssistants(period: string): Promise<Section[]> 
       throw new Error(`Error buscando los monitores: ${response.statusText}`, { cause: errorData });
     }
     return response.json();
-  }
+}
+
+export async function createUndergraduateProject(bodyData:createProject, id: string) {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}?professorId=${encodeURIComponent(id)}`;
+  const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(bodyData)
+    });
+  
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Error creando los proyectos: ${response.statusText}`, { cause: errorData });
+    }
+    return response.json();
+  
+}
   

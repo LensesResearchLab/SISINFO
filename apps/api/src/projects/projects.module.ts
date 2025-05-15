@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
 import { ProfessorsModule } from '../professors/professors.module';
 import { PeriodsModule } from '../periods/periods.module';
+import { AreasOfInterestModule } from 'src/areas-of-interest/areas-of-interest.module';
 
 @Module({
   controllers: [ProjectController],
@@ -12,6 +13,7 @@ import { PeriodsModule } from '../periods/periods.module';
   imports: [
     PeriodsModule,
     ProfessorsModule,
+    AreasOfInterestModule,
     TypeOrmModule.forFeature([Project]),
   ],
   exports: [TypeOrmModule, ProjectsService],

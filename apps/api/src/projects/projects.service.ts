@@ -7,22 +7,34 @@ import { Project } from './entities/project.entity';
 import { ProfessorsService } from '../professors/professors.service';
 import { PeriodsService } from '../periods/periods.service';
 import { Student } from '../students/entities/student.entity';
+import { AreasOfInterestService } from 'src/areas-of-interest/areas-of-interest.service';
+import { AreasOfInterest } from 'src/areas-of-interest/entities/areas-of-interest.entity';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     private readonly periodsService: PeriodsService,
     private readonly professorsService: ProfessorsService,
+    private readonly areaInterestService: AreasOfInterestService,
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
   ) {}
   async create(
     createProjectDto: CreateProjectDto,
     professorId: string,
-    periodId: string,
   ) {
+    const period = await this.periodsService.findOneByPeriodAndYear(createProjectDto.period.slice(4,6), Number(createProjectDto.period.slice(0,4)));
+    console.log(period);
     const professor = await this.professorsService.findOne(professorId);
-    const period = await this.periodsService.findOne(periodId);
+    const areasInterest: AreasOfInterest[] = [];
+
+    for (const tag of createProjectDto.areasOfInterest) {
+      let findedTag = await this.areaInterestService.findByDescription(tag);
+      if (!findedTag) {
+        findedTag = await this.areaInterestService.create({ description: tag });
+      }
+      areasInterest.push(findedTag);
+    }
 
     if (!professor) {
       throw new NotFoundException(
@@ -30,12 +42,13 @@ export class ProjectsService {
       );
     }
     if (!period) {
-      throw new NotFoundException(`Period with id ${periodId} not found`);
+      throw new NotFoundException(`Period with id ${createProjectDto.period} not found`);
     }
     const project = this.projectRepository.create({
       ...createProjectDto,
       professor: professor,
       period: period,
+      areasOfInterest: areasInterest
     });
 
     await this.projectRepository.save(project);

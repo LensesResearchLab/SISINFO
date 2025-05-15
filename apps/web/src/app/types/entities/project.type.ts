@@ -9,14 +9,21 @@ export interface Project {
   description: string;
   category: string;
   maxStudents: number;
-  isEnded: boolean;
+  isEnded?: boolean;
   projectApplications?: ProjectApplication[];
   areasOfInterest?: AreasOfInterest[];
-  professor: Professor;
+  professor?: Professor;
   period?: Period;
   students?: Student[];
 }
-
+export interface createProject {
+  title: string;
+  description: string;
+  category: string;
+  maxStudents: number;
+  areasOfInterest: string[];
+  period?: string;
+}
 export interface AreasOfInterest {
   description: string
 }

@@ -17,8 +17,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ConfirmationModal } from '@/components/shared/confirmation-modal';
 import { ROUTES } from '@/app/routes'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CategoryTag } from '@/components/shared/category-tag'
+import { createProject } from '@/app/types/entities/project.type'
+import { createUndergraduateProject } from '@/app/services/professor.service'
+import { getUserInfo } from '@/app/auth/auth-service'
 
 
 const thesisSchema = z.object({
@@ -53,8 +56,24 @@ export default function ThesisForm() {
     url: `${ROUTES.HOME}/${ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST}`
   }
 
-  function onSubmit(values: z.infer<typeof thesisSchema>) {
-    alert(JSON.stringify(values, null, 2))
+  async function onSubmit(values: z.infer<typeof thesisSchema>) {
+    let bodyProject: createProject = {
+      title: values.title,
+      description: values.description,
+      maxStudents: values.students,
+      category: values.category,
+      areasOfInterest: values.tags,
+      period: values.lastPeriod
+    };
+
+    let userId ="";
+
+    await getUserInfo().then((data)=>{
+      userId = data.user?.id;
+    })
+
+    createUndergraduateProject(bodyProject, userId);
+    
   }
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -219,9 +238,9 @@ export default function ThesisForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="2025-10">2025-10</SelectItem>
-                        <SelectItem value="2025-20">2025-20</SelectItem>
-                        <SelectItem value="2026-10">2026-10</SelectItem>
+                        <SelectItem value="202510">2025-10</SelectItem>
+                        <SelectItem value="202520">2025-20</SelectItem>
+                        <SelectItem value="202610">2026-10</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage className="text-red-500" />

@@ -342,11 +342,11 @@ export class SeedService {
               description: faker.lorem.sentence(),
               isEnded: faker.datatype.boolean(),
               maxStudents: faker.number.int({ min: 1, max: 10 }),
-              category:
-                categories[Math.floor(Math.random() * categories.length)],
+              category: categories[Math.floor(Math.random() * categories.length)],
+              period: '202520',
+              areasOfInterest: ["Bases de datos", "no c"]
             },
             users[i].id,
-            periods[Math.floor(Math.random() * periods.length)].id,
           ),
         );
       }
