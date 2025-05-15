@@ -4,6 +4,8 @@ import { useHomeStore } from "../home.store"; // Ajusta la ruta según tu estruc
 import { getPendingTasksForStudent, getPendingTasksForProfessor } from "@/app/services/project-application.service"; // Ajusta la ruta si es necesario
 import { Button } from "@/components/ui/button";
 import { ChevronDown, MoreHorizontal } from "lucide-react";
+import { ROUTES } from "@/app/routes";
+import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -83,28 +85,30 @@ const columns: ColumnDef<Task>[] = [
     accessorKey: "date",
     header: "Fecha",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("date"));
-      return <div>{date.toLocaleDateString()}</div>;
+      const date = new Date();
+      const isValid = !isNaN(date.getTime());
+      return <div>{isValid ? date.toLocaleDateString() : "Sin fecha"}</div>;
     },
   },
   {
     id: "actions",
+    header: "Acciones",
     enableHiding: false,
     cell: ({ row }) => {
+      const router = useRouter();
       const task = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Abrir menú</span>
-              <MoreHorizontal />
+            <Button variant="ghost" size="sm">
+              <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(task.id)}>Copiar ID de tarea</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Ver detalles</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`${ROUTES.HOME}/${ROUTES.TASK_LIST}/${task.id}`)}>
+              Ver detalles
+            </DropdownMenuItem>
             <DropdownMenuItem>Editar tarea</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -112,6 +116,7 @@ const columns: ColumnDef<Task>[] = [
     },
   },
 ];
+
 
 function TasksList({ role }: { role: string }) {
   const { setTasks } = useHomeStore();
@@ -147,6 +152,7 @@ function TasksList({ role }: { role: string }) {
 }
 
 function DataTableDemo() {
+  const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -171,6 +177,10 @@ function DataTableDemo() {
       rowSelection,
     },
   });
+
+  const handleClick = (id: string) => {
+    router.push(`${ROUTES.HOME}/${ROUTES.TASK_LIST}/${id}`);
+  };
 
   return (
     <div className="w-full">
@@ -208,12 +218,15 @@ function DataTableDemo() {
               <TableRow key={headerGroup.id} className="hover:bg-core">
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id} className="text-white">
-                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -241,7 +254,8 @@ function DataTableDemo() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} de {table.getFilteredRowModel().rows.length} filas seleccionadas
+          {table.getFilteredSelectedRowModel().rows.length} de{" "}
+          {table.getFilteredRowModel().rows.length} filas seleccionadas
         </div>
         <div className="space-x-2">
           <Button size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>

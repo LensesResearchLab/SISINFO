@@ -18,12 +18,15 @@ import { DataSource } from 'typeorm';
 import { ProjecStatusEnum } from './enums/project_status.enum';
 import { PeriodsService } from '../periods/periods.service';
 import { Task } from '../tasks/entities/task.entity';
+import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
+import { DocumentsService } from 'src/documents/documents.service';
 
 @Injectable()
 export class ProjectApplicationsService {
   constructor(
     private readonly studentsService: StudentsService,
     private readonly projectsService: ProjectsService,
+    private readonly documentService: DocumentsService,
     private readonly tasksService: TasksService,
     private readonly factory: TaskFactory,
     private readonly dataSource: DataSource,
@@ -237,47 +240,67 @@ export class ProjectApplicationsService {
     }));
   }
 
-  async completeAndAdvance(projectId: string): Promise<ProjectApplication> {
-    return this.dataSource.transaction(async (manager) => {
-      const projectApplication = await manager
-        .getRepository(ProjectApplication)
-        .findOne({
-          where: { id: projectId },
-          relations: ['previousTasks', 'actualTask', 'student', 'project'],
-        });
-      if (!projectApplication) throw new NotFoundException();
+  async completeAndAdvance(
+  projectId: string,
+  taskDto: CreateTaskDto,
+  file?: Express.Multer.File
+): Promise<ProjectApplication> {
+  return this.dataSource.transaction(async (manager) => {
+    const projectApplication = await manager.getRepository(ProjectApplication).findOne({
+      where: { id: projectId },
+      relations: ['previousTasks', 'actualTask', 'student', 'project'],
+    });
+    if (!projectApplication) throw new NotFoundException();
 
-      const actualTask = projectApplication.actualTask;
-      const previousTasks = projectApplication.previousTasks;
-      const actualIndex = previousTasks.length;
+    console.log(projectApplication);
 
-      const steps = flows[actualTask.flow][actualIndex + 1];
-      if (!steps)
-        throw new BadRequestException(`Flujo desconocido: ${actualTask.flow}`);
+    const actualTask = projectApplication.actualTask;
+    const previousTasks = projectApplication.previousTasks;
+    const actualIndex = previousTasks.length;
 
-      const nextType = steps[actualIndex + 1];
-      if (!nextType) return projectApplication;
+    const steps = flows[actualTask.flow];
+    const nextStep = steps[actualIndex + 1];
+    if (!nextStep) {
+      throw new BadRequestException(`Paso siguiente no encontrado en el flujo: ${actualTask.flow}`);
+    }
 
-      let documentId: string | undefined;
-      if (
-        actualTask.flow === 'proyectoPregrado' &&
-        actualIndex === 1 &&
-        previousTasks[actualIndex].document?.id
-      ) {
-        documentId = previousTasks[actualIndex].document.id;
+    // Documento solo si aplica
+    let documentId: string | undefined;
+
+    if (taskDto.type === TaskType.UPLOAD_FILE) {
+      if (!file) {
+        throw new BadRequestException('Se requiere un archivo para esta tarea');
       }
 
-      projectApplication.previousTasks.push(actualTask);
-      const next = await this.tasksService.create(nextType, {
-        documentId,
-        flow: actualTask.flow,
-        projectApplicationId: projectApplication.id,
-        ...(nextType.assignee === 'student'
-          ? { studentId: projectApplication.student.id }
-          : { professorId: projectApplication.project.professor.id }),
+      const savedDocument = await this.documentService.create({
+        name: file.originalname,
+        file: Buffer.from(file.buffer),
       });
+      documentId = savedDocument.id;
+    } else if (
+      actualTask.flow === 'proyectoPregrado' &&
+      actualIndex === 1 &&
+      previousTasks[actualIndex].document?.id
+    ) {
+      documentId = previousTasks[actualIndex].document.id;
+    }
 
-      return manager.getRepository(ProjectApplication).save(projectApplication);
+    // Guardar tarea actual como completada
+    projectApplication.previousTasks.push(actualTask);
+
+    // Crear nueva tarea
+    const nextTask = await this.tasksService.create(nextStep.type, {
+      documentId,
+      flow: actualTask.flow,
+      projectApplicationId: projectApplication.id,
+      ...(nextStep.assignee === 'student'
+        ? { studentId: projectApplication.student.id }
+        : { professorId: projectApplication.project.professor.id }),
     });
-  }
+
+    projectApplication.actualTask = nextTask;
+
+    return manager.getRepository(ProjectApplication).save(projectApplication);
+  });
+}
 }

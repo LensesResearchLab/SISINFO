@@ -53,7 +53,7 @@ export class TasksService {
   async findOne(id: string): Promise<Task> {
     const task = await this.repo.findOne({
       where: { id },
-      relations: ['previousTask', 'nextTasks', 'student', 'professor'],
+      relations: ['projectPreviousTasks', 'projectActualTask', 'student', 'professor'],
     });
     if (!task) throw new NotFoundException(`Task ${id} not found`);
     return task;
