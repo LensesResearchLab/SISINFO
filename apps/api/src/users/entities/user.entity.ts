@@ -3,7 +3,8 @@ import { Administrator } from '../../administrators/entities/administrator.entit
 import { Coordinator } from '../../coordinators/entities/coordinator.entity';
 import { Professor } from '../../professors/entities/professor.entity';
 import { Student } from '../../students/entities/student.entity';
-import { Column, Entity, OneToOne } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { Incidence } from '../../incidences/entities/incidence.entity';
 
 @Entity()
 export class User extends Base {
@@ -31,4 +32,7 @@ export class User extends Base {
 
   @OneToOne(() => Student, (student) => student.user, { nullable: true })
   student: Student;
+
+  @OneToMany(() => Incidence, (incidence) => incidence.user)
+  incidences: Incidence[];
 }
