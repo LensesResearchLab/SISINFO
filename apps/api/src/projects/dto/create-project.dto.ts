@@ -29,4 +29,9 @@ export class CreateProjectDto {
   @IsBoolean()
   @IsOptional()
   isEnded?: boolean;
+
+  @IsString()
+  period: string;
+
+  areasOfInterest: string[];
 }

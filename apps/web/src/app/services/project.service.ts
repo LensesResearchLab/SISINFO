@@ -27,7 +27,7 @@ export async function getUndergraduateThesis({
 
 
 
-export async function getUndergraduateThesisById(id: string){
+export async function getUndergraduateProjectById(id: string){
   const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}/${id}`;
   const response = await fetch(url, {
     method: "GET",

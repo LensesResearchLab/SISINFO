@@ -15,6 +15,7 @@ export interface Thesis {
   professor: Professor;
   tags: string[];
   students?: Student[];
+  category?: string;
 }
 
 
