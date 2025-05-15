@@ -6,7 +6,7 @@ import {
 import { CreateTeachingAssistanceDto } from './dto/create-teaching-assistance.dto';
 import { UpdateTeachingAssistanceDto } from './dto/update-teaching-assistance.dto';
 import { TeachingAssistance } from './entities/teaching-assistance.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PeriodsService } from '../periods/periods.service';
 import { SectionsService } from '../sections/sections.service';
@@ -20,6 +20,7 @@ export class TeachingAssistancesService {
     private readonly periodsService: PeriodsService,
     private readonly sectionsService: SectionsService,
     private readonly studentsService: StudentsService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(
@@ -78,23 +79,31 @@ export class TeachingAssistancesService {
   }
 
   async updateGrade(id: string, grade?: number, gradeDescription?: string) {
-    const assistance = await this.teachingAssistanceRepository.findOne({
-      where: { id },
+    return this.dataSource.transaction(async (manager) => {
+      const assistance = await manager.findOne(TeachingAssistance, {
+        where: { id },
+      });
+
+      if (!assistance) {
+        throw new NotFoundException(`Monitor con id ${id} no encontrado`);
+      }
+
+      if (assistance.grade !== null) {
+        throw new BadRequestException(
+          `La monitoría con id ${id} ya tiene una nota asignada`,
+        );
+      }
+
+      if (grade !== undefined) {
+        assistance.grade = grade;
+      }
+
+      if (gradeDescription !== undefined) {
+        assistance.gradeDescription = gradeDescription;
+      }
+
+      return manager.save(assistance);
     });
-
-    if (!assistance) {
-      throw new NotFoundException(`Monitor con id ${id} no encontrado`);
-    }
-
-    if (grade !== undefined) {
-      assistance.grade = grade;
-    }
-
-    if (gradeDescription !== undefined) {
-      assistance.gradeDescription = gradeDescription;
-    }
-
-    return this.teachingAssistanceRepository.save(assistance);
   }
 
   async findAll(periodStr: string) {

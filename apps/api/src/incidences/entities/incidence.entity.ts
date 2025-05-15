@@ -15,6 +15,12 @@ export class Incidence extends Base {
   @Column('text')
   description: string;
 
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  date: Date;
+
+  @Column({ default: false })
+  isClosed: boolean;
+
   @ManyToOne(() => User, (user) => user.incidences)
   user: User;
 }

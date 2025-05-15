@@ -66,6 +66,8 @@ export const ROUTES: Record<string, string> = {
 
   UPLOAD_TAS: "/coordinador/monitores",
 
+  /*  Administrators  */
+  ADMINISTRATOR_INCIDENCES: "/administrador/incidencia",
   /*  General  */
 
   TASK_LIST: "/tareas",

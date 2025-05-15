@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/inicio/profesor/pregrado/detalle/page.txs"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/inicio/profesor/pregrado/detalle/page.txs", "src/components/cell-content-dialog.tsx"],
   "exclude": ["node_modules"]
 }

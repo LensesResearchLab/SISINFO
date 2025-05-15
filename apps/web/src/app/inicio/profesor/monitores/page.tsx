@@ -41,6 +41,7 @@ import { getPeriods } from "@/app/services/period.service";
 import { getTeachingAssistants } from "@/app/services/professor.service";
 import { mapSectionsToProfessorTable } from "@/app/mappers/section.mapper";
 import { ProfessorTA, TeachingAssistantshipProfessorSection } from "@/app/types/teachingAssistantshipProfessorSection";
+import { toast } from "sonner";
 
 
 
@@ -65,10 +66,11 @@ export default function TeachingAssistantList() {
   );
   const setOrder = useTeachingAssistantListStore((state) => state.setOrder);
 
-  const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
+  const { data: semesters, isFetching: isLoadingSemesters } = useQuery({
     queryKey: ["undergraduate-semesters"],
     queryFn: getPeriods,
   });
+
 
 
   const { data: sectionsList, isFetching: isFetchingTeachingAssistants } = useQuery({
@@ -89,7 +91,6 @@ export default function TeachingAssistantList() {
   }, [mappedTASList, setOrder, sortDirection]);
 
   if (isLoadingSemesters) return <SpinnerPage />;
-
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
       <Accordion
@@ -112,8 +113,13 @@ export default function TeachingAssistantList() {
         </div>
         {isFetchingTeachingAssistants ? (
           <SkeletonAccordion />
+        ) : Object.keys(mappedTASList).length === 0 ? (
+          <div className="text-center text-muted-foreground py-10">
+            <p className="text-lg font-medium">No se encontraron monitores asignados.</p>
+            <p className="text-sm mt-2">Verifica si estás en el periodo correcto o ajusta tu búsqueda.</p>
+          </div>
         ) : (
-          <SectionAccordionList sectionsList={mappedTASList ?? {}} />
+          <SectionAccordionList sectionsList={mappedTASList} />
         )}
       </Accordion>
     </div>
@@ -252,18 +258,37 @@ function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAs
   const [grade, setGrade] = useState('');
   const [description, setDescription] = useState('');
   const [selectedGrade, setSelectedGrade] = useState<{ value: number; description: string } | null>(null);
+  const [localList, setLocalList] = useState(teachingAssistantList);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (gradingId) {
-      submitTeachingAssistantGrade(gradingId, grade, description);
-      setGradingId(null);
-      setGrade('');
-      setDescription('');
+      try {
+        await submitTeachingAssistantGrade(gradingId, grade, description);
+        setLocalList((prevList) =>
+          prevList.map((ta) =>
+            ta.id === gradingId
+              ? { ...ta, grade: parseFloat(grade), gradeDescription: description }
+              : ta
+          )
+        );
+        setGradingId(null);
+        setGrade('');
+        setDescription('');
+      } catch (error) {
+        toast("Ha ocurrido un error", {
+          description: `El monitor ya tiene una calificación asociada`,
+        })
+      }
     }
   };
 
   const handleGradeClick = (grade: number, description: string) => {
     setSelectedGrade({ value: grade, description });
+  };
+
+  const isValidGrade = (value: string) => {
+    const number = parseFloat(value);
+    return !isNaN(number) && number >= 0 && number <= 5;
   };
 
   return (
@@ -277,7 +302,7 @@ function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAs
           </TableRow>
         </TableHeader>
         <TableBody className="text-center">
-          {teachingAssistantList.map((student, index) => (
+          {localList.map((student, index) => (
             <TableRow key={index}>
               <TableCell className="font-medium">{student.name}</TableCell>
               <TableCell className="font-medium">{student.code}</TableCell>
@@ -300,7 +325,7 @@ function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAs
                     {gradingId === student.id && (
                       <DialogContent className="sm:max-w-[500px]">
                         <DialogHeader>
-                          <DialogTitle>Calificar Monitor</DialogTitle>
+                          <DialogTitle>Calificar Monitor {student.name}</DialogTitle>
                         </DialogHeader>
                         <div className="flex flex-col gap-4">
                           <Input
@@ -320,7 +345,12 @@ function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAs
                           />
                         </div>
                         <DialogFooter className="mt-4 flex justify-end gap-2">
-                          <Button onClick={handleSubmit}>Guardar</Button>
+                          <Button
+                            onClick={handleSubmit}
+                            disabled={!isValidGrade(grade)}
+                          >
+                            Guardar
+                          </Button>
                           <Button variant="outline" onClick={() => setGradingId(null)}>Cancelar</Button>
                         </DialogFooter>
                       </DialogContent>
@@ -355,10 +385,10 @@ function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAs
           </DialogContent>
         </Dialog>
       )}
-
     </>
   );
 }
+
 
 
 

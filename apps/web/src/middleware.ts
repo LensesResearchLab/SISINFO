@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import { administratorData } from "./components/links-per-group";
 
 /* Dont need authentication for these */
 const publicRoutes = ["/auth", "/auth/api", "/api/auth/login"];
@@ -22,6 +23,7 @@ const roleRoutes = {
   ],
   profesor: ["/inicio/profesor", "/inicio/tareas", "/inicio/soporte"],
   coordinador: ["/inicio/coordinador", "/inicio/tareas", "/inicio/soporte"],
+  administrador: ["/inicio/administrador"]
 };
 
 /* Key for decryption */
@@ -67,6 +69,7 @@ export async function middleware(req: NextRequest) {
     path.startsWith("/estudiante") ||
     path.startsWith("/profesor") ||
     path.startsWith("/coordinador") ||
+    path.startsWith("/administrador") ||
     path.startsWith("/soporte");
 
   const isPublicRoute = publicRoutes.some((route) => path.startsWith(route));

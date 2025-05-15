@@ -53,7 +53,9 @@ export class ProfessorsService implements RoleService {
     }
 
     const filteredSections = professor.sections.filter(
-      (section) => section.period.id === period.id,
+      (section) =>
+        section.period.id === period.id &&
+        section.teachingAssistances.length > 0,
     );
 
     return filteredSections;

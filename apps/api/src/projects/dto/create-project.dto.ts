@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  Matches,
 } from 'class-validator';
 
 export class CreateProjectDto {
@@ -31,6 +32,8 @@ export class CreateProjectDto {
   isEnded?: boolean;
 
   @IsString()
+  @IsNotEmpty()
+  @Matches(/^\d{6}$/)
   period: string;
 
   areasOfInterest: string[];

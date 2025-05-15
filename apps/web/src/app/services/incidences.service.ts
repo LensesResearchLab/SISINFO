@@ -3,8 +3,6 @@ import { Incidence } from "../types/entities/incidence.type";
 
 export async function createIncidence(incidence: Incidence): Promise<Incidence> {
   const url = `${API_ROUTES.BASE}/${API_ROUTES.INCIDENCES}`;
-  console.log("URL a la que se va a enviar la incidencia:", url);
-  console.log("Incidencia a enviar:", JSON.stringify(incidence));
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -31,6 +29,38 @@ export async function createIncidence(incidence: Incidence): Promise<Incidence> 
     return await response.json();
   } catch (error) {
     console.error("Error al enviar la petición:", error);
+    throw error;
+  }
+}
+
+export async function getAllIncidences(): Promise<Incidence[]> {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.INCIDENCES}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      let errorData = {};
+      try {
+        errorData = await response.json();
+      } catch (parseError) {
+        console.error("No se pudo parsear el error:", parseError);
+      }
+      throw new Error(
+        `Error fetching incidences: ${response.status} ${response.statusText}`,
+        { cause: errorData }
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error al obtener las incidencias:", error);
     throw error;
   }
 }

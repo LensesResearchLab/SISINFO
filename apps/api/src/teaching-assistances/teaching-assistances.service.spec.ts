@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeachingAssistancesService } from './teaching-assistances.service';
 import { TeachingAssistance } from './entities/teaching-assistance.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PeriodsService } from '../periods/periods.service';
 import { SectionsService } from '../sections/sections.service';
@@ -13,6 +13,7 @@ describe('TeachingAssistancesService', () => {
   let periodsService: PeriodsService;
   let sectionsService: SectionsService;
   let studentsService: StudentsService;
+  let dataSource: DataSource;
 
   beforeEach(async () => {
     const mockRepository = {
@@ -39,6 +40,7 @@ describe('TeachingAssistancesService', () => {
       save: jest.fn(),
       delete: jest.fn(),
     };
+    const mockDataSource = {};
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TeachingAssistancesService,
@@ -57,6 +59,10 @@ describe('TeachingAssistancesService', () => {
         {
           provide: SectionsService,
           useValue: mockSectionsService,
+        },
+        {
+          provide: DataSource,
+          useValue: mockDataSource,
         },
       ],
     }).compile();

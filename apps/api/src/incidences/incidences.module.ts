@@ -4,7 +4,7 @@ import { IncidencesController } from './incidences.controller';
 import { Incidence } from './entities/incidence.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   controllers: [IncidencesController],

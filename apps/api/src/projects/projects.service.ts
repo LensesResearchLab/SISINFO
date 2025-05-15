@@ -7,8 +7,8 @@ import { Project } from './entities/project.entity';
 import { ProfessorsService } from '../professors/professors.service';
 import { PeriodsService } from '../periods/periods.service';
 import { Student } from '../students/entities/student.entity';
-import { AreasOfInterestService } from 'src/areas-of-interest/areas-of-interest.service';
-import { AreasOfInterest } from 'src/areas-of-interest/entities/areas-of-interest.entity';
+import { AreasOfInterestService } from '../areas-of-interest/areas-of-interest.service';
+import { AreasOfInterest } from '../areas-of-interest/entities/areas-of-interest.entity';
 
 @Injectable()
 export class ProjectsService {
@@ -22,9 +22,8 @@ export class ProjectsService {
   async create(
     createProjectDto: CreateProjectDto,
     professorId: string,
+    periodId: string,
   ) {
-    const period = await this.periodsService.findOneByPeriodAndYear(createProjectDto.period.slice(4,6), Number(createProjectDto.period.slice(0,4)));
-    console.log(period);
     const professor = await this.professorsService.findOne(professorId);
     const areasInterest: AreasOfInterest[] = [];
 
@@ -42,13 +41,12 @@ export class ProjectsService {
       );
     }
     if (!period) {
-      throw new NotFoundException(`Period with id ${createProjectDto.period} not found`);
+      throw new NotFoundException(`Period with id ${periodId} not found`);
     }
     const project = this.projectRepository.create({
       ...createProjectDto,
       professor: professor,
       period: period,
-      areasOfInterest: areasInterest
     });
 
     await this.projectRepository.save(project);

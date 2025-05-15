@@ -125,6 +125,37 @@ export const graduateData = [
   },
 ];
 
+
+export const administratorData = [
+  {
+    title: "Administracion",
+    url: "administracion",
+    icon: ScrollText,
+    items: [
+      {
+        Icon: FileText,
+        title: "Ver incidencias",
+        description:
+          "Aquí puedes ver las incidencias reportadas por los usuarios.",
+        url: ROUTES.ADMINISTRATOR_INCIDENCES,
+      },
+      {
+        Icon: PenSquare,
+        title: "Consultar usuarios y roles",
+        description: "Aquí puedes ver los usuarios y sus roles.",
+        url: ROUTES.POSTGRADUATE_THESIS_STATUS,
+      },
+      {
+        Icon: Calendar,
+        title: "Asignar profesores lideres",
+        description:
+          "Aquí puedes asignar y consultar los profesores lideres de cada materia.",
+        url: ROUTES.POSTGRADUATE_THESIS_DATES,
+      },
+    ],
+  },
+];
+
 export const professorData = [
   {
     title: "Proyecto de pregrado",
