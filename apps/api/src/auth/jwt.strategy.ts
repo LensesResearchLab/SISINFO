@@ -27,7 +27,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             return token;
           }
 
-          console.debug('[JWT Strategy] No se encontró el token en las cookies');
+          console.debug(
+            '[JWT Strategy] No se encontró el token en las cookies',
+          );
           return null;
         },
       ]),

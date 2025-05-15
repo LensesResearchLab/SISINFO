@@ -29,7 +29,7 @@ export class UsersService {
   async findOne(id: string) {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['coordinator', 'professor', 'student'],
+      relations: ['coordinator', 'professor', 'student', 'administrator'],
     });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -41,7 +41,7 @@ export class UsersService {
   async findByEmail(email: string) {
     const user = await this.userRepository.findOne({
       where: { email },
-      relations: ['coordinator', 'professor', 'student'],
+      relations: ['coordinator', 'professor', 'student', 'administrator'],
     });
     if (!user) return null;
     const roles: string[] = this.getUserRoles(user);
@@ -50,10 +50,14 @@ export class UsersService {
 
   getUserRoles(user: User) {
     const roles: string[] = [];
+    if (user.administrator) roles.push('administrador');
     if (user.coordinator) roles.push('coordinador');
     if (user.professor) roles.push('profesor');
     if (user.student) {
-      if (user.student.isUndergraduate) {
+      if (user.administrator) {
+        roles.push('estudiante');
+        roles.push('estudiante_maestria');
+      } else if (user.student.isUndergraduate) {
         roles.push('estudiante');
       } else {
         roles.push('estudiante_maestria');

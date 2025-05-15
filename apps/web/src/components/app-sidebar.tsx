@@ -18,6 +18,7 @@ import {
   coordinatorData,
   supportData,
   graduateData,
+  administratorData,
 } from "@/components/links-per-group";
 import { useHomeStore } from "@/app/inicio/home.store";
 import { getUserInfo } from "@/app/auth/auth-service";
@@ -52,6 +53,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [setRoles]);
 
   const roleNavMainMap = new Map([
+    ["administrador", administratorData],
     ["coordinador", coordinatorData],
     ["profesor", professorData],
     ["estudiante", undergraduateData],

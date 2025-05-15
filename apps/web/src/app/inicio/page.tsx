@@ -10,6 +10,7 @@ import SupportFeatures from "./components/support-features";
 import { fetchUserRoles } from "../auth/auth-service";
 import SpinnerPage from "@/components/shared/spinner-page";
 import GraduateStudentFeatures from "./components/graduate-student-features";
+import AdministratorFeatures from "./components/administrator-features";
 
 const roleMap = new Map<string, React.ReactNode>([
   [
@@ -31,6 +32,7 @@ const roleMap = new Map<string, React.ReactNode>([
     </ProfessorFeatures>,
   ],
   ["coordinador", <CoordinatorFeatures key={"coordinador"} />],
+  ["administrador", <AdministratorFeatures key={"administrador"} />],
 ]);
 
 export default function Home() {
@@ -59,7 +61,6 @@ export default function Home() {
 }
 
 function RoleInformation() {
-  /* Apply fetched roles of before to the content displayer */
   const roles = useHomeStore((state) => state.roles);
   return (
     <>

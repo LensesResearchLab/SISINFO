@@ -91,6 +91,7 @@ export class SeedService {
   MAX_PROJECTS_PER_PROFESSOR = 3;
   GRADUATED_ASSISTANCE_APPLICATIONS_NUMBER = 2;
 
+  // TODO
   async seedSampleTASEntities() {
     const period =
       await this.periodsService.findOneByPeriodAndYearString('202510');
@@ -184,13 +185,13 @@ export class SeedService {
     for (const period of periods) {
       const existingPeriod = await this.periodsService.findOneByPeriodAndYear(
         period.period,
-        period.year
-      ); 
+        period.year,
+      );
       if (!existingPeriod) {
         insertPromises.push(this.periodsService.create(period));
       }
     }
-    
+
     await Promise.all(insertPromises);
     return true;
   }
@@ -258,26 +259,27 @@ export class SeedService {
     const users = await this.usersService.findAll();
     const insertPromises: Promise<Thesis>[] = [];
     const periods = await this.periodsService.findAll();
-    
+
     // Filter periods to ensure they have valid format
-    const validPeriods = periods.filter(period => 
-      period && period.year && period.period
+    const validPeriods = periods.filter(
+      (period) => period && period.year && period.period,
     );
-    
+
     if (validPeriods.length === 0) {
       console.log('No valid periods found for thesis creation');
       return false;
     }
-    
+
     for (let i = 0; i < this.PROFESSORS_NUMBER; i++) {
       for (
         let cnt = 0;
         cnt < this.PROFESSORS_NUMBER % (this.MAX_THESIS_PER_PROFESSOR + 1);
         cnt++
       ) {
-        const randomPeriod = validPeriods[Math.floor(Math.random() * validPeriods.length)];
+        const randomPeriod =
+          validPeriods[Math.floor(Math.random() * validPeriods.length)];
         const periodString = `${randomPeriod.year}${Number(randomPeriod.period) < 10 ? '0' + randomPeriod.period : randomPeriod.period}`;
-        
+
         try {
           insertPromises.push(
             this.thesesService.create(
@@ -288,7 +290,7 @@ export class SeedService {
                 investigationSubarea: faker.lorem.word(),
               },
               users[i].id,
-              periodString, 
+              periodString,
             ),
           );
         } catch (error) {
@@ -296,7 +298,6 @@ export class SeedService {
         }
       }
     }
-    
     await Promise.all(insertPromises);
     return true;
   }
@@ -342,9 +343,10 @@ export class SeedService {
               description: faker.lorem.sentence(),
               isEnded: faker.datatype.boolean(),
               maxStudents: faker.number.int({ min: 1, max: 10 }),
-              category: categories[Math.floor(Math.random() * categories.length)],
+              category:
+                categories[Math.floor(Math.random() * categories.length)],
               period: '202520',
-              areasOfInterest: ["Bases de datos", "no c"]
+              areasOfInterest: ['Bases de datos', 'Desarrollo de Software'],
             },
             users[i].id,
           ),
@@ -492,7 +494,7 @@ export class SeedService {
     await Promise.all(insertPromises);
     return true;
   }
-  
+
   async seedAreasOfInterest() {
     const areasOfInterest: CreateAreasOfInterestDto[] = sampleAreasOfInterest;
     const insertPromises: Promise<CreateAreasOfInterestDto>[] = [];

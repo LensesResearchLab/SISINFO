@@ -22,7 +22,14 @@ export class IncidencesService {
     return this.incidenceRepository.save(incidence);
   }
 
-  findAll() {
-    return this.incidenceRepository.find();
+  async findAll() {
+    const incidences = await this.incidenceRepository.find({
+      relations: { user: true },
+    });
+
+    return incidences.map(({ user, ...rest }) => ({
+      ...rest,
+      userId: user.id,
+    }));
   }
 }

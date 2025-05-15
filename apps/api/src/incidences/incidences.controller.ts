@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { IncidencesService } from './incidences.service';
 import { CreateIncidenceDto } from './dto/create-incidence.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from 'src/auth/roles.decorator';
 
 @Controller('incidences')
 export class IncidencesController {
@@ -18,6 +19,8 @@ export class IncidencesController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @Roles('admin')
   findAll() {
     return this.incidencesService.findAll();
   }
