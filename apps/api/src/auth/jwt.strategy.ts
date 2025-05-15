@@ -2,26 +2,54 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
+import { Request } from 'express';
 import jwtConstants from '../shared/security/constants';
 
-// ... existing code ...
+interface JwtPayload {
+  id: string;
+  email: string;
+  name: string;
+  roles: string[];
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private configService: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        (req: Request | undefined): string | null => {
+          const cookies = req?.cookies as Record<string, unknown> | undefined;
+          const token = cookies?.['auth-token'];
+
+          if (typeof token === 'string') {
+            console.debug('[JWT Strategy] Token extraído desde cookie:', token);
+            return token;
+          }
+
+          console.debug('[JWT Strategy] No se encontró el token en las cookies');
+          return null;
+        },
+      ]),
       ignoreExpiration: false,
       secretOrKey: jwtConstants.JWT_SECRET,
-      algorithms: ['HS256'], 
+      algorithms: ['HS256'],
     });
   }
 
-  async validate(payload: any) {
-    return { 
+  validate(payload: JwtPayload) {
+    console.debug('[JWT Strategy] Payload validado:', payload);
+
+    if (!payload.id || !payload.email) {
+      console.error('[JWT Strategy] JWT payload inválido:', payload);
+      throw new Error('Invalid JWT payload');
+    }
+
+    return {
       id: payload.id,
       email: payload.email,
       name: payload.name,
-      roles: payload.roles 
+      roles: payload.roles,
     };
   }
 }
