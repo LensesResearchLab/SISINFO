@@ -13,12 +13,14 @@ import { StudentsService } from '../students/students.service';
 import { ProfessorsService } from '../professors/professors.service';
 import { Student } from '../students/entities/student.entity';
 import { Professor } from '../professors/entities/professor.entity';
+import { DocumentsService } from 'src/documents/documents.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(Task)
     private readonly repo: Repository<Task>,
+    private readonly documentService: DocumentsService,
     private readonly factory: TaskFactory,
     private readonly studentsService: StudentsService,
     private readonly professorService: ProfessorsService,
@@ -45,6 +47,12 @@ export class TasksService {
       professor = await this.professorService.findOne(overrides?.professorId);
       if (professor) {
         entity.professor = professor;
+      }
+    }
+    if(overrides?.documentId){
+      const document = await this.documentService.findOne(overrides?.documentId);
+      if (document){
+        entity.document=document;
       }
     }
     return await this.repo.save(entity);

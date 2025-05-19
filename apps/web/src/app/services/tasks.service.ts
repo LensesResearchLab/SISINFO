@@ -5,7 +5,7 @@ export async function createTask(projectId: string, taskData: any, file?: File) 
 
   formData.append(
     "taskDto",
-    new Blob([JSON.stringify(taskData)], { type: "application/json" })
+    JSON.stringify(taskData)
   );
 
   if (file) {

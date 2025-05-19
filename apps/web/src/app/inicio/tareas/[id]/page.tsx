@@ -23,8 +23,9 @@ import { ROUTES } from "@/app/routes";
 import { createTask, getTask } from "@/app/services/tasks.service";
 import { TaskType } from "../flows";
 
+/* ---------- VALIDACIÓN ---------- */
 const taskSchema = z.object({
-  taskType: z.nativeEnum(TaskType),
+  type: z.nativeEnum(TaskType),
   document: z.instanceof(File).optional(),
   comment: z.string().optional(),
   isApproved: z.boolean().optional(),
@@ -33,90 +34,136 @@ const taskSchema = z.object({
 export default function TaskForm() {
   const { id } = useParams();
   const router = useRouter();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [task, setTask] = useState<any>(null); // Puedes tiparlo mejor si sabes la forma exacta
+  const [task, setTask] = useState<any>(null);
+
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);          // ← nuevo
 
   const form = useForm<z.infer<typeof taskSchema>>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
-      taskType: TaskType.UPLOAD_FILE,
+      type: TaskType.UPLOAD_FILE,
       document: undefined,
       comment: "",
       isApproved: false,
     },
   });
 
-  // Obtener tarea desde el backend
+  /* ---------- CARGAR TAREA ---------- */
   useEffect(() => {
     async function fetchTask() {
       if (!id) return;
       try {
         const response = await getTask(id as string);
         setTask(response);
-        form.setValue("taskType", response.type);
-      } catch (error) {
-        console.error("Error al obtener la tarea", error);
+
+        // Si la tarea trae PDF, obtenemos url
+        if (response?.document?.file?.data) {
+          setPdfLoading(true);
+          const bytes = new Uint8Array(response.document.file.data);
+          const blob = new Blob([bytes], { type: "application/pdf" });
+          setPdfUrl(URL.createObjectURL(blob));
+          setPdfLoading(false);
+        }
+
+        form.setValue("type", response.type);
+        form.setValue("isApproved", Boolean(response.approved));
+      } catch (err) {
+        console.error("Error al obtener la tarea:", err);
       } finally {
         setLoading(false);
       }
     }
 
     fetchTask();
-  }, [id, form]);
 
-  const dialogText = {
-    title: "Confirmar Acción",
-    description: "¿Estás seguro de que deseas completar esta tarea?",
-    buttonText: "Confirmar",
-    successTitle: "Tarea completada",
-    successText: "La tarea se completó correctamente",
-    url: `${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`,
-  };
+    return () => {
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+    };
+  }, [id]);
 
+  /* ---------- GUARDAR TAREA ---------- */
   async function onSubmit(values: z.infer<typeof taskSchema>) {
-  if (!id) return;
+    if (!id) return;
 
-  const taskData = {
-    type: values.taskType,
-    state: "pending",
-    date: new Date(),
-    payload: {
+    const taskData = {
+      type: values.type,
+      state: "pending",
+      date: new Date(),
       comment: values.comment,
-      isApproved: values.isApproved,
-    },
-  };
+      approved: values.isApproved,
+    };
 
-  const file = values.document ?? undefined;
-  
-  await createTask(id as string, taskData, file);
-  router.push(dialogText.url);
-}
+    await createTask(id as string, taskData, values.document);
+    router.push(`${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`);
+  }
 
+  /* ---------- UI ---------- */
+  if (loading) return <div className="text-center py-10">Cargando tarea…</div>;
+  if (!task)
+    return (
+      <div className="text-center py-10 text-red-500">
+        Tarea no encontrada
+      </div>
+    );
 
-  if (loading) return <div className="text-center py-10">Cargando tarea...</div>;
-  if (!task) return <div className="text-center py-10 text-red-500">Tarea no encontrada</div>;
+  const hasDocument = Boolean(task.document);
 
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
-      <div className="w-full bg-card shadow-xl rounded-2xl p-8 space-y-2 border border-gray-100">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-core-highlight">{task.title}</h1>
-          <p className="text-muted-foreground">{task.description}</p>
+      <div className="w-full bg-card shadow-xl rounded-2xl p-8 space-y-4 border border-gray-100">
+        {/* Encabezado */}
+        <div className="text-center space-y-1">
+          <h1 className="text-2xl font-bold text-core-highlight">
+            {task.title ?? task.document?.name ?? "Revisión de documento"}
+          </h1>
+          {task.description && (
+            <p className="text-muted-foreground">{task.description}</p>
+          )}
         </div>
 
+        {/* Comentario previo de la tarea */}
+        {task.comment && task.comment.trim() !== "" && (
+          <div className="bg-muted/60 p-4 rounded-md border text-sm space-y-1">
+            <p className="font-semibold text-primary">Comentario existente:</p>
+            <p className="whitespace-pre-wrap">{task.comment}</p>
+          </div>
+        )}
+
+        {/* Visor PDF */}
+        {hasDocument &&
+          (pdfUrl ? (
+            <iframe
+              src={pdfUrl}
+              width="100%"
+              height="600px"
+              title="Documento PDF"
+              className="min-h-[400px] md:min-h-[600px]"
+            />
+          ) : (
+            pdfLoading && (
+              <p className="text-center text-gray-500">
+                Cargando documento…
+              </p>
+            )
+          ))}
+
+        {/* Formulario */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Tipo de tarea */}
               <FormItem>
-                <FormLabel className="font-semibold">Tipo de Tarea</FormLabel>
-                <div className="p-2 bg-muted rounded-md text-sm text-primary font-medium">
-                  {task.type === TaskType.UPLOAD_FILE && "Subir archivo"}
-                  {task.type === TaskType.SEND_COMMENTS && "Enviar comentarios"}
-                  {task.type === TaskType.SEND_APPROVE && "Aprobar tarea"}
+                <FormLabel className="font-semibold">Tipo de tarea</FormLabel>
+                <div className="p-2 bg-muted rounded-md text-sm text-primary font-medium capitalize">
+                  {task.type.replace("_", " ").toLowerCase()}
                 </div>
               </FormItem>
 
+              {/* Subida de archivo */}
               {task.type === TaskType.UPLOAD_FILE && (
                 <div className="md:col-span-2">
                   <FormField
@@ -124,21 +171,27 @@ export default function TaskForm() {
                     name="document"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-primary font-semibold">Selecciona el Documento</FormLabel>
+                        <FormLabel className="text-primary font-semibold">
+                          Selecciona el documento
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="file"
+                            accept="application/pdf"
+                            onChange={(e) =>
+                              field.onChange(e.target.files?.[0])
+                            }
                             className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg"
-                            onChange={(e) => field.onChange(e.target.files?.[0])}
                           />
                         </FormControl>
-                        <FormMessage className="text-red-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
               )}
 
+              {/* Comentarios */}
               {task.type === TaskType.SEND_COMMENTS && (
                 <div className="md:col-span-2">
                   <FormField
@@ -146,56 +199,68 @@ export default function TaskForm() {
                     name="comment"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-primary font-semibold">Comentarios</FormLabel>
+                        <FormLabel className="text-primary font-semibold">
+                          Comentarios
+                        </FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
-                            placeholder="Escribe tus comentarios aquí..."
+                            placeholder="Escribe tus comentarios aquí…"
                             className="min-h-[100px] focus:ring-2 focus:ring-core border-gray-300 rounded-lg text-primary"
                           />
                         </FormControl>
-                        <FormMessage className="text-red-500" />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
               )}
 
+              {/* Aprobación */}
               {task.type === TaskType.SEND_APPROVE && (
                 <FormField
                   control={form.control}
                   name="isApproved"
                   render={({ field }) => (
-                    <FormItem className="text-primary">
-                      <FormLabel className="font-semibold">¿Aprobar tarea?</FormLabel>
+                    <FormItem>
+                      <FormLabel className="font-semibold">
+                        ¿Aprobar tarea?
+                      </FormLabel>
                       <FormControl>
                         <Checkbox
                           checked={field.value}
-                          onCheckedChange={(checked) => field.onChange(checked)}
+                          onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                      <FormMessage className="text-red-500" />
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
               )}
             </div>
 
-            <div className="flex justify-center mt-5">
+            {/* Botón y modal */}
+            <div className="flex justify-center">
               <Button
                 type="button"
                 onClick={async () => {
                   const isValid = await form.trigger();
-                  if (isValid) {
-                    setIsModalOpen(true);
-                  }
+                  if (isValid) setIsModalOpen(true);
                 }}
                 className="bg-core text-white hover:bg-core-dark"
               >
-                Confirmar Tarea
+                Confirmar tarea
               </Button>
+
               <ConfirmationModal
-                dialogText={dialogText}
+                dialogText={{
+                  title: "Confirmar acción",
+                  description: "¿Estás seguro de completar esta tarea?",
+                  buttonText: "Confirmar",
+                  successTitle: "Tarea completada",
+                  successText: "La tarea se completó correctamente",
+                  url: `${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`,
+                }}
                 onConfirm={form.handleSubmit(onSubmit)}
                 open={isModalOpen}
                 setIsOpen={setIsModalOpen}

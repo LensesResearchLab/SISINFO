@@ -241,31 +241,49 @@ export class ProjectApplicationsService {
   }
 
   async completeAndAdvance(
-  projectId: string,
+  taskId: string,
   taskDto: CreateTaskDto,
   file?: Express.Multer.File
 ): Promise<ProjectApplication> {
   return this.dataSource.transaction(async (manager) => {
-    const projectApplication = await manager.getRepository(ProjectApplication).findOne({
-      where: { id: projectId },
-      relations: ['previousTasks', 'actualTask', 'student', 'project'],
+    const task = await manager.getRepository(Task).findOne({
+      where: { id: taskId },
+      relations: ['projectActualTask', 'projectActualTask.actualTask', 'projectActualTask.previousTasks.document', 'projectActualTask.student', 'projectActualTask.project.professor'],
     });
+    const projectApplication= task?.projectActualTask;
     if (!projectApplication) throw new NotFoundException();
-
-    console.log(projectApplication);
 
     const actualTask = projectApplication.actualTask;
     const previousTasks = projectApplication.previousTasks;
-    const actualIndex = previousTasks.length;
+    let actualIndex = 0;
+    if (previousTasks){
+      actualIndex = previousTasks.length;
+    }
+
+    console.log(previousTasks);
+    
 
     const steps = flows[actualTask.flow];
     const nextStep = steps[actualIndex + 1];
+    console.log(nextStep);
     if (!nextStep) {
       throw new BadRequestException(`Paso siguiente no encontrado en el flujo: ${actualTask.flow}`);
     }
 
     // Documento solo si aplica
     let documentId: string | undefined;
+
+    console.log(taskDto);
+    console.log(taskDto.type === TaskType.UPLOAD_FILE);
+    let comment = "";
+
+    if (taskDto.type === TaskType.SEND_COMMENTS){
+      if(!taskDto.comment){
+        throw new BadRequestException('No hay comentarios');
+      }
+      comment = taskDto.comment;
+      
+    }
 
     if (taskDto.type === TaskType.UPLOAD_FILE) {
       if (!file) {
@@ -276,20 +294,25 @@ export class ProjectApplicationsService {
         name: file.originalname,
         file: Buffer.from(file.buffer),
       });
+      console.log(savedDocument.id);
       documentId = savedDocument.id;
     } else if (
       actualTask.flow === 'proyectoPregrado' &&
       actualIndex === 1 &&
-      previousTasks[actualIndex].document?.id
+      previousTasks[actualIndex]?.document?.id
     ) {
-      documentId = previousTasks[actualIndex].document.id;
+      documentId = previousTasks[actualIndex]?.document?.id;
     }
 
     // Guardar tarea actual como completada
+    if (!projectApplication.previousTasks){
+      projectApplication.previousTasks = [];
+    }
     projectApplication.previousTasks.push(actualTask);
 
     // Crear nueva tarea
     const nextTask = await this.tasksService.create(nextStep.type, {
+      comment,
       documentId,
       flow: actualTask.flow,
       projectApplicationId: projectApplication.id,
@@ -297,6 +320,8 @@ export class ProjectApplicationsService {
         ? { studentId: projectApplication.student.id }
         : { professorId: projectApplication.project.professor.id }),
     });
+
+    console.log(nextTask);
 
     projectApplication.actualTask = nextTask;
 

@@ -4,14 +4,40 @@ import { CreateProjectApplicationDto } from './dto/create-project-application.dt
 import { UpdateProjectApplicationDto } from './dto/update-project-application.dto';
 import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Request } from 'express';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles.decorator';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('project-applications')
 export class ProjectApplicationsController {
   constructor(
     private readonly projectApplicationsService: ProjectApplicationsService,
   ) { }
+
+
+@Post(':id/task')
+@UseGuards(JwtAuthGuard)
+@UseInterceptors(FileInterceptor('file'))
+async complete(
+  @Body() taskDto: any,
+  @UploadedFile(
+    new ParseFilePipe({
+      validators: [
+        new MaxFileSizeValidator({ maxSize: 10000000000 }),
+        new FileTypeValidator({ fileType: 'application/pdf' }),
+      ],
+      fileIsRequired: false,
+    }),
+  )
+  file: Express.Multer.File,
+  @Param('id') id: string,
+) {
+  taskDto=JSON.parse(taskDto.taskDto);
+  const taskDto_l=plainToInstance(CreateTaskDto, taskDto);
+  return this.projectApplicationsService.completeAndAdvance(id, taskDto_l, file);
+}
+
 
   @Post()
   create(@Body() createProjectApplicationDto: CreateProjectApplicationDto) {
@@ -59,36 +85,6 @@ export class ProjectApplicationsController {
       id,
       updateProjectApplicationDto,
     );
-  }
-
-  @Post(':id/task')
-  @UseGuards(JwtAuthGuard)
-  @Roles('profesor', 'estudiante')
-  @UseInterceptors(FileInterceptor('file'))
-  async complete(
-    @Body('taskDto') taskDtoRaw: string,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 1000000 }),
-          new FileTypeValidator({ fileType: 'application/pdf' }),
-        ],
-        fileIsRequired: false,
-      }),
-    )
-    file: Express.Multer.File,
-    @Param('id') id: string,
-  ) {
-    let taskDto: CreateTaskDto;
-
-    try {
-      taskDto = JSON.parse(taskDtoRaw);
-    } catch (error) {
-      throw new BadRequestException('taskDto inválido');
-    }
-    console.log(id);
-
-    return await this.projectApplicationsService.completeAndAdvance(id, taskDto, file);
   }
 
 

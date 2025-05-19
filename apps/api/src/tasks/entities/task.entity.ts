@@ -44,7 +44,7 @@ export class Task extends Base {
   @ManyToOne(() => Professor, (s) => s.tasks)
   professor: Professor;
 
-  @OneToMany(() => ProjectApplication, (p) => p.previousTasks)
+  @ManyToOne(() => ProjectApplication, (p) => p.previousTasks)
   @JoinColumn({ name: 'projectApplicationId' })
   projectPreviousTasks: ProjectApplication;
 
