@@ -22,6 +22,9 @@ export class Task extends Base {
   @Column()
   comment: string;
 
+  @Column({nullable:true})
+  step: number;
+
   @Column()
   approved: boolean;
 
@@ -44,7 +47,7 @@ export class Task extends Base {
   @ManyToOne(() => Professor, (s) => s.tasks)
   professor: Professor;
 
-  @OneToMany(() => ProjectApplication, (p) => p.previousTasks)
+  @ManyToOne(() => ProjectApplication, (p) => p.previousTasks)
   @JoinColumn({ name: 'projectApplicationId' })
   projectPreviousTasks: ProjectApplication;
 

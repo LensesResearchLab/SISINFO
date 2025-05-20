@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCoordinators } from "@/app/services/support.service";
 import Image from "next/image";
-import { Coordinator } from "@/app/types/coordinator.type";
+import { Coordinator } from "@/app/types/entities/coordinator.type";
 
 /**
  * AcademicCoordinators Component

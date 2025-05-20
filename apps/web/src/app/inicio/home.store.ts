@@ -1,12 +1,5 @@
 import { create } from "zustand";
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-  date: Date;
-}
+import { Task } from "../types/entities/task.type";
 
 interface HomeState {
   roles: string[];

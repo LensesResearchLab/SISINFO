@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useProjectInscriptionStore } from "./store";
 import { ROUTES } from "@/app/routes";
 import { ProjectDetailCard, ProjectNotFound } from "@/components/shared/project-detail-card";
-import { createProjectApplication, getUndergraduateThesisById } from "@/app/services/project.service";
+import { createProjectApplication, getUndergraduateProjectById } from "@/app/services/project.service";
 import { Project } from "@/app/types/entities/project.type";
 import { getUserInfo } from "@/app/auth/auth-service";
 
@@ -43,7 +43,7 @@ export default function ThesisInscription({
     error,
   } = useQuery({
     queryKey: ["student-project-application", id],
-    queryFn: () => getUndergraduateThesisById(id),
+    queryFn: () => getUndergraduateProjectById(id),
   });
 
   const isApplying = useProjectInscriptionStore((state) => state.isApplying);

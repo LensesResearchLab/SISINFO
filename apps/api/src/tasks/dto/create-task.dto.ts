@@ -1,4 +1,4 @@
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 import { TaskType } from '../enums/taskType';
 
 export class CreateTaskDto {
@@ -7,6 +7,10 @@ export class CreateTaskDto {
   @IsOptional()
   @IsString()
   comment?: string;
+
+  @IsInt()
+  @IsOptional()
+  step?: number; 
 
   @IsOptional()
   @IsBoolean()

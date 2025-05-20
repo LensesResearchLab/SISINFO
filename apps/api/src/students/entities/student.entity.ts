@@ -66,7 +66,7 @@ export class Student extends Role {
   @JoinColumn()
   thesisApplication: ThesisApplication;
 
-  @OneToOne(
+  @OneToMany(
     () => ProjectApplication,
     (projectApplication) => projectApplication.student,
     { nullable: true },

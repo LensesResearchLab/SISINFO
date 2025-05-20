@@ -6,6 +6,7 @@ export interface FactoryParams {
   type: TaskType;
   comment?: string;
   approved?: boolean;
+  step?:number;
   documentId?: string;
   flow?: string;
   projectApplicationId?: string;
@@ -22,6 +23,7 @@ export class TaskFactory {
       approved,
       documentId,
       flow,
+      step,
       projectApplicationId,
       studentId,
       professorId,
@@ -34,6 +36,7 @@ export class TaskFactory {
       approved: approved ?? false,
       documentId,
       flow,
+      step,
       projectApplicationId,
       studentId,
       professorId,
@@ -45,12 +48,16 @@ export class TaskFactory {
         return dto;
 
       case TaskType.SEND_COMMENTS:
-        // Tarea de enviar comentarios: arranca aprobado en false
-        dto.comment = dto.comment || 'Envía tus comentarios aquí';
+        dto.comment = dto.comment;
         return dto;
 
       case TaskType.SEND_APPROVE:
         dto.approved = dto.approved!;
+        dto.documentId= dto.documentId;
+        return dto;
+
+      case TaskType.VIEW_COMMENTS:
+        dto.comment = dto.comment;
         return dto;
 
       default:
