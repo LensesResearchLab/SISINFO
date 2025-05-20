@@ -179,7 +179,10 @@ export class SeedService {
       });
       const profs = await this.professorsService.findAll();
       const professorChosen = faker.helpers.arrayElement(profs);
-      await this.coursesService.updateMainProfessor(course.id, professorChosen);
+      await this.coursesService.updateMainProfessor(
+        course.id,
+        professorChosen.id,
+      );
       await this.coursesService.updateProgram(course.id, programDoc);
     }
 

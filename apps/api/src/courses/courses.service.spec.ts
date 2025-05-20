@@ -4,10 +4,12 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Course } from './entities/course.entity';
 import { Repository } from 'typeorm';
 import { PeriodsService } from '../periods/periods.service';
+import { ProfessorsService } from '../professors/professors.service';
 
 describe('CoursesService', () => {
   let coursesService: CoursesService;
   let coursesRepository: Repository<Course>;
+  let professorsService: ProfessorsService;
 
   beforeEach(async () => {
     const mockRepository = {
@@ -24,12 +26,23 @@ describe('CoursesService', () => {
       delete: jest.fn(),
     };
 
+    const mockProfessorsService = {
+      find: jest.fn(),
+      findOne: jest.fn(),
+      save: jest.fn(),
+      delete: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CoursesService,
         {
           provide: PeriodsService,
           useValue: mockPeriodsService,
+        },
+        {
+          provide: ProfessorsService,
+          useValue: mockProfessorsService,
         },
         {
           provide: getRepositoryToken(Course),

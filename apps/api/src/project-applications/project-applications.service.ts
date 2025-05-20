@@ -18,8 +18,8 @@ import { DataSource } from 'typeorm';
 import { ProjecStatusEnum } from './enums/project_status.enum';
 import { PeriodsService } from '../periods/periods.service';
 import { Task } from '../tasks/entities/task.entity';
-import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
-import { DocumentsService } from 'src/documents/documents.service';
+import { CreateTaskDto } from '../tasks/dto/create-task.dto';
+import { DocumentsService } from '../documents/documents.service';
 
 @Injectable()
 export class ProjectApplicationsService {
@@ -33,7 +33,7 @@ export class ProjectApplicationsService {
     private readonly periodsService: PeriodsService,
     @InjectRepository(ProjectApplication)
     private readonly projectApplicationRepository: Repository<ProjectApplication>,
-  ) { }
+  ) {}
 
   async create(
     createProjectApplicationDto: CreateProjectApplicationDto,
@@ -167,10 +167,7 @@ export class ProjectApplicationsService {
 
     const tasks = apps
       .map((a) => a.actualTask)
-      .filter(
-        (t): t is Task =>
-          t !== null && t.student?.id === studentId
-      );
+      .filter((t): t is Task => t !== null && t.student?.id === studentId);
 
     return tasks;
   }
@@ -188,10 +185,7 @@ export class ProjectApplicationsService {
 
     const tasks = apps
       .map((a) => a.actualTask)
-      .filter(
-        (t): t is Task =>
-          t !== null && t.professor?.id === profId 
-      );
+      .filter((t): t is Task => t !== null && t.professor?.id === profId);
 
     return tasks;
   }
@@ -229,12 +223,18 @@ export class ProjectApplicationsService {
   async completeAndAdvance(
     taskId: string,
     taskDto: CreateTaskDto,
-    file?: Express.Multer.File
+    file?: Express.Multer.File,
   ): Promise<ProjectApplication> {
     return this.dataSource.transaction(async (manager) => {
       const task = await manager.getRepository(Task).findOne({
         where: { id: taskId },
-        relations: ['projectActualTask', 'projectActualTask.actualTask', 'projectActualTask.previousTasks.document', 'projectActualTask.student', 'projectActualTask.project.professor'],
+        relations: [
+          'projectActualTask',
+          'projectActualTask.actualTask',
+          'projectActualTask.previousTasks.document',
+          'projectActualTask.student',
+          'projectActualTask.project.professor',
+        ],
       });
       const projectApplication = task?.projectActualTask;
       if (!projectApplication) throw new NotFoundException();
@@ -246,27 +246,32 @@ export class ProjectApplicationsService {
         actualIndex = previousTasks.length;
       }
 
-
       const steps = flows[actualTask.flow];
       const nextStep = steps[actualIndex + 1];
       if (!nextStep) {
-        throw new BadRequestException(`Paso siguiente no encontrado en el flujo: ${actualTask.flow}`);
+        throw new BadRequestException(
+          `Paso siguiente no encontrado en el flujo: ${actualTask.flow}`,
+        );
       }
 
       let documentId: string | undefined;
-      let comment = "";
+      let comment = '';
 
-      if (taskDto.type === TaskType.SEND_COMMENTS || taskDto.type === TaskType.VIEW_COMMENTS) {
+      if (
+        taskDto.type === TaskType.SEND_COMMENTS ||
+        taskDto.type === TaskType.VIEW_COMMENTS
+      ) {
         if (!taskDto.comment) {
           throw new BadRequestException('No hay comentarios');
         }
         comment = taskDto.comment;
-
       }
 
       if (taskDto.type === TaskType.UPLOAD_FILE) {
         if (!file) {
-          throw new BadRequestException('Se requiere un archivo para esta tarea');
+          throw new BadRequestException(
+            'Se requiere un archivo para esta tarea',
+          );
         }
 
         const savedDocument = await this.documentService.create({

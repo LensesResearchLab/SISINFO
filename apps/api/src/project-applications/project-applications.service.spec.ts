@@ -8,6 +8,7 @@ import { ProjectsService } from '../projects/projects.service';
 import { PeriodsService } from '../periods/periods.service';
 import { TaskFactory } from '../tasks/factory/tasks.factory';
 import { TasksService } from '../tasks/tasks.service';
+import { DocumentsService } from '../documents/documents.service';
 
 describe('ProjectApplicationsService', () => {
   let service: ProjectApplicationsService;
@@ -18,6 +19,7 @@ describe('ProjectApplicationsService', () => {
   let factory: TaskFactory;
   let dataSource: DataSource;
   let tasksService: TasksService;
+  let documentsService: DocumentsService;
 
   beforeEach(async () => {
     const repositoryMock = {
@@ -33,6 +35,9 @@ describe('ProjectApplicationsService', () => {
       findOne: jest.fn(),
     };
     const periodsServiceMock = {
+      findOne: jest.fn(),
+    };
+    const documentsServiceMock = {
       findOne: jest.fn(),
     };
     const taskFactoryMock = {};
@@ -68,6 +73,10 @@ describe('ProjectApplicationsService', () => {
         {
           provide: TasksService,
           useValue: tasksServiceMock,
+        },
+        {
+          provide: DocumentsService,
+          useValue: documentsServiceMock,
         },
       ],
     }).compile();
