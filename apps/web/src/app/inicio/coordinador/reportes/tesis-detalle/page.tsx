@@ -9,6 +9,37 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
 import { ThesisReport } from "@/app/types/thesis-report.type";
 
+/**
+ * ThesisDetailedReport Component
+ *
+ * Renders a paginated, filterable list of thesis application cards for "Tesis 1",
+ * with the ability to export the visible data into a stylized PDF (2 cards per page).
+ *
+ * Features:
+ * - Search by student name, thesis subarea, and semester
+ * - Pagination (4 cards per page)
+ * - Dynamic generation of filtered results
+ * - Export to landscape PDF using html2canvas and jsPDF
+ *
+ * Filters:
+ * - Name (text input)
+ * - Subarea (text input)
+ * - Semester (dropdown derived from data)
+ *
+ * Export:
+ * - Generates a 2-column layout per page using `html2canvas` snapshots of `.thesis-card` DOM nodes
+ * - Adds generation date and page number to each sheet
+ * - Final output is a downloadable PDF file with academic styling
+ *
+ * Technologies:
+ * - React state and effects for data fetching and filtering
+ * - Refs and DOM traversal for capturing rendered content
+ * - html2canvas for element-to-image conversion
+ * - jsPDF for structured PDF creation
+ *
+ * @returns {JSX.Element} Rendered UI with filters, cards, and export button
+ */
+
 export default function ThesisDetailedReport() {
   return (
     <div className="container mx-auto py-10 px-8">

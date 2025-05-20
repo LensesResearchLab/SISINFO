@@ -3,8 +3,7 @@
 import React, { useState, useMemo, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Search, MoreHorizontal } from "lucide-react"
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+import { Search } from "lucide-react"
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select"
 import { useProgramsStore } from "./store"
 import { Course } from "@/app/types/entities/billboard.type"
@@ -14,54 +13,71 @@ import { mapPeriodToString } from "@/app/mappers/period.mapper"
 import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { AlertDialogError } from "@/components/shared/alert-dialog-error"
+import { DataTable } from "@/components/data-table"
+import { getProgramColumns } from "./ProgramColumns" // Import custom columns
 
+/**
+ * ProgramsList Component
+ *
+ * Displays a list of courses for the selected academic period.
+ * Integrates the reusable DataTable component for filtering, pagination, and sorting.
+ * Includes global state for selected period and loaded course IDs.
+ *
+ * Features:
+ * - Period selection dropdown
+ * - Search input with real-time filtering
+ * - Sort toggle (A-Z / Z-A)
+ * - Navigation to course details
+ *
+ * @returns {JSX.Element} Main UI container with search, filter, and DataTable
+ */
 export default function ProgramsList() {
   const router = useRouter()
-  const period =  useProgramsStore((state) => state.period);
-  const setPeriod = useProgramsStore((state) => state.setPeriod);
-  const setIds = useProgramsStore((state) => state.setIds);
+  const period = useProgramsStore((state) => state.period)
+  const setPeriod = useProgramsStore((state) => state.setPeriod)
+  const setIds = useProgramsStore((state) => state.setIds)
+
   const [periods, setPeriods] = useState<string[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [search, setSearch] = useState("")
   const [sortDesc, setSortDesc] = useState(false)
-  const [loadError, setLoadError] = useState(false);
-  const [page, setPage] = useState(1)
-  const perPage = 10
+  const [loadError, setLoadError] = useState(false)
 
+  // Fetch list of periods using React Query
   const { data: fetchedPeriods } = useQuery({
     queryKey: ["periods"],
     queryFn: getPeriodsWMap,
     staleTime: 1000 * 60 * 5,
   })
 
+  // Set periods when they are fetched
   useEffect(() => {
     if (fetchedPeriods) {
       setPeriods(fetchedPeriods.map(mapPeriodToString))
     }
   }, [fetchedPeriods])
 
+  // Fetch courses when a period is selected
   useEffect(() => {
     if (!period) return
     getBillboard(period)
-      .then(data => {
+      .then((data) => {
         setCourses(data.courses)
         setIds(data.courses.map((c: { id: string }) => c.id))
-        setPage(1)
-        setLoadError(false);
-        console.log(data.courses)
+        setLoadError(false)
       })
-      .catch(()=>{
-        setLoadError(true);
+      .catch(() => {
+        setLoadError(true)
         setCourses([])
         setIds([])
-        setPage(0)
       })
   }, [period, setIds])
 
-  const filtered = useMemo(() => {
+  // Filter and sort courses based on search term
+  const filteredCourses = useMemo(() => {
     const term = search.toLowerCase()
-    return courses
-      .filter(c => c.name.toLowerCase().includes(term) || c.code.toLowerCase().includes(term))
+    return [...courses]
+      .filter((c) => c.name.toLowerCase().includes(term) || c.code.toLowerCase().includes(term))
       .sort((a, b) => {
         if (a.name < b.name) return sortDesc ? 1 : -1
         if (a.name > b.name) return sortDesc ? -1 : 1
@@ -69,15 +85,15 @@ export default function ProgramsList() {
       })
   }, [courses, search, sortDesc])
 
-  const totalPages = Math.ceil(filtered.length / perPage)
-  const visible = useMemo(() => {
-    const start = (page - 1) * perPage
-    return filtered.slice(start, start + perPage)
-  }, [filtered, page])
-
-  const handleDetail = (id: string) =>{ 
-    const currentPath=window.location.pathname;
-    router.push(`${currentPath}/${id}`)}
+  /**
+   * Handles routing to the detailed view of a selected course
+   *
+   * @param {string} id - Course ID
+   */
+  const handleDetail = (id: string) => {
+    const currentPath = window.location.pathname
+    router.push(`${currentPath}/${id}`)
+  }
 
   return (
     <div className="min-w-full mx-auto p-4">
@@ -86,7 +102,9 @@ export default function ProgramsList() {
           <CardTitle className="text-center">Listado de Programas</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Filter controls */}
           <div className="flex flex-wrap justify-center items-center gap-4">
+            {/* Search input */}
             <div className="relative w-64">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-primary" />
               <input
@@ -94,62 +112,45 @@ export default function ProgramsList() {
                 className="pl-9 pr-4 py-2 border rounded focus:outline-none text-primary w-full text-center"
                 placeholder="Buscar clase o código"
                 value={search}
-                onChange={e => setSearch(e.target.value)}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
+
+            {/* Period selector */}
             <div className="relative w-64">
               <Select onValueChange={setPeriod} value={period}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona periodo" />
                 </SelectTrigger>
                 <SelectContent>
-                  {periods.map((p, i) => <SelectItem key={i} value={p}>{p}</SelectItem>)}
+                  {periods.map((p, i) => (
+                    <SelectItem key={i} value={p}>
+                      {p}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={() => setSortDesc(!sortDesc)} className="bg-core text-card hover:bg-core">
+
+            {/* Sort toggle */}
+            <Button
+              onClick={() => setSortDesc(!sortDesc)}
+              className="bg-core text-card hover:bg-core"
+            >
               {sortDesc ? "Z - A" : "A - Z"}
             </Button>
           </div>
-          <div className="rounded-md border overflow-hidden">
-            <Table>
-              <TableHeader className="bg-core">
-                <TableRow>
-                  <TableHead className="text-card py-2 px-3">Clase</TableHead>
-                  <TableHead className="text-card py-2 px-3">Código</TableHead>
-                  <TableHead className="text-card py-2 px-3">Estado</TableHead>
-                  <TableHead className="text-card py-2 px-3">Profesor</TableHead>
-                  <TableHead className="text-card py-2 px-3">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {visible.map((c) => (
-                  <React.Fragment key={c.id}>
-                    <TableRow className="border-b cursor-pointer">
-                      <TableCell className="py-2 px-3 font-semibold text-primary">{c.name}</TableCell>
-                      <TableCell className="py-2 px-3 text-primary">{c.code}</TableCell>
-                      <TableCell className="py-2 px-3 text-primary">{c?.program ? 'Cargado' : 'Pendiente'}</TableCell>
-                      <TableCell className="py-2 px-3 text-primary">{c.mainProfessor?.user?.name!=null ? c.mainProfessor.user.name : "No professor asigned"}</TableCell>
-                      <TableCell className="py-2 px-3">
-                        <Button variant="ghost" size="icon" onClick={e => { e.stopPropagation(); handleDetail(c.id); }}>
-                          <MoreHorizontal className="w-4 h-4 text-primary" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  </React.Fragment>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+
+          {/* Render filtered courses in the reusable DataTable */}
+          <DataTable columns={getProgramColumns(handleDetail)} data={filteredCourses} />
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button size="sm" onClick={() => setPage(p => Math.max(p-1,1))} disabled={page===1}>Anterior</Button>
-          <span className="self-center">Página {page} de {totalPages}</span>
-          <Button size="sm" onClick={() => setPage(p => Math.min(p+1,totalPages))} disabled={page===totalPages}>Siguiente</Button>
+        <CardFooter className="justify-center text-sm text-muted-foreground">
+          {filteredCourses.length === 0 && "No se encontraron resultados para este periodo."}
         </CardFooter>
       </Card>
-      <AlertDialogError onOpenChange={setLoadError} open={loadError}/>
+
+      {/* Error alert modal */}
+      <AlertDialogError onOpenChange={setLoadError} open={loadError} />
     </div>
-    
   )
 }

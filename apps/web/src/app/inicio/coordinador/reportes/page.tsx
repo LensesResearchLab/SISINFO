@@ -9,26 +9,51 @@ import {
 import { Users, GraduationCap, ClipboardList } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+/**
+ * Reports Component
+ *
+ * Displays a grid of report options for the academic coordinator to access.
+ * Each card represents a different type of academic report (projects, theses, sections).
+ *
+ * Features:
+ * - Visual menu of all report categories
+ * - Navigation on card click
+ * - Semantic icons and descriptions for quick understanding
+ *
+ * @returns {JSX.Element} A responsive, interactive report dashboard
+ */
 export default function Reports() {
   const router = useRouter();
 
+  /**
+   * Navigates to the selected report route based on type
+   * @param type - report type identifier
+   */
   const handleClick = (type: string) => {
     let path = "";
 
-    if (type === "project") {
-      path = "/inicio/coordinador/reportes/proyecto-grado";
-    } else if (type === "thesis") {
-      path = "/inicio/coordinador/reportes/tesis";
-    } else if (type === "thesis1-detail") {
-      path = "/inicio/coordinador/reportes/tesis-detalle";
-    } else if (type === "thesis2-inscription") {
-      path = "/inicio/coordinador/reportes/tesis2";
-    } else if (type === "sections-syllabus") {
-      path = "/inicio/coordinador/reportes/secciones-programa";
-    } else if (type === "sections-30%") {
-      path = "/inicio/coordinador/reportes/notas-parciales";
-    } else if (type === "sections-100%") {
-      path = "/inicio/coordinador/reportes/notas-totales";
+    switch (type) {
+      case "project":
+        path = "/inicio/coordinador/reportes/proyecto-grado";
+        break;
+      case "thesis":
+        path = "/inicio/coordinador/reportes/tesis";
+        break;
+      case "thesis1-detail":
+        path = "/inicio/coordinador/reportes/tesis-detalle";
+        break;
+      case "thesis2-inscription":
+        path = "/inicio/coordinador/reportes/tesis2";
+        break;
+      case "sections-syllabus":
+        path = "/inicio/coordinador/reportes/secciones-programa";
+        break;
+      case "sections-30%":
+        path = "/inicio/coordinador/reportes/notas-parciales";
+        break;
+      case "sections-100%":
+        path = "/inicio/coordinador/reportes/notas-totales";
+        break;
     }
 
     router.push(path);
@@ -38,6 +63,7 @@ export default function Reports() {
     <div className="min-h-full min-w-full p-20">
       <div className="bg-card rounded-lg shadow-lg p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* Project Report Card */}
           <Card
             className="hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => handleClick("project")}
@@ -59,6 +85,7 @@ export default function Reports() {
             </CardContent>
           </Card>
 
+          {/* Thesis 1 Report */}
           <Card
             className="hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => handleClick("thesis")}
@@ -71,13 +98,14 @@ export default function Reports() {
                 <div>
                   <CardTitle className="text-lg">Reporte de tesis 1</CardTitle>
                   <CardDescription>
-                    Generar y visualizar reporte de tesis 1 de maestria.
+                    Generar y visualizar reporte de tesis 1 de maestría.
                   </CardDescription>
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Detailed Thesis 1 Report */}
           <Card
             className="hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => handleClick("thesis1-detail")}
@@ -92,14 +120,14 @@ export default function Reports() {
                     Reporte detallado inscritos a tesis 1
                   </CardTitle>
                   <CardDescription>
-                    Generar y visualizar reporte detallado inscritos a tesis 1
-                    de maestria.
+                    Generar y visualizar reporte detallado de inscripción a tesis 1.
                   </CardDescription>
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Thesis 1 to Thesis 2 Report */}
           <Card
             className="hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => handleClick("thesis2-inscription")}
@@ -111,18 +139,17 @@ export default function Reports() {
                 </div>
                 <div>
                   <CardTitle className="text-lg">
-                    Reporte detallado inscritos a tesis 1 e inscripcion a tesis
-                    2
+                    Reporte de inscripción a tesis 2
                   </CardTitle>
                   <CardDescription>
-                    Generar y visualizar reporte detallado inscritos a tesis 1
-                    de maestria e inscripcion a tesis 2.
+                    Visualizar estudiantes que culminaron tesis 1 e inscribieron tesis 2.
                   </CardDescription>
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Sections Without Program File */}
           <Card
             className="hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => handleClick("sections-syllabus")}
@@ -137,14 +164,14 @@ export default function Reports() {
                     Reporte de secciones sin archivos de programa
                   </CardTitle>
                   <CardDescription>
-                    Generar y visualizar reporte de secciones que no han cargado
-                    archivo de programa.
+                    Reporte de secciones sin programa académico cargado.
                   </CardDescription>
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Sections Without 30% Grade File */}
           <Card
             className="hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => handleClick("sections-30%")}
@@ -159,14 +186,14 @@ export default function Reports() {
                     Reporte de secciones sin archivos de 30%
                   </CardTitle>
                   <CardDescription>
-                    Generar y visualizar reporte de secciones que no han cargado
-                    archivo del 30%.
+                    Ver qué secciones no han cargado notas parciales.
                   </CardDescription>
                 </div>
               </div>
             </CardContent>
           </Card>
 
+          {/* Sections Without Final Grade File */}
           <Card
             className="hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => handleClick("sections-100%")}
@@ -181,8 +208,7 @@ export default function Reports() {
                     Reporte de secciones sin archivos de cierre
                   </CardTitle>
                   <CardDescription>
-                    Generar y visualizar reporte de secciones que no han cargado
-                    archivo de cierre.
+                    Reporte de secciones que no han entregado notas finales.
                   </CardDescription>
                 </div>
               </div>
