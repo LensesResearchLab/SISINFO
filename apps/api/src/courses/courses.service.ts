@@ -9,12 +9,15 @@ import { Period } from '../periods/entities/period.entity';
 import { PeriodsService } from '../periods/periods.service';
 import { Professor } from '../professors/entities/professor.entity';
 import { Document } from '../documents/entities/document.entity';
+import { ProfessorsService } from '../professors/professors.service';
 
 @Injectable()
 export class CoursesService {
   constructor(
-    @InjectRepository(Course) private readonly courseRepository: Repository<Course>,
+    @InjectRepository(Course)
+    private readonly courseRepository: Repository<Course>,
     private readonly periodsService: PeriodsService,
+    private readonly professorsService: ProfessorsService,
   ) {}
 
   async create(createCourseDto: CreateCourseDto, section: Section) {
@@ -67,6 +70,20 @@ export class CoursesService {
       .getOne();
   }
 
+  async findAllByPeriodWithMainProfessor(periodStr: string) {
+    const period =
+      await this.periodsService.findOneByPeriodAndYearString(periodStr);
+
+    return this.courseRepository.find({
+      where: {
+        sections: {
+          period: { id: period.id },
+        },
+      },
+      relations: ['mainProfessor'],
+    });
+  }
+
   async update(id: string, updateCourseDto: UpdateCourseDto) {
     const course = await this.courseRepository.findOne({ where: { id } });
     if (course) {
@@ -76,13 +93,18 @@ export class CoursesService {
     throw new Error('Course not found');
   }
 
-  async updateMainProfessor(id: string, professor: Professor) {
+  async updateMainProfessor(id: string, professorId: string) {
     const course = await this.courseRepository.findOne({ where: { id } });
-    if (course) {
-      course.mainProfessor = professor;
-      return await this.courseRepository.save(course);
+    if (!course) {
+      throw new Error('Course not found');
     }
-    throw new Error('Course not found');
+    const professor = await this.professorsService.findOne(professorId);
+    if (!professor) {
+      throw new Error('Professor not found');
+    }
+
+    course.mainProfessor = professor;
+    return await this.courseRepository.save(course);
   }
 
   async updateProgram(id: string, program: Document) {

@@ -6,12 +6,14 @@ import { Task } from './entities/task.entity';
 import { ProfessorsService } from '../professors/professors.service';
 import { StudentsService } from '../students/students.service';
 import { TaskFactory } from './factory/tasks.factory';
+import { DocumentsService } from '../documents/documents.service';
 describe('TasksService', () => {
   let service: TasksService;
   let taskRepository: Repository<Task>;
   let mockFactory: TaskFactory;
   let mockStudentsService: StudentsService;
   let mockProfessorsService: ProfessorsService;
+  let documentService: DocumentsService;
 
   beforeEach(async () => {
     const taskRepository = {
@@ -32,6 +34,9 @@ describe('TasksService', () => {
     const mockProfessorsService = {
       create: jest.fn(),
     };
+    const mockDocumentsService = {
+      create: jest.fn(),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -40,6 +45,7 @@ describe('TasksService', () => {
         { provide: TaskFactory, useValue: mockFactory },
         { provide: StudentsService, useValue: mockStudentsService },
         { provide: ProfessorsService, useValue: mockProfessorsService },
+        { provide: DocumentsService, useValue: mockDocumentsService },
       ],
     }).compile();
 

@@ -13,7 +13,7 @@ import { StudentsService } from '../students/students.service';
 import { ProfessorsService } from '../professors/professors.service';
 import { Student } from '../students/entities/student.entity';
 import { Professor } from '../professors/entities/professor.entity';
-import { DocumentsService } from 'src/documents/documents.service';
+import { DocumentsService } from '../documents/documents.service';
 
 @Injectable()
 export class TasksService {
@@ -24,7 +24,7 @@ export class TasksService {
     private readonly factory: TaskFactory,
     private readonly studentsService: StudentsService,
     private readonly professorService: ProfessorsService,
-  ) { }
+  ) {}
 
   async create(type: TaskType, overrides?: UpdateTaskDto): Promise<Task> {
     const hasStudent = !!overrides?.studentId;

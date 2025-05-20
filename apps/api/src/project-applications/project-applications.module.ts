@@ -8,7 +8,7 @@ import { StudentsModule } from '../students/students.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { TaskFactory } from '../tasks/factory/tasks.factory';
 import { PeriodsModule } from '../periods/periods.module';
-import { DocumentsModule } from 'src/documents/documents.module';
+import { DocumentsModule } from '../documents/documents.module';
 
 @Module({
   controllers: [ProjectApplicationsController],
