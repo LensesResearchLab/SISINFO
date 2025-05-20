@@ -28,7 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { StatusInformation } from "@/app/types/graduated-assistance.type";
+import { StatusInformation } from "@/app/types/entities/graduated-assistance.type";
 import Link from "next/link";
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";

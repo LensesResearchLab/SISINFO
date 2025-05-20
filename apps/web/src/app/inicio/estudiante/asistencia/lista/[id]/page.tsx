@@ -22,7 +22,7 @@ import { getGraduatedAssistanceById } from "@/app/services/assistance.service";
 import {
   GraduatedAssistance,
   Requirement,
-} from "@/app/types/graduated-assistance.type";
+} from "@/app/types/entities/graduated-assistance.type";
 
 interface AssistanceProps {
   readonly assistance: GraduatedAssistance;

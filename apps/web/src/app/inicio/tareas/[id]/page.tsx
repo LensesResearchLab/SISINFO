@@ -1,3 +1,23 @@
+/**
+ * @module TaskForm
+ * @description
+ * Renders a dynamic form for completing tasks associated with a student project.
+ * Based on the task type, the form supports:
+ * - File upload (UPLOAD_FILE)
+ * - Comment submission (SEND_COMMENTS)
+ * - Approval toggle (SEND_APPROVE)
+ * or simply viewing task results (VIEW_COMMENTS).
+ *
+ * It fetches the task from the backend on load and displays relevant data
+ * including PDF previews and past comments.
+ *
+ * @returns {JSX.Element} A responsive task interaction form.
+ *
+ * @remarks
+ * Integrates React Hook Form with Zod for schema validation.
+ * Uses Zustand store for route constants and task flow management.
+ */
+
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -23,6 +43,10 @@ import { createTask, getTask } from "@/app/services/tasks.service";
 import { TaskType } from "../flows";
 import { flows } from "../flows"; // Asegúrate que esté importado correctamente
 
+/**
+ * @constant taskSchema
+ * @description Zod schema used for form validation, dynamically adapts to task type.
+ */
 const taskSchema = z.object({
   type: z.nativeEnum(TaskType),
   document: z.instanceof(File).optional(),

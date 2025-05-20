@@ -20,6 +20,21 @@ const roleMap: Record<string, React.ReactNode> = {
   profesor: <ProfessorTutorials key="profesor" />,
   coordinador: <CoordinatorTutorials key="coordinador" />,
 };
+/**
+ * @module Tutorials
+ * @description
+ * Renders a dynamic view of tutorial videos based on the authenticated user's roles.
+ * If the user has only one role, it renders tutorials for that role directly.
+ * If the user has multiple roles, it displays a tabbed interface for switching between them.
+ *
+ * @returns {JSX.Element | null} The appropriate tutorials section based on user roles or null if no roles.
+ *
+ * @remarks
+ * Uses Zustand (`useTutorialStore`) to manage role state.
+ * Role-specific videos are imported and rendered via the `TutorialsGrid` component.
+ *
+ * @see {@link fetchUserRoles} Function that retrieves user roles from auth service.
+ */
 
 export default function Tutorials() {
   const roles = useTutorialStore((state) => state.roles);
@@ -46,22 +61,51 @@ export default function Tutorials() {
     </RoleTab>
   );
 }
-
+/**
+ * @function CoordinatorTutorials
+ * @description Wrapper to display tutorials for coordinators.
+ * @returns {JSX.Element}
+ */
 function CoordinatorTutorials() {
   return <TutorialsGrid tutorials={coordinatorVideos} />;
 }
-
+/**
+ * @function ProfessorTutorials
+ * @description Wrapper to display tutorials for professors.
+ * @returns {JSX.Element}
+ */
 function ProfessorTutorials() {
   return <TutorialsGrid tutorials={professorVideos} />;
 }
-
+/**
+ * @function PostgraduateTutorials
+ * @description Wrapper to display tutorials for postgraduate students.
+ * @returns {JSX.Element}
+ */
 function PostgraduateTutorials() {
   return <TutorialsGrid tutorials={postgraduateVideos} />;
 }
+/**
+ * @function UndergraduateTutorials
+ * @description Wrapper to display tutorials for undergraduate students.
+ * @returns {JSX.Element}
+ */
 
 function UndergraduateTutorials() {
   return <TutorialsGrid tutorials={undergraduateVideos} />;
 }
+
+/**
+ * @function TutorialsGrid
+ * @description
+ * Displays a responsive grid of tutorial cards based on the provided list.
+ *
+ * @param {Object} props
+ * @param {Tutorial[]} props.tutorials - Array of tutorials to be displayed.
+ *
+ * @returns {JSX.Element} A grid layout of tutorial video cards.
+ */
+
 
 function TutorialsGrid({ tutorials }: { tutorials: Tutorial[] }) {
   return (

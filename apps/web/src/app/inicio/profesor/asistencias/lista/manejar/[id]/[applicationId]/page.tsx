@@ -6,6 +6,29 @@ import { use, useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, FileText } from "lucide-react";
 import SpinnerPage from "@/components/shared/spinner-page";
 
+/**
+ * ApplicationDetail Component
+ *
+ * This page is responsible for displaying the full details of a student's application
+ * to a graduated assistance opportunity. It includes:
+ * - PDF resume preview using a Blob generated from binary data.
+ * - A responsive layout with two sections: PDF viewer and student information card.
+ * - Accept/Reject action buttons (not yet connected to backend).
+ * - Navigation buttons for switching between applicants (handlers provided as props).
+ *
+ * Data fetching:
+ * - Uses `getAssistanceStatusByIdWithDocument` to retrieve the full application including the document.
+ * - Uses React Query for cache and loading management.
+ * - Parses binary data to display the PDF using a blob URL.
+ *
+ * Params:
+ * - Expects `applicationId` from the `params` promise.
+ *
+ * Structure:
+ * - Left section: PDF viewer (iframe).
+ * - Right section: `StudentProfileCard` with student's name, email, and action buttons.
+ */
+
 export default function ApplicationDetail({
   params,
 }: {

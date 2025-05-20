@@ -23,6 +23,16 @@ import { useState } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { postNewThesis } from '@/app/services/thesis.service'
 
+/**
+ * @file ThesisForm.tsx
+ * @description This file defines the form component used by professors to create and publish a new postgraduate thesis project.
+ * It includes fields such as title, description, number of students, category, investigation subarea (tags), and academic period.
+ * Form validation is handled using `zod` and `react-hook-form`.
+ * On submission, the data is sent to the backend via `postNewThesis` service.
+ * 
+ * @version 1.0
+ */
+
 
 const thesisSchema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres"),

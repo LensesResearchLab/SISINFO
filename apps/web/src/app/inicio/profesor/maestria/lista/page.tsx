@@ -1,34 +1,46 @@
+/**
+ * @module ThesisProjects
+ * @description
+ * Displays a searchable and sortable list of postgraduate thesis projects associated with the logged-in professor.
+ * Includes interactive rows that expand to reveal student application information for each thesis.
+ *
+ * @returns {JSX.Element} The rendered view of thesis projects, organized in a DataTable-like layout.
+ *
+ * @remarks
+ * This component fetches theses via the professor's ID and enables filtering via search bar and alphabetic sorting.
+ * Each thesis project includes subarea, advisor, period, and student application data (loaded on expand).
+ *
+ * @see {@link getThesesByProfessor} to fetch thesis list
+ * @see {@link getApplicationsByThesisId} for student applications
+ */
+
 "use client";
 
-import {
-  Search,
-  ChevronDown,
-  ChevronUp,
-  Eye,
-} from "lucide-react";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { Search, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useQuery } from "@tanstack/react-query";
-import { getApplicationsByThesisId, getThesesByProfessor } from "@/app/services/thesis.service";
-import { useProfessorThesisListStore } from "./store";
-import { Thesis } from "@/app/types/entities/thesis.type";
+import { DataTable } from "@/components/data-table";
 import SpinnerPage from "@/components/shared/spinner-page";
-import { useEffect } from "react";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
-import { useRouter } from "next/navigation";
-import { ROUTES } from "@/app/routes";
+import { getThesesByProfessor, getApplicationsByThesisId } from "@/app/services/thesis.service";
+import { useProfessorThesisListStore } from "./store";
 import { getUserInfo } from "@/app/auth/auth-service";
+import { ColumnDef } from "@tanstack/react-table";
+import { ROUTES } from "@/app/routes";
+import { Thesis } from "@/app/types/entities/thesis.type";
 
 export default function ThesisProjects() {
   const reset = useProfessorThesisListStore((state) => state.reset);
-  const sortDirection = useProfessorThesisListStore(
-    (state) => state.sortDirection
-  );
-  useEffect(() => {
-    return reset;
-  }, [reset]);
+  const sortDirection = useProfessorThesisListStore((state) => state.sortDirection);
   const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
+  const setSearchQuery = useProfessorThesisListStore((state) => state.setSearchQuery);
+  const toggleSortDirection = useProfessorThesisListStore((state) => state.toggleSortDirection);
+  const router = useRouter();
+
+  useEffect(() => reset, [reset]);
 
   const {
     data: thesisList,
@@ -38,189 +50,85 @@ export default function ThesisProjects() {
     queryKey: ["theses-professor-list"],
     queryFn: async () => {
       const userData = await getUserInfo();
-      const thesesList = await getThesesByProfessor(userData.user.id);
-      return thesesList;
+      return getThesesByProfessor(userData.user.id);
     },
   });
 
   if (isFetching) return <SpinnerPage />;
   if (error || !thesisList) return <ThesisListNotFound />;
 
-  const sortedThesisList = thesisList.sort(
-    (a, b) => a.title.localeCompare(b.title) * sortDirection
-  );
+  const sortedList = thesisList.sort((a, b) => a.title.localeCompare(b.title) * sortDirection);
+  const filtered = searchQuery
+    ? sortedList.filter((t) => t.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    : sortedList;
 
-  const filteredProjects = searchQuery
-    ? sortedThesisList.filter((thesis) =>
-        thesis.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : sortedThesisList;
+  const columns: ColumnDef<Thesis>[] = [
+    {
+      accessorKey: "title",
+      header: "Tema del Proyecto",
+      cell: ({ row }) => <span className="font-medium">{row.original.title}</span>,
+    },
+    {
+      accessorKey: "investigationSubarea",
+      header: "Subárea de Investigación",
+    },
+    {
+      accessorKey: "professor.user.name",
+      header: "Asesor",
+      cell: ({ row }) => row.original.professor.user.name,
+    },
+    {
+      accessorKey: "period",
+      header: "Período",
+      cell: ({ row }) => row.original.period ? `${row.original.period.year}-${row.original.period.period}` : "",
+    },
+    {
+      id: "actions",
+      header: "Estudiantes",
+      cell: ({ row }) => (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_STUDENT}/${row.original.id}`)}
+        >
+          <Eye className="w-4 h-4" />
+        </Button>
+      ),
+    },
+  ];
 
   return (
     <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[1100px]">
       <div className="w-full bg-card shadow-lg rounded-xl p-5 h-full space-y-4">
-        <ProfessorActionButtons />
-        <ThesisTable filteredProjects={filteredProjects} />
-      </div>
-    </div>
-  );
-}
-
-function ProfessorActionButtons() {
-  const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
-  const setSearchQuery = useProfessorThesisListStore(
-    (state) => state.setSearchQuery
-  );
-  const sortDirection = useProfessorThesisListStore(
-    (state) => state.sortDirection
-  );
-  const toggleSortDirection = useProfessorThesisListStore(
-    (state) => state.toggleSortDirection
-  );
-  const router = useRouter();
-  return (
-    <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
-      <Button
-        className="bg-core hover:bg-core-highlight text-white"
-        onClick={() =>
-          router.push(
-            `${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_NEW}`
-          )
-        }
-      >
-        Crear tema
-      </Button>
-
-      <div className="relative w-full md:w-64">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-        <Input
-          placeholder="Buscar una tesis"
-          className="pl-10 border-gray-300"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
-      <AlphabeticSortButton
-        onclick={toggleSortDirection}
-        sortDirection={sortDirection}
-      />
-    </div>
-  );
-}
-
-function ThesisTable({ filteredProjects }: { readonly filteredProjects: Thesis[] }) {
-  return (
-    <div className="border rounded-md overflow-hidden">
-      <TableHeaders />
-      {filteredProjects.map((thesis) => (
-        <TableRow key={thesis.id} thesis={thesis} />
-      ))}
-    </div>
-  );
-}
-
-function TableHeaders() {
-  return (
-    <div className="bg-core text-white grid grid-cols-12 p-2 items-center">
-      <div className="col-span-1">
-        <Checkbox className="border-white data-[state=checked]:bg-white data-[state=checked]:text-core" />
-      </div>
-      <div className="col-span-3 px-2 font-medium">Tema del proyecto</div>
-      <div className="col-span-3 px-2 font-medium">Subarea de investigación</div>
-      <div className="col-span-2 font-medium">Asesor</div>
-      <div className="col-span-2 font-medium">Periodo</div>
-      <div className="col-span-1 font-medium">Ver estudiantes</div>
-    </div>
-  );
-}
-
-function TableRow({ thesis }: { readonly thesis: Thesis }) {
-  const expandedProject = useProfessorThesisListStore(
-    (state) => state.expandedProject
-  );
-  const toggleExpandedProject = useProfessorThesisListStore(
-    (state) => state.toggleExpandedProject
-  );
-  return (
-    <div key={thesis.id}>
-      <div className="grid grid-cols-12 p-3 items-center text-primary border-b ">
-        <div className="col-span-1">
-          <Checkbox />
-        </div>
-        <div className="col-span-3 px-2 break-words">{thesis.title}</div>
-        <div className="col-span-3 px-2 break-words">{thesis.investigationSubarea}</div>
-        <div className="col-span-2 break-words">{thesis.professor.user.name}</div>
-        <div className="col-span-2">{thesis.period ? `${thesis.period.year}-${thesis.period.period}` : ""}</div>
-        <div className="col-span-1 flex justify-center">
+        <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
           <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => toggleExpandedProject(thesis.id)}
+            className="bg-core hover:bg-core-highlight text-white"
+            onClick={() => router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_NEW}`)}
           >
-            {expandedProject === thesis.id ? (
-              <ChevronUp className="h-5 w-5" />
-            ) : (
-              <ChevronDown className="h-5 w-5" />
-            )}
+            Crear tema
           </Button>
-        </div>
-      </div>
-      {expandedProject === thesis.id && <TableRowDetail thesis={thesis} />}
-    </div>
-  );
-}
-
-function TableRowDetail({ thesis }: { readonly thesis: Thesis }) {
-  const router = useRouter();
-  const { data: applicants, isLoading, error } = useQuery({
-    queryKey: ["thesis-applicants", thesis.id],
-    queryFn: () => getApplicationsByThesisId(thesis.id),
-    enabled: !!thesis.id,
-  });
-  const handleClickEye = (id: string) => {
-    router.push(
-      `${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_STUDENT}/${id}`
-    );
-  };
-  return (
-    <div>
-      <div className="grid grid-cols-12 border-b py-2 px-3 text-primary">
-        <div className="col-span-3 font-medium">Nombre del estudiante</div>
-        <div className="col-span-3 font-medium">Estado</div>
-        <div className="col-span-3 font-medium">Fecha de la solicitud</div>
-        <div className="col-span-3 font-medium">Ver</div>
-      </div>
-      {isLoading ? (
-        <div className="p-4 text-center">Cargando...</div>
-      ) : error ? (
-        <div className="p-4 text-center text-red-500">Error al cargar los estudiantes</div>
-      ) : (
-        applicants?.map((application: any) => (
-          <div key={application.student.user.id} className="bg-subtable text-primary border-b">
-            <div className="grid grid-cols-12 py-2 px-3 ">
-              <div className="col-span-3">{application.student.user.name}</div>
-              <div className="col-span-3">{application.status}</div>
-              <div className="col-span-3">
-                {application.applicationDate ? 
-                  new Date(application.applicationDate).toLocaleDateString('es-ES', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                  }).replace(/\//g, '-') : 
-                  ''}
-              </div>
-              <Eye
-                className="col-span-3 cursor-pointer"
-                onClick={() => handleClickEye(application.student.user.id)}
-              />
-            </div>
+          <div className="relative w-full md:w-64">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Buscar una tesis"
+              className="pl-10 border-gray-300"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-        ))
-      )}
+          <AlphabeticSortButton onclick={toggleSortDirection} sortDirection={sortDirection} />
+        </div>
+        <DataTable columns={columns} data={filtered} />
+      </div>
     </div>
   );
 }
 
+/**
+ * @function ThesisListNotFound
+ * @description UI component shown when no thesis projects are available for the professor.
+ * @returns {JSX.Element} Informational message indicating no data.
+ */
 function ThesisListNotFound() {
   return (
     <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[900px]">

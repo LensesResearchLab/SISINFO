@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getUndergraduateThesisDates } from "@/app/services/thesis.service";
+import { getUndergraduateThesisDates } from "@/app/services/project.service";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useQuery } from "@tanstack/react-query";
 

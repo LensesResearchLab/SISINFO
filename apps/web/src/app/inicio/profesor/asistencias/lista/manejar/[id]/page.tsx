@@ -11,7 +11,26 @@ import {
   deleteGraduatedAssistance,
   getGraduatedAssistanceById,
 } from "@/app/services/assistance.service";
-import { GraduatedAssistance } from "@/app/types/graduated-assistance.type";
+import { GraduatedAssistance } from "@/app/types/entities/graduated-assistance.type";
+
+/**
+ * AssistanceManagePage Component
+ *
+ * This page allows professors to view detailed information about a specific graduated assistance post.
+ * It includes general information, classification, description, and requirements of the assistance,
+ * as well as a list of student applicants.
+ *
+ * Features:
+ * - Fetches the assistance post by ID on component mount
+ * - Displays general info and requirements in a sectioned layout
+ * - Allows professors to edit or delete the assistance post
+ * - Integrates with ConfirmationModal for deletion confirmation
+ * - Uses TabApplicants to render the main tabbed UI for general and applicants view
+ *
+ * Navigation:
+ * - On edit: navigates to the edit page for the specific assistance
+ * - On delete: removes the assistance and redirects back to the listing
+ */
 
 export default function AssistanceManagePage() {
   const params = useParams();

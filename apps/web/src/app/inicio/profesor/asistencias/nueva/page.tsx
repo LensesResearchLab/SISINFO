@@ -32,6 +32,38 @@ import { addDays } from "date-fns";
 import DateRangePicker from "@/components/shared/datepicker";
 import { mapStringtoPeriod } from "@/app/mappers/period.mapper";
 
+/**
+ * GraduateAssistanceForm Component
+ *
+ * This form allows professors to create and publish a new *Graduated Assistance* offer. It includes:
+ *
+ * 🔧 Form Features:
+ * - Title, Description, Category, Period, Date Range, and Requirements fields.
+ * - Uses Zod for validation and React Hook Form for controlled input handling.
+ * - Requirements are managed dynamically with the ability to add and remove badges.
+ * - Confirmation modal is shown before submitting the offer.
+ *
+ * 📤 Submission:
+ * - On confirmation, the data is transformed (e.g., date to ISO string, period mapping)
+ *   and sent to the backend using `createGraduatedAssistance`.
+ *
+ * 🧩 Additional Components:
+ * - `DateRangePicker`: Custom component for selecting a date range.
+ * - `ConfirmationModal`: Modal used to confirm publishing action.
+ *
+ * 🧪 Validation Schema (Zod):
+ * - Validates string lengths, non-empty category and period, valid date range,
+ *   and requires at least one requirement.
+ *
+ * 📌 UX Design:
+ * - UI components use ShadCN/Ui standards for consistency.
+ * - Modular and mobile-friendly with Tailwind-based responsive layout.
+ *
+ * 👨‍🏫 Audience:
+ * - Used by professors to register new graduate assistance positions.
+ */
+
+
 const thesisSchema = z.object({
   title: z.string().min(5, "El título debe tener al menos 5 caracteres"),
   description: z

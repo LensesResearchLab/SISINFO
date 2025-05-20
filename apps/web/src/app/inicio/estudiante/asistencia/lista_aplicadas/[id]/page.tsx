@@ -1,7 +1,7 @@
 "use client";
 import { Calendar, FileText, Mail, User } from "lucide-react";
 import { use, useEffect, useState } from "react";
-import { StatusInformation } from "@/app/types/graduated-assistance.type";
+import { StatusInformation } from "@/app/types/entities/graduated-assistance.type";
 import TabStatus, { SectionProps } from "@/components/shared/tab-status";
 import { useRouter } from "next/navigation";
 import SpinnerPage from "@/components/shared/spinner-page";
@@ -66,6 +66,7 @@ export default function AssistanceStatus({
         },
         isUndergraduate: false,
         code: "",
+        id: ""
       },
     }
   );

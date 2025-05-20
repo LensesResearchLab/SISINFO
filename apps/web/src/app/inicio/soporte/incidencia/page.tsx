@@ -1,3 +1,19 @@
+/**
+ * @module IncidentReportForm
+ * @description
+ * Renderiza un formulario para reportar incidencias técnicas o errores del sistema.
+ * El usuario puede seleccionar un tipo de incidente y describir el problema presentado.
+ * La información se envía mediante el servicio `createIncidence` y queda registrada en el sistema.
+ *
+ * @returns {JSX.Element} El formulario renderizado para crear un reporte de incidente.
+ *
+ * @remarks
+ * Incluye una validación básica que deshabilita el botón de envío si los campos no están completos.
+ * Utiliza `ConfirmationModal` para confirmar antes de enviar el reporte.
+ *
+ * @see {@link createIncidence} Servicio que guarda el incidente en backend
+ */
+
 "use client"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"

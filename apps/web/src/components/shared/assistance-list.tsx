@@ -32,7 +32,7 @@ import SpinnerPage from "@/components/shared/spinner-page";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { getGraduatedAssistance } from "@/app/services/assistance.service";
-import { GraduatedAssistance } from "@/app/types/graduated-assistance.type";
+import { GraduatedAssistance } from "@/app/types/entities/graduated-assistance.type";
 
 const semesters = [
   { value: "all", label: "Todos los semestres" },

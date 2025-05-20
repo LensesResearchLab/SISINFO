@@ -1,3 +1,19 @@
+/**
+ * @module ThesisForm
+ * @description
+ * Formulario para que el profesor registre un nuevo proyecto de tesis de pregrado.
+ * Permite ingresar título, descripción, número máximo de estudiantes, categoría, etiquetas y período.
+ * Al enviarlo, se guarda en el backend asociado al ID del profesor autenticado.
+ *
+ * @returns {JSX.Element} El formulario renderizado para crear un nuevo proyecto de tesis.
+ *
+ * @remarks
+ * Este formulario utiliza `react-hook-form` y validación con Zod. Incluye un modal de confirmación antes de guardar.
+ * El ID del usuario se obtiene con `getUserInfo` y se usa para asociar el proyecto al profesor.
+ *
+ * @see {@link createUndergraduateProject} para registrar el proyecto
+ * @see {@link getUserInfo} para obtener el ID del usuario autenticado
+ */
 "use client"
 
 import { useForm } from 'react-hook-form'
