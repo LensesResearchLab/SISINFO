@@ -22,6 +22,9 @@ export class Task extends Base {
   @Column()
   comment: string;
 
+  @Column({nullable:true})
+  step: number;
+
   @Column()
   approved: boolean;
 

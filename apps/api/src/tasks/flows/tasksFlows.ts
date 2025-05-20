@@ -45,7 +45,7 @@ export const flows: Record<string, Step[]> = {
       description: 'Enviar nota del 100%',
     },
     {
-      type: TaskType.SEND_COMMENTS,
+      type: TaskType.VIEW_COMMENTS,
       assignee: 'student',
       title: 'Revisar 100%',
       description: 'Revisar la nota del 100%',

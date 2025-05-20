@@ -33,7 +33,7 @@ export class ProjectApplicationsService {
     private readonly periodsService: PeriodsService,
     @InjectRepository(ProjectApplication)
     private readonly projectApplicationRepository: Repository<ProjectApplication>,
-  ) {}
+  ) { }
 
   async create(
     createProjectApplicationDto: CreateProjectApplicationDto,
@@ -156,60 +156,46 @@ export class ProjectApplicationsService {
 
   async findTasksByStudent(studentId: string): Promise<Task[]> {
     const period = await this.periodsService.findCurrentPeriod();
-    const application = await this.projectApplicationRepository.find({
+
+    const apps = await this.projectApplicationRepository.find({
       where: {
         student: { id: studentId },
         period: { id: period.id },
       },
-      relations: {
-        student: { user: true },
-        project: { professor: { user: true } },
-        period: true,
-        actualTask: true,
-      },
+      relations: { actualTask: { student: true, professor: true } },
     });
 
-    const actualTasks: Task[] = [];
-
-    application.map((p) => {
-      actualTasks.push(p.actualTask);
-    });
-
-    if (!actualTasks) {
-      throw new NotFoundException(
-        `No se encontró una aplicación de proyecto para el estudiante con id ${studentId} en el periodo actual.`,
+    const tasks = apps
+      .map((a) => a.actualTask)
+      .filter(
+        (t): t is Task =>
+          t !== null && t.student?.id === studentId
       );
-    }
-    return actualTasks;
+
+    return tasks;
   }
-  async findTasksByProfessor(professorId: string): Promise<Task[]> {
+
+  async findTasksByProfessor(profId: string): Promise<Task[]> {
     const period = await this.periodsService.findCurrentPeriod();
-    const application = await this.projectApplicationRepository.find({
+
+    const apps = await this.projectApplicationRepository.find({
       where: {
-        project: { professor: { id: professorId } },
+        project: { professor: { id: profId } },
         period: { id: period.id },
       },
-      relations: {
-        student: { user: true },
-        project: { professor: { user: true } },
-        period: true,
-        actualTask: true,
-      },
+      relations: { actualTask: { student: true, professor: true } },
     });
 
-    const actualTasks: Task[] = [];
-
-    application.map((p) => {
-      actualTasks.push(p.actualTask);
-    });
-
-    if (!actualTasks) {
-      throw new NotFoundException(
-        `No se encontró una aplicación de proyecto para el estudiante con id ${professorId} en el periodo actual.`,
+    const tasks = apps
+      .map((a) => a.actualTask)
+      .filter(
+        (t): t is Task =>
+          t !== null && t.professor?.id === profId 
       );
-    }
-    return actualTasks;
+
+    return tasks;
   }
+
   async getProjectApplicationsReport() {
     const applications = await this.projectApplicationRepository.find({
       where: {
@@ -241,91 +227,83 @@ export class ProjectApplicationsService {
   }
 
   async completeAndAdvance(
-  taskId: string,
-  taskDto: CreateTaskDto,
-  file?: Express.Multer.File
-): Promise<ProjectApplication> {
-  return this.dataSource.transaction(async (manager) => {
-    const task = await manager.getRepository(Task).findOne({
-      where: { id: taskId },
-      relations: ['projectActualTask', 'projectActualTask.actualTask', 'projectActualTask.previousTasks.document', 'projectActualTask.student', 'projectActualTask.project.professor'],
-    });
-    const projectApplication= task?.projectActualTask;
-    if (!projectApplication) throw new NotFoundException();
-
-    const actualTask = projectApplication.actualTask;
-    const previousTasks = projectApplication.previousTasks;
-    let actualIndex = 0;
-    if (previousTasks){
-      actualIndex = previousTasks.length;
-    }
-
-    console.log(previousTasks);
-    
-
-    const steps = flows[actualTask.flow];
-    const nextStep = steps[actualIndex + 1];
-    console.log(nextStep);
-    if (!nextStep) {
-      throw new BadRequestException(`Paso siguiente no encontrado en el flujo: ${actualTask.flow}`);
-    }
-
-    // Documento solo si aplica
-    let documentId: string | undefined;
-
-    console.log(taskDto);
-    console.log(taskDto.type === TaskType.UPLOAD_FILE);
-    let comment = "";
-
-    if (taskDto.type === TaskType.SEND_COMMENTS){
-      if(!taskDto.comment){
-        throw new BadRequestException('No hay comentarios');
-      }
-      comment = taskDto.comment;
-      
-    }
-
-    if (taskDto.type === TaskType.UPLOAD_FILE) {
-      if (!file) {
-        throw new BadRequestException('Se requiere un archivo para esta tarea');
-      }
-
-      const savedDocument = await this.documentService.create({
-        name: file.originalname,
-        file: Buffer.from(file.buffer),
+    taskId: string,
+    taskDto: CreateTaskDto,
+    file?: Express.Multer.File
+  ): Promise<ProjectApplication> {
+    return this.dataSource.transaction(async (manager) => {
+      const task = await manager.getRepository(Task).findOne({
+        where: { id: taskId },
+        relations: ['projectActualTask', 'projectActualTask.actualTask', 'projectActualTask.previousTasks.document', 'projectActualTask.student', 'projectActualTask.project.professor'],
       });
-      console.log(savedDocument.id);
-      documentId = savedDocument.id;
-    } else if (
-      actualTask.flow === 'proyectoPregrado' &&
-      actualIndex === 1 &&
-      previousTasks[actualIndex]?.document?.id
-    ) {
-      documentId = previousTasks[actualIndex]?.document?.id;
-    }
+      const projectApplication = task?.projectActualTask;
+      if (!projectApplication) throw new NotFoundException();
 
-    // Guardar tarea actual como completada
-    if (!projectApplication.previousTasks){
-      projectApplication.previousTasks = [];
-    }
-    projectApplication.previousTasks.push(actualTask);
+      const actualTask = projectApplication.actualTask;
+      const previousTasks = projectApplication.previousTasks;
+      let actualIndex = 0;
+      if (previousTasks) {
+        actualIndex = previousTasks.length;
+      }
 
-    // Crear nueva tarea
-    const nextTask = await this.tasksService.create(nextStep.type, {
-      comment,
-      documentId,
-      flow: actualTask.flow,
-      projectApplicationId: projectApplication.id,
-      ...(nextStep.assignee === 'student'
-        ? { studentId: projectApplication.student.id }
-        : { professorId: projectApplication.project.professor.id }),
+
+      const steps = flows[actualTask.flow];
+      const nextStep = steps[actualIndex + 1];
+      if (!nextStep) {
+        throw new BadRequestException(`Paso siguiente no encontrado en el flujo: ${actualTask.flow}`);
+      }
+
+      let documentId: string | undefined;
+      let comment = "";
+
+      if (taskDto.type === TaskType.SEND_COMMENTS || taskDto.type === TaskType.VIEW_COMMENTS) {
+        if (!taskDto.comment) {
+          throw new BadRequestException('No hay comentarios');
+        }
+        comment = taskDto.comment;
+
+      }
+
+      if (taskDto.type === TaskType.UPLOAD_FILE) {
+        if (!file) {
+          throw new BadRequestException('Se requiere un archivo para esta tarea');
+        }
+
+        const savedDocument = await this.documentService.create({
+          name: file.originalname,
+          file: Buffer.from(file.buffer),
+        });
+        console.log(savedDocument.id);
+        documentId = savedDocument.id;
+      } else if (
+        actualTask.flow === 'proyectoPregrado' &&
+        actualIndex === 1 &&
+        previousTasks[actualIndex]?.document?.id
+      ) {
+        documentId = previousTasks[actualIndex]?.document?.id;
+      }
+
+      if (!projectApplication.previousTasks) {
+        projectApplication.previousTasks = [];
+      }
+      projectApplication.previousTasks.push(actualTask);
+
+      const nextStepIndex = actualIndex + 1;
+
+      const nextTask = await this.tasksService.create(nextStep.type, {
+        step: nextStepIndex,
+        comment,
+        documentId,
+        flow: actualTask.flow,
+        projectApplicationId: projectApplication.id,
+        ...(nextStep.assignee === 'student'
+          ? { studentId: projectApplication.student.id }
+          : { professorId: projectApplication.project.professor.id }),
+      });
+
+      projectApplication.actualTask = nextTask;
+
+      return manager.getRepository(ProjectApplication).save(projectApplication);
     });
-
-    console.log(nextTask);
-
-    projectApplication.actualTask = nextTask;
-
-    return manager.getRepository(ProjectApplication).save(projectApplication);
-  });
-}
+  }
 }

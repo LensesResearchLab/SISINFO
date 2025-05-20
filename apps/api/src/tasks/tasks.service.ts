@@ -24,7 +24,7 @@ export class TasksService {
     private readonly factory: TaskFactory,
     private readonly studentsService: StudentsService,
     private readonly professorService: ProfessorsService,
-  ) {}
+  ) { }
 
   async create(type: TaskType, overrides?: UpdateTaskDto): Promise<Task> {
     const hasStudent = !!overrides?.studentId;
@@ -49,10 +49,10 @@ export class TasksService {
         entity.professor = professor;
       }
     }
-    if(overrides?.documentId){
+    if (overrides?.documentId) {
       const document = await this.documentService.findOne(overrides?.documentId);
-      if (document){
-        entity.document=document;
+      if (document) {
+        entity.document = document;
       }
     }
     return await this.repo.save(entity);

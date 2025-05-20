@@ -1,8 +1,9 @@
 export enum TaskType {
-    UPLOAD_FILE       = 'UPLOAD_FILE',       
-    SEND_COMMENTS     = 'SEND_COMMENTS',
-    SEND_APPROVE      = 'SEND_APPROVE'
-  }
+  UPLOAD_FILE = 'UPLOAD_FILE',
+  SEND_COMMENTS = 'SEND_COMMENTS',
+  SEND_APPROVE = 'SEND_APPROVE',
+  VIEW_COMMENTS = 'VIEW_COMMENTS'
+}
 export interface Step {
   type: TaskType;
   assignee: 'student' | 'professor';
@@ -46,6 +47,12 @@ export const flows: Record<string, Step[]> = {
       assignee: 'professor',
       title: 'Nota 100%',
       description: 'Enviar nota del 100%',
+    },
+    {
+      type: TaskType.VIEW_COMMENTS,
+      assignee: 'student',
+      title: 'Revisar 100%',
+      description: 'Revisar la nota del 100%',
     },
   ],
 };

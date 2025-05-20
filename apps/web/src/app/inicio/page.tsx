@@ -11,6 +11,9 @@ import { fetchUserRoles } from "../auth/auth-service";
 import SpinnerPage from "@/components/shared/spinner-page";
 import GraduateStudentFeatures from "./components/graduate-student-features";
 import AdministratorFeatures from "./components/administrator-features";
+import { getPendingTasksForProfessor, getPendingTasksForStudent } from "@/app/services/project-application.service";
+import { getUserInfo } from "@/app/auth/auth-service";
+import { flows } from "./tareas/flows";
 
 const roleMap = new Map<string, React.ReactNode>([
   [
@@ -22,13 +25,13 @@ const roleMap = new Map<string, React.ReactNode>([
   [
     "estudiante_maestria",
     <GraduateStudentFeatures key={"estudiante_maestria"}>
-      <SupportFeatures />,
+      <SupportFeatures />
     </GraduateStudentFeatures>,
   ],
   [
     "profesor",
     <ProfessorFeatures key={"profesor"}>
-      <SupportFeatures />,
+      <SupportFeatures />
     </ProfessorFeatures>,
   ],
   ["coordinador", <CoordinatorFeatures key={"coordinador"} />],
@@ -38,16 +41,38 @@ const roleMap = new Map<string, React.ReactNode>([
 export default function Home() {
   const roles = useHomeStore((state) => state.roles);
   const setRoles = useHomeStore((state) => state.setRoles);
-
+  const setTasks = useHomeStore((state) => state.setTasks);
   const [loading, setLoading] = useState(true);
   const fetchedRef = useRef(false);
 
-  /* Fetch the user role to display the correct view based on his role*/
   useEffect(() => {
     if (!fetchedRef.current) {
       fetchUserRoles(setRoles, setLoading, fetchedRef);
+
+      getUserInfo().then((data) => {
+        const userId = data.user.id;
+
+        Promise.all([
+          getPendingTasksForStudent(userId),
+          getPendingTasksForProfessor(userId),
+        ]).then(([studentTasks, professorTasks]) => {
+          const allTasks = [...studentTasks, ...professorTasks];
+          const parsedTasks = allTasks.map((task: any) => {
+            const stepNumber = typeof task.step === "number" ? task.step : Number(task.step);
+            const stepInfo = flows.proyectoPregrado[stepNumber];
+            return {
+              ...task,
+              step: stepNumber,
+              title: stepInfo?.title || "Sin título",
+              description: stepInfo?.description || "Sin descripción",
+              date: task.date ? new Date(task.date) : new Date(),
+            } satisfies import("@/app/types/entities/task.type").Task;
+          });
+          setTasks(parsedTasks);
+        });
+      });
     }
-  }, [setRoles]);
+  }, [setRoles, setTasks]);
 
   if (loading) return <SpinnerPage />;
 
