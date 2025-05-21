@@ -102,7 +102,8 @@ export async function getApplicationsByThesisId(thesisId:string): Promise<Thesis
 /* Posgraduate Report */
 /* API GET for coordinators report of thesis */
 export async function getThesisApplicationsReport() {
-  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS}`);
+  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS_REPORT}`);
+  console.log(response.body);
   if (!response.ok) {
     throw new Error("Failed to fetch undergraduate projects data for report.");
   }
