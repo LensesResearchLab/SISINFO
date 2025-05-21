@@ -143,14 +143,14 @@ export const administratorData = [
         Icon: PenSquare,
         title: "Consultar usuarios y roles",
         description: "Aquí puedes ver los usuarios y sus roles.",
-        url: ROUTES.POSTGRADUATE_THESIS_STATUS,
+        url: ROUTES.ADMINISTRATOR_USERS,
       },
       {
         Icon: Calendar,
         title: "Asignar profesores lideres",
         description:
           "Aquí puedes asignar y consultar los profesores lideres de cada materia.",
-        url: ROUTES.POSTGRADUATE_THESIS_DATES,
+        url: ROUTES.ADMINISTRATOR_COURSE_LEADERS,
       },
     ],
   },

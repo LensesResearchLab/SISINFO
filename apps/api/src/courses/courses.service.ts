@@ -7,7 +7,6 @@ import { Course } from './entities/course.entity';
 import { Section } from '../sections/entities/section.entity';
 import { Period } from '../periods/entities/period.entity';
 import { PeriodsService } from '../periods/periods.service';
-import { Professor } from '../professors/entities/professor.entity';
 import { Document } from '../documents/entities/document.entity';
 import { ProfessorsService } from '../professors/professors.service';
 
@@ -70,16 +69,8 @@ export class CoursesService {
       .getOne();
   }
 
-  async findAllByPeriodWithMainProfessor(periodStr: string) {
-    const period =
-      await this.periodsService.findOneByPeriodAndYearString(periodStr);
-
+  async findAllWithMainProfessor() {
     return this.courseRepository.find({
-      where: {
-        sections: {
-          period: { id: period.id },
-        },
-      },
       relations: ['mainProfessor'],
     });
   }

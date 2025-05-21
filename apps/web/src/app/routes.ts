@@ -68,6 +68,8 @@ export const ROUTES: Record<string, string> = {
 
   /*  Administrators  */
   ADMINISTRATOR_INCIDENCES: "/administrador/incidencia",
+  ADMINISTRATOR_USERS: "/administrador/usuario",
+  ADMINISTRATOR_COURSE_LEADERS: "/administrador/lider",
   /*  General  */
 
   TASK_LIST: "/tareas",
@@ -92,5 +94,10 @@ export const API_ROUTES: Record<string, string> = {
   SECTIONS_REPORTS: "sections",
   INCIDENCES: "incidences",
   COORDINATORS: "coordinators",
-  PROJECT_APPLICATIONS: "project-applications"
+  PROJECT_APPLICATIONS: "project-applications",
+
+  COURSE_LEADERS: 'courses/leaders/',
+  USER_ROLES: 'users/roles/'
 };
+
+

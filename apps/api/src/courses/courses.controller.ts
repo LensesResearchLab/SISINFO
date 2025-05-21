@@ -11,9 +11,9 @@ export class CourseController {
     return this.coursesService.findAll();
   }
 
-  @Get('leaders/:periodStr')
-  findAllByPeriodWithMainProfessor(@Param('periodStr') periodStr: string) {
-    return this.coursesService.findAllByPeriodWithMainProfessor(periodStr);
+  @Get('leaders')
+  findAllWithMainProfessor() {
+    return this.coursesService.findAllWithMainProfessor();
   }
 
   @Patch(':id/updateProfessor/:professorId')

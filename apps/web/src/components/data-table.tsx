@@ -100,15 +100,21 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                   return (
                     <TableHead
                       key={header.id}
-                      className="text-white cursor-pointer select-none whitespace-normal break-words p-4"
-                      onClick={header.column.getToggleSortingHandler()}
+                      className={`text-white whitespace-normal break-words p-4 ${header.column.getCanSort() ? "cursor-pointer select-none" : ""}`}
+                      onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
                       style={{ maxWidth: "300px" }}
                     >
                       <div className="flex items-center gap-2">
                         {flexRender(header.column.columnDef.header, header.getContext())}
-                        {isSorted === false && <ArrowUpDown className="h-4 w-4 opacity-50 flex-shrink-0" />}
-                        {isSorted === "asc" && <ArrowUp className="h-4 w-4 flex-shrink-0" />}
-                        {isSorted === "desc" && <ArrowDown className="h-4 w-4 flex-shrink-0" />}
+
+                        {header.column.getCanSort() && (
+                          <>
+                            {isSorted === false && <ArrowUpDown className="h-4 w-4 opacity-50 flex-shrink-0" />}
+                            {isSorted === "asc" && <ArrowUp className="h-4 w-4 flex-shrink-0" />}
+                            {isSorted === "desc" && <ArrowDown className="h-4 w-4 flex-shrink-0" />}
+                          </>
+                        )}
+
                       </div>
                     </TableHead>
                   )
@@ -149,14 +155,13 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           </Button>
 
           <div className="text-sm text-muted-foreground">
-            {`Mostrando ${
-              table.getRowModel().rows.length > 0
-                ? table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1
-                : 0
-            } - ${Math.min(
-              (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-              table.getFilteredRowModel().rows.length,
-            )} de ${table.getFilteredRowModel().rows.length} resultados`}
+            {`Mostrando ${table.getRowModel().rows.length > 0
+              ? table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1
+              : 0
+              } - ${Math.min(
+                (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                table.getFilteredRowModel().rows.length,
+              )} de ${table.getFilteredRowModel().rows.length} resultados`}
           </div>
 
           <Button size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>

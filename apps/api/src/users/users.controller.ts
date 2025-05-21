@@ -72,6 +72,13 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'admin')
+  @Get('roles')
+  findAllWithRoles() {
+    return this.usersService.findAllWithRoles();
+  }
+
   @Get(':id') // TODO: Como proteger esto??
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);

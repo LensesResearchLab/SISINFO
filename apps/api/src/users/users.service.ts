@@ -26,6 +26,15 @@ export class UsersService {
     });
   }
 
+  async findAllWithRoles() {
+    const users = await this.userRepository.find({
+      relations: ['coordinator', 'professor', 'student', 'administrator'],
+    });
+    return users.map((user) =>
+      deletePasswordFromUser(user, this.getUserRoles(user)),
+    );
+  }
+
   async findOne(id: string) {
     const user = await this.userRepository.findOne({
       where: { id },

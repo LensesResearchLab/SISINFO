@@ -95,7 +95,7 @@ export default function IncidenceList() {
 
   return (
     <div className="min-h-full mx-auto p-4 space-y-8 container">
-      <div className="w-full bg-white shadow-lg rounded-xl p-5 h-full space-y-4">
+      <div className="w-full bg-card text-foreground shadow-lg rounded-xl p-5 h-full space-y-4">
         <h2 className="text-xl font-bold text-core">
           Listado de incidencias
         </h2>
