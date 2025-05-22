@@ -1,7 +1,7 @@
 "use client";
 
-import { getAllIncidences } from "@/app/services/incidences.service";
-import { useQuery } from "@tanstack/react-query";
+import { closeIncidence, getAllIncidences } from "@/app/services/incidences.service";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DataTable } from '@/components/data-table';
 import { Incidence } from "@/app/types/entities/incidence.type";
 import { ColumnDef } from "@tanstack/react-table";
@@ -9,6 +9,7 @@ import SpinnerPage from "@/components/shared/spinner-page";
 import ErrorPage from "@/components/shared/error-page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 /**
  * Column definitions for the Incidences DataTable
@@ -34,11 +35,11 @@ export const columns: ColumnDef<Incidence>[] = [
     accessorKey: "isCompleted",
     header: "Estado",
     cell: ({ row }) => {
-      const completed = row.original.isCompleted;
+      const completed = row.original.isClosed;
       return (
         <Badge
           className={`px-3 py-1 rounded-full text-white text-sm font-semibold
-            ${completed ? "bg-blue-700" : "bg-red-700"}`}
+            ${completed ? "bg-core" : "bg-destructive"}`}
         >
           {completed ? "Completado" : "En revisión"}
         </Badge>
@@ -56,19 +57,8 @@ export const columns: ColumnDef<Incidence>[] = [
   {
     id: "actions",
     header: "Acciones",
-    cell: ({ row }) => {
-      const completed = row.original.isCompleted;
-      return (
-        <Button
-          className={`text-white px-3 py-1 rounded-full text-sm font-medium 
-            ${completed ? "bg-gray-400 cursor-not-allowed" : "bg-core hover:bg-core-highlight"}`}
-          disabled={completed}
-        >
-          Completar
-        </Button>
-      );
-    },
-  },
+    cell: ({ row }) => <ActionCell incidence={row.original} />,
+  }
 ];
 
 /**
@@ -92,7 +82,6 @@ export default function IncidenceList() {
 
   if (isFetching) return <SpinnerPage />;
   if (isError) return <ErrorPage />;
-
   return (
     <div className="min-h-full mx-auto p-4 space-y-8 container">
       <div className="w-full bg-card text-foreground shadow-lg rounded-xl p-5 h-full space-y-4">
@@ -102,5 +91,35 @@ export default function IncidenceList() {
         <DataTable columns={columns} data={data ?? []} />
       </div>
     </div>
+  );
+}
+
+
+function ActionCell({ incidence }: { incidence: Incidence }) {
+  const [isClosing, setIsClosing] = useState(false);
+  const queryClient = useQueryClient();
+
+  const completed = incidence.isClosed || isClosing;
+
+  const handleClose = async () => {
+    setIsClosing(true);
+    try {
+      await closeIncidence(incidence.id);
+      await queryClient.invalidateQueries({ queryKey: ['incidences'] });
+    } catch (error) {
+      console.error("Error al cerrar la incidencia:", error);
+      setIsClosing(false);
+    }
+  };
+
+  return (
+    <Button
+      onClick={handleClose}
+      className={`text-white px-3 py-1 rounded-full text-sm font-medium 
+        ${completed ? "bg-gray-400 cursor-not-allowed" : "bg-core hover:bg-core-highlight"}`}
+      disabled={completed}
+    >
+      Completar
+    </Button>
   );
 }

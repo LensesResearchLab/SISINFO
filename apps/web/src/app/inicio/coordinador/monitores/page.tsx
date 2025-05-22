@@ -52,6 +52,9 @@ export default function UploadTeachingAssistants() {
    */
   const handleUploadCsv = (data: CreateTeachingAssistance[]) => {
     uploadTeachingAssistantsFile(data, selectedPeriod);
+    getTeachingAssistants(selectedPeriod).then((data) => {
+      setTeachingAssistantships(data);
+    });
   };
 
   /**
@@ -102,8 +105,6 @@ function TeachingAssistantsTable({
         <h2 className="text-2xl font-bold mb-4 text-core text-center">
           Monitores para el periodo
         </h2>
-
-        {/* Render assistantships using DataTable with transformed rows */}
         <DataTable
           columns={columns}
           data={mapTeachingAssistantshipsToCoordinatorTable(teachingAssistantships)}

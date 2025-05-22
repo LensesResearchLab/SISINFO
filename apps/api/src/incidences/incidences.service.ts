@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateIncidenceDto } from './dto/create-incidence.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -31,5 +31,19 @@ export class IncidencesService {
       ...rest,
       userId: user.id,
     }));
+  }
+
+  async findOne(id: string) {
+    const incidence = await this.incidenceRepository.findOne({ where: { id } });
+    if (!incidence) {
+      throw new NotFoundException('Incidencia no encontrada');
+    }
+    return incidence;
+  }
+
+  async close(id: string) {
+    const incidence = await this.findOne(id);
+    incidence.isClosed = true;
+    return this.incidenceRepository.save(incidence);
   }
 }

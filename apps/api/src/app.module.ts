@@ -68,7 +68,7 @@ import { ImportantSectionsModule } from './important-sections/important-sections
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      dropSchema: true,
+      dropSchema: false,
     }),
     AdministratorsModule,
     ImportantSectionsModule,

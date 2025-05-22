@@ -1,6 +1,7 @@
 export interface Incidence {
+  id: string;
   type: string;
   description: string;
-  isCompleted?: boolean;
+  isClosed?: boolean;
   date?: string;
 }

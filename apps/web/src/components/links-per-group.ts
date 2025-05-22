@@ -260,13 +260,13 @@ export const coordinatorData = [
         description: "Aquí puedes ver los programas de clases por periodo.",
         url: ROUTES.COURSE_PROGRAMS,
       },
-      {
+/*       {
         Icon: PenSquare,
         title: "Consultar cargas de notas",
         description:
           "Aquí puedes ver la carga de notas de los distintos cursos.",
         url: ROUTES.GRADE_LOAD,
-      },
+      }, */
       {
         Icon: Calendar,
         title: "Administrar cartelera",

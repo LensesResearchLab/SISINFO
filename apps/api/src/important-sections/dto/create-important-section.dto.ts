@@ -1,4 +1,4 @@
-import { AcademicProcess } from "../enum/academic-process.enum";
+import { AcademicProcess } from '../enum/academic-process.enum';
 
 export class CreateImportantSectionDto {
   name: string;

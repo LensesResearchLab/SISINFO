@@ -39,7 +39,6 @@ export default function UploadFiles({
             )
           )
           handleUploadCsv(filteredData)
-          window.location.reload()
         },
         error: (error) => {
           console.error("Error al parsear el CSV:", error)
