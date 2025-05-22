@@ -23,13 +23,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           const token = cookies?.['auth-token'];
 
           if (typeof token === 'string') {
-            console.debug('[JWT Strategy] Token extraído desde cookie:', token);
             return token;
           }
-
-          console.debug(
-            '[JWT Strategy] No se encontró el token en las cookies',
-          );
           return null;
         },
       ]),
@@ -40,8 +35,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: JwtPayload) {
-    console.debug('[JWT Strategy] Payload validado:', payload);
-
     if (!payload.id || !payload.email) {
       console.error('[JWT Strategy] JWT payload inválido:', payload);
       throw new Error('Invalid JWT payload');

@@ -97,7 +97,8 @@ export const API_ROUTES: Record<string, string> = {
   PROJECT_APPLICATIONS: "project-applications",
 
   COURSE_LEADERS: 'courses/leaders/',
-  USER_ROLES: 'users/roles/'
+  USER_ROLES: 'users/roles/',
+  DATES: 'important-sections'
 };
 
 

@@ -1,26 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { CreateImportantSectionDto } from './dto/create-important-section.dto';
-import { UpdateImportantSectionDto } from './dto/update-important-section.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ImportantSection } from './entities/important-section.entity';
+import { Repository } from 'typeorm';
+import { PeriodsService } from 'src/periods/periods.service';
+import { AcademicProcess } from './enum/academic-process.enum';
+import { Period } from 'src/periods/entities/period.entity';
 
 @Injectable()
 export class ImportantSectionsService {
-  create(createImportantSectionDto: CreateImportantSectionDto) {
-    return 'This action adds a new importantSection';
-  }
+  constructor(
+    @InjectRepository(ImportantSection)
+    private importantSectionRepository: Repository<ImportantSection>,
+    private periodsService: PeriodsService,
+  ) {}
 
-  findAll() {
-    return `This action returns all importantSections`;
-  }
+  async findByAcademicProcessAndPeriod(
+    academicProcessStr: string,
+    periodStr: string,
+  ) {
+    let period: Period;
+    if (periodStr) {
+      period =
+        await this.periodsService.findOneByPeriodAndYearString(periodStr);
+    } else {
+      period = await this.periodsService.findCurrentPeriod();
+    }
+    const academicProcess = Object.values(AcademicProcess).includes(
+      academicProcessStr as AcademicProcess,
+    )
+      ? (academicProcessStr as AcademicProcess)
+      : undefined;
 
-  findOne(id: number) {
-    return `This action returns a #${id} importantSection`;
-  }
+    if (!academicProcess) {
+      throw new Error(`Invalid academicProcess: ${academicProcessStr}`);
+    }
 
-  update(id: number, updateImportantSectionDto: UpdateImportantSectionDto) {
-    return `This action updates a #${id} importantSection`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} importantSection`;
+    return this.importantSectionRepository.find({
+      where: {
+        academicProcess,
+        period: {
+          id: period.id,
+        },
+      },
+      relations: ['importantDates'],
+      order: { name: 'ASC' },
+    });
   }
 }

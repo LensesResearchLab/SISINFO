@@ -1,15 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ImportantSectionsService } from './important-sections.service';
-import { CreateImportantSectionDto } from './dto/create-important-section.dto';
-import { UpdateImportantSectionDto } from './dto/update-important-section.dto';
+import { BadRequestException } from '@nestjs/common';
 
 @Controller('important-sections')
 export class ImportantSectionsController {
@@ -17,31 +8,19 @@ export class ImportantSectionsController {
     private readonly importantSectionsService: ImportantSectionsService,
   ) {}
 
-  @Post()
-  create(@Body() createImportantSectionDto: CreateImportantSectionDto) {
-    return this.importantSectionsService.create(createImportantSectionDto);
-  }
-
   @Get()
-  findAll() {
-    return this.importantSectionsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.importantSectionsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateImportantSectionDto: UpdateImportantSectionDto,
+  async getByProcessAndPeriod(
+    @Query('academicProcess') academicProcess: string,
+    @Query('periodStr') periodStr: string,
   ) {
-    return this.importantSectionsService.update(+id, updateImportantSectionDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.importantSectionsService.remove(+id);
+    if (!academicProcess) {
+      throw new BadRequestException(
+        'Es necesario un periodo y tipo de proceso',
+      );
+    }
+    return await this.importantSectionsService.findByAcademicProcessAndPeriod(
+      academicProcess,
+      periodStr,
+    );
   }
 }

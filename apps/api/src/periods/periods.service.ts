@@ -51,9 +51,28 @@ export class PeriodsService {
 
   async findCurrentPeriod(): Promise<Period> {
     const periods = await this.periodRepository.find();
+
+    if (periods.length === 0) {
+      throw new Error('No periods found');
+    }
+
     const currentPeriod = periods.reduce((prev, current) => {
-      return prev.period > current.period ? prev : current;
+      if (current.year > prev.year) {
+        return current;
+      }
+      if (current.year === prev.year && current.semester > prev.semester) {
+        return current;
+      }
+      if (
+        current.year === prev.year &&
+        current.semester === prev.semester &&
+        current.period > prev.period
+      ) {
+        return current;
+      }
+      return prev;
     });
+
     return currentPeriod;
   }
 
