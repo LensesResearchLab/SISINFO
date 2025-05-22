@@ -3,5 +3,6 @@ export interface LeaderPerCourse {
   courseName: string
   professorName: string
   email: string
+  courseId: string;
 }
 

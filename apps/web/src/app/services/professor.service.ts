@@ -34,6 +34,38 @@ export async function createUndergraduateProject(bodyData:createProject, id: str
       throw new Error(`Error creando los proyectos: ${response.statusText}`, { cause: errorData });
     }
     return response.json();
+}
   
+export async function findProfessorsForCourseInCurrentPeriod(id: string) {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROFESSORS}/courses/${encodeURIComponent(id)}`;
+  const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
+  
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Error encontrando los profesores: ${response.statusText}`, { cause: errorData });
+    }
+    return response.json();
+}
+  
+
+export async function assignProfessorAsCourseLeader(professorId: string, courseId: string) {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROFESSORS}/${encodeURIComponent(professorId)}/assign/${encodeURIComponent(courseId)}`;
+  const response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
+  
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Error asignando como lider: ${response.statusText}`, { cause: errorData });
+    }
+    return response.json();
 }
   
