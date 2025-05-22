@@ -6,16 +6,10 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 @Entity()
 export class ImportantDate extends Base {
   @Column('text')
-  description: string;
+  name: string;
 
   @Column('date')
   date: Date;
-
-  @Column('text')
-  sectionTitle: string;
-
-  @Column('text')
-  type: string;
 
   @ManyToOne(
     () => ImportantSection,
@@ -24,5 +18,5 @@ export class ImportantDate extends Base {
   importantSection: ImportantSection;
 
   @OneToMany(() => Task, (task) => task.date)
-  tasks: Task;
+  tasks: Task[];
 }
