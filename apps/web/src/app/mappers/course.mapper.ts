@@ -7,10 +7,11 @@ export function mapCoursesToLeadersRow(courses: Course[]) {
 }
 
 function mapCourseToLeaderRow(course: Course): LeaderPerCourse {
-    return  {
+    return {
         code: course.code,
         courseName: course.name,
-        professorName: course.mainProfessor.user.name,
-        email: course.mainProfessor.user.email,
+        professorName: course.mainProfessor?.user?.name ?? "Sin asignar",
+        email: course.mainProfessor?.user?.email ?? "Sin correo",
+        courseId: course.id,
     }
 }

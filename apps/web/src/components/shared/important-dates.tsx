@@ -36,7 +36,10 @@ export default function ImportantDates({name, academicProcess} : {name: string, 
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
       <div className="w-full bg-card shadow-lg rounded-xl p-5 h-full space-y-4">
         <h1 className="text-xl font-semibold text-core">Fechas de {name}</h1>
-        {sections.map((section) => (
+        {
+          !sections.length && <p className="text-foreground">No se han definido fechas para el periodo actual</p>
+        }
+        {sections.length > 0 && sections.map((section) => (
           <DateTable
             key={section.name}
             title={section.name}
