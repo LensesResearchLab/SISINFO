@@ -3,16 +3,12 @@ import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 export class CreateImportantDateDto {
   @IsString()
   @IsNotEmpty()
-  description: string;
+  name: string;
 
   @IsDate()
   date: Date;
 
   @IsString()
   @IsNotEmpty()
-  sectionTitle: string;
-
-  @IsString()
-  @IsNotEmpty()
-  type: string;
+  importantSectionId: string;
 }

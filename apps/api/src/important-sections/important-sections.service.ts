@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImportantSection } from './entities/important-section.entity';
 import { Repository } from 'typeorm';
 import { PeriodsService } from 'src/periods/periods.service';
 import { AcademicProcess } from './enum/academic-process.enum';
 import { Period } from 'src/periods/entities/period.entity';
+import { CreateImportantSectionDto } from './dto/create-important-section.dto';
 
 @Injectable()
 export class ImportantSectionsService {
@@ -45,5 +46,31 @@ export class ImportantSectionsService {
       relations: ['importantDates'],
       order: { name: 'ASC' },
     });
+  }
+
+  findAll() {
+    return this.importantSectionRepository.find();
+  }
+
+  async findOne(id: string) {
+    const section = await this.importantSectionRepository.findOne({
+      where: { id },
+    });
+    if (!section) {
+      throw new NotFoundException('Seccion de fechas no encontrada');
+    }
+    return section;
+  }
+
+  async create(createImportantSectionDto: CreateImportantSectionDto) {
+    const period = await this.periodsService.findOneByPeriodAndYearString(
+      createImportantSectionDto.periodStr,
+    );
+
+    const section = this.importantSectionRepository.create(
+      createImportantSectionDto,
+    );
+    section.period = period;
+    return await this.importantSectionRepository.save(section);
   }
 }

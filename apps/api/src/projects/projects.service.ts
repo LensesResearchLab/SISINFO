@@ -20,9 +20,8 @@ export class ProjectsService {
     private readonly projectRepository: Repository<Project>,
   ) {}
   async create(createProjectDto: CreateProjectDto, professorId: string) {
-    const period = await this.periodsService.findOneByPeriodAndYear(
-      createProjectDto.period.slice(4, 6),
-      Number(createProjectDto.period.slice(0, 4)),
+    const period = await this.periodsService.findOneByPeriodAndYearString(
+      createProjectDto.period,
     );
     console.log(period);
     const professor = await this.professorsService.findOne(professorId);

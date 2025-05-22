@@ -55,6 +55,10 @@ import { Section } from '../sections/entities/section.entity';
 import { ImportantDatesService } from '../important-dates/important-dates.service';
 import { ImportantDate } from '../important-dates/entities/important-date.entity';
 import { CreateImportantDateDto } from '../important-dates/dto/create-important-date.dto';
+import { ImportantSectionsService } from '../important-sections/important-sections.service';
+import { ImportantSection } from 'src/important-sections/entities/important-section.entity';
+import { CreateImportantSectionDto } from 'src/important-sections/dto/create-important-section.dto';
+import { AcademicProcess } from 'src/important-sections/enum/academic-process.enum';
 
 @Injectable()
 export class SeedService {
@@ -80,6 +84,7 @@ export class SeedService {
     private readonly documentsService: DocumentsService,
     private readonly usersService: UsersService,
     private readonly importantDatesService: ImportantDatesService,
+    private readonly importantSectionsService: ImportantSectionsService,
   ) {}
 
   STUDENTS_NUMBER = 10;
@@ -599,17 +604,39 @@ export class SeedService {
     return true;
   }
 
-  async seedImportantDates() {
+  async seedImportantSections() {
     const periods = await this.periodsService.findAll();
+    const insertPromises: Promise<ImportantSection>[] = [];
+    const importantSections: CreateImportantSectionDto[] = Array.from({
+      length: 10,
+    }).map(() => ({
+      name: faker.lorem.sentence(),
+      academicProcess: AcademicProcess.UNDERGRADUATE_PROJECT,
+      periodStr:
+        periods[Math.floor(Math.random() * periods.length)].year +
+        periods[Math.floor(Math.random() * periods.length)].period,
+    }));
+
+    importantSections.forEach((importantSection) => {
+      insertPromises.push(
+        this.importantSectionsService.create(importantSection),
+      );
+    });
+
+    await Promise.all(insertPromises);
+    return true;
+  }
+
+  async seedImportantDates() {
+    const sections = await this.importantSectionsService.findAll();
     const insertPromises: Promise<ImportantDate>[] = [];
     const importantDates: CreateImportantDateDto[] = Array.from({
       length: 10,
     }).map(() => ({
-      description: faker.lorem.sentence(),
+      name: faker.lorem.sentence(),
       date: faker.date.future(),
-      sectionTitle: faker.lorem.word(),
-      type: faker.helpers.arrayElement(['type1', 'type2', 'type3']),
-      period: periods[Math.floor(Math.random() * periods.length)].id,
+      importantSectionId:
+        sections[Math.floor(Math.random() * sections.length)].id,
     }));
 
     importantDates.forEach((importantDate) => {
@@ -625,6 +652,7 @@ export class SeedService {
     await this.seedRequirements();
     await this.seedTags();
     await this.seedAreasOfInterest();
+    await this.seedImportantSections();
     await this.seedImportantDates();
 
     return 'SEED_EXECUTED';
@@ -641,7 +669,7 @@ export class SeedService {
 
   async executeSeedGraduatedAssistance() {
     await this.seedGraduatedAssistances();
-    await this.seedGraduatedAssistanceApplications();
+    //await this.seedGraduatedAssistanceApplications();
     return 'SEED_EXECUTED';
   }
 

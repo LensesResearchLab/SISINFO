@@ -22,6 +22,7 @@ import { AssistanceApplicationsModule } from '../assistance-applications/assista
 import { UsersModule } from '../users/users.module';
 import { DocumentsModule } from '../documents/documents.module';
 import { ImportantDatesModule } from '../important-dates/important-dates.module';
+import { ImportantSectionsModule } from 'src/important-sections/important-sections.module';
 
 @Module({
   controllers: [SeedController],
@@ -48,6 +49,7 @@ import { ImportantDatesModule } from '../important-dates/important-dates.module'
     UsersModule,
     DocumentsModule,
     ImportantDatesModule,
+    ImportantSectionsModule,
   ],
 })
 export class SeedModule {}

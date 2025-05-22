@@ -9,6 +9,6 @@ import { PeriodsModule } from '../periods/periods.module';
   controllers: [ImportantSectionsController],
   providers: [ImportantSectionsService],
   imports: [TypeOrmModule.forFeature([ImportantSection]), PeriodsModule],
-  exports: [ImportantSectionsModule],
+  exports: [ImportantSectionsModule, ImportantSectionsService],
 })
 export class ImportantSectionsModule {}
