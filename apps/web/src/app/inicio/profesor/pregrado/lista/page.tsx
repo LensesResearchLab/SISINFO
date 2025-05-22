@@ -80,13 +80,28 @@ export default function UndergraduateProjects() {
     },
     {
       id: "actions",
-      header: "Estudiantes",
+      header: "Detalle",
       cell: ({ row }) => (
         <Button
           variant="ghost"
           size="icon"
           onClick={() =>
             router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST}/${row.original.id}`)
+          }
+        >
+          <Eye className="w-4 h-4" />
+        </Button>
+      ),
+    },
+    {
+      id: "aplicantes",
+      header: "Estudiantes",
+      cell: ({ row }) => (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() =>
+            router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST}/${row.original.id}/aplicantes`)
           }
         >
           <Eye className="w-4 h-4" />
