@@ -5,7 +5,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button"
 import { Upload } from "lucide-react"
 import Papa, { ParseResult } from "papaparse"
+import * as XLSX from "xlsx";
 import { ConfirmationModal, DialogTextProps } from "./confirmation-modal"
+import { createBillboard } from "@/app/services/billboard.service"
 
 interface UploadFilesProps {
   readonly title: string;
@@ -27,27 +29,67 @@ export default function UploadFiles({
   }
 
   const onConfirmUpload = () => {
-    if (file) {
+    if (!file) return setIsModalOpen(false);
+
+    const extension = file.name.split(".").pop()?.toLowerCase();
+
+    if (extension === "csv") {
       Papa.parse<Record<string, string | number | boolean | null>>(file, {
         header: true,
         skipEmptyLines: true,
-        complete: (results: ParseResult<Record<string, string | number | boolean | null>>) => {
-          console.log("Parsed CSV data:", results.data)
+        complete: (results) => {
           const filteredData = results.data.filter((row) =>
             Object.values(row).some(
               (value) => typeof value === "string" && value.trim() !== ""
             )
-          )
-          handleUploadCsv(filteredData)
+          );
+          handleUploadCsv(filteredData);
+          setIsModalOpen(false);
         },
         error: (error) => {
-          console.error("Error al parsear el CSV:", error)
+          console.error("Error al parsear el CSV:", error);
+          setIsModalOpen(false);
         },
-      })
+      });
+    } else if (extension === "xlsx" || extension === "xlsm") {
+      file.arrayBuffer().then((data) => {
+        try {
+          const workbook = XLSX.read(data, { type: "array" });
+          const sheet = workbook.Sheets["plantillaSisinfo"];
+          if (!sheet) throw new Error("No se encontró la hoja 'plantillaSisinfo'");
+
+          const jsonData = XLSX.utils.sheet_to_json<Record<string, string | number | boolean | null>>(sheet);
+          handleUploadCsv(jsonData);
+          const billboardData = jsonData.map((row) => ({
+            NRC: String(row["NRC"] ?? ""),
+            code: String(row["code"] ?? ""),
+            name: String(row["name"] ?? ""),
+            departament: String(row["departament"] ?? ""),
+            credits: typeof row["credits"] === "number" ? row["credits"] : Number(row["credits"] ?? 0),
+            section: String(row["section"] ?? ""),
+            period: String(row["period"] ?? ""),
+            professors: Array.isArray(row["professors"])
+              ? row["professors"].map((p) => String(p)).join(", ")
+              : typeof row["professors"] === "string" && row["professors"]
+                ? row["professors"]
+                : "",
+            publicated: typeof row["publicated"] === "boolean"
+              ? row["publicated"]
+              : row["publicated"] === "true" || row["publicated"] === "1"
+          }));
+          createBillboard(billboardData);
+        } catch (error) {
+          console.error("Error al leer el archivo XLSX/XLSM:", error);
+        } finally {
+          setIsModalOpen(false);
+        }
+      });
     } else {
-      setIsModalOpen(false)
+      console.error("Tipo de archivo no soportado");
+      setIsModalOpen(false);
     }
-  }
+  };
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -78,7 +120,7 @@ export default function UploadFiles({
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">CSV</p>
               </div>
-              <input id="dropzone-file" type="file" className="hidden" accept=".csv" onChange={handleFileChange} />
+              <input id="dropzone-file" type="file" className="hidden" accept=".csv, .xlsx, .xlsm" onChange={handleFileChange} />
             </label>
           </div>
           {file && (

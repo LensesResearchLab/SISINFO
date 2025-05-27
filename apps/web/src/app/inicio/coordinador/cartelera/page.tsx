@@ -11,6 +11,7 @@ import { UploadFilePage } from "@/components/shared/upload-files-page";
 import { AlertDialogError } from "@/components/shared/alert-dialog-error";
 import { DataTable } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
+import * as XLSX from "xlsx";
 
 export default function UploadBillboard() {
   const headers = React.useMemo<(keyof Billboard)[]>(
@@ -58,21 +59,30 @@ export default function UploadBillboard() {
   );
 
   const handleDownload = () => {
-    const encodedUri = encodeURI(`data:text/csv;charset=utf-8,${csvContent}`);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "plantilla.csv");
-    link.style.display = "none";
+    link.href = "/plantilla.xlsm";
+    link.download = "plantilla.xlsm";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  const handleUploadCsv = (data: Billboard[]) => {
-    setCsvData(data);
-    createBillboard(data);
-  };
+  const handleUploadXlsm = async (file: File) => {
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, { type: "array" });
 
+    const sheetName = "plantillaSisinfo";
+    const worksheet = workbook.Sheets[sheetName];
+
+    if (!worksheet) {
+      setLoadError(true);
+      return;
+    }
+
+    const jsonData = XLSX.utils.sheet_to_json(worksheet) as Billboard[];
+    console.log(jsonData);
+    setCsvData(jsonData);
+  };
   const handlePeriodChange = (value: string) => {
     getBillboard(value)
       .then((data) => {
@@ -91,14 +101,15 @@ export default function UploadBillboard() {
         title="Cargar cartelera"
         handlePeriodChange={handlePeriodChange}
         handleDownload={handleDownload}
-        handleUploadCsv={(data) => {
-          const billboardData = data as unknown as Billboard[];
-          handleUploadCsv(billboardData);
+        handleUploadCsv={(file) => {
+          if (file instanceof File) {
+            handleUploadXlsm(file);
+          }
         }}
-        dialogText={dialogText}
+      dialogText={dialogText}
       >
-        <UploadedBillboard classesData={coursesData} loadError={loadError} />
-      </UploadFilePage>
+      <UploadedBillboard classesData={coursesData} loadError={loadError} />
+    </UploadFilePage >
 
       <AlertDialogError open={loadError} onOpenChange={setLoadError} />
     </>

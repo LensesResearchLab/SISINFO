@@ -12,7 +12,7 @@ export interface Billboard {
     credits: number;
     section: string;
     period: string;
-    professors: string[];
+    professors: string;
     publicated: boolean;
 }
   

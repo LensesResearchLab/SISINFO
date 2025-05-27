@@ -64,10 +64,12 @@ export class BillboardsService {
 
         await Promise.all(
           professorsArr.map(async (prof) => {
+            console.log(prof);
             const cleanedName = prof
               .replace(/^\s*\(\d+\)\s*/, '')
               .replace(/\s*\([^)]+\)\s*$/, '')
               .trim();
+            console.log(cleanedName);
             const searchProfessor =
               await this.professorService.findByName(cleanedName);
             if (searchProfessor) {
@@ -104,6 +106,8 @@ export class BillboardsService {
           const newSectionDto = new CreateSectionDto();
           newSectionDto.NRC = section.NRC;
           newSectionDto.section = section.section;
+          console.log(findedProfessors);
+          console.log(supportProfessors);
           if (findedProfessors.length === 0 && supportProfessors.length === 0) {
             throw new Error('No professors found for the section');
           }
