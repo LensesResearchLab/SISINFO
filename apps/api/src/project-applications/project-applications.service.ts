@@ -60,11 +60,19 @@ export class ProjectApplicationsService {
           throw new NotFoundException(`Periodo actual no encontrado`);
         }
 
+        let coordinator;
+
+        coordinators.map((c)=>{
+          if(c.isActive){
+            coordinator=c;
+          }
+        })
+
         const task = await this.tasksService.create(TaskType.SEND_APPROVE, {
           flow: 'proyectoPregrado',
           step: 0,
           comment: '',
-          coordinatorId: coordinators[0].id,
+          coordinatorId: coordinator.id,
         });
 
         const projectApplication = manager.create(ProjectApplication, {
