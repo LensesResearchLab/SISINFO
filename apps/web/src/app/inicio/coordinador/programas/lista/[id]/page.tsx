@@ -39,8 +39,7 @@ export default function ApplicationDetail() {
   // Fetch course data using React Query
   const { data: course, isFetching, error } = useQuery({
     queryKey: ["course-program", id],
-    queryFn: () =>
-      typeof id === "string" ? getCourseWithDocument(id) : Promise.reject("Invalid ID"),
+    queryFn: () => getCourseWithDocument(String(id)),
   });
 
   /**

@@ -30,7 +30,7 @@ export async function postThesisApplication(
   studentId: string
 ) {
   try {
-    const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/${studentId}`, {
+    await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/${studentId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

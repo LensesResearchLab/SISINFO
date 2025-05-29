@@ -1,6 +1,5 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
 import { ImportantSectionsService } from './important-sections.service';
-import { BadRequestException } from '@nestjs/common';
 
 @Controller('important-sections')
 export class ImportantSectionsController {

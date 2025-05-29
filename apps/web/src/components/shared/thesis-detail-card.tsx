@@ -1,7 +1,6 @@
 import { Thesis } from "@/app/types/entities/thesis.type";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Tag, Calendar, Mail } from "lucide-react";
-import { CategoryTagStatic } from "./category-tag";
 
 export function ThesisDetailCard({
   thesis,

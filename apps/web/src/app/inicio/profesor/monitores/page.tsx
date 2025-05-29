@@ -302,8 +302,8 @@ function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAs
           </TableRow>
         </TableHeader>
         <TableBody className="text-center">
-          {localList.map((student, index) => (
-            <TableRow key={index}>
+          {localList.map((student) => (
+            <TableRow key={student.id}>
               <TableCell className="font-medium">{student.name}</TableCell>
               <TableCell className="font-medium">{student.code}</TableCell>
               <TableCell className="font-medium">

@@ -207,11 +207,11 @@ export default function EditAssistancePage() {
             <Label>Requisitos</Label>
             <div className="space-y-2">
               {formData.requirements.map((req, index) => (
-                <div key={index} className="flex gap-2">
+                <div key={req.id} className="flex gap-2">
                   <Input
                     value={req.description}
                     onChange={(e) => handleRequirementChange(index, e.target.value)}
-                    placeholder={`Requisito ${index + 1}`}
+                    placeholder={req.description || "Descripción del requisito"}
                     required
                   />
                   {formData.requirements.length > 1 && (

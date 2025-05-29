@@ -1,3 +1,8 @@
+
+import { Coordinator } from "./coordinator.type";
+import { Professor } from "./professor.type";
+import { Student } from "./student.type";
+
 export interface Task {
   projectActualTask: any;
   id: string;
@@ -6,7 +11,7 @@ export interface Task {
   step: number;
   title: string;
   description: string;
-  student:any;
-  professor:any;
-  coordinator:any;
+  student:Student;
+  professor:Professor;
+  coordinator:Coordinator;
 }

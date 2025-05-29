@@ -8,7 +8,7 @@ export interface Step {
 }
 export const flows: Record<string, Step[]> = {
   proyectoPregrado: [
-      {
+    {
       type: TaskType.SEND_APPROVE,
       assignee: 'coordinator',
       title: 'Aprobar estudiante',

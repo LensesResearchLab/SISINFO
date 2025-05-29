@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
-import { administratorData } from "./components/links-per-group";
 
 /* Dont need authentication for these */
 const publicRoutes = ["/auth", "/auth/api", "/api/auth/login"];

@@ -596,6 +596,17 @@ function SidebarMenuBadge({
   )
 }
 
+export function getSecureRandomNumber(min: number, max: number): number {
+  const range = max - min;
+  if (range <= 0) {
+    throw new Error("The max value must be greater than the min value");
+  }
+  const randomBuffer = new Uint32Array(1);
+  window.crypto.getRandomValues(randomBuffer);
+  const secureRandomFraction = randomBuffer[0] / (0xFFFFFFFF + 1);
+  return min + secureRandomFraction * range;
+}
+
 function SidebarMenuSkeleton({
   className,
   showIcon = false,
@@ -605,7 +616,7 @@ function SidebarMenuSkeleton({
 }) {
   // Random width between 50 to 90%.
   const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
+    return `${getSecureRandomNumber(50, 90)}%`
   }, [])
 
   return (

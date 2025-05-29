@@ -1,6 +1,6 @@
 import { mapProjectsToStudentTable } from "../mappers/project.mapper";
 import { API_ROUTES } from "../routes";
-import { CreateProjectApplication, ProjectApplication } from "../types/entities/project-application.type";
+import { CreateProjectApplication } from "../types/entities/project-application.type";
 import { Project } from "../types/entities/project.type";
 
 export async function getUndergraduateThesis({
@@ -73,7 +73,6 @@ export async function getThesisStatusInformation(id:string) {
     return await response.json();
   }
 
-// TODO
 export async function getUndergraduateThesisStatusInformation(studentId: string){
   const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECT_APPLICATIONS}/student/${studentId}`;
   const response = await fetch(url, {
@@ -88,7 +87,6 @@ export async function getUndergraduateThesisStatusInformation(studentId: string)
   return await response.json();
 }
 
-// TODO
 export async function getUndergraduateThesisDates() {
   const url = `${API_ROUTES.BASE}/`;
   const response = await fetch(url, {
@@ -105,7 +103,6 @@ export async function getUndergraduateThesisDates() {
 
 
 
-// TODO
 export async function getProjectsByProfessor(userId:string): Promise<Project[]> {
   const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}/professor/${userId}`;
   const response = await fetch(url, {

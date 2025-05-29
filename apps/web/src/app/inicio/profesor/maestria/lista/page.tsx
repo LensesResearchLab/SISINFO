@@ -66,7 +66,7 @@ export default function ThesisProjects() {
     {
       accessorKey: "title",
       header: "Tema del Proyecto",
-      cell: ({ row }) => <span className="font-medium">{row.original.title}</span>,
+      cell: ({ row }) => <ThesisSpan text={row.original.title} />,
     },
     {
       accessorKey: "investigationSubarea",
@@ -121,6 +121,14 @@ export default function ThesisProjects() {
         <DataTable columns={columns} data={filtered} />
       </div>
     </div>
+  );
+}
+
+function ThesisSpan({ text }: { readonly text: string }) {
+  return (
+    <span className="text-primary font-medium">
+      {text}
+    </span>
   );
 }
 

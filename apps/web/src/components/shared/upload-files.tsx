@@ -4,14 +4,16 @@ import { useState } from "react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Upload } from "lucide-react"
-import Papa, { ParseResult } from "papaparse"
+import Papa from "papaparse"
 import * as XLSX from "xlsx";
 import { ConfirmationModal, DialogTextProps } from "./confirmation-modal"
 import { createBillboard } from "@/app/services/billboard.service"
 
+type CsvRow = Record<string, string | number | boolean | null>;
+
 interface UploadFilesProps {
   readonly title: string;
-  readonly handleUploadCsv: (data: Record<string, string | number | boolean | null>[]) => void;
+  readonly handleUploadCsv: (data: CsvRow[]) => void;
   readonly dialogText: DialogTextProps;
 }
 
@@ -68,14 +70,8 @@ export default function UploadFiles({
             credits: typeof row["credits"] === "number" ? row["credits"] : Number(row["credits"] ?? 0),
             section: String(row["section"] ?? ""),
             period: String(row["period"] ?? ""),
-            professors: Array.isArray(row["professors"])
-              ? row["professors"].map((p) => String(p)).join(", ")
-              : typeof row["professors"] === "string" && row["professors"]
-                ? row["professors"]
-                : "",
-            publicated: typeof row["publicated"] === "boolean"
-              ? row["publicated"]
-              : row["publicated"] === "true" || row["publicated"] === "1"
+            professors: formatProfessors(row["professors"]),
+            publicated: formatPublicated(row["publicated"])
           }));
           createBillboard(billboardData);
         } catch (error) {
@@ -144,4 +140,22 @@ export default function UploadFiles({
       )}
     </Card>
   )
+}
+
+function formatProfessors(professors: unknown): string {
+  if (Array.isArray(professors)) {
+    return professors.map((p) => String(p)).join(", ");
+  } else if (typeof professors === "string" && professors.trim() !== "") {
+    return professors;
+  }
+  return "";
+}
+
+function formatPublicated(value: unknown): boolean {
+  if (typeof value === "boolean") {
+    return value;
+  } else if (typeof value === "string") {
+    return value.toLowerCase() === "true";
+  }
+  return false;
 }

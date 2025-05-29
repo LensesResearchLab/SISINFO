@@ -500,6 +500,11 @@ function UploadCV({ setFile }: {
     event.preventDefault();
   };
 
+  const handleActivateInput = () => {
+    const fileInput = document.getElementById("cv");
+    if (fileInput) fileInput.click();
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -510,6 +515,15 @@ function UploadCV({ setFile }: {
       </div>
 
       <div
+        role="button"
+        tabIndex={0}
+        onClick={handleActivateInput}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            handleActivateInput();
+          }
+        }}
         className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer"
         onDrop={handleDrop}
         onDragOver={handleDragOver}

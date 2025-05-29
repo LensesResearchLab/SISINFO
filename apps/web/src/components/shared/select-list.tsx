@@ -19,8 +19,8 @@ const SelectList: React.FC<SelectListProps> = ({ list, placeholder }) => {
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-                {list.map((item, index) => (
-                    <SelectItem key={index} value={item}>
+                {list.map((item) => (
+                    <SelectItem key={item} value={item}>
                         {item}
                     </SelectItem>
                 ))}

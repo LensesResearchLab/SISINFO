@@ -76,7 +76,16 @@ export default function AcademicCoordinators() {
             alt="Bookeau"
             className="w-64 mb-4"
           />
-          <Button className="px-6 py-2 rounded-md text-lg" onClick={() => window.open("https://encuentrosconingenieria.bookeau.com/#/reservas", "_blank")}>
+          <Button
+            className="px-6 py-2 rounded-md text-lg"
+            onClick={() =>
+              window.open(
+                "https://encuentrosconingenieria.bookeau.com/#/reservas",
+                "_blank",
+                "noopener,noreferrer"
+              )
+            }
+          >
             Reserva tu cita
           </Button>
         </div>

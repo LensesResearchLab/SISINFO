@@ -9,7 +9,7 @@ import { TasksModule } from '../tasks/tasks.module';
 import { TaskFactory } from '../tasks/factory/tasks.factory';
 import { PeriodsModule } from '../periods/periods.module';
 import { DocumentsModule } from '../documents/documents.module';
-import { CoordinatorsModule } from 'src/coordinators/coordinators.module';
+import { CoordinatorsModule } from '../coordinators/coordinators.module';
 
 @Module({
   controllers: [ProjectApplicationsController],

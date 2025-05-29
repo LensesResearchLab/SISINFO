@@ -93,7 +93,7 @@ export default function ThesisList() {
  * Renders dropdown to select academic period.
  * Updates the search term in global store.
  */
-function SelectSemester({ semesters, className }: { semesters: string[]; className?: string }) {
+function SelectSemester({ semesters, className }: { readonly semesters: string[]; readonly className?: string }) {
   const setSearchTerm = useThesisListStore((state) => state.setSearchTerm);
   return (
     <Select onValueChange={setSearchTerm}>
@@ -120,7 +120,7 @@ function SelectSemester({ semesters, className }: { semesters: string[]; classNa
  * Allows users to filter thesis data by category.
  * Options include: professor and area of interest.
  */
-function SelectSearchCategory({ className }: { className?: string }) {
+function SelectSearchCategory({ className }: { readonly className?: string }) {
   const setSearchCategory = useThesisListStore((state) => state.setSearchCategory);
   return (
     <Select onValueChange={setSearchCategory}>
@@ -143,7 +143,7 @@ function SelectSearchCategory({ className }: { className?: string }) {
  *
  * Renders an accordion item for each category group (e.g., professor name or interest area).
  */
-function AccordionList({ thesisList }: { thesisList: ProjectsStudentTable }) {
+function AccordionList({ thesisList }: { readonly thesisList: ProjectsStudentTable }) {
   const order = useThesisListStore((state) => state.order);
   return (
     <>
@@ -170,24 +170,24 @@ function AccordionList({ thesisList }: { thesisList: ProjectsStudentTable }) {
  * Displays thesis data using reusable DataTable component.
  * Enables column sorting, pagination and custom cell rendering.
  */
-function ThesisTable({ data }: { data: ProjectsStudentTableRow[] }) {
+function ThesisTable({ data }: { readonly data: ProjectsStudentTableRow[] }) {
   const router = useRouter();
 
   const columns: ColumnDef<ProjectsStudentTableRow>[] = [
     {
       accessorKey: "title",
       header: "Nombre del proyecto",
-      cell: ({ row }) => <span className="font-medium">{row.original.title}</span>,
+      cell: ({ row }) => <ThesisSpan text={row.original.title} />,
     },
     {
       accessorKey: "category",
       header: "Categoría",
-      cell: ({ row }) => <span className="font-medium">{row.original.category}</span>,
+      cell: ({ row }) => <ThesisSpan text={row.original.category} />,
     },
     {
       accessorKey: "maxStudents",
       header: "Número de estudiantes",
-      cell: ({ row }) => <span className="font-medium">{row.original.maxStudents}</span>,
+      cell: ({ row }) => <ThesisSpan text={row.original.maxStudents} />,
     },
     {
       id: "actions",
@@ -207,6 +207,14 @@ function ThesisTable({ data }: { data: ProjectsStudentTableRow[] }) {
   ];
 
   return <DataTable columns={columns} data={data} />;
+}
+
+function ThesisSpan({ text }: { readonly text: string }) {
+  return (
+    <span className="text-primary font-medium">
+      {text}
+    </span>
+  );
 }
 
 /**

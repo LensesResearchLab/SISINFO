@@ -10,8 +10,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Check } from "lucide-react";
-import { useEffect, useState } from "react";
-import type { Course, Student } from "../../../../../types/student-profile.type";
+import type { Course } from "../../../../../types/student-profile.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { useParams } from "next/navigation";
 import { ProfileTab } from "@/components/shared/profile-tab";
@@ -77,13 +76,12 @@ function PlanDetailsTab({others, courses}: {readonly others: Course[], readonly 
               ))}
             </div>
             <div className="space-y-6 w-full">
-              {courses?.map((item, index) => (
+              {courses?.map((item) => (
                 <div
-                  key={index}
+                  key={item.id}
                   className="flex w-full columns-2 items-center space-x-4"
                 >
                   <RenderFields
-                    key={index}
                     label="Semestre"
                     className="flex-grow"
                     value={item.name}
@@ -100,15 +98,14 @@ function PlanDetailsTab({others, courses}: {readonly others: Course[], readonly 
           </div>
           <div className="grid grid-cols-[2fr_3fr] gap-8 w-full pt-6">
             <div className="space-y-6 w-full">
-              {others?.map((item, index) => (
-                <RenderFields key={index} label="Curso" value={item.name} />
+              {others?.map((item) => (
+                <RenderFields key={item.id} label="Curso" value={item.name} />
               ))}
             </div>
             <div className="space-y-6 w-full">
-              {others?.map((item, index) => (
-                <div key={index} className="flex items-center space-x-4">
+              {others?.map((item) => (
+                <div key={item.id} className="flex items-center space-x-4">
                   <RenderFields
-                    key={index}
                     label="Semestre"
                     className="flex-grow"
                     value={item.name}

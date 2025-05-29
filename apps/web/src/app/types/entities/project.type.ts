@@ -16,7 +16,7 @@ export interface Project {
   period?: Period;
   students?: Student[];
 }
-export interface createProject {
+export interface CreateProject {
   title: string;
   description: string;
   category: string;

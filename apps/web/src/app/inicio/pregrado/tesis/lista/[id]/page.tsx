@@ -14,7 +14,7 @@ import { ProjectDetailCard, ProjectNotFound } from "@/components/shared/project-
 import { createProjectApplication, getUndergraduateProjectById } from "@/app/services/project.service";
 import { Project } from "@/app/types/entities/project.type";
 import { getUserInfo } from "@/app/auth/auth-service";
-import { CreateProjectApplication, ProjectApplication } from "@/app/types/entities/project-application.type";
+import { CreateProjectApplication } from "@/app/types/entities/project-application.type";
 
 /**
  * ThesisInscription Component

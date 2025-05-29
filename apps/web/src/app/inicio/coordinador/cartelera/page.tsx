@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
-import { Billboard, Course } from "@/app/types/entities/billboard.type";
+import { useState } from "react";
+import { Course } from "@/app/types/entities/billboard.type";
 import {
-  createBillboard,
   getBillboard,
 } from "@/app/services/billboard.service";
 import { ROUTES } from "@/app/routes";
@@ -14,21 +13,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import * as XLSX from "xlsx";
 
 export default function UploadBillboard() {
-  const headers = React.useMemo<(keyof Billboard)[]>(
-    () => [
-      "NRC",
-      "code",
-      "name",
-      "departament",
-      "credits",
-      "section",
-      "period",
-      "professors",
-    ],
-    []
-  );
-
-  const [csvData, setCsvData] = useState<Billboard[]>([]);
   const [coursesData, setCoursesData] = useState<Course[]>([]);
   const [loadError, setLoadError] = useState(false);
 
@@ -41,22 +25,6 @@ export default function UploadBillboard() {
     url: `${ROUTES.HOME}/${ROUTES.BULLETIN_BOARD}`,
   };
 
-  const convertToCSV = (
-    headers: (keyof Billboard)[],
-    data: Billboard[]
-  ): string => {
-    const csv = [headers.join(",")];
-    data.slice(0, 3).forEach((row) => {
-      const rowData = headers.map((header) => row[header] ?? "");
-      csv.push(rowData.join(","));
-    });
-    return csv.join("\n");
-  };
-
-  const csvContent = React.useMemo(
-    () => convertToCSV(headers, csvData),
-    [csvData, headers]
-  );
 
   const handleDownload = () => {
     const link = document.createElement("a");
@@ -79,9 +47,8 @@ export default function UploadBillboard() {
       return;
     }
 
-    const jsonData = XLSX.utils.sheet_to_json(worksheet) as Billboard[];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet);
     console.log(jsonData);
-    setCsvData(jsonData);
   };
   const handlePeriodChange = (value: string) => {
     getBillboard(value)

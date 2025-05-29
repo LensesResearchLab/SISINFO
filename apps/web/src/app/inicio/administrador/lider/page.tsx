@@ -14,7 +14,7 @@ import {
   CommandEmpty,
 } from "@/components/ui/command";
 import { Professor } from "@/app/types/entities/professor.type";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   assignProfessorAsCourseLeader,
   findProfessorsForCourseInCurrentPeriod,
@@ -84,8 +84,8 @@ function ProfessorListPopover({
   courseId,
   onAssigned,
 }: {
-  courseId: string;
-  onAssigned?: () => void;
+  readonly courseId: string;
+  readonly onAssigned?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const { data } = useQuery({

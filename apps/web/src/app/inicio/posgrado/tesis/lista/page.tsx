@@ -367,8 +367,8 @@ function ElementThesisTable({ thesisList }: { readonly thesisList: Thesis[] }) {
         </TableRow>
       </TableHeader>
       <TableBody className="text-center">
-        {thesisList.map((thesis, index) => (
-          <TableRow key={index}>
+        {thesisList.map((thesis) => (
+          <TableRow key={thesis.id}>
             <TableCell className="font-medium">{thesis.title}</TableCell>
             <TableCell className="font-medium">
               {thesis.investigationSubarea}

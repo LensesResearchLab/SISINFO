@@ -22,19 +22,15 @@ export class BillboardsService {
     private readonly courseService: CoursesService,
     private readonly sectionService: SectionsService,
     private readonly professorService: ProfessorsService,
-  ) { }
+  ) {}
 
   async create(sectionsDto: CreateSectionDto[]) {
     const billboardCoursesMap = new Map<string, Course>();
-    const billboardSectionsMap = new Map<string, Section>();
 
     const normalizeName = (name: string) =>
-      name
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, " ");
+      name.toLowerCase().trim().replace(/\s+/g, ' ');
 
-    const mapPeriod = (raw: string) => raw[0] === '1' ? '10' : '20';
+    const mapPeriod = (raw: string) => (raw.startsWith('1') ? '10' : '20');
 
     for (const section of sectionsDto) {
       const year = Number(section.period.slice(0, 4));
@@ -76,12 +72,10 @@ export class BillboardsService {
         await Promise.all(
           professorsArr.map(async (prof) => {
             console.log(prof);
-            const cleanedName = prof
-              .replace(/^\s*\(\d+\)\s*/, '')
-              .replace(/\s*\([^)]+\)\s*$/, '')
-              .trim();
-            const searchProfessor =
-              await this.professorService.findByName(normalizeName(cleanedName));
+            const cleanedName = cleanName(prof);
+            const searchProfessor = await this.professorService.findByName(
+              normalizeName(cleanedName),
+            );
             if (searchProfessor) {
               if (/\(01\)/.test(prof)) {
                 if (
@@ -111,7 +105,6 @@ export class BillboardsService {
             findedProfessors,
             supportProfessors,
           );
-          billboardSectionsMap.set(sectionToUse.NRC, sectionToUse);
         } else {
           const newSectionDto = new CreateSectionDto();
           newSectionDto.NRC = section.NRC;
@@ -127,7 +120,6 @@ export class BillboardsService {
             findedProfessors,
             periodFound,
           );
-          billboardSectionsMap.set(sectionToUse.NRC, sectionToUse);
         }
 
         if (existingCourse) {
@@ -183,9 +175,12 @@ export class BillboardsService {
     );
     console.log(billboardExisting);
     if (billboardExisting) {
-      const combinedCourses = [...billboardExisting.courses, ...billboard.courses];
+      const combinedCourses = [
+        ...billboardExisting.courses,
+        ...billboard.courses,
+      ];
       const uniqueCoursesMap = new Map(
-        combinedCourses.map((course) => [course.code, course])
+        combinedCourses.map((course) => [course.code, course]),
       );
       billboardExisting.courses = Array.from(uniqueCoursesMap.values());
 
@@ -195,10 +190,8 @@ export class BillboardsService {
       return billboardExisting;
     }
 
-
     return await this.billboardRepository.save(billboard);
   }
-
 
   async findAll() {
     const response = await this.billboardRepository.find({
@@ -239,4 +232,25 @@ export class BillboardsService {
   remove(id: string) {
     return this.billboardRepository.delete(id);
   }
+}
+
+function cleanName(prof: string): string {
+  let name = prof.trim();
+  if (name.startsWith('(')) {
+    const endIdx = name.indexOf(')');
+    const numberPart = name.slice(1, endIdx);
+    if (!isNaN(Number(numberPart))) {
+      name = name.slice(endIdx + 1).trim();
+    }
+  }
+  const lastOpen = name.lastIndexOf('(');
+  const lastClose = name.lastIndexOf(')');
+  if (
+    lastOpen !== -1 &&
+    lastClose === name.length - 1 &&
+    lastOpen < lastClose
+  ) {
+    name = name.slice(0, lastOpen).trim();
+  }
+  return name;
 }

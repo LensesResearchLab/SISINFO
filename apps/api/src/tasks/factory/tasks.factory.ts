@@ -6,7 +6,7 @@ export interface FactoryParams {
   type: TaskType;
   comment?: string;
   approved?: boolean;
-  step?:number;
+  step?: number;
   documentId?: string;
   flow?: string;
   projectApplicationId?: string;
@@ -28,7 +28,7 @@ export class TaskFactory {
       projectApplicationId,
       studentId,
       professorId,
-      coordinatorId
+      coordinatorId,
     } = params;
 
     // Base común
@@ -42,7 +42,7 @@ export class TaskFactory {
       projectApplicationId,
       studentId,
       professorId,
-      coordinatorId
+      coordinatorId,
     };
 
     switch (type) {
@@ -50,17 +50,9 @@ export class TaskFactory {
         dto.documentId = '';
         return dto;
 
-      case TaskType.SEND_COMMENTS:
-        dto.comment = dto.comment;
-        return dto;
-
-      case TaskType.SEND_APPROVE:
-        dto.approved = dto.approved!;
-        dto.documentId= dto.documentId;
-        return dto;
-
-      case TaskType.VIEW_COMMENTS:
-        dto.comment = dto.comment;
+      case TaskType.SEND_APPROVE ||
+        TaskType.VIEW_COMMENTS ||
+        TaskType.SEND_COMMENTS:
         return dto;
 
       default:

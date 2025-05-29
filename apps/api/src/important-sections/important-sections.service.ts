@@ -2,17 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ImportantSection } from './entities/important-section.entity';
 import { Repository } from 'typeorm';
-import { PeriodsService } from 'src/periods/periods.service';
+import { PeriodsService } from '../periods/periods.service';
 import { AcademicProcess } from './enum/academic-process.enum';
-import { Period } from 'src/periods/entities/period.entity';
+import { Period } from '../periods/entities/period.entity';
 import { CreateImportantSectionDto } from './dto/create-important-section.dto';
 
 @Injectable()
 export class ImportantSectionsService {
   constructor(
     @InjectRepository(ImportantSection)
-    private importantSectionRepository: Repository<ImportantSection>,
-    private periodsService: PeriodsService,
+    private readonly importantSectionRepository: Repository<ImportantSection>,
+    private readonly periodsService: PeriodsService,
   ) {}
 
   async findByAcademicProcessAndPeriod(

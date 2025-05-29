@@ -19,72 +19,72 @@ const roleColorMap: Record<string, string> = {
 };
 
 const formatRole = (role: string) =>
-    role
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+  role
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 
 export const columns: ColumnDef<User>[] = [
-    {
-        accessorKey: "name",
-        header: "Nombre",
+  {
+    accessorKey: "name",
+    header: "Nombre",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "roles",
+    header: "Roles",
+    cell: ({ row }) => {
+      const roles = row.original.roles;
+        return (
+          <div className="flex flex-wrap gap-2">
+            {(roles ?? []).map((role: string) => {
+              const colorClasses = roleColorMap[role] || "bg-gray-100 text-gray-800 border border-gray-800";
+                return (
+                  <Badge
+                    key={role}
+                    className={`text-sm font-medium px-3 py-1 rounded-md ${colorClasses}`}
+                  >
+                  {formatRole(role)}
+                </Badge>
+              );
+            })}
+          </div>
+      );
+    }
+  },
+  {
+    id: "actions",
+    header: "Acciones",
+    cell: () => {
+      return (
+        <Button>
+          Asignar roles
+        </Button>
+      );
     },
-    {
-        accessorKey: "email",
-        header: "Email",
-    },
-    {
-        accessorKey: "roles",
-        header: "Roles",
-        cell: ({ row }) => {
-            const roles = row.original.roles;
-            return (
-                <div className="flex flex-wrap gap-2">
-                    {(roles ?? []).map((role: string, index: number) => {
-                        const colorClasses = roleColorMap[role] || "bg-gray-100 text-gray-800 border border-gray-800";
-                        return (
-                            <Badge
-                                key={index}
-                                className={`text-sm font-medium px-3 py-1 rounded-md ${colorClasses}`}
-                            >
-                                {formatRole(role)}
-                            </Badge>
-                        );
-                    })}
-                </div>
-            );
-        }
-    },
-    {
-        id: "actions",
-        header: "Acciones",
-        cell: () => {
-            return (
-                <Button>
-                    Asignar roles
-                </Button>
-            );
-        },
-    },
+  },
 ];
 
 
 export default function UserList() {
-    const { data, isFetching, isError } = useQuery({
-        queryKey: ['users-roles'],
-        queryFn: () => findAllWithRoles(),
-    });
+  const { data, isFetching, isError } = useQuery({
+    queryKey: ['users-roles'],
+    queryFn: () => findAllWithRoles(),
+  });
 
-    if (isFetching) return <SpinnerPage />;
-    if (isError) return <ErrorPage />;
-    return (
-        <div className="min-h-full mx-auto p-4 space-y-8 container">
-            <div className="w-full bg-card text-foreground shadow-lg rounded-xl p-5 h-full space-y-4">
-                <h2 className="text-xl font-bold text-core">
-                    Listado de usuarios
-                </h2>
-                <DataTable columns={columns} data={data ?? []} />
-            </div>
-        </div>
+  if (isFetching) return <SpinnerPage />;
+  if (isError) return <ErrorPage />;
+  return (
+    <div className="min-h-full mx-auto p-4 space-y-8 container">
+      <div className="w-full bg-card text-foreground shadow-lg rounded-xl p-5 h-full space-y-4">
+        <h2 className="text-xl font-bold text-core">
+          Listado de usuarios
+        </h2>
+        <DataTable columns={columns} data={data ?? []} />
+      </div>
+    </div>
     );
 }

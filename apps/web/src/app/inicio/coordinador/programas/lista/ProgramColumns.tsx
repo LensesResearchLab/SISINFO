@@ -2,7 +2,6 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Course } from "@/app/types/entities/billboard.type"
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
 
 /**
  * Defines the table columns for displaying courses with program status and main professor.

@@ -107,12 +107,12 @@ function UndergraduateTutorials() {
  */
 
 
-function TutorialsGrid({ tutorials }: { tutorials: Tutorial[] }) {
+function TutorialsGrid({ tutorials }: { readonly tutorials: Tutorial[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4">
-      {tutorials.map((tutorial, index) => (
+      {tutorials.map((tutorial) => (
         <InformationCard
-          key={index}
+          key={tutorial.id}
           Icon={FileVideo}
           title={tutorial.title}
           description={tutorial.description}

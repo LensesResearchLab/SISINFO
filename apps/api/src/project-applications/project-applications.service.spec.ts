@@ -9,6 +9,7 @@ import { PeriodsService } from '../periods/periods.service';
 import { TaskFactory } from '../tasks/factory/tasks.factory';
 import { TasksService } from '../tasks/tasks.service';
 import { DocumentsService } from '../documents/documents.service';
+import { CoordinatorsService } from '../coordinators/coordinators.service';
 
 describe('ProjectApplicationsService', () => {
   let service: ProjectApplicationsService;
@@ -16,10 +17,10 @@ describe('ProjectApplicationsService', () => {
   let studentsService: StudentsService;
   let projectsService: ProjectsService;
   let periodsService: PeriodsService;
-  let factory: TaskFactory;
   let dataSource: DataSource;
   let tasksService: TasksService;
   let documentsService: DocumentsService;
+  let coordinatorsService: CoordinatorsService;
 
   beforeEach(async () => {
     const repositoryMock = {
@@ -40,9 +41,9 @@ describe('ProjectApplicationsService', () => {
     const documentsServiceMock = {
       findOne: jest.fn(),
     };
-    const taskFactoryMock = {};
     const dataSourceMock = {};
     const tasksServiceMock = {};
+    const coordinatorsServiceMock = {};
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProjectApplicationsService,
@@ -63,10 +64,6 @@ describe('ProjectApplicationsService', () => {
           useValue: periodsServiceMock,
         },
         {
-          provide: TaskFactory,
-          useValue: taskFactoryMock,
-        },
-        {
           provide: DataSource,
           useValue: dataSourceMock,
         },
@@ -77,6 +74,10 @@ describe('ProjectApplicationsService', () => {
         {
           provide: DocumentsService,
           useValue: documentsServiceMock,
+        },
+        {
+          provide: CoordinatorsService,
+          useValue: coordinatorsServiceMock,
         },
       ],
     }).compile();

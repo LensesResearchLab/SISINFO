@@ -7,10 +7,9 @@ function createValidImportantDateDto(
   overrides: Partial<CreateImportantDateDto> = {},
 ): CreateImportantDateDto {
   const dto = new CreateImportantDateDto();
-  dto.description = 'Inicio de inscripciones';
+  dto.name = 'Inicio de inscripciones';
   dto.date = new Date('2025-06-01');
-  dto.sectionTitle = 'Develop';
-  dto.type = 'Thesis';
+  dto.importantSectionId = 'section-123';
   return Object.assign(dto, overrides);
 }
 
@@ -23,9 +22,8 @@ describe('CreateImportantDateDto validation', () => {
 
   it('should not validate with empty strings', async () => {
     const dto = createValidImportantDateDto({
-      description: '',
-      sectionTitle: '',
-      type: '',
+      name: '',
+      importantSectionId: '',
     });
 
     const errors = await validate(dto);
@@ -34,7 +32,7 @@ describe('CreateImportantDateDto validation', () => {
       errors.find((error) => error.property === property);
 
     expect(errors.length).toBeGreaterThan(0);
-    ['description', 'sectionTitle', 'type'].forEach((field) => {
+    ['name', 'importantSectionId'].forEach((field) => {
       const err = getError(field);
       expect(err?.constraints).toBeDefined();
       expect(err?.constraints).toHaveProperty('isNotEmpty');
@@ -43,10 +41,9 @@ describe('CreateImportantDateDto validation', () => {
 
   it('should not validate if date is not a valid date', async () => {
     const dto = plainToInstance(CreateImportantDateDto, {
-      description: 'Pending dates',
+      name: 'Fechas pendientes',
       date: 'invalid-date',
-      sectionTitle: 'Pending',
-      type: 'Thesis',
+      importantSectionId: 'section-123',
     });
 
     const errors = await validate(dto);

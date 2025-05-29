@@ -20,7 +20,7 @@ import { useQuery } from "@tanstack/react-query";
  *
  * @returns {JSX.Element} A container with multiple date tables grouped by category
  */
-export default function ImportantDates({name, academicProcess} : {name: string, academicProcess: string}) {
+export default function ImportantDates({name, academicProcess} : {readonly name: string, readonly academicProcess: string}) {
   const {
     data: sections,
     isFetching,

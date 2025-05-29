@@ -8,19 +8,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectApplication } from './entities/project-application.entity';
 import { ProjectsService } from '../projects/projects.service';
 import { StudentsService } from '../students/students.service';
-import { Repository } from 'typeorm';
 import { UpdateProjectApplicationDto } from './dto/update-project-application.dto';
 import { TaskType } from '../tasks/enums/taskType';
 import { TasksService } from '../tasks/tasks.service';
 import { flows } from '../tasks/flows/tasksFlows';
-import { TaskFactory } from '../tasks/factory/tasks.factory';
-import { DataSource } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { ProjecStatusEnum } from './enums/project_status.enum';
 import { PeriodsService } from '../periods/periods.service';
 import { Task } from '../tasks/entities/task.entity';
 import { CreateTaskDto } from '../tasks/dto/create-task.dto';
 import { DocumentsService } from '../documents/documents.service';
-import { CoordinatorsService } from 'src/coordinators/coordinators.service';
+import { CoordinatorsService } from '../coordinators/coordinators.service';
 
 @Injectable()
 export class ProjectApplicationsService {
@@ -29,13 +27,12 @@ export class ProjectApplicationsService {
     private readonly projectsService: ProjectsService,
     private readonly documentService: DocumentsService,
     private readonly tasksService: TasksService,
-    private readonly factory: TaskFactory,
     private readonly dataSource: DataSource,
     private readonly periodsService: PeriodsService,
     private readonly coordinatorService: CoordinatorsService,
     @InjectRepository(ProjectApplication)
     private readonly projectApplicationRepository: Repository<ProjectApplication>,
-  ) { }
+  ) {}
 
   async create(
     createProjectApplicationDto: CreateProjectApplicationDto,
@@ -67,7 +64,7 @@ export class ProjectApplicationsService {
           flow: 'proyectoPregrado',
           step: 0,
           comment: '',
-          coordinatorId: coordinators[0].id
+          coordinatorId: coordinators[0].id,
         });
 
         const projectApplication = manager.create(ProjectApplication, {
@@ -75,7 +72,7 @@ export class ProjectApplicationsService {
           project,
           student,
           period,
-          actualTask: task
+          actualTask: task,
         });
 
         return await manager.save(projectApplication);
@@ -101,7 +98,10 @@ export class ProjectApplicationsService {
 
     let task;
     // 2. Lógica de negocio
-    if (updateProjectApplicationDto.status === ProjecStatusEnum.ENROLLED && projectApplication.status === ProjecStatusEnum.APPROVED) {
+    if (
+      updateProjectApplicationDto.status === ProjecStatusEnum.ENROLLED &&
+      projectApplication.status === ProjecStatusEnum.APPROVED
+    ) {
       // Solo si el estado cambia a 'ENROLLED' y ya ha sido aprobado por coordinadores, actualizamos
       await this.projectsService.updateStudents(
         projectApplication.project.id,
@@ -114,10 +114,11 @@ export class ProjectApplicationsService {
         projectApplicationId: id,
         studentId: projectApplication.student.id,
       });
-
-    } else if (updateProjectApplicationDto.status === ProjecStatusEnum.REJECTED) {
-      updateProjectApplicationDto.status=ProjecStatusEnum.REJECTED;
-      task=null;
+    } else if (
+      updateProjectApplicationDto.status === ProjecStatusEnum.REJECTED
+    ) {
+      updateProjectApplicationDto.status = ProjecStatusEnum.REJECTED;
+      task = null;
     }
 
     // 4. Usar QueryBuilder para actualizar solo los campos específicos
@@ -177,7 +178,14 @@ export class ProjectApplicationsService {
         student: { id: studentId },
         period: { id: period.id },
       },
-      relations: ["actualTask", "actualTask.student", "actualTask.professor", "actualTask.coordinator", "actualTask.projectActualTask", "actualTask.projectActualTask.student"],
+      relations: [
+        'actualTask',
+        'actualTask.student',
+        'actualTask.professor',
+        'actualTask.coordinator',
+        'actualTask.projectActualTask',
+        'actualTask.projectActualTask.student',
+      ],
     });
 
     const tasks = apps
@@ -195,7 +203,14 @@ export class ProjectApplicationsService {
         project: { professor: { id: profId } },
         period: { id: period.id },
       },
-      relations: ["actualTask", "actualTask.student", "actualTask.professor", "actualTask.coordinator", "actualTask.projectActualTask", "actualTask.projectActualTask.student"],
+      relations: [
+        'actualTask',
+        'actualTask.student',
+        'actualTask.professor',
+        'actualTask.coordinator',
+        'actualTask.projectActualTask',
+        'actualTask.projectActualTask.student',
+      ],
     });
 
     const tasks = apps
@@ -206,18 +221,24 @@ export class ProjectApplicationsService {
   }
 
   async findTasksByCoordinator(coorId: string): Promise<Task[]> {
-
-    let taskList: Task[] = [];
+    const taskList: Task[] = [];
 
     const apps = await this.projectApplicationRepository.find({
-      relations: ["actualTask", "actualTask.student", "actualTask.professor", "actualTask.coordinator", "actualTask.projectActualTask", "actualTask.projectActualTask.student"],
+      relations: [
+        'actualTask',
+        'actualTask.student',
+        'actualTask.professor',
+        'actualTask.coordinator',
+        'actualTask.projectActualTask',
+        'actualTask.projectActualTask.student',
+      ],
     });
 
-    apps.map((app) => {
+    for (const app of apps) {
       if (app.actualTask?.coordinator?.id === coorId) {
         taskList.push(app.actualTask);
       }
-    });
+    }
     return taskList;
   }
 

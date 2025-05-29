@@ -18,7 +18,7 @@ import { Roles } from '../auth/roles.decorator';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   @Post()
@@ -79,7 +79,7 @@ export class UsersController {
     return this.usersService.findAllWithRoles();
   }
 
-  @Get(':id') // TODO: Como proteger esto??
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }

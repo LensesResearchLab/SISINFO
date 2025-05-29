@@ -24,7 +24,6 @@ import { CreateGraduatedAssistanceDto } from '../graduated-assistances/dto/creat
 import { CoordinatorsService } from '../coordinators/coordinators.service';
 import { CreateCoordinatorDto } from '../coordinators/dto/create-coordinator.dto';
 import { TasksService } from '../tasks/tasks.service';
-import { CreateTaskDto } from '../tasks/dto/create-task.dto';
 import { AreasOfInterestService } from '../areas-of-interest/areas-of-interest.service';
 import { CreateAreasOfInterestDto } from '../areas-of-interest/dto/create-areas-of-interest.dto';
 import { StudentsService } from '../students/students.service';
@@ -56,9 +55,9 @@ import { ImportantDatesService } from '../important-dates/important-dates.servic
 import { ImportantDate } from '../important-dates/entities/important-date.entity';
 import { CreateImportantDateDto } from '../important-dates/dto/create-important-date.dto';
 import { ImportantSectionsService } from '../important-sections/important-sections.service';
-import { ImportantSection } from 'src/important-sections/entities/important-section.entity';
-import { CreateImportantSectionDto } from 'src/important-sections/dto/create-important-section.dto';
-import { AcademicProcess } from 'src/important-sections/enum/academic-process.enum';
+import { ImportantSection } from '../important-sections/entities/important-section.entity';
+import { CreateImportantSectionDto } from '../important-sections/dto/create-important-section.dto';
+import { AcademicProcess } from '../important-sections/enum/academic-process.enum';
 
 @Injectable()
 export class SeedService {
@@ -275,9 +274,8 @@ export class SeedService {
     const insertPromises: Promise<Thesis>[] = [];
     const periods = await this.periodsService.findAll();
 
-    // Filter periods to ensure they have valid format
     const validPeriods = periods.filter(
-      (period) => period && period.year && period.period,
+      (period) => period?.year && period?.period,
     );
 
     if (validPeriods.length === 0) {

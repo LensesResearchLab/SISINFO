@@ -95,7 +95,7 @@ export default function IncidenceList() {
 }
 
 
-function ActionCell({ incidence }: { incidence: Incidence }) {
+function ActionCell({ incidence }: { readonly incidence: Incidence }) {
   const [isClosing, setIsClosing] = useState(false);
   const queryClient = useQueryClient();
 

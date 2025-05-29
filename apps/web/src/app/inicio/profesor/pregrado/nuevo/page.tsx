@@ -33,9 +33,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ConfirmationModal } from '@/components/shared/confirmation-modal';
 import { ROUTES } from '@/app/routes'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { CategoryTag } from '@/components/shared/category-tag'
-import { createProject } from '@/app/types/entities/project.type'
+import { CreateProject } from '@/app/types/entities/project.type'
 import { createUndergraduateProject } from '@/app/services/professor.service'
 import { getUserInfo } from '@/app/auth/auth-service'
 
@@ -73,7 +73,7 @@ export default function ThesisForm() {
   }
 
   async function onSubmit(values: z.infer<typeof thesisSchema>) {
-    let bodyProject: createProject = {
+    const bodyProject: CreateProject = {
       title: values.title,
       description: values.description,
       maxStudents: values.students,

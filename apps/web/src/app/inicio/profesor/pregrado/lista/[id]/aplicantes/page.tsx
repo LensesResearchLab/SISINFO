@@ -17,7 +17,7 @@
 "use client";
 
 import * as React from "react";
-import { use, useEffect, useState } from "react";
+import { use, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getUndergraduateProjectById } from "@/app/services/project.service";
 import { updateProjectApplication } from "@/app/services/project-application.service";

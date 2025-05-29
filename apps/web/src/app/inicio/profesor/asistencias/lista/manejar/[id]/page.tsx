@@ -38,14 +38,14 @@ export default function AssistanceManagePage() {
   const id = params.id as string;
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [assistance, setAssistanceDetail] =
+  const [assistance, setAssistance] =
   useState<GraduatedAssistance | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const assistanceData = await getGraduatedAssistanceById(id);
-        setAssistanceDetail(assistanceData);
+        setAssistance(assistanceData);
       } catch (error) {
         console.error("Error fetching assistance data:", error);
       } finally {

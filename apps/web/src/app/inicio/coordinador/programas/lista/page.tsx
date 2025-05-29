@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { useProgramsStore } from "./store"
 import { Course } from "@/app/types/entities/billboard.type"
 import { getBillboard } from "@/app/services/billboard.service"

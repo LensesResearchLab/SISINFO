@@ -4,7 +4,7 @@
 import * as React from "react"
 import { useHomeStore } from "../home.store"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, MoreHorizontal } from "lucide-react"
+import { MoreHorizontal } from "lucide-react"
 import { ROUTES } from "@/app/routes"
 import { useRouter } from "next/navigation"
 import { TabsContent } from "@radix-ui/react-tabs"
@@ -29,7 +29,7 @@ const baseColumns: ColumnDef<Task>[] = [
   {
     accessorKey: "date",
     header: "Fecha",
-    cell: ({ row }) => {
+    cell: () => {
       const parsed = new Date()
       return isNaN(parsed.getTime()) ? "Sin fecha" : parsed.toLocaleDateString()
     },
@@ -94,7 +94,7 @@ export default function Tasks() {
   )
 }
 
-function TasksTable({ role }: { role: string }) {
+function TasksTable({ role }: { readonly role: string }) {
   const allTasks = useHomeStore((state) => state.tasks)
   const [selectedTasks, setSelectedTasks] = React.useState<Task[]>([])
 

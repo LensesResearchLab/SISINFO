@@ -1,19 +1,12 @@
 import { Base } from '../../common/entities/base.entity';
 import { ImportantDate } from '../../important-dates/entities/important-date.entity';
 import { Document } from '../../documents/entities/document.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { TaskType } from '../enums/taskType';
 import { ProjectApplication } from '../../project-applications/entities/project-application.entity';
 import { Student } from '../../students/entities/student.entity';
 import { Professor } from '../../professors/entities/professor.entity';
-import { Coordinator } from 'src/coordinators/entities/coordinator.entity';
+import { Coordinator } from '../../coordinators/entities/coordinator.entity';
 
 @Entity('tasks')
 export class Task extends Base {
@@ -23,7 +16,7 @@ export class Task extends Base {
   @Column()
   comment: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   step: number;
 
   @Column()

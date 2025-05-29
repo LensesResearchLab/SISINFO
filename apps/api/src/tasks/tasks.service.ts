@@ -14,8 +14,8 @@ import { ProfessorsService } from '../professors/professors.service';
 import { Student } from '../students/entities/student.entity';
 import { Professor } from '../professors/entities/professor.entity';
 import { DocumentsService } from '../documents/documents.service';
-import { Coordinator } from 'src/coordinators/entities/coordinator.entity';
-import { CoordinatorsService } from 'src/coordinators/coordinators.service';
+import { Coordinator } from '../coordinators/entities/coordinator.entity';
+import { CoordinatorsService } from '../coordinators/coordinators.service';
 
 @Injectable()
 export class TasksService {
@@ -26,8 +26,8 @@ export class TasksService {
     private readonly factory: TaskFactory,
     private readonly studentsService: StudentsService,
     private readonly professorService: ProfessorsService,
-    private readonly coordinatorService: CoordinatorsService
-  ) { }
+    private readonly coordinatorService: CoordinatorsService,
+  ) {}
 
   async create(type: TaskType, overrides?: UpdateTaskDto): Promise<Task> {
     let student: Student | null;
@@ -57,7 +57,9 @@ export class TasksService {
         entity.professor = professor;
       }
     } else if (overrides?.coordinatorId) {
-      coordinator = await this.coordinatorService.findOne(overrides?.coordinatorId);
+      coordinator = await this.coordinatorService.findOne(
+        overrides?.coordinatorId,
+      );
       console.log(coordinator);
       if (coordinator) {
         entity.coordinator = coordinator;
@@ -65,7 +67,9 @@ export class TasksService {
       }
     }
     if (overrides?.documentId) {
-      const document = await this.documentService.findOne(overrides?.documentId);
+      const document = await this.documentService.findOne(
+        overrides?.documentId,
+      );
       if (document) {
         entity.document = document;
       }
@@ -76,7 +80,12 @@ export class TasksService {
   async findOne(id: string): Promise<Task> {
     const task = await this.repo.findOne({
       where: { id },
-      relations: ['projectPreviousTasks', 'projectActualTask', 'student', 'professor'],
+      relations: [
+        'projectPreviousTasks',
+        'projectActualTask',
+        'student',
+        'professor',
+      ],
     });
     if (!task) throw new NotFoundException(`Task ${id} not found`);
     return task;
@@ -86,7 +95,9 @@ export class TasksService {
     return this.findOne(id);
   }
 
-  async findAll(): Promise<Task[]>{
-    return await this.repo.find({relations:['coordinator', 'projectActualTask', 'projectPreviousTasks']});
+  async findAll(): Promise<Task[]> {
+    return await this.repo.find({
+      relations: ['coordinator', 'projectActualTask', 'projectPreviousTasks'],
+    });
   }
 }

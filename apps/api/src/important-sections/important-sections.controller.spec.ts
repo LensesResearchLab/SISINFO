@@ -8,10 +8,23 @@ describe('ImportantSectionsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ImportantSectionsController],
-      providers: [ImportantSectionsService],
+      providers: [
+        {
+          provide: ImportantSectionsService,
+          useValue: {
+            findAll: jest.fn(),
+            findOne: jest.fn(),
+            create: jest.fn(),
+            update: jest.fn(),
+            remove: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
-    controller = module.get<ImportantSectionsController>(ImportantSectionsController);
+    controller = module.get<ImportantSectionsController>(
+      ImportantSectionsController,
+    );
   });
 
   it('should be defined', () => {

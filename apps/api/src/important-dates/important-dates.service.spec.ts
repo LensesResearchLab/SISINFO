@@ -3,9 +3,11 @@ import { ImportantDatesService } from './important-dates.service';
 import { Repository } from 'typeorm';
 import { ImportantDate } from './entities/important-date.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ImportantSectionsService } from '../important-sections/important-sections.service';
 
 describe('ImportantDatesService', () => {
   let service: ImportantDatesService;
+  let importantSectionService: ImportantSectionsService;
   let importantDatesRepository: Repository<ImportantDate>;
 
   beforeEach(async () => {
@@ -15,12 +17,19 @@ describe('ImportantDatesService', () => {
       save: jest.fn(),
       delete: jest.fn(),
     };
+    const importantSectionServiceMock = {
+      findOne: jest.fn(),
+    };
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ImportantDatesService,
         {
           provide: getRepositoryToken(ImportantDate),
           useValue: mockRepository,
+        },
+        {
+          provide: ImportantSectionsService,
+          useValue: importantSectionServiceMock,
         },
       ],
     }).compile();
