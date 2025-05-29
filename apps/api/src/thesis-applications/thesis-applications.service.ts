@@ -45,19 +45,20 @@ export class ThesisApplicationsService {
 
     /* Add application date */
     const applicationDate = new Date();
-    
+
     const thesisApplication = this.thesisApplicationRepository.create({
       ...rest,
       student,
       thesis,
-      applicationDate, 
+      applicationDate,
     });
 
-    const savedApplication = await this.thesisApplicationRepository.save(thesisApplication);
+    const savedApplication =
+      await this.thesisApplicationRepository.save(thesisApplication);
     student.thesisApplication = savedApplication;
     await this.studentRepository.save(student);
 
-    return savedApplication; 
+    return savedApplication;
   }
 
   findAll() {
@@ -138,7 +139,9 @@ export class ThesisApplicationsService {
         app.student.user = userWithoutPassword as unknown as User;
       }
       if (app.thesis?.professor?.user) {
-        app.thesis.professor.user = deletePasswordFromUser(app.thesis.professor.user);
+        app.thesis.professor.user = deletePasswordFromUser(
+          app.thesis.professor.user,
+        );
       }
     });
 
@@ -179,14 +182,15 @@ export class ThesisApplicationsService {
     }));
   }
 
-
   /* Update status when accepted or rejected to thesis */
   async updateStatus(applicationId: string, status: ThesisStatusEnum) {
     const application = await this.thesisApplicationRepository.findOne({
       where: { id: applicationId },
     });
     if (!application) {
-      throw new NotFoundException(`Thesis application with id ${applicationId} not found`);
+      throw new NotFoundException(
+        `Thesis application with id ${applicationId} not found`,
+      );
     }
     application.status = status;
     await this.thesisApplicationRepository.save(application);

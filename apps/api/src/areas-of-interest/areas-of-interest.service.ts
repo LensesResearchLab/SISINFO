@@ -20,8 +20,10 @@ export class AreasOfInterestService {
     return area;
   }
 
-  async findByDescription(description: string){
-    return await this.areasOfInterestRepository.findOne({where:{description:description}});
+  async findByDescription(description: string) {
+    return await this.areasOfInterestRepository.findOne({
+      where: { description: description },
+    });
   }
 
   findAll() {

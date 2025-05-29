@@ -275,6 +275,7 @@ function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAs
         setGrade('');
         setDescription('');
       } catch (error) {
+        console.error("Error al enviar la calificación:", error);
         toast("Ha ocurrido un error", {
           description: `El monitor ya tiene una calificación asociada`,
         })

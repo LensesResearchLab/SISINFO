@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { ProjecStatusEnum } from '../enums/project_status.enum';
 import { Student } from '../../students/entities/student.entity';
 import { Project } from '../../projects/entities/project.entity';
@@ -34,7 +41,10 @@ export class ProjectApplication extends Base {
   @ManyToOne(() => Project, (project) => project.projectApplications)
   project: Project;
 
-  @OneToMany(() => Task, (t) => t.projectPreviousTasks, {cascade: ['insert', 'update'], eager: false})
+  @OneToMany(() => Task, (t) => t.projectPreviousTasks, {
+    cascade: ['insert', 'update'],
+    eager: false,
+  })
   previousTasks: Task[];
 
   @OneToOne(() => Task, (t) => t.projectActualTask, { nullable: true })

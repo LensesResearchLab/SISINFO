@@ -19,7 +19,7 @@ export class ProjectController {
   @Post()
   create(
     @Body() createProjectDto: CreateProjectDto,
-    @Query('professorId') professorId: string
+    @Query('professorId') professorId: string,
   ) {
     return this.projectsService.create(createProjectDto, professorId);
   }

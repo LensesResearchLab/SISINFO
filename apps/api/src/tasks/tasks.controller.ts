@@ -8,7 +8,16 @@ export class TasksController {
   constructor(private readonly tasks: TasksService) {}
 
   @Post()
-  create(@Body() body: { type: TaskType; comment?: string; documentId?: string; approved?: boolean, dateId?: string }) {
+  create(
+    @Body()
+    body: {
+      type: TaskType;
+      comment?: string;
+      documentId?: string;
+      approved?: boolean;
+      dateId?: string;
+    },
+  ) {
     return this.tasks.create(body.type, {
       comment: body.comment,
     });

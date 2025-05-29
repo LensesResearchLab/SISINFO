@@ -187,7 +187,7 @@ function ThesisTable({ data }: { readonly data: ProjectsStudentTableRow[] }) {
     {
       accessorKey: "maxStudents",
       header: "Número de estudiantes",
-      cell: ({ row }) => <ThesisSpan text={row.original.maxStudents} />,
+      cell: ({ row }) => <ThesisSpan text={String(row.original.maxStudents)} />,
     },
     {
       id: "actions",

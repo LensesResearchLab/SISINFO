@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/data-table";
 import SpinnerPage from "@/components/shared/spinner-page";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
-import { getThesesByProfessor, getApplicationsByThesisId } from "@/app/services/thesis.service";
+import { getThesesByProfessor } from "@/app/services/thesis.service";
 import { useProfessorThesisListStore } from "./store";
 import { getUserInfo } from "@/app/auth/auth-service";
 import { ColumnDef } from "@tanstack/react-table";

@@ -53,6 +53,8 @@ describe('GraduatedAssistance Entity', () => {
     expect(graduatedAssistance.assistanceApplications[0]).toBeInstanceOf(
       AssistanceApplication,
     );
-    expect(graduatedAssistance.assistanceApplications[1]).toBeInstanceOf(AssistanceApplication);
+    expect(graduatedAssistance.assistanceApplications[1]).toBeInstanceOf(
+      AssistanceApplication,
+    );
   });
 });
