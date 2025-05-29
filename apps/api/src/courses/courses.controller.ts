@@ -16,6 +16,11 @@ export class CourseController {
     return this.coursesService.findAllWithMainProfessor();
   }
 
+  @Get('professors/:id')
+  findProfessorsForCourseInCurrentPeriod(@Param('id') id: string) {
+    return this.coursesService.findProfessorsForCourseInCurrentPeriod(id);
+  }
+
   @Patch(':id/updateProfessor/:professorId')
   updateMainProfessor(
     @Param('id') id: string,

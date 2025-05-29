@@ -9,12 +9,16 @@ import { Period } from '../periods/entities/period.entity';
 import { PeriodsService } from '../periods/periods.service';
 import { Document } from '../documents/entities/document.entity';
 import { ProfessorsService } from '../professors/professors.service';
+import { Professor } from 'src/professors/entities/professor.entity';
+import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 
 @Injectable()
 export class CoursesService {
   constructor(
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
+    @InjectRepository(Section)
+    private readonly sectionRepository: Repository<Section>,
     private readonly periodsService: PeriodsService,
     private readonly professorsService: ProfessorsService,
   ) {}
@@ -73,6 +77,30 @@ export class CoursesService {
     return this.courseRepository.find({
       relations: ['mainProfessor'],
     });
+  }
+
+  async findProfessorsForCourseInCurrentPeriod(courseId: string) {
+    const period = await this.periodsService.findCurrentPeriod();
+
+    const sections = await this.sectionRepository.find({
+      where: {
+        course: { id: courseId },
+        period: { id: period.id },
+      },
+      relations: ['professors'],
+    });
+    const professorsMap = new Map<string, Professor>();
+    for (const section of sections) {
+      for (const professor of section.professors) {
+        professorsMap.set(professor.id, professor);
+      }
+    }
+
+    const professorsArray = Array.from(professorsMap.values());
+    const sanitizedProfessors = professorsArray.map((professor) =>
+      deletePasswordFromUser(professor.user),
+    );
+    return sanitizedProfessors;
   }
 
   async update(id: string, updateCourseDto: UpdateCourseDto) {

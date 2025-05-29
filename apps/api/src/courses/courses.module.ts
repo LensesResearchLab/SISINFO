@@ -4,14 +4,14 @@ import { CourseController } from './courses.controller';
 import { Course } from './entities/course.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PeriodsModule } from '../periods/periods.module';
-import { Period } from '../periods/entities/period.entity';
 import { ProfessorsModule } from '../professors/professors.module';
+import { Section } from '../sections/entities/section.entity';
 
 @Module({
   controllers: [CourseController],
   providers: [CoursesService],
   imports: [
-    TypeOrmModule.forFeature([Course, Period]),
+    TypeOrmModule.forFeature([Course, Section]),
     PeriodsModule,
     ProfessorsModule,
   ],

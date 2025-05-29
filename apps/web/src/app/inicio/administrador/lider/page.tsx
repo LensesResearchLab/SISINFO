@@ -13,19 +13,15 @@ import {
   CommandList,
   CommandEmpty,
 } from "@/components/ui/command";
-import { Professor } from "@/app/types/entities/professor.type";
 import { useState } from "react";
-import {
-  assignProfessorAsCourseLeader,
-  findProfessorsForCourseInCurrentPeriod,
-} from "@/app/services/professor.service";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { findAllWithMainProfessor } from "@/app/services/courses.service";
+import { assignProfessorAsCourseLeader, findAllWithMainProfessor, findProfessorsForCourseInCurrentPeriod } from "@/app/services/courses.service";
 import { LeaderPerCourse } from "@/app/types/leader-per-course.type";
+import { User } from "@/app/types/entities/user.type";
 
 export default function CourseList() {
   const { data, isFetching, isError, refetch } = useQuery({
@@ -94,9 +90,9 @@ function ProfessorListPopover({
     enabled: open,
   });
 
-  const [selected, setSelected] = useState<Professor | null>(null);
+  const [selected, setSelected] = useState<User | null>(null);
 
-  const handleAssign = async (professor: Professor) => {
+  const handleAssign = async (professor: User) => {
     try {
       await assignProfessorAsCourseLeader(professor.id, courseId);
       setSelected(professor);
@@ -111,7 +107,7 @@ function ProfessorListPopover({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button className="w-full">
-          {selected ? selected.user.name : "Asignar"}
+          {selected ? selected.name : "Asignar"}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[300px] p-0">
@@ -119,12 +115,12 @@ function ProfessorListPopover({
           <CommandInput placeholder="Buscar profesor..." />
           <CommandList>
             <CommandEmpty>No se encontraron profesores.</CommandEmpty>
-            {data?.map((prof: Professor) => (
-              <CommandItem
+            {data?.map((prof: User) => (
+              <CommandItem className="cursor-pointer"
                 key={prof.id}
                 onSelect={() => handleAssign(prof)}
               >
-                {prof.user.name}
+                {prof.name}
               </CommandItem>
             ))}
           </CommandList>

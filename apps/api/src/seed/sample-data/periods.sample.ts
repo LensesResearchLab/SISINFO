@@ -7,58 +7,53 @@ export const samplePeriods: CreatePeriodDto[] = [
     semester: 1,
   },
   {
-    period: '20',
-    year: 2025,
-    semester: 2,
-  },
-  {
     period: '10',
-    year: 2026,
+    year: 2024,
     semester: 1,
   },
   {
     period: '20',
-    year: 2026,
+    year: 2024,
     semester: 2,
   },
   {
     period: '10',
-    year: 2027,
+    year: 2023,
     semester: 1,
   },
   {
     period: '20',
-    year: 2027,
+    year: 2023,
     semester: 2,
   },
   {
     period: '10',
-    year: 2028,
+    year: 2022,
     semester: 1,
   },
   {
     period: '20',
-    year: 2028,
+    year: 2022,
     semester: 2,
   },
   {
     period: '10',
-    year: 2029,
+    year: 2021,
     semester: 1,
   },
   {
     period: '20',
-    year: 2029,
+    year: 2021,
     semester: 2,
   },
   {
     period: '10',
-    year: 2030,
+    year: 2020,
     semester: 1,
   },
   {
     period: '20',
-    year: 2030,
+    year: 2020,
     semester: 2,
   },
 ];

@@ -5,14 +5,22 @@ import { Course } from './entities/course.entity';
 import { Repository } from 'typeorm';
 import { PeriodsService } from '../periods/periods.service';
 import { ProfessorsService } from '../professors/professors.service';
+import { Section } from '../sections/entities/section.entity';
 
 describe('CoursesService', () => {
   let coursesService: CoursesService;
   let coursesRepository: Repository<Course>;
+  let sectionsRepository: Repository<Section>;
   let professorsService: ProfessorsService;
 
   beforeEach(async () => {
     const mockRepository = {
+      find: jest.fn(),
+      findOne: jest.fn(),
+      save: jest.fn(),
+      delete: jest.fn(),
+    };
+    const mockSectionRepository = {
       find: jest.fn(),
       findOne: jest.fn(),
       save: jest.fn(),
@@ -47,6 +55,10 @@ describe('CoursesService', () => {
         {
           provide: getRepositoryToken(Course),
           useValue: mockRepository,
+        },
+        {
+          provide: getRepositoryToken(Section),
+          useValue: mockSectionRepository,
         },
       ],
     }).compile();

@@ -1,6 +1,7 @@
 import { API_ROUTES } from "../routes";
 import { Section } from "../types/entities/billboard.type";
-import { createProject } from "../types/entities/project.type";
+import { CreateProject } from "../types/entities/project.type";
+
 
 export async function getTeachingAssistants(period: string): Promise<Section[]> {
     const url = `${API_ROUTES.BASE}/${API_ROUTES.PROFESSORS}/${API_ROUTES.TEACHING_ASSISTANTS}?period=${encodeURIComponent(period)}`;
@@ -19,7 +20,7 @@ export async function getTeachingAssistants(period: string): Promise<Section[]> 
     return response.json();
 }
 
-export async function createUndergraduateProject(bodyData:createProject, id: string) {
+export async function createUndergraduateProject(bodyData: CreateProject, id: string) {
   const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}?professorId=${encodeURIComponent(id)}`;
   const response = await fetch(url, {
       method: 'POST',
@@ -32,39 +33,6 @@ export async function createUndergraduateProject(bodyData:createProject, id: str
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(`Error creando los proyectos: ${response.statusText}`, { cause: errorData });
-    }
-    return response.json();
-}
-  
-export async function findProfessorsForCourseInCurrentPeriod(id: string) {
-  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROFESSORS}/courses/${encodeURIComponent(id)}`;
-  const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    });
-  
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(`Error encontrando los profesores: ${response.statusText}`, { cause: errorData });
-    }
-    return response.json();
-}
-  
-
-export async function assignProfessorAsCourseLeader(professorId: string, courseId: string) {
-  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROFESSORS}/${encodeURIComponent(professorId)}/assign/${encodeURIComponent(courseId)}`;
-  const response = await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    });
-  
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(`Error asignando como lider: ${response.statusText}`, { cause: errorData });
     }
     return response.json();
 }

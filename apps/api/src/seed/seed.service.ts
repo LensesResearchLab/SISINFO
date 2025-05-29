@@ -98,9 +98,6 @@ export class SeedService {
   async seedSampleTASEntities() {
     const period =
       await this.periodsService.findOneByPeriodAndYearString('202510');
-    if (!period) {
-      return 'SEED_FAILED';
-    }
     const createdUsers: User[] = [];
     for (const user of sampleUser) {
       const userWithPassword = {
@@ -358,7 +355,7 @@ export class SeedService {
               maxStudents: faker.number.int({ min: 1, max: 10 }),
               category:
                 categories[Math.floor(Math.random() * categories.length)],
-              period: '202520',
+              period: '202510',
               areasOfInterest: ['Bases de datos', 'Desarrollo de Software'],
             },
             users[i].id,
@@ -538,7 +535,7 @@ export class SeedService {
       password: 'admin',
     };
     const admin = await this.usersService.create(adminRaw);
-    await this.usersService.assignRole<CreateStudentDto>(admin, 'student', {
+    await this.usersService.assignRole<CreateStudentDto>(admin, 'estudiante', {
       code: 'admin',
       isActive: true,
       isUndergraduate: true,
@@ -546,19 +543,19 @@ export class SeedService {
     });
     await this.usersService.assignRole<CreateCoordinatorDto>(
       admin,
-      'coordinator',
+      'coordinador',
       {
         isActive: true,
         id: admin.id,
       },
     );
-    await this.usersService.assignRole<CreateProfessorDto>(admin, 'professor', {
+    await this.usersService.assignRole<CreateProfessorDto>(admin, 'profesor', {
       isActive: true,
       id: admin.id,
     });
     await this.usersService.assignRole<CreateAdministratorDto>(
       admin,
-      'administrator',
+      'administrador',
       {
         id: admin.id,
         isActive: true,
