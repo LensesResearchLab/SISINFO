@@ -28,7 +28,7 @@ export class UsersService {
 
   async findAllWithRoles() {
     const users = await this.userRepository.find({
-      relations: ['coordinator', 'professor', 'student', 'administrator'],
+      relations: ['coordinator', 'professor', 'administrator'],
     });
     return users.map((user) =>
       deletePasswordFromUser(user, this.getUserRoles(user)),
@@ -59,11 +59,13 @@ export class UsersService {
 
   getUserRoles(user: User) {
     const roles: string[] = [];
-    if (user.administrator) roles.push('administrador');
-    if (user.coordinator) roles.push('coordinador');
-    if (user.professor) roles.push('profesor');
-    if (user.student) {
-      if (user.administrator) {
+    if (user.administrator && user.administrator.isActive)
+      roles.push('administrador');
+    if (user.coordinator && user.coordinator.isActive)
+      roles.push('coordinador');
+    if (user.professor && user.professor.isActive) roles.push('profesor');
+    if (user.student && user.student.isActive) {
+      if (user.administrator && user.administrator.isActive) {
         roles.push('estudiante');
         roles.push('estudiante_maestria');
       } else if (user.student.isUndergraduate) {

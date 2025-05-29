@@ -493,11 +493,7 @@ export class SeedService {
 
       const coordinatorDto: CreateCoordinatorDto = {
         id: createdUser.id,
-        office: faker.lorem.word(),
-        extension: faker.string.numeric(5),
         isActive: faker.datatype.boolean(),
-        photo:
-          'https://sistemasproyectos.uniandes.edu.co/informe-actividades/wp-content/uploads/2015/12/jp.fernandez29.jpg',
       };
 
       insertPromises.push(
@@ -554,10 +550,6 @@ export class SeedService {
       {
         isActive: true,
         id: admin.id,
-        office: 'admin',
-        extension: 'admin',
-        photo:
-          'https://sistemasproyectos.uniandes.edu.co/informe-actividades/wp-content/uploads/2015/12/jp.fernandez29.jpg',
       },
     );
     await this.usersService.assignRole<CreateProfessorDto>(admin, 'professor', {

@@ -85,15 +85,16 @@ export class ProfessorsService implements RoleService {
 
   async addRole<T>(user: User, roleInfo: T): Promise<void> {
     let professor = await this.professorRepository.findOne({
-      where: { id: user.id },
+      where: { user: { id: user.id } },
+      relations: ['user'],
     });
     if (!professor) {
       professor = this.professorRepository.create({
         ...roleInfo,
-        user: user,
+        user,
       });
     } else {
-      professor.isActive = true;
+      professor.isActive = !professor.isActive;
       Object.assign(professor, roleInfo);
     }
     await this.professorRepository.save(professor);

@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { AssignRoleDto } from './dto/assign-Role.dto';
 
 @Controller('users')
 export class UsersController {
@@ -82,5 +83,16 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
+  }
+
+  @Post('assign-role')
+  async assignRole(@Body() assignRoleDto: AssignRoleDto) {
+    const { userId, roleType, roleInfo } = assignRoleDto;
+    const user = await this.usersService.findOne(userId);
+    const result = await this.usersService.assignRole(user, roleType, roleInfo);
+    return {
+      message: 'Rol asignado correctamente',
+      result,
+    };
   }
 }

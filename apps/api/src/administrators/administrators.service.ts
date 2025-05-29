@@ -51,21 +51,19 @@ export class AdministratorsService implements RoleService {
     roleInfo: CreateAdministratorDto,
   ): Promise<void> {
     let administrator = await this.administratorRepository.findOne({
-      where: {
-        user: {
-          id: user.id,
-        },
-      },
+      where: { user: { id: user.id } },
+      relations: ['user'],
     });
     if (!administrator) {
       administrator = this.administratorRepository.create({
         ...roleInfo,
-        user: user,
+        user,
       });
     } else {
-      administrator.isActive = true;
+      administrator.isActive = !administrator.isActive;
       Object.assign(administrator, roleInfo);
     }
+
     await this.administratorRepository.save(administrator);
   }
 }

@@ -16,10 +16,10 @@ export class RoleSimpleFactory {
     administratorsService: AdministratorsService,
   ) {
     this.strategies = {
-      professor: professorService,
-      student: studentService,
-      coordinator: coordinatorService,
-      administrator: administratorsService,
+      profesor: professorService,
+      estudiante: studentService,
+      coordinador: coordinatorService,
+      administrador: administratorsService,
     };
   }
 

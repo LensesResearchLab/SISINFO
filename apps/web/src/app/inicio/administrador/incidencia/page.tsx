@@ -32,19 +32,31 @@ export const columns: ColumnDef<Incidence>[] = [
     header: "Razón",
   },
   {
-    accessorKey: "isCompleted",
-    header: "Estado",
-    cell: ({ row }) => {
-      const completed = row.original.isClosed;
+    accessorKey: "isClosed",
+    header: ({ column }) => (
+      <div
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="cursor-pointer select-none"
+      >
+        Estado {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : ""}
+      </div>
+    ),
+    cell: ({ getValue }) => {
+      const completed = getValue<boolean>();
       return (
         <Badge
           className={`px-3 py-1 rounded-full text-white text-sm font-semibold
-            ${completed ? "bg-core" : "bg-destructive"}`}
+          ${completed ? "bg-core" : "bg-destructive"}`}
         >
           {completed ? "Completado" : "En revisión"}
         </Badge>
       );
     },
+    sortingFn: (rowA, rowB, columnId) => {
+      const a = rowA.getValue<boolean>(columnId);
+      const b = rowB.getValue<boolean>(columnId);
+      return a === b ? 0 : a ? 1 : -1;
+    }
   },
   {
     accessorKey: "userId",

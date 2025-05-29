@@ -31,3 +31,42 @@ export async function findAllWithRoles(): Promise<User[]> {
     throw error;
   }
 }
+
+
+export async function assignRole({
+  userId,
+  roleType,
+  roleInfo,
+}: {
+  userId: string;
+  roleType: string;
+  roleInfo?: unknown;
+}): Promise<void> {
+  const url = `${API_ROUTES.BASE}/users/assign-role`;
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ userId, roleType, roleInfo }),
+    });
+    if (!response.ok) {
+      let errorData = {};
+      try {
+        errorData = await response.json();
+      } catch (parseError) {
+        console.error("No se pudo parsear el error:", parseError);
+      }
+      throw new Error(
+        `Error asignando rol: ${response.status} ${response.statusText}`,
+        { cause: errorData }
+      );
+    }
+  } catch (error) {
+    console.error("Error al asignar el rol:", error);
+    throw error;
+  }
+}

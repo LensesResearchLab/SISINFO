@@ -1,10 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getCoordinators } from "@/app/services/support.service";
 import Image from "next/image";
-import { Coordinator } from "@/app/types/entities/coordinator.type";
 
 /**
  * AcademicCoordinators Component
@@ -19,16 +16,23 @@ import { Coordinator } from "@/app/types/entities/coordinator.type";
  * @returns {JSX.Element} A div containing the list of academic coordinators and a "Reserva tu cita" button.
  */
 export default function AcademicCoordinators() {
-  const [coordinators, setCoordinators] = useState<Coordinator[]>([]);
+  const coordinators = [
+    {
+      name: "Juan Pablo Fernandez",
+      office: "ML 770",
+      email: "pregisis@uniandes.edu.co",
+      extension: "2873",
+      photo: "https://sistemas.uniandes.edu.co/images/Personas/Administrativo/jpfernandez29.jpg"
+    },
+    {
+      name: "Natalia Franco Tamara",
+      office: "ML 769",
+      email: "magisist@uniandes.edu.co",
+      extension: "3745",
+      photo: "https://sistemas.uniandes.edu.co/images/Personas/Administrativo/natalia-franco.jpg"
+    }
+  ]
 
-  /**
-   * useEffect hook to fetch coordinator data when the component mounts
-   */
-  useEffect(() => {
-    getCoordinators().then((data) => {
-      setCoordinators(data);
-    });
-  }, []);
 
   return (
     <div className="flex justify-center items-center min-h-full min-w-full">
@@ -48,18 +52,18 @@ export default function AcademicCoordinators() {
                 src={coordinator.photo}
                 height={96}
                 width={96}
-                alt={coordinator.user.name}
+                alt={coordinator.name}
                 className="w-24 h-24 rounded-full object-cover mr-6"
               />
               <CardContent className="text-left">
                 <h3 className="text-xl font-semibold text-core-highlight mb-2 p-2">
-                  {coordinator.user.name}
+                  {coordinator.name}
                 </h3>
                 <p className="text-lg text-foreground-soft mb-1">
                   Oficina: {coordinator.office}
                 </p>
                 <p className="text-lg text-foreground-soft mb-1">
-                  Correo: {coordinator.user.email}
+                  Correo: {coordinator.email}
                 </p>
                 <p className="text-lg text-foreground-soft">
                   Extensión: {coordinator.extension}
@@ -93,3 +97,5 @@ export default function AcademicCoordinators() {
     </div>
   );
 }
+
+

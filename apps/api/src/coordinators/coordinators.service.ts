@@ -55,19 +55,19 @@ export class CoordinatorsService implements RoleService {
     roleInfo: CreateCoordinatorDto,
   ): Promise<void> {
     let coordinator = await this.coordinatorRepository.findOne({
-      where: {
-        id: user.id,
-      },
+      where: { user: { id: user.id } },
+      relations: ['user'],
     });
     if (!coordinator) {
       coordinator = this.coordinatorRepository.create({
         ...roleInfo,
-        user: user,
+        user,
       });
     } else {
-      coordinator.isActive = true;
+      coordinator.isActive = !coordinator.isActive;
       Object.assign(coordinator, roleInfo);
     }
+
     await this.coordinatorRepository.save(coordinator);
   }
 }

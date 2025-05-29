@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       "sistemasproyectos.uniandes.edu.co",
+      "sistemas.uniandes.edu.co",
     ]
   }
   /* config options here */
