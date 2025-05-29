@@ -26,6 +26,7 @@ import { fetchUserRoles, getUserInfo } from "../auth/auth-service";
 import {
   getPendingTasksForStudent,
   getPendingTasksForProfessor,
+  getPendingTasksForCoordinator,
 } from "@/app/services/project-application.service";
 import { flows } from "./tareas/flows";
 
@@ -80,8 +81,9 @@ export default function Home() {
         Promise.all([
           getPendingTasksForStudent(userId),
           getPendingTasksForProfessor(userId),
-        ]).then(([studentTasks, professorTasks]) => {
-          const allTasks = [...studentTasks, ...professorTasks];
+          getPendingTasksForCoordinator(userId)
+        ]).then(([studentTasks, professorTasks, coordinatorTasks]) => {
+          const allTasks = [...studentTasks, ...professorTasks, ...coordinatorTasks];
 
           // Add display info from predefined flow structure
           const parsedTasks = allTasks.map((task: any) => {

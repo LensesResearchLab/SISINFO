@@ -100,9 +100,6 @@ export default function ProgramsList() {
             data={courses}
           />
         </CardContent>
-        <CardFooter className="justify-center text-sm text-muted-foreground">
-          {courses.length === 0 && "No se encontraron resultados para este periodo."}
-        </CardFooter>
       </Card>
 
       {/* Error alert modal */}

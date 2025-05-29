@@ -14,6 +14,7 @@ import { ProjectDetailCard, ProjectNotFound } from "@/components/shared/project-
 import { createProjectApplication, getUndergraduateProjectById } from "@/app/services/project.service";
 import { Project } from "@/app/types/entities/project.type";
 import { getUserInfo } from "@/app/auth/auth-service";
+import { CreateProjectApplication, ProjectApplication } from "@/app/types/entities/project-application.type";
 
 /**
  * ThesisInscription Component
@@ -135,7 +136,10 @@ function ProjectApplying({ project }: { readonly project: Project }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const user = (await getUserInfo()).user;
-    await createProjectApplication(motivation, contacted, project.id, user.id)
+    console.log(motivation, contacted, project.id, user.id)
+    const projectApplication: CreateProjectApplication = {motivation, wasContacted:contacted, projectId:project.id, studentId: user.id}
+    console.log(projectApplication);
+    await createProjectApplication(projectApplication);
   };
 
   const modalProps = {

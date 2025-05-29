@@ -1,4 +1,5 @@
 export interface Task {
+  projectActualTask: any;
   id: string;
   status: string;
   date: Date;
@@ -7,4 +8,5 @@ export interface Task {
   description: string;
   student:any;
   professor:any;
+  coordinator:any;
 }

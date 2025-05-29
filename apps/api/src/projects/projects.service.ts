@@ -23,7 +23,6 @@ export class ProjectsService {
     const period = await this.periodsService.findOneByPeriodAndYearString(
       createProjectDto.period,
     );
-    console.log(period);
     const professor = await this.professorsService.findOne(professorId);
     const areasInterest: AreasOfInterest[] = [];
 

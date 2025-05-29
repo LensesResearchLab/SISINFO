@@ -24,6 +24,6 @@ export class CreateProjectApplicationDto {
   grade?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   studentId: string;
 }

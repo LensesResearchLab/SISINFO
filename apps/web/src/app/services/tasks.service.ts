@@ -1,6 +1,6 @@
 import { API_ROUTES } from "../routes";
 
-export async function createTask(projectId: string, taskData: any, file?: File) {
+export async function createTask(taskId: string, taskData: any, file?: File) {
   const formData = new FormData();
 
   formData.append(
@@ -12,7 +12,7 @@ export async function createTask(projectId: string, taskData: any, file?: File) 
     formData.append("file", file);
   }
 
-  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECT_APPLICATIONS}/${projectId}/task`;
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECT_APPLICATIONS}/${taskId}/task`;
   const response = await fetch(url, {
     method: "POST",
     body: formData,

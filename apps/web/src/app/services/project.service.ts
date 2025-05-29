@@ -1,5 +1,6 @@
 import { mapProjectsToStudentTable } from "../mappers/project.mapper";
 import { API_ROUTES } from "../routes";
+import { CreateProjectApplication, ProjectApplication } from "../types/entities/project-application.type";
 import { Project } from "../types/entities/project.type";
 
 export async function getUndergraduateThesis({
@@ -42,18 +43,9 @@ export async function getUndergraduateProjectById(id: string){
 }
 
 export async function createProjectApplication(
-  motivation: string,
-  contacted: boolean,
-  projectId: string,
-  studentId: string
+  application:CreateProjectApplication
 ) {
   const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECT_APPLICATIONS}`;
-  const application = {
-    motivation,
-    contacted,
-    projectId,
-    studentId,
-  };
   const response = await fetch(url, {
     method: "POST",
     headers: {

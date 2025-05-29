@@ -31,4 +31,7 @@ export class CreateTaskDto {
 
   @IsOptional()
   studentId?: string;
+
+  @IsOptional()
+  coordinatorId?: string;
 }

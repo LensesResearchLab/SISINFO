@@ -2,12 +2,18 @@ import { TaskType } from '../enums/taskType';
 
 export interface Step {
   type: TaskType;
-  assignee: 'student' | 'professor';
+  assignee: 'student' | 'professor' | 'coordinator';
   title: string;
   description: string;
 }
 export const flows: Record<string, Step[]> = {
   proyectoPregrado: [
+      {
+      type: TaskType.SEND_APPROVE,
+      assignee: 'coordinator',
+      title: 'Aprobar estudiante',
+      description: 'Aprobar al estudiante',
+    },
     {
       type: TaskType.UPLOAD_FILE,
       assignee: 'student',

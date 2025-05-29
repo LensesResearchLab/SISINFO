@@ -81,6 +81,10 @@ export class ProjectApplicationsController {
   findByTasksStudentId(@Param('id') id: string) {
     return this.projectApplicationsService.findTasksByStudent(id);
   }
+  @Get('coordinator/tasks/:id')
+  findByTasksCoordinatorId(@Param('id') id: string) {
+    return this.projectApplicationsService.findTasksByCoordinator(id);
+  }
 
   @Get('professor/tasks/:id')
   findByTasksProfessorId(@Param('id') id: string) {

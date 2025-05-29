@@ -20,6 +20,7 @@ import { PeriodsService } from '../periods/periods.service';
 import { Task } from '../tasks/entities/task.entity';
 import { CreateTaskDto } from '../tasks/dto/create-task.dto';
 import { DocumentsService } from '../documents/documents.service';
+import { CoordinatorsService } from 'src/coordinators/coordinators.service';
 
 @Injectable()
 export class ProjectApplicationsService {
@@ -31,14 +32,16 @@ export class ProjectApplicationsService {
     private readonly factory: TaskFactory,
     private readonly dataSource: DataSource,
     private readonly periodsService: PeriodsService,
+    private readonly coordinatorService: CoordinatorsService,
     @InjectRepository(ProjectApplication)
     private readonly projectApplicationRepository: Repository<ProjectApplication>,
-  ) {}
+  ) { }
 
   async create(
     createProjectApplicationDto: CreateProjectApplicationDto,
   ): Promise<ProjectApplication> {
     const { studentId, projectId } = createProjectApplicationDto;
+    const coordinators = await this.coordinatorService.findAll();
     const result = await this.projectApplicationRepository.manager.transaction(
       async (manager) => {
         const [student, project, period] = await Promise.all([
@@ -59,11 +62,20 @@ export class ProjectApplicationsService {
         if (!period) {
           throw new NotFoundException(`Periodo actual no encontrado`);
         }
+
+        const task = await this.tasksService.create(TaskType.SEND_APPROVE, {
+          flow: 'proyectoPregrado',
+          step: 0,
+          comment: '',
+          coordinatorId: coordinators[0].id
+        });
+
         const projectApplication = manager.create(ProjectApplication, {
           ...createProjectApplicationDto,
           project,
           student,
           period,
+          actualTask: task
         });
 
         return await manager.save(projectApplication);
@@ -80,30 +92,33 @@ export class ProjectApplicationsService {
     // 1. Cargar la entidad projectApplication
     const projectApplication = await this.projectApplicationRepository.findOne({
       where: { id },
-      relations: ['student', 'project'], // Asegúrate de cargar todas las relaciones necesarias
+      relations: ['student', 'project', 'project.professor'], // Asegúrate de cargar todas las relaciones necesarias
     });
 
     if (!projectApplication) {
       throw new NotFoundException(`Graduated project with ID ${id} not found`);
     }
 
+    let task;
     // 2. Lógica de negocio
-    if (updateProjectApplicationDto.status === ProjecStatusEnum.ENROLLED) {
-      // Solo si el estado cambia a 'ENROLLED', actualizamos
+    if (updateProjectApplicationDto.status === ProjecStatusEnum.ENROLLED && projectApplication.status === ProjecStatusEnum.APPROVED) {
+      // Solo si el estado cambia a 'ENROLLED' y ya ha sido aprobado por coordinadores, actualizamos
       await this.projectsService.updateStudents(
         projectApplication.project.id,
         projectApplication.student,
       );
+      task = await this.tasksService.create(TaskType.UPLOAD_FILE, {
+        flow: 'proyectoPregrado',
+        step: 1,
+        comment: '',
+        projectApplicationId: id,
+        studentId: projectApplication.student.id,
+      });
+
+    } else if (updateProjectApplicationDto.status === ProjecStatusEnum.REJECTED) {
+      updateProjectApplicationDto.status=ProjecStatusEnum.REJECTED;
+      task=null;
     }
-
-    // 3. Crear la tarea (task) asociada
-    const task = await this.tasksService.create(TaskType.UPLOAD_FILE, {
-      flow: 'proyectoPregrado',
-      projectApplicationId: id,
-      studentId: projectApplication.student.id,
-    });
-
-    console.log(task);
 
     // 4. Usar QueryBuilder para actualizar solo los campos específicos
     await this.projectApplicationRepository
@@ -113,7 +128,7 @@ export class ProjectApplicationsService {
         status: updateProjectApplicationDto.status,
         actualTask: task,
       })
-      .where('id = :id', { id }) // Condición para actualizar el registro correcto
+      .where('id = :id', { id })
       .execute();
 
     // 5. Devolver la entidad actualizada
@@ -162,7 +177,7 @@ export class ProjectApplicationsService {
         student: { id: studentId },
         period: { id: period.id },
       },
-      relations: { actualTask: { student: true, professor: true } },
+      relations: ["actualTask", "actualTask.student", "actualTask.professor", "actualTask.coordinator", "actualTask.projectActualTask", "actualTask.projectActualTask.student"],
     });
 
     const tasks = apps
@@ -180,7 +195,7 @@ export class ProjectApplicationsService {
         project: { professor: { id: profId } },
         period: { id: period.id },
       },
-      relations: { actualTask: { student: true, professor: true } },
+      relations: ["actualTask", "actualTask.student", "actualTask.professor", "actualTask.coordinator", "actualTask.projectActualTask", "actualTask.projectActualTask.student"],
     });
 
     const tasks = apps
@@ -188,6 +203,22 @@ export class ProjectApplicationsService {
       .filter((t): t is Task => t !== null && t.professor?.id === profId);
 
     return tasks;
+  }
+
+  async findTasksByCoordinator(coorId: string): Promise<Task[]> {
+
+    let taskList: Task[] = [];
+
+    const apps = await this.projectApplicationRepository.find({
+      relations: ["actualTask", "actualTask.student", "actualTask.professor", "actualTask.coordinator", "actualTask.projectActualTask", "actualTask.projectActualTask.student"],
+    });
+
+    apps.map((app) => {
+      if (app.actualTask?.coordinator?.id === coorId) {
+        taskList.push(app.actualTask);
+      }
+    });
+    return taskList;
   }
 
   async getProjectApplicationsReport() {
@@ -278,7 +309,6 @@ export class ProjectApplicationsService {
           name: file.originalname,
           file: Buffer.from(file.buffer),
         });
-        console.log(savedDocument.id);
         documentId = savedDocument.id;
       } else if (
         actualTask.flow === 'proyectoPregrado' &&
@@ -292,6 +322,14 @@ export class ProjectApplicationsService {
         projectApplication.previousTasks = [];
       }
       projectApplication.previousTasks.push(actualTask);
+
+      if (
+        actualIndex === 0 &&
+        taskDto.type === TaskType.SEND_APPROVE &&
+        taskDto.approved === true
+      ) {
+        projectApplication.status = ProjecStatusEnum.APPROVED;
+      }
 
       const nextStepIndex = actualIndex + 1;
 

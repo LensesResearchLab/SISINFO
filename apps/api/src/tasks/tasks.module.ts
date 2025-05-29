@@ -7,6 +7,7 @@ import { TaskFactory } from './factory/tasks.factory';
 import { ProfessorsModule } from '../professors/professors.module';
 import { StudentsModule } from '../students/students.module';
 import { DocumentsModule } from '../documents/documents.module';
+import { CoordinatorsModule } from 'src/coordinators/coordinators.module';
 
 @Module({
   controllers: [TasksController],
@@ -16,6 +17,7 @@ import { DocumentsModule } from '../documents/documents.module';
     ProfessorsModule,
     StudentsModule,
     DocumentsModule,
+    CoordinatorsModule
   ],
   exports: [TypeOrmModule, TasksService],
 })

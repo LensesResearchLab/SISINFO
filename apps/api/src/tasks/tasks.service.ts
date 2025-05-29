@@ -14,6 +14,8 @@ import { ProfessorsService } from '../professors/professors.service';
 import { Student } from '../students/entities/student.entity';
 import { Professor } from '../professors/entities/professor.entity';
 import { DocumentsService } from '../documents/documents.service';
+import { Coordinator } from 'src/coordinators/entities/coordinator.entity';
+import { CoordinatorsService } from 'src/coordinators/coordinators.service';
 
 @Injectable()
 export class TasksService {
@@ -24,18 +26,24 @@ export class TasksService {
     private readonly factory: TaskFactory,
     private readonly studentsService: StudentsService,
     private readonly professorService: ProfessorsService,
-  ) {}
+    private readonly coordinatorService: CoordinatorsService
+  ) { }
 
   async create(type: TaskType, overrides?: UpdateTaskDto): Promise<Task> {
-    const hasStudent = !!overrides?.studentId;
-    const hasProfessor = !!overrides?.professorId;
     let student: Student | null;
     let professor: Professor | null;
-    if (hasStudent == hasProfessor) {
+    let coordinator: Coordinator | null;
+    const total =
+      Number(!!overrides?.studentId) +
+      Number(!!overrides?.professorId) +
+      Number(!!overrides?.coordinatorId);
+
+    if (total !== 1) {
       throw new BadRequestException(
-        'Debes especificar exactamente uno: studentId o professorId',
+        'Debes especificar exactamente uno: studentId, professorId o coordinatorId',
       );
     }
+
     const dto = this.factory.create({ type, ...overrides });
     const entity = this.repo.create(dto);
     if (overrides?.studentId) {
@@ -47,6 +55,13 @@ export class TasksService {
       professor = await this.professorService.findOne(overrides?.professorId);
       if (professor) {
         entity.professor = professor;
+      }
+    } else if (overrides?.coordinatorId) {
+      coordinator = await this.coordinatorService.findOne(overrides?.coordinatorId);
+      console.log(coordinator);
+      if (coordinator) {
+        entity.coordinator = coordinator;
+        console.log(entity);
       }
     }
     if (overrides?.documentId) {
@@ -69,5 +84,9 @@ export class TasksService {
   async update(id: string, dto: UpdateTaskDto): Promise<Task> {
     await this.repo.update(id, dto);
     return this.findOne(id);
+  }
+
+  async findAll(): Promise<Task[]>{
+    return await this.repo.find({relations:['coordinator', 'projectActualTask', 'projectPreviousTasks']});
   }
 }

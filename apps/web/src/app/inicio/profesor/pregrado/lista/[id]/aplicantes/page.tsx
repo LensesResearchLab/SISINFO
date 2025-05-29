@@ -138,6 +138,8 @@ export default function ProjectDetail({
 
   if (isFetching) return <div className="text-center py-10">Cargando...</div>;
   if (error || !data) return <div className="text-center py-10">Error al cargar los datos.</div>;
+  console.log(data);
+  const approvedData = data?.filter((a: any) => a.status === "Aceptado");
 
   return (
     <div className="min-h-full w-full container max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
@@ -159,7 +161,8 @@ export default function ProjectDetail({
             Rechazar seleccionados
           </Button>
         </div>
-        <DataTable columns={columns} data={data} />
+
+        <DataTable columns={columns} data={approvedData} />
       </div>
 
       <ConfirmationModal

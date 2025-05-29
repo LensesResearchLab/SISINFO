@@ -22,16 +22,27 @@ export class BillboardsService {
     private readonly courseService: CoursesService,
     private readonly sectionService: SectionsService,
     private readonly professorService: ProfessorsService,
-  ) {}
+  ) { }
 
   async create(sectionsDto: CreateSectionDto[]) {
     const billboardCoursesMap = new Map<string, Course>();
     const billboardSectionsMap = new Map<string, Section>();
 
+    const normalizeName = (name: string) =>
+      name
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, " ");
+
+    const mapPeriod = (raw: string) => raw[0] === '1' ? '10' : '20';
+
     for (const section of sectionsDto) {
       const year = Number(section.period.slice(0, 4));
       const semester = section.period.slice(4, 5);
-      const periodStr = section.period.slice(4, 6);
+      const rawPeriod = section.period.slice(4, 6);
+      const periodStr = mapPeriod(rawPeriod);
+
+      console.log(year, semester, periodStr);
 
       let periodFound = await this.periodsService.findOneByPeriodAndYear(
         periodStr,
@@ -69,9 +80,8 @@ export class BillboardsService {
               .replace(/^\s*\(\d+\)\s*/, '')
               .replace(/\s*\([^)]+\)\s*$/, '')
               .trim();
-            console.log(cleanedName);
             const searchProfessor =
-              await this.professorService.findByName(cleanedName);
+              await this.professorService.findByName(normalizeName(cleanedName));
             if (searchProfessor) {
               if (/\(01\)/.test(prof)) {
                 if (
@@ -148,7 +158,8 @@ export class BillboardsService {
 
     const firstsection = sectionsDto[0];
     const billboardYear = Number(firstsection.period.slice(0, 4));
-    const firstPeriodStr = firstsection.period.slice(4, 6);
+    const firstRawPeriod = firstsection.period.slice(4, 6);
+    const firstPeriodStr = mapPeriod(firstRawPeriod);
 
     let periodForBillboard = await this.periodsService.findOneByPeriodAndYear(
       firstPeriodStr,
@@ -170,18 +181,24 @@ export class BillboardsService {
     const billboardExisting = await this.findOne(
       billboard.period.year + billboard.period.period,
     );
+    console.log(billboardExisting);
     if (billboardExisting) {
-      billboardExisting.courses = billboardExisting.courses.concat(
-        billboard.courses,
+      const combinedCourses = [...billboardExisting.courses, ...billboard.courses];
+      const uniqueCoursesMap = new Map(
+        combinedCourses.map((course) => [course.code, course])
       );
+      billboardExisting.courses = Array.from(uniqueCoursesMap.values());
+
       billboardExisting.period = billboard.period;
       billboardExisting.publicated = true;
       await this.billboardRepository.save(billboardExisting);
       return billboardExisting;
     }
 
+
     return await this.billboardRepository.save(billboard);
   }
+
 
   async findAll() {
     const response = await this.billboardRepository.find({

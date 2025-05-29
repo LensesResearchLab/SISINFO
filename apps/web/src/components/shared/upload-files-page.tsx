@@ -27,8 +27,8 @@ export function UploadFilePage({
     return (
       <div className="grid grid-rows-3 w-full h-full gap-4 p-4">
         <div className="grid grid-cols-2 row-span-1 gap-4 h-4">
-          <TermCard handlePeriodChange={handlePeriodChange} footer={"Selecciona el periodo"} />
-          <TemplateCard handleDownload={handleDownload} title="Plantillas" description="Descargar plantilla" footer="Descarga la plantilla" />
+          <TermCard handlePeriodChange={handlePeriodChange} footer={""} />
+          <TemplateCard handleDownload={handleDownload} title="Plantillas" description="Descargar plantilla" footer="" />
         </div>
   
         <div className="row-span-3">

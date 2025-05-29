@@ -12,3 +12,10 @@ export interface ProjectApplication {
   project: Project;
   period: Period;
 }
+
+export interface CreateProjectApplication {
+  motivation: string;
+  wasContacted: boolean;
+  studentId: string;
+  projectId: string;
+}

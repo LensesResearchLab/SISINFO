@@ -9,6 +9,7 @@ import { TasksModule } from '../tasks/tasks.module';
 import { TaskFactory } from '../tasks/factory/tasks.factory';
 import { PeriodsModule } from '../periods/periods.module';
 import { DocumentsModule } from '../documents/documents.module';
+import { CoordinatorsModule } from 'src/coordinators/coordinators.module';
 
 @Module({
   controllers: [ProjectApplicationsController],
@@ -19,6 +20,7 @@ import { DocumentsModule } from '../documents/documents.module';
     TasksModule,
     PeriodsModule,
     DocumentsModule,
+    CoordinatorsModule,
     TypeOrmModule.forFeature([ProjectApplication]),
   ],
   exports: [TypeOrmModule, ProjectApplicationsService],
