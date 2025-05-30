@@ -33,12 +33,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { getGraduatedAssistance } from "@/app/services/assistance.service";
 import { GraduatedAssistance } from "@/app/types/entities/graduated-assistance.type";
-
-const semesters = [
-  { value: "all", label: "Todos los semestres" },
-  { value: "2025-01", label: "2025-01" },
-  { value: "2025-02", label: "2025-02" },
-] as const;
+import { useQuery } from "@tanstack/react-query";
+import { getPeriods } from "@/app/services/period.service";
 
 interface AssistanceListProps {
   readonly professorName?: string;
@@ -78,6 +74,11 @@ function FilterBar({
   sorting,
   setSorting,
 }: FilterBarProps) {
+  const { data: semesters } = useQuery({
+    queryKey: ["undergraduate-semesters"],
+    queryFn: getPeriods,
+  });
+
   return (
     <div className="flex flex-wrap gap-4 mb-6 items-center justify-between ">
       <div className="flex flex-wrap gap-4 items-center">
@@ -86,11 +87,13 @@ function FilterBar({
             <SelectValue placeholder="Elige un semestre" />
           </SelectTrigger>
           <SelectContent>
-            {semesters.map(({ value, label }) => (
-              <SelectItem key={value} value={value}>
-                {label}
-              </SelectItem>
-            ))}
+            <SelectItem value="all">Todos los semestres</SelectItem>
+            {Array.isArray(semesters) &&
+              semesters.map((semester: string) => (
+                <SelectItem value={semester} key={semester}>
+                  {semester}
+                </SelectItem>
+              ))}
           </SelectContent>
         </Select>
 
@@ -140,17 +143,10 @@ function FilterBar({
  * @returns {JSX.Element} A table displaying graduated assistance programs with filtering, sorting, and pagination.
  */
 
-
-
-
-
 export function AssistanceList({
   professorName,
   role = "estudiante",
 }: AssistanceListProps) {
-
-
-
   const [data, setData] = React.useState<GraduatedAssistance[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [selectedSemester, setSelectedSemester] = React.useState("all");
@@ -158,13 +154,17 @@ export function AssistanceList({
   const [nameFilter, setNameFilter] = React.useState("");
   const [sorting, setSorting] = React.useState([{ id: "title", desc: false }]);
   const router = useRouter();
-  const handleClick = React.useCallback((id: string) => {
-    const path =
-      role === "profesor"
-        ? `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`
-        : `${ROUTES.HOME}/${ROUTES.ASSISTANCE_LIST}/${id}`;
-    router.push(path);
-  }, [role, router]);
+
+  const handleClick = React.useCallback(
+    (id: string) => {
+      const path =
+        role === "profesor"
+          ? `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`
+          : `${ROUTES.HOME}/${ROUTES.ASSISTANCE_LIST}/${id}`;
+      router.push(path);
+    },
+    [role, router]
+  );
 
   const columns = React.useMemo<ColumnDef<GraduatedAssistance>[]>(
     () => [
@@ -225,43 +225,27 @@ export function AssistanceList({
     fetchData();
   }, []);
 
-  const getSemester = (dateInput: string): string => {
-    const [year, month, day] = dateInput.split("-").map(Number);
-    const date = new Date(year, month - 1, day);
-    const cutoffDate = new Date(date.getFullYear(), 5, 30); // June = 5, day = 30
-    return date < cutoffDate
-      ? `${date.getFullYear()}-01`
-      : `${date.getFullYear()}-02`;
-  };
-
   const filteredData = React.useMemo(() => {
-    return data.filter((item) => {
-      const semester = getSemester(String(item.startDate));
-      if (selectedSemester !== "all" && semester !== selectedSemester) {
-        return false;
-      }
-      if (
-        role === "profesor" &&
-        showOnlyMyAssistance &&
-        professorName &&
-        item.professor.user.name !== professorName
-      ) {
-        return false;
-      }
-      if (nameFilter) {
-        const searchTerm = nameFilter.toLowerCase();
-        return item.title.toLowerCase().includes(searchTerm);
-      }
-      return true;
-    });
-  }, [
-    data,
-    selectedSemester,
-    showOnlyMyAssistance,
-    professorName,
-    nameFilter,
-    role,
-  ]);
+    // First filter by semester
+    let result =
+      selectedSemester === "all"
+        ? data
+        : data.filter((item) => {
+            const date = new Date(item.startDate);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const semester = month <= 6 ? "10" : "20";
+            const formattedSemester = `${year}${semester}`;
+            return formattedSemester === selectedSemester;
+          });
+
+    if (nameFilter) {
+      result = result.filter((item) =>
+        item.title.toLowerCase().includes(nameFilter.toLowerCase())
+      );
+    }
+    return result;
+  }, [selectedSemester, data, nameFilter]);
 
   const table = useReactTable({
     data: filteredData,

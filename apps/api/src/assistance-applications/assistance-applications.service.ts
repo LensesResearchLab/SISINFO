@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AssistanceApplication } from './entities/assistance-application.entity';
 import { Repository } from 'typeorm';
 import { DocumentsService } from '../documents/documents.service';
+import { AssistanceStatusEnum } from './enums/assistance_status.enum';
 
 @Injectable()
 export class AssistanceApplicationsService {
@@ -42,6 +43,7 @@ export class AssistanceApplicationsService {
 
     const application = this.assistanceApplicationRepository.create({
       ...createAssistanceApplicationDto,
+      status: AssistanceStatusEnum.POSTULADO,
       graduatedAssistance: assitance,
       student: student,
       document: document,
@@ -61,6 +63,7 @@ export class AssistanceApplicationsService {
           professor: true,
         },
         student: true,
+        document: true,
       },
     });
     return results;
@@ -74,6 +77,7 @@ export class AssistanceApplicationsService {
           professor: true,
         },
         student: true,
+        document: true,
       },
     });
     if (!application) {

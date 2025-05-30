@@ -41,6 +41,9 @@ export default function AssistanceStatus({
   const [statusInformation, setStatusInformation] = useState<StatusInformation>(
     {
       id: "0",
+      document: {
+        name: "",
+      },
       graduatedAssistance: {
         id: "0",
         title: "",
@@ -66,7 +69,7 @@ export default function AssistanceStatus({
         },
         isUndergraduate: false,
         code: "",
-        id: ""
+        id: "",
       },
     }
   );
@@ -98,7 +101,7 @@ export default function AssistanceStatus({
     currentStatus: statusInformation.status,
     statusMessage: messagePerStep.get(statusInformation.status) ?? "",
     steps: statusInformation.status === "Rechazado" ? [] : steps,
-    title: "Estado inscripción proyecto de grado",
+    title: "Estado inscripción a asistencia graduada",
   };
 
   if (isLoading) {
@@ -135,18 +138,17 @@ export default function AssistanceStatus({
  *
  * All icons use consistent styling (sky blue color, small size)
  */
-function getSections(statusInformation: StatusInformation)  {
+function getSections(statusInformation: StatusInformation) {
   return [
     {
       title: "Semestre de inicio",
-      description: statusInformation.graduatedAssistance.startDate.toLocaleDateString(
-        "es-CO",
-        {
-          year: "numeric",
-          month: "long",
-          day: "2-digit",
-        }
-      ),
+      description: new Date(
+        statusInformation.graduatedAssistance.startDate
+      ).toLocaleDateString("es-CO", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+      }),
       icon: <Calendar className="h-5 w-5 text-core mt-1" />,
     },
     {
@@ -171,7 +173,7 @@ function getSections(statusInformation: StatusInformation)  {
     },
     {
       title: "Archivo adjunto",
-      description: "statusInformation.studentCv",
+      description: statusInformation.document.name,
       icon: <FileText className="h-5 w-5 text-core mt-1" />,
     },
   ];

@@ -23,6 +23,7 @@ import {
   GraduatedAssistance,
   Requirement,
 } from "@/app/types/entities/graduated-assistance.type";
+import { useAuth } from "@/hooks/use-auth";
 
 interface AssistanceProps {
   readonly assistance: GraduatedAssistance;
@@ -207,7 +208,11 @@ function InfoItem({ icon, title, content }: InfoItemProps) {
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing main position information
  */
-function MainInformation({ assistance }: { readonly assistance: GraduatedAssistance }) {
+function MainInformation({
+  assistance,
+}: {
+  readonly assistance: GraduatedAssistance;
+}) {
   return (
     <div className="space-y-12">
       <div className="space-y-6">
@@ -291,7 +296,11 @@ function Requisites({ requisites }: { readonly requisites?: Requirement[] }) {
  * @param {Object} props Component props
  * @returns {JSX.Element} Section containing contact information
  */
-function ContactInfo({ assistance }: { readonly assistance: GraduatedAssistance }) {
+function ContactInfo({
+  assistance,
+}: {
+  readonly assistance: GraduatedAssistance;
+}) {
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-2xl text-core-highlight">
@@ -338,7 +347,9 @@ function ContactInfo({ assistance }: { readonly assistance: GraduatedAssistance 
 function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
+  const { user } = useAuth();
 
   const modalProps = {
     title: "¿Estás seguro de aplicar a esta asistencia graduada?",
@@ -351,17 +362,18 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
 
   const handleSubmit = async () => {
     if (!file) {
-      console.error("No se seleccionó ningún archivo");
+      setError("Debes seleccionar un archivo PDF para aplicar.");
       return;
     }
-  
-    const studentId = "Document 10";
+    setError(null);
+
+    const studentId = user?.id;
     const graduatedAssistanceId = id;
-  
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("name", file.name);
-  
+
     try {
       const response = await fetch(
         `${API_ROUTES.BASE}/${API_ROUTES.ASSISTANCE_APPLICATIONS}?studentId=${studentId}&graduatedAssistanceId=${graduatedAssistanceId}`,
@@ -370,7 +382,7 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
           body: formData,
         }
       );
-  
+
       if (response.ok) {
         const result = await response.json();
         console.log("Aplicación creada:", result);
@@ -384,6 +396,15 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
     }
   };
 
+  const handleApplyClick = () => {
+    if (!file) {
+      setError("Debes seleccionar un archivo PDF para aplicar.");
+      return;
+    }
+    setError(null);
+    setIsConfirmed(true);
+  };
+
   return (
     <Card className="max-w-3xl mx-auto shadow-lg">
       <CardHeader className="flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
@@ -394,11 +415,16 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
       </CardHeader>
       <CardContent>
         <form className="space-y-6">
-          <UploadCV assistance={assistance} setFile={setFile} />
+          <UploadCV assistance={assistance} file={file} setFile={setFile} />
+          {error && (
+            <div className="text-red-600 text-center font-semibold">
+              {error}
+            </div>
+          )}
           <div className="flex justify-center pt-3.5">
             <Button
               type="button"
-              onClick={() => setIsConfirmed(true)}
+              onClick={handleApplyClick}
               className="bg-core hover:bg-core-highlight text-card px-10 py-5 rounded-xl text-lg font-semibold transition-colors shadow-lg hover:shadow-core-soft"
             >
               Aplicar
@@ -415,7 +441,6 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
     </Card>
   );
 }
-
 
 /**
  * ButtonBack Component
@@ -471,28 +496,26 @@ function ButtonBack({
  * @param {Object} props Component props
  * @returns {JSX.Element} File upload section
  */
-function UploadCV({ setFile }: { 
-  readonly assistance: GraduatedAssistance; 
-  readonly setFile: (file: File | null) => void; 
+function UploadCV({
+  setFile,
+  file,
+}: {
+  readonly assistance: GraduatedAssistance;
+  readonly file: File | null;
+  readonly setFile: (file: File | null) => void;
 }) {
-  const [uploadedFile, setUploadedFile] = useState<{ name: string; url: string } | null>(null);
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.type === "application/pdf") {
-      const url = URL.createObjectURL(file);
-      setUploadedFile({ name: file.name, url });
-      setFile(file);
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile && selectedFile.type === "application/pdf") {
+      setFile(selectedFile);
     }
   };
 
   const handleDrop = (event: React.DragEvent) => {
     event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    if (file && file.type === "application/pdf") {
-      const url = URL.createObjectURL(file);
-      setUploadedFile({ name: file.name, url });
-      setFile(file);
+    const droppedFile = event.dataTransfer.files[0];
+    if (droppedFile && droppedFile.type === "application/pdf") {
+      setFile(droppedFile);
     }
   };
 
@@ -528,11 +551,12 @@ function UploadCV({ setFile }: {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
-        {!uploadedFile ? (
+        {!file ? (
           <div>
             <Upload className="mx-auto h-12 w-12 text-ring" />
             <Label htmlFor="cv" className="mt-4 block text-sm font-medium">
-              <span className="text-core-highlight">Click para subir</span> o arrastra y suelta
+              <span className="text-core-highlight">Click para subir</span> o
+              arrastra y suelta
             </Label>
             <Input
               id="cv"
@@ -548,14 +572,13 @@ function UploadCV({ setFile }: {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <FileText className="h-6 w-6 text-core-highlight mr-2" />
-              <span>{uploadedFile.name}</span>
+              <span>{file.name}</span>
             </div>
             <Button
               variant="ghost"
               size="sm"
               className="text-destructive"
               onClick={() => {
-                setUploadedFile(null);
                 setFile(null);
               }}
             >

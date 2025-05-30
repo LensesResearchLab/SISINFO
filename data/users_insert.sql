@@ -1,5 +1,16 @@
 select * from "user";
 
+-- ADMIN: --
+select * from "administrator";
+INSERT INTO "user" VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb60c', 'admin', 'admin@admin.com', 'admin');
+INSERT INTO student VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb60c', true, true, 'admin000');
+INSERT INTO professor VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb60c', true);
+INSERT INTO coordinator VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb60c', true);
+INSERT INTO administrator VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb60c', true);
+
+
+
+
 -- students: --
 INSERT INTO "user" VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb61c', 'Nicolas Camargo Prieto', 'n.camargop@uniandes.edu.co', '123');
 INSERT INTO "user" VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb62c', 'Jorge David Bustamente Pino', 'j.bustamentep@uniandes.edu.co', '123');
@@ -28,10 +39,9 @@ INSERT INTO "user" VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb67c', 'Juan Pablo F
 
 select * from coordinator;
 
-INSERT INTO coordinator VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb66c', true, 'ML-704', '2003', 'https://sistemasproyectos.uniandes.edu.co/informe-actividades/wp-content/uploads/2015/12/jp.fernandez29.jpg');
-INSERT INTO coordinator VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb67c', true, 'ML-704', '2003', 'https://sistemasproyectos.uniandes.edu.co/informe-actividades/wp-content/uploads/2015/12/jp.fernandez29.jpg');
 
-
+INSERT INTO coordinator VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb66c', true);
+INSERT INTO coordinator VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb67c', true);
 
 
 

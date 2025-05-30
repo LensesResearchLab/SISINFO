@@ -25,6 +25,7 @@ export interface GraduatedAssistance {
 
 export interface StatusInformation {
   id: string;
+  document: { name: string };
   status: string;
   student: Student;
   graduatedAssistance: GraduatedAssistance;
