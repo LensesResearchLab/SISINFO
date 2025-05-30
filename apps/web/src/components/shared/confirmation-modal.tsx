@@ -8,55 +8,66 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from '@/components/ui/button'
-import { Check } from "lucide-react"
-import React, { useState } from "react"
-import { useRouter } from 'next/navigation'
+} from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Check, AlertTriangle } from "lucide-react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export interface DialogTextProps {
-  title: string
-  description: string
-  buttonText: string
-  successTitle: string
-  successText: string
-  url?: string
+  title: string;
+  description: string;
+  buttonText: string;
+  successTitle: string;
+  successText: string;
+  url?: string;
+  isError?: boolean;
 }
-
 
 /**
  * ConfirmationModal Component
- * 
+ *
  * Renders a modal dialog that asks for user confirmation before proceeding with an action.
- * After confirmation, displays a success modal.
- * 
+ * After confirmation, displays a success or error modal based on the isError prop.
+ *
  * @param {Object} props
  * @param {DialogTextProps} props.dialogText - Text content for the dialog
  * @param {Function} props.onConfirm - Callback function to execute on confirmation
- * @returns {JSX.Element} A confirmation dialog or success modal
+ * @returns {JSX.Element} A confirmation dialog or success/error modal
  */
-export function ConfirmationModal({ dialogText, onConfirm, open, setIsOpen }: {
-  readonly dialogText: DialogTextProps,
-  readonly onConfirm: (e: React.MouseEvent<HTMLButtonElement>) => void,
-  readonly open: boolean,
-  readonly setIsOpen: (open: boolean) => void
+export function ConfirmationModal({
+  dialogText,
+  onConfirm,
+  open,
+  setIsOpen,
+}: {
+  readonly dialogText: DialogTextProps;
+  readonly onConfirm: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  readonly open: boolean;
+  readonly setIsOpen: (open: boolean) => void;
 }) {
   const [isConfirmed, setIsConfirmed] = useState(false);
   if (isConfirmed) {
-    return <SuccessModal 
-      successTitle={dialogText.successTitle} 
-      successText={dialogText.successText} 
-      url={dialogText.url} 
-      setIsConfirmed = {setIsConfirmed}
-    />
+    return (
+      <ResultModal
+        successTitle={dialogText.successTitle}
+        successText={dialogText.successText}
+        url={dialogText.url}
+        setIsConfirmed={setIsConfirmed}
+        isError={dialogText.isError}
+      />
+    );
   }
   const handleConfirm = (e: React.MouseEvent<HTMLButtonElement>) => {
     onConfirm(e);
     setIsConfirmed(true);
-  }
-
-
+  };
 
   return (
     <AlertDialog open={open} onOpenChange={setIsOpen}>
@@ -69,35 +80,41 @@ export function ConfirmationModal({ dialogText, onConfirm, open, setIsOpen }: {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm}>Confirmar</AlertDialogAction>
+          <AlertDialogAction onClick={handleConfirm}>
+            {dialogText.buttonText || "Confirmar"}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
 
-  /**
-   * SuccessModal Component
-   * 
-   * Displays a success message modal after a confirmed action.
-   * Includes a checkmark icon and redirects to a specified URL when closed.
-   * 
-   * @param {Object} props
-   * @param {string} props.successTitle - Title of the success message
-   * @param {string} props.successText - Description text for the success message
-   * @param {string} props.url - URL to navigate to when modal is closed
-   * @returns {JSX.Element} A success message modal
-   */
-function SuccessModal({
+/**
+ * ResultModal Component
+ *
+ * Displays a success or error message modal after a confirmed action.
+ * Includes a checkmark icon for success or warning icon for error.
+ * Redirects to a specified URL when closed.
+ *
+ * @param {Object} props
+ * @param {string} props.successTitle - Title of the message
+ * @param {string} props.successText - Description text for the message
+ * @param {string} props.url - URL to navigate to when modal is closed
+ * @param {boolean} props.isError - Whether to display as an error message
+ * @returns {JSX.Element} A success or error message modal
+ */
+function ResultModal({
   successTitle,
   successText,
   url,
-  setIsConfirmed
+  setIsConfirmed,
+  isError = false,
 }: {
   readonly successTitle: string;
   readonly successText: string;
   readonly url?: string;
-  readonly setIsConfirmed: (confirmed: boolean) => void
+  readonly setIsConfirmed: (confirmed: boolean) => void;
+  readonly isError?: boolean;
 }) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
@@ -110,21 +127,35 @@ function SuccessModal({
     }
   };
 
+  const iconBgColor = isError ? "bg-red-100" : "bg-core-soft";
+  const iconColor = isError ? "text-red-600" : "text-core";
+  const textColor = isError ? "text-red-600" : "text-core";
+
   return (
-    <Dialog open={isOpen} onOpenChange={() => {setIsConfirmed(false); setIsOpen(false)}}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={() => {
+        setIsConfirmed(false);
+        setIsOpen(false);
+      }}
+    >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-core text-xl mx-auto">
+            <DialogTitle className={`text-xl mx-auto ${textColor}`}>
               {successTitle}
             </DialogTitle>
           </div>
         </DialogHeader>
         <div className="flex flex-col items-center justify-center space-y-6 py-4">
-          <div className="rounded-full bg-core-soft p-3">
-            <Check className="h-16 w-16 text-core" />
+          <div className={`rounded-full ${iconBgColor} p-3`}>
+            {isError ? (
+              <AlertTriangle className={`h-16 w-16 ${iconColor}`} />
+            ) : (
+              <Check className={`h-16 w-16 ${iconColor}`} />
+            )}
           </div>
-          <p className="text-center text-core">{successText}</p>
+          <p className={`text-center ${textColor}`}>{successText}</p>
           <Button className="w-32" onClick={handleAccept}>
             Aceptar
           </Button>

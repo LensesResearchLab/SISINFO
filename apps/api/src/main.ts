@@ -9,7 +9,7 @@ export async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(json({ limit: '5mb' }));
   app.use(urlencoded({ limit: '5mb', extended: true }));
-  app.use(cookieParser()); 
+  app.use(cookieParser());
   app.setGlobalPrefix('api');
 
   app.enableCors({

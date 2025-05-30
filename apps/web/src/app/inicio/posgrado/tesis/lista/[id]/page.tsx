@@ -5,6 +5,7 @@ import { Mail, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   getPostgraduateThesisById,
+  getPostgraduateThesisStatus,
   postThesisApplication,
 } from "@/app/services/thesis.service";
 import { Thesis } from "@/app/types/entities/thesis.type";
@@ -131,9 +132,10 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
   const setContacted = useThesisInscriptionStore((state) => state.setContacted);
 
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [hasExistingApplication, setHasExistingApplication] = useState(false);
   const { user } = useAuth();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const thesisId = thesis.id;
     const userId = user?.id;
     console.log(userId);
@@ -143,7 +145,15 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
       return;
     }
 
-    postThesisApplication(thesisId, userId);
+    const userApplications = await getPostgraduateThesisStatus(userId);
+    if (userApplications) {
+      console.log("Error: You have already applied to a thesis.");
+      setHasExistingApplication(true);
+      return;
+    } // Check if the user has already applied to this thesis
+    else {
+      await postThesisApplication(thesisId, userId);
+    }
   };
 
   const modalProps = {
@@ -152,7 +162,17 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
     buttonText: "Aplicar",
     successTitle: "¡Aplicación enviada!",
     successText: "Tu aplicación ha sido enviada con éxito",
-    url: `${ROUTES.HOME}/${ROUTES.UNDERGRADUATE_THESIS_STATUS}`,
+    url: `${ROUTES.HOME}/${ROUTES.POSTGRADUATE_THESIS_STATUS}`,
+  };
+
+  const errorProps = {
+    title: "Error en la aplicación a la tesis",
+    description: "No puedes aplicar a más de una tesis",
+    buttonText: "Entendido",
+    successTitle: "Aplicación no procesada",
+    successText: "Solo puedes tener una aplicación activa a la vez",
+    url: `${ROUTES.HOME}/${ROUTES.POSTGRADUATE_THESIS_LIST}`,
+    isError: true,
   };
 
   return (
@@ -180,7 +200,7 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
               Aplicar
             </Button>
             <ConfirmationModal
-              dialogText={modalProps}
+              dialogText={hasExistingApplication ? errorProps : modalProps}
               onConfirm={handleSubmit}
               open={isConfirmed}
               setIsOpen={setIsConfirmed}

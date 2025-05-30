@@ -56,7 +56,9 @@ export default function ThesisList() {
   const searchCategory = useThesisListStore((state) => state.searchCategory);
   const searchTerm = useThesisListStore((state) => state.searchTerm);
   const sortDirection = useThesisListStore((state) => state.sortDirection);
-  const setSortDirection = useThesisListStore((state) => state.setSortDirection);
+  const setSortDirection = useThesisListStore(
+    (state) => state.setSortDirection
+  );
   const setOrder = useThesisListStore((state) => state.setOrder);
 
   const { data: thesisList, isFetching: isFetchingThesis } = useQuery({
@@ -82,26 +84,32 @@ export default function ThesisList() {
 
   // Agrupar tesis por profesor
   const groupedByProfessor = useMemo(() => {
-    return filteredThesisList.reduce((acc, thesis) => {
-      const profName =
-        thesis.professor?.user?.name &&
-        typeof thesis.professor.user.name === "string"
-          ? thesis.professor.user.name
-          : "Sin profesor";
-      if (!acc[profName]) acc[profName] = [];
-      acc[profName].push(thesis);
-      return acc;
-    }, {} as { [professor: string]: Thesis[] });
+    return filteredThesisList.reduce(
+      (acc, thesis) => {
+        const profName =
+          thesis.professor?.user?.name &&
+          typeof thesis.professor.user.name === "string"
+            ? thesis.professor.user.name
+            : "Sin profesor";
+        if (!acc[profName]) acc[profName] = [];
+        acc[profName].push(thesis);
+        return acc;
+      },
+      {} as { [professor: string]: Thesis[] }
+    );
   }, [filteredThesisList]);
 
   // Agrupar tesis por área de investigación
   const groupedByArea = useMemo(() => {
-    return filteredThesisList.reduce((acc, thesis) => {
-      const area = thesis.investigationSubarea;
-      if (!acc[area]) acc[area] = [];
-      acc[area].push(thesis);
-      return acc;
-    }, {} as { [area: string]: Thesis[] });
+    return filteredThesisList.reduce(
+      (acc, thesis) => {
+        const area = thesis.investigationSubarea;
+        if (!acc[area]) acc[area] = [];
+        acc[area].push(thesis);
+        return acc;
+      },
+      {} as { [area: string]: Thesis[] }
+    );
   }, [filteredThesisList]);
 
   // Calcular el orden usando useMemo

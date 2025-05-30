@@ -35,6 +35,8 @@ import SpinnerPage from "@/components/shared/spinner-page";
 import { getAssistanceApplications } from "@/app/services/assistance.service";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useQuery } from "@tanstack/react-query";
+import { getPeriods } from "@/app/services/period.service";
 
 /**
  * Column definitions for the AssistanceAppliedList table
@@ -110,6 +112,11 @@ export default function AssistanceAppliedList() {
 
   const { user, isLoading: isAuthLoading } = useAuth();
 
+  const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
+    queryKey: ["undergraduate-semesters"],
+    queryFn: getPeriods,
+  });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -136,8 +143,8 @@ export default function AssistanceAppliedList() {
       const date = new Date(item.graduatedAssistance.startDate);
       const year = date.getFullYear();
       const month = date.getMonth() + 1;
-      const semester = month <= 6 ? "01" : "02";
-      const formattedSemester = `${year}-${semester}`;
+      const semester = month <= 6 ? "10" : "20";
+      const formattedSemester = `${year}${semester}`;
 
       return formattedSemester === selectedSemester;
     });
@@ -156,7 +163,7 @@ export default function AssistanceAppliedList() {
     },
   });
 
-  if (isLoading) {
+  if (isLoading || isLoadingSemesters) {
     return <SpinnerPage />;
   }
 
@@ -174,8 +181,12 @@ export default function AssistanceAppliedList() {
                   <SelectValue placeholder="Elige un semestre" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="2025-01">2025-01</SelectItem>
-                  <SelectItem value="2025-02">2025-02</SelectItem>
+                  {Array.isArray(semesters) &&
+                    semesters.map((semester: string) => (
+                      <SelectItem value={semester} key={semester}>
+                        {semester}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>

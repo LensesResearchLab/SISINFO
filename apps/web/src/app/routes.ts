@@ -78,27 +78,25 @@ export const ROUTES: Record<string, string> = {
 export const API_ROUTES: Record<string, string> = {
   BASE: "http://localhost:8000/api",
   PERIODS: "periods",
-  ASSISTANCE_APPLICATIONS: 'assistance-applications',
-  COURSES:'courses',
-  COORDINATOR_BILLBOARD:'billboards',
-  TASKS:'tasks',
+  ASSISTANCE_APPLICATIONS: "assistance-applications",
+  COURSES: "courses",
+  COORDINATOR_BILLBOARD: "billboards",
+  TASKS: "tasks",
 
-  PROJECTS:'projects',
-  THESIS: 'theses',
-  THESIS_REPORT: 'thesis-applications/thesis-report',
-  THESIS_APPLICATIONS: 'thesis-applications',
+  PROJECTS: "projects",
+  THESIS: "theses",
+  THESIS_REPORT: "thesis-applications/thesis-report",
+  THESIS_APPLICATIONS: "thesis-applications",
 
-  TEACHING_ASSISTANTS: 'teaching-assistances',
-  PROFESSORS: 'professors',
-  STUDENTS: 'students',
+  TEACHING_ASSISTANTS: "teaching-assistances",
+  PROFESSORS: "professors",
+  STUDENTS: "students",
   SECTIONS_REPORTS: "sections",
   INCIDENCES: "incidences",
   COORDINATORS: "coordinators",
   PROJECT_APPLICATIONS: "project-applications",
 
-  COURSE_LEADERS: 'courses/leaders/',
-  USER_ROLES: 'users/roles/',
-  DATES: 'important-sections'
+  COURSE_LEADERS: "courses/leaders/",
+  USER_ROLES: "users/roles/",
+  DATES: "important-sections",
 };
-
-

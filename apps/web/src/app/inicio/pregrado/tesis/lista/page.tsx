@@ -22,7 +22,10 @@ import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
 import { getPeriods } from "@/app/services/period.service";
 import { getUndergraduateThesis } from "@/app/services/project.service";
 import { useThesisListStore } from "./store";
-import { ProjectsStudentTable, ProjectsStudentTableRow } from "@/app/types/projects-by-professor.type";
+import {
+  ProjectsStudentTable,
+  ProjectsStudentTableRow,
+} from "@/app/types/projects-by-professor.type";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -43,13 +46,16 @@ export default function ThesisList() {
   const searchCategory = useThesisListStore((state) => state.searchCategory);
   const searchTerm = useThesisListStore((state) => state.searchTerm);
   const sortDirection = useThesisListStore((state) => state.sortDirection);
-  const setSortDirection = useThesisListStore((state) => state.setSortDirection);
+  const setSortDirection = useThesisListStore(
+    (state) => state.setSortDirection
+  );
   const setOrder = useThesisListStore((state) => state.setOrder);
 
   // Fetch undergraduate thesis list
   const { data: thesisList, isFetching: isFetchingThesis } = useQuery({
     queryKey: ["student-thesis-projects", searchCategory, searchTerm],
-    queryFn: () => getUndergraduateThesis({ category: searchCategory, period: searchTerm }),
+    queryFn: () =>
+      getUndergraduateThesis({ category: searchCategory, period: searchTerm }),
   });
 
   // Fetch available academic periods
@@ -61,7 +67,9 @@ export default function ThesisList() {
   // Sort field names alphabetically whenever thesis list or direction changes
   useEffect(() => {
     if (thesisList) {
-      const sortedOrder = Object.keys(thesisList).sort((a, b) => sortDirection * a.localeCompare(b));
+      const sortedOrder = Object.keys(thesisList).sort(
+        (a, b) => sortDirection * a.localeCompare(b)
+      );
       setOrder(sortedOrder);
     }
   }, [thesisList, sortDirection, setOrder]);
@@ -70,18 +78,32 @@ export default function ThesisList() {
 
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
-      <Accordion type="single" collapsible className="w-full bg-card shadow-lg rounded-xl p-5 h-full text-primary">
+      <Accordion
+        type="single"
+        collapsible
+        className="w-full bg-card shadow-lg rounded-xl p-5 h-full text-primary"
+      >
         {/* Filters and sorting header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
             <SelectSearchCategory className="w-full sm:w-auto" />
-            <SelectSemester semesters={semesters ?? []} className="w-full sm:w-auto" />
+            <SelectSemester
+              semesters={semesters ?? []}
+              className="w-full sm:w-auto"
+            />
           </div>
-          <AlphabeticSortButton onclick={() => setSortDirection(sortDirection * -1)} sortDirection={sortDirection} />
+          <AlphabeticSortButton
+            onclick={() => setSortDirection(sortDirection * -1)}
+            sortDirection={sortDirection}
+          />
         </div>
 
         {/* Content */}
-        {isFetchingThesis ? <SkeletonAccordion /> : <AccordionList thesisList={thesisList ?? {}} />}
+        {isFetchingThesis ? (
+          <SkeletonAccordion />
+        ) : (
+          <AccordionList thesisList={thesisList ?? {}} />
+        )}
       </Accordion>
     </div>
   );
@@ -93,7 +115,13 @@ export default function ThesisList() {
  * Renders dropdown to select academic period.
  * Updates the search term in global store.
  */
-function SelectSemester({ semesters, className }: { readonly semesters: string[]; readonly className?: string }) {
+function SelectSemester({
+  semesters,
+  className,
+}: {
+  readonly semesters: string[];
+  readonly className?: string;
+}) {
   const setSearchTerm = useThesisListStore((state) => state.setSearchTerm);
   return (
     <Select onValueChange={setSearchTerm}>
@@ -121,7 +149,9 @@ function SelectSemester({ semesters, className }: { readonly semesters: string[]
  * Options include: professor and area of interest.
  */
 function SelectSearchCategory({ className }: { readonly className?: string }) {
-  const setSearchCategory = useThesisListStore((state) => state.setSearchCategory);
+  const setSearchCategory = useThesisListStore(
+    (state) => state.setSearchCategory
+  );
   return (
     <Select onValueChange={setSearchCategory}>
       <SelectTrigger className={cn("w-[180px]", className)}>
@@ -143,7 +173,11 @@ function SelectSearchCategory({ className }: { readonly className?: string }) {
  *
  * Renders an accordion item for each category group (e.g., professor name or interest area).
  */
-function AccordionList({ thesisList }: { readonly thesisList: ProjectsStudentTable }) {
+function AccordionList({
+  thesisList,
+}: {
+  readonly thesisList: ProjectsStudentTable;
+}) {
   const order = useThesisListStore((state) => state.order);
   return (
     <>
@@ -156,7 +190,13 @@ function AccordionList({ thesisList }: { readonly thesisList: ProjectsStudentTab
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <ThesisTable data={thesisList[field]} />
+            {thesisList[field]?.length ? (
+              <ThesisTable data={thesisList[field]} />
+            ) : (
+              <div className="text-center py-4 text-muted-foreground">
+                No hay proyectos disponibles
+              </div>
+            )}
           </AccordionContent>
         </AccordionItem>
       ))}
@@ -197,7 +237,9 @@ function ThesisTable({ data }: { readonly data: ProjectsStudentTableRow[] }) {
           variant="ghost"
           size="icon"
           onClick={() =>
-            router.push(`${ROUTES.HOME}/${ROUTES.UNDERGRADUATE_THESIS_LIST}/${row.original.id}`)
+            router.push(
+              `${ROUTES.HOME}/${ROUTES.UNDERGRADUATE_THESIS_LIST}/${row.original.id}`
+            )
           }
         >
           <Search className="w-4 h-4" />
@@ -210,11 +252,7 @@ function ThesisTable({ data }: { readonly data: ProjectsStudentTableRow[] }) {
 }
 
 function ThesisSpan({ text }: { readonly text: string }) {
-  return (
-    <span className="text-primary font-medium">
-      {text}
-    </span>
-  );
+  return <span className="text-primary font-medium">{text}</span>;
 }
 
 /**

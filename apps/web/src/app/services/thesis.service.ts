@@ -18,7 +18,14 @@ export async function getPostgraduateThesisById(id: string) {
 }
 
 export async function getPostgraduateThesisStatus(id?: string) {
-  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/${id}`);
+  const response = await fetch(
+    `${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/${id}`
+  );
+
+  if (response.status === 404) {
+    return null;
+  }
+
   if (!response.ok) {
     throw new Error("Failed to fetch graduated thesis data.");
   }
@@ -30,20 +37,22 @@ export async function postThesisApplication(
   studentId: string
 ) {
   try {
-    await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/${studentId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        thesisId,
-        status: "Postulado",
-        grade: "Pendiente",
-      }),
-    });
+    await fetch(
+      `${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/${studentId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          thesisId,
+          status: "Postulado",
+          grade: "Pendiente",
+        }),
+      }
+    );
 
     // TODO: Return response for modal
-
   } catch (error) {
     console.error("Error:", error);
     alert("Error al enviar la aplicación");
@@ -52,7 +61,11 @@ export async function postThesisApplication(
 
 /* POSTGRAUATE THESIS FOR PROFESSOR */
 /* Postgraduate Theses for professor create */
-export async function postNewThesis(userId:string, thesisData: any, periodId:string): Promise<Thesis[]> {
+export async function postNewThesis(
+  userId: string,
+  thesisData: any,
+  periodId: string
+): Promise<Thesis[]> {
   const url = `${API_ROUTES.BASE}/${API_ROUTES.THESIS}?professorId=${userId}&period=${periodId}`;
   const response = await fetch(url, {
     method: "POST",
@@ -68,7 +81,7 @@ export async function postNewThesis(userId:string, thesisData: any, periodId:str
 }
 
 /* Postgraduate Theses for professor view */
-export async function getThesesByProfessor(userId:string): Promise<Thesis[]> {
+export async function getThesesByProfessor(userId: string): Promise<Thesis[]> {
   const url = `${API_ROUTES.BASE}/${API_ROUTES.THESIS}/professor/${userId}`;
   const response = await fetch(url, {
     method: "GET",
@@ -82,7 +95,9 @@ export async function getThesesByProfessor(userId:string): Promise<Thesis[]> {
   return await response.json();
 }
 
-export async function getApplicationsByThesisId(thesisId:string): Promise<Thesis[]> {
+export async function getApplicationsByThesisId(
+  thesisId: string
+): Promise<Thesis[]> {
   const url = `${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/applicants/${thesisId}`;
   const response = await fetch(url, {
     method: "GET",
@@ -96,13 +111,12 @@ export async function getApplicationsByThesisId(thesisId:string): Promise<Thesis
   return await response.json();
 }
 
-
-
-
 /* Posgraduate Report */
 /* API GET for coordinators report of thesis */
 export async function getThesisApplicationsReport() {
-  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS_REPORT}`);
+  const response = await fetch(
+    `${API_ROUTES.BASE}/${API_ROUTES.THESIS_REPORT}`
+  );
   console.log(response.body);
   if (!response.ok) {
     throw new Error("Failed to fetch undergraduate projects data for report.");
