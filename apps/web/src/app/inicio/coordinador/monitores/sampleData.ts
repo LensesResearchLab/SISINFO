@@ -3,32 +3,20 @@ import { CreateTeachingAssistance } from "@/app/types/createTeachingAssistance.t
 export const sampleData: CreateTeachingAssistance[] = [
     {
         contractNumber: 1,
-        studentCode: "202210111",
+        studentCode: "202020782",
         courseCode: "ISIS-3710",
-        sectionNumber: 1,
-    },
-    {
-        contractNumber: 2,
-        studentCode: "202210112",
-        courseCode: "ISIS-3710",
-        sectionNumber: 1,
+        sectionNumber: 3,
     },
     {
         contractNumber: 1,
-        studentCode: "202210111",
+        studentCode: "202020782",
         courseCode: "ISIS-3510",
-        sectionNumber: 1,
-    },
-    {
-        contractNumber: 2,
-        studentCode: "202210112",
-        courseCode: "ISIS-3510",
-        sectionNumber: 1,
+        sectionNumber: 2,
     },
     {
         contractNumber: 3,
-        studentCode: "202210113",
+        studentCode: "202020782",
         courseCode: "ISIS-2603",
-        sectionNumber: 1,
+        sectionNumber: 4,
     },
 ];

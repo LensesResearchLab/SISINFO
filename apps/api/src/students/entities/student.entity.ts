@@ -71,7 +71,7 @@ export class Student extends Role {
     (projectApplication) => projectApplication.student,
     { nullable: true },
   )
-  projectApplication: ProjectApplication;
+  projectApplication: ProjectApplication[];
 
   @OneToOne(
     () => GraduatedAssistance,

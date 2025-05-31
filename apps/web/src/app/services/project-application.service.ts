@@ -57,8 +57,8 @@ export async function getPendingTasksForProfessor(id: string) {
   return response.json();
 }
 
-export async function getPendingTasksForCoordinator(id: string) {
-  const url = `${API_URL}/coordinator/tasks/${id}`;
+export async function getPendingTasksForCoordinator() {
+  const url = `${API_URL}/coordinator/tasks`;
   
   const response = await fetch(url, {
     method: 'GET',

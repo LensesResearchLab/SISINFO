@@ -34,7 +34,8 @@ export class StudentsService implements RoleService {
         'thesisApplication',
         'thesisApplication.thesis',
         'thesisApplication.thesis.professor',
-        'thesisApplication.thesis.professor.user']
+        'thesisApplication.thesis.professor.user',
+        'projectApplication']
     });
 
     if (student?.user && 'password' in student.user) {

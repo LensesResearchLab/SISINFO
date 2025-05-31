@@ -82,15 +82,10 @@ export class SectionsService {
           [fieldToCheck]: IsNull(),
         },
       },
-      relations: {
-        period: true,
-        course: {
-          mainProfessor: {
-            user: true,
-          },
-        },
-      },
+      relations:["period", "course", "course.mainProfessor", "course.mainProfessor.user"]
     });
+
+    console.log(sections);
 
     return sections.map((section) => {
       const result = {
@@ -99,8 +94,8 @@ export class SectionsService {
         section: section.section,
         courseCode: section.course.code,
         courseName: section.course.name,
-        professorName: section.course.mainProfessor.user.name,
-        professorEmail: section.course.mainProfessor.user.email,
+        professorName: section.course.mainProfessor?.user.name,
+        professorEmail: section.course.mainProfessor?.user.email,
       };
 
       return result;

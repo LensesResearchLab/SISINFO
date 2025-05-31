@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,7 +13,7 @@ import { UpdateProjectApplicationDto } from './dto/update-project-application.dt
 import { TaskType } from '../tasks/enums/taskType';
 import { TasksService } from '../tasks/tasks.service';
 import { flows } from '../tasks/flows/tasksFlows';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, Not } from 'typeorm';
 import { ProjecStatusEnum } from './enums/project_status.enum';
 import { PeriodsService } from '../periods/periods.service';
 import { Task } from '../tasks/entities/task.entity';
@@ -32,7 +33,7 @@ export class ProjectApplicationsService {
     private readonly coordinatorService: CoordinatorsService,
     @InjectRepository(ProjectApplication)
     private readonly projectApplicationRepository: Repository<ProjectApplication>,
-  ) {}
+  ) { }
 
   async create(
     createProjectApplicationDto: CreateProjectApplicationDto,
@@ -51,6 +52,20 @@ export class ProjectApplicationsService {
             `Estudiante con documento ${studentId} no encontrado`,
           );
         }
+        const hasActive = await this.projectApplicationRepository.exist({
+          where: {
+            student: { id: studentId },
+            period: { id: period.id },
+            status: Not(ProjecStatusEnum.REJECTED),
+          },
+        });
+
+        if (hasActive) {
+          throw new ConflictException(
+            'El estudiante ya tiene una aplicación activa en este periodo',
+          );
+        }
+
         if (!project) {
           throw new NotFoundException(
             `Proyecto con ID ${projectId} no encontrado`,
@@ -62,9 +77,9 @@ export class ProjectApplicationsService {
 
         let coordinator;
 
-        coordinators.map((c)=>{
-          if(c.isActive){
-            coordinator=c;
+        coordinators.map((c) => {
+          if (c.isActive) {
+            coordinator = c;
           }
         })
 
@@ -228,7 +243,7 @@ export class ProjectApplicationsService {
     return tasks;
   }
 
-  async findTasksByCoordinator(coorId: string): Promise<Task[]> {
+  async findTasksByCoordinator(): Promise<Task[]> {
     const taskList: Task[] = [];
 
     const apps = await this.projectApplicationRepository.find({
@@ -243,7 +258,7 @@ export class ProjectApplicationsService {
     });
 
     for (const app of apps) {
-      if (app.actualTask?.coordinator?.id === coorId) {
+      if (app.actualTask?.coordinator?.id) {
         taskList.push(app.actualTask);
       }
     }

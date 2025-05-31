@@ -1,20 +1,34 @@
+// TasksPage.tsx
+"use client";
 
-"use client"
+import * as React from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import * as React from "react"
-import { useHomeStore } from "../home.store"
-import { Button } from "@/components/ui/button"
-import { MoreHorizontal } from "lucide-react"
-import { ROUTES } from "@/app/routes"
-import { useRouter } from "next/navigation"
-import { TabsContent } from "@radix-ui/react-tabs"
-import { Task } from "@/app/types/entities/task.type"
-import { ColumnDef } from "@tanstack/react-table"
-import { createTask } from "@/app/services/tasks.service"
-import { TaskType } from "./flows"
-import RoleTab from "@/components/shared/role-tab"
-import { DataTable } from "@/components/data-table"
+import { useRouter } from "next/navigation";
+import { ColumnDef } from "@tanstack/react-table";
 
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/data-table";
+import { MoreHorizontal } from "lucide-react";
+
+import { useHomeStore } from "../home.store";
+import { ROUTES } from "@/app/routes";
+import {
+  getPendingTasksForStudent,
+  getPendingTasksForProfessor,
+  getPendingTasksForCoordinator,
+} from "@/app/services/project-application.service";
+import { getUserInfo } from "@/app/auth/auth-service";
+import { createTask } from "@/app/services/tasks.service";
+import { Task } from "@/app/types/entities/task.type";
+import { TaskType, flows } from "./flows";
+import SpinnerPage from "@/components/shared/spinner-page";
+import RoleTab from "@/components/shared/role-tab";
+import { TabsContent } from "@radix-ui/react-tabs";
+
+/**
+ * Common table column definitions that don’t depend on runtime state.
+ */
 const baseColumns: ColumnDef<Task>[] = [
   {
     accessorKey: "title",
@@ -24,14 +38,16 @@ const baseColumns: ColumnDef<Task>[] = [
   {
     accessorKey: "description",
     header: "Descripción",
-    cell: ({ row }) => <div className="line-clamp-2 max-w-[200px]">{row.getValue("description")}</div>,
+    cell: ({ row }) => (
+      <div className="line-clamp-2 max-w-[200px]">{row.getValue("description")}</div>
+    ),
   },
   {
     accessorKey: "date",
     header: "Fecha",
-    cell: () => {
-      const parsed = new Date()
-      return isNaN(parsed.getTime()) ? "Sin fecha" : parsed.toLocaleDateString()
+    cell: ({ row }) => {
+      const parsed = new Date(row.getValue("date") as string);
+      return isNaN(parsed.getTime()) ? "Sin fecha" : parsed.toLocaleDateString();
     },
   },
   {
@@ -54,25 +70,79 @@ const baseColumns: ColumnDef<Task>[] = [
     id: "actions",
     header: "Acciones",
     cell: ({ row }) => {
-      const router = useRouter()
-      const task = row.original
+      const router = useRouter();
+      const task = row.original;
       return (
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => router.push(`${ROUTES.HOME}/${ROUTES.TASK_LIST}/${task.id}`)}
+          onClick={() =>
+            router.push(`${ROUTES.HOME}/${ROUTES.TASK_LIST}/${task.id}`)
+          }
         >
           <MoreHorizontal className="h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
-]
+];
 
+/**
+ * Top‑level Tasks page. Ensures tasks are loaded (similar to Home dashboard)
+ * and displays them in role‑specific tables.
+ */
 export default function Tasks() {
-  const roles = useHomeStore((state) => state.roles)
+  const roles = useHomeStore((state) => state.roles);
+  const tasks = useHomeStore((state) => state.tasks);
+  const setTasks = useHomeStore((state) => state.setTasks);
 
-  if (roles.length === 0) return null
+  const [loading, setLoading] = useState(tasks.length === 0);
+
+  // Only fetch tasks if they’re not already in the store.
+  useEffect(() => {
+    if (tasks.length > 0) return; // already present
+
+    (async () => {
+      try {
+        const {
+          user: { id: userId },
+        } = await getUserInfo();
+
+        const [studentTasks, professorTasks, coordinatorTasks] =
+          await Promise.all([
+            getPendingTasksForStudent(userId),
+            getPendingTasksForProfessor(userId),
+            getPendingTasksForCoordinator(),
+          ]);
+
+        const allTasks = [
+          ...studentTasks,
+          ...professorTasks,
+          ...coordinatorTasks,
+        ];
+
+        const parsedTasks = allTasks.map((task: any) => {
+          const stepNumber =
+            typeof task.step === "number" ? task.step : Number(task.step);
+          const stepInfo = flows.proyectoPregrado[stepNumber];
+          return {
+            ...task,
+            step: stepNumber,
+            title: stepInfo?.title || "Sin título",
+            description: stepInfo?.description || "Sin descripción",
+            date: task.date ? new Date(task.date) : new Date(),
+          } as Task;
+        });
+
+        setTasks(parsedTasks);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [tasks.length, setTasks]);
+
+  if (loading) return <SpinnerPage />;
+  if (roles.length === 0) return null;
 
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
@@ -82,8 +152,8 @@ export default function Tasks() {
           <TasksTable role={roles[0]} />
         ) : (
           <RoleTab>
-            {roles.map((role, index) => (
-              <TabsContent key={`${role}-${index}`} value={role}>
+            {roles.map((role) => (
+              <TabsContent key={role} value={role}>
                 <TasksTable role={role} />
               </TabsContent>
             ))}
@@ -91,40 +161,50 @@ export default function Tasks() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-function TasksTable({ role }: { readonly role: string }) {
-  const allTasks = useHomeStore((state) => state.tasks)
-  const [selectedTasks, setSelectedTasks] = React.useState<Task[]>([])
+interface TasksTableProps {
+  role: string;
+}
 
-  const columnsWithSelection: ColumnDef<Task>[] = React.useMemo(() => {
-    return [
-      {
-        id: "select",
-        header: ({ table }) => (
-          <input
-            type="checkbox"
-            checked={table.getIsAllPageRowsSelected()}
-            onChange={table.getToggleAllPageRowsSelectedHandler()}
-            className="cursor-pointer"
-          />
-        ),
-        cell: ({ row }) => (
-          <input
-            type="checkbox"
-            checked={row.getIsSelected()}
-            onChange={row.getToggleSelectedHandler()}
-            className="cursor-pointer"
-          />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-      },
-      ...baseColumns,
-    ]
-  }, [])
+function TasksTable({ role }: TasksTableProps) {
+  const allTasks = useHomeStore((state) => state.tasks);
+  const [selectedTasks, setSelectedTasks] = useState<Task[]>([]);
 
+  /**
+   * Column definitions with a leading selection column.
+   * useMemo avoids recreating on every render.
+   */
+  const columns: ColumnDef<Task>[] = useMemo(() => {
+    const selectColumn: ColumnDef<Task> = {
+      id: "select",
+      header: ({ table }) => (
+        <input
+          type="checkbox"
+          checked={table.getIsAllPageRowsSelected()}
+          onChange={table.getToggleAllPageRowsSelectedHandler()}
+          className="cursor-pointer"
+        />
+      ),
+      cell: ({ row }) => (
+        <input
+          type="checkbox"
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+          className="cursor-pointer"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    };
+
+    return [selectColumn, ...baseColumns];
+  }, []);
+
+  /**
+   * Approve all selected tasks in bulk, then refresh.
+   */
   const handleBulkApprove = async () => {
     for (const task of selectedTasks) {
       await createTask(task.id, {
@@ -133,34 +213,38 @@ function TasksTable({ role }: { readonly role: string }) {
         comment: "",
         date: new Date(),
         step: task.step,
-      })
+      });
     }
+    window.location.reload();
+  };
 
-    window.location.reload()
-  }
-
+  /**
+   * Filter tasks by current role.
+   */
   const filtered = allTasks.filter((task) => {
-    if (role === "estudiante") return !!task.student
-    if (role === "profesor") return !!task.professor
-    if (role === "coordinador") return !!task.coordinator
-    return false
-  })
+    if (role === "estudiante") return Boolean(task.student);
+    if (role === "profesor") return Boolean(task.professor);
+    if (role === "coordinador") return Boolean(task.coordinator);
+    return false;
+  });
 
   return (
     <div className="space-y-4">
       {selectedTasks.length > 0 && (
         <div className="flex justify-end">
           <Button onClick={handleBulkApprove}>
-            Aprobar {selectedTasks.length} tarea{selectedTasks.length > 1 ? "s" : ""}
+            Aprobar {selectedTasks.length} tarea
+            {selectedTasks.length > 1 ? "s" : ""}
           </Button>
         </div>
       )}
+
       <DataTable
-        columns={columnsWithSelection}
+        columns={columns}
         data={filtered}
         enableRowSelection
-        onSelectedRowsChange={(selected) => setSelectedTasks(selected)}
+        onSelectedRowsChange={(rows) => setSelectedTasks(rows)}
       />
     </div>
-  )
+  );
 }

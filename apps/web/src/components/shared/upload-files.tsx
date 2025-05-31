@@ -114,7 +114,7 @@ export default function UploadFiles({
                 <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                   <span className="font-semibold">Click para subir</span> o arrastra y suelta
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">CSV</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">XLSM, CSV</p>
               </div>
               <input id="dropzone-file" type="file" className="hidden" accept=".csv, .xlsx, .xlsm" onChange={handleFileChange} />
             </label>

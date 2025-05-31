@@ -81,7 +81,7 @@ export default function Home() {
         Promise.all([
           getPendingTasksForStudent(userId),
           getPendingTasksForProfessor(userId),
-          getPendingTasksForCoordinator(userId)
+          getPendingTasksForCoordinator()
         ]).then(([studentTasks, professorTasks, coordinatorTasks]) => {
           const allTasks = [...studentTasks, ...professorTasks, ...coordinatorTasks];
 

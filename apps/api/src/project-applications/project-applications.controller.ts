@@ -27,7 +27,6 @@ export class ProjectApplicationsController {
   ) {}
 
   @Post(':id/task')
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   async complete(
     @Body() taskDto: any,
@@ -81,9 +80,9 @@ export class ProjectApplicationsController {
   findByTasksStudentId(@Param('id') id: string) {
     return this.projectApplicationsService.findTasksByStudent(id);
   }
-  @Get('coordinator/tasks/:id')
-  findByTasksCoordinatorId(@Param('id') id: string) {
-    return this.projectApplicationsService.findTasksByCoordinator(id);
+  @Get('coordinator/tasks')
+  findByTasksCoordinatorId() {
+    return this.projectApplicationsService.findTasksByCoordinator();
   }
 
   @Get('professor/tasks/:id')
