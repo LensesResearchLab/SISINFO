@@ -69,23 +69,27 @@ const baseColumns: ColumnDef<Task>[] = [
   {
     id: "actions",
     header: "Acciones",
-    cell: ({ row }) => {
-      const router = useRouter();
-      const task = row.original;
-      return (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            router.push(`${ROUTES.HOME}/${ROUTES.TASK_LIST}/${task.id}`)
-          }
-        >
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      );
-    },
+    cell: ({ row }) => <ActionsCell row={row} />,
   },
 ];
+
+
+function ActionsCell({ row }: { row: { original: Task } }) {
+  const router = useRouter();
+  const task = row.original;
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() =>
+        router.push(`${ROUTES.HOME}/${ROUTES.TASK_LIST}/${task.id}`)
+      }
+    >
+      <MoreHorizontal className="h-4 w-4" />
+    </Button>
+  );
+}
+
 
 /**
  * Top‑level Tasks page. Ensures tasks are loaded (similar to Home dashboard)
@@ -121,7 +125,7 @@ export default function Tasks() {
           ...coordinatorTasks,
         ];
 
-        const parsedTasks = allTasks.map((task: any) => {
+        const parsedTasks = allTasks.map((task: Task) => {
           const stepNumber =
             typeof task.step === "number" ? task.step : Number(task.step);
           const stepInfo = flows.proyectoPregrado[stepNumber];

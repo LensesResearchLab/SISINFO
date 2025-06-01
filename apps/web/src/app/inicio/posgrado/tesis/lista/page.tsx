@@ -385,7 +385,7 @@ function ElementThesisTable({ thesisList }: { readonly thesisList: Thesis[] }) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => handleClick(thesis.id)}
+                onClick={() => handleClick(thesis.id!)}
               >
                 <Search className="w-4 h-4" />
               </Button>

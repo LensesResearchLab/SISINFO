@@ -1,4 +1,5 @@
 import { Period } from "./period.type";
+import { Professor } from "./professor.type";
 import { Project } from "./project.type";
 import { Student } from "./student.type";
 
@@ -11,6 +12,7 @@ export interface ProjectApplication {
   student: Student;
   project: Project;
   period: Period;
+  professor: Professor;
 }
 
 export interface CreateProjectApplication {

@@ -1,19 +1,3 @@
-/**
- * @module ProjectDetail
- * @description
- * Displays and manages the list of student applicants for a given undergraduate project.
- * Allows the professor to select, accept, or reject applications in bulk or individually.
- *
- * @returns {JSX.Element} The rendered view of applicants associated with a project.
- *
- * @remarks
- * This component fetches project application data and provides UI controls for selection and status updates.
- * Uses a confirmation modal to confirm actions before persisting changes.
- *
- * @see {@link getUndergraduateProjectById} to fetch applicants per project
- * @see {@link updateProjectApplication} to update application status
- */
-
 "use client";
 
 import * as React from "react";
@@ -39,13 +23,10 @@ export default function ProjectDetail({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newStatus, setNewStatus] = useState<string | null>(null);
 
-  const {
-    data,
-    isFetching,
-    error,
-  } = useQuery({
+  const { data, isFetching, error } = useQuery<Application[]>({
     queryKey: ["student-project-application", id],
-    queryFn: () => getUndergraduateProjectById(id).then(res => res.projectApplications),
+    queryFn: () =>
+      getUndergraduateProjectById(id).then((res) => res.projectApplications),
   });
 
   const handleOpenModal = (ids: string[], status: string) => {
@@ -58,23 +39,23 @@ export default function ProjectDetail({
     try {
       await Promise.all(
         selectedApplicantIds.map((id) =>
-          updateProjectApplication(id, { status: newStatus })
+          updateProjectApplication(id, { status: newStatus! })
         )
       );
       setIsModalOpen(false);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const handleSelectAll = (checked: boolean) => {
     if (!data) return;
-    setSelectedApplicantIds(checked ? data.map((a: { id: any; }) => a.id) : []);
+    setSelectedApplicantIds(checked ? data.map((applicant) => applicant.id) : []);
   };
 
   const handleSelectApplicant = (id: string, checked: boolean) => {
     setSelectedApplicantIds((prev) =>
-      checked ? [...prev, id] : prev.filter((a) => a !== id)
+      checked ? [...prev, id] : prev.filter((applicantId) => applicantId !== id)
     );
   };
 
@@ -91,7 +72,9 @@ export default function ProjectDetail({
       cell: ({ row }) => (
         <Checkbox
           checked={selectedApplicantIds.includes(row.original.id)}
-          onCheckedChange={(checked) => handleSelectApplicant(row.original.id, Boolean(checked))}
+          onCheckedChange={(checked) =>
+            handleSelectApplicant(row.original.id, Boolean(checked))
+          }
           aria-label="Select row"
         />
       ),
@@ -136,10 +119,12 @@ export default function ProjectDetail({
     },
   ];
 
-  if (isFetching) return <div className="text-center py-10">Cargando...</div>;
-  if (error || !data) return <div className="text-center py-10">Error al cargar los datos.</div>;
-  console.log(data);
-  const approvedData = data?.filter((a: any) => a.status === "Aceptado");
+  if (isFetching)
+    return <div className="text-center py-10">Cargando...</div>;
+  if (error || !data)
+    return <div className="text-center py-10">Error al cargar los datos.</div>;
+
+  const approvedData = data.filter((applicant) => applicant.status === "Aceptado");
 
   return (
     <div className="min-h-full w-full container max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">

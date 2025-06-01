@@ -165,12 +165,12 @@ function StudentsAndContactInfo({ thesis }: { readonly thesis: Thesis }) {
         <Mail className="h-5 w-5 text-core-highlight mt-1" />
         <div>
           <h3 className="font-semibold">Contacto:</h3>
-          <p className="text-foreground-soft">{thesis.professor.user.name}</p>
+          <p className="text-foreground-soft">{thesis.professor!.user.name}</p>
           <a
-            href={`mailto:${thesis.professor.user.email}`}
+            href={`mailto:${thesis.professor!.user.email}`}
             className="text-core-highlight hover:underline"
           >
-            {thesis.professor.user.email}
+            {thesis.professor!.user.email}
           </a>
         </div>
       </div>

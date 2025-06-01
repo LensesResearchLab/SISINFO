@@ -29,6 +29,7 @@ import {
   getPendingTasksForCoordinator,
 } from "@/app/services/project-application.service";
 import { flows } from "./tareas/flows";
+import { Task } from "../types/entities/task.type";
 
 /**
  * Maps each user role to the corresponding dashboard component.
@@ -67,14 +68,9 @@ export default function Home() {
   const setTasks = useHomeStore((state) => state.setTasks);
   const [loading, setLoading] = useState(true);
   const fetchedRef = useRef(false);
-
-  // Fetches roles and tasks only once on mount
   useEffect(() => {
     if (!fetchedRef.current) {
-      // Step 1: Get roles and mark fetch as done
       fetchUserRoles(setRoles, setLoading, fetchedRef);
-
-      // Step 2: Get user and load all pending tasks (student and professor)
       getUserInfo().then((data) => {
         const userId = data.user.id;
 
@@ -84,9 +80,7 @@ export default function Home() {
           getPendingTasksForCoordinator()
         ]).then(([studentTasks, professorTasks, coordinatorTasks]) => {
           const allTasks = [...studentTasks, ...professorTasks, ...coordinatorTasks];
-
-          // Add display info from predefined flow structure
-          const parsedTasks = allTasks.map((task: any) => {
+          const parsedTasks = allTasks.map((task: Task) => {
             const stepNumber =
               typeof task.step === "number" ? task.step : Number(task.step);
             const stepInfo = flows.proyectoPregrado[stepNumber];
@@ -96,7 +90,7 @@ export default function Home() {
               title: stepInfo?.title || "Sin título",
               description: stepInfo?.description || "Sin descripción",
               date: task.date ? new Date(task.date) : new Date(),
-            } satisfies import("@/app/types/entities/task.type").Task;
+            };
           });
 
           setTasks(parsedTasks);
@@ -107,8 +101,6 @@ export default function Home() {
 
   if (loading) return <SpinnerPage />;
   if (roles.length === 0) return null;
-
-  // Show single role UI directly, or tabbed interface if multiple roles exist
   if (roles.length === 1) return roleMap.get(roles[0]);
 
   return (

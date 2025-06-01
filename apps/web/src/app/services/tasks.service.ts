@@ -1,6 +1,7 @@
 import { API_ROUTES } from "../routes";
+import { CreateTask } from "../types/entities/task.type";
 
-export async function createTask(taskId: string, taskData: any, file?: File) {
+export async function createTask(taskId: string, taskData: CreateTask, file?: File) {
   const formData = new FormData();
 
   formData.append(

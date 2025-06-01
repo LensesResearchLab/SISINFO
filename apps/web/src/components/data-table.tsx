@@ -80,7 +80,7 @@ export function DataTable<TData, TValue>({
         .rows.map((row) => row.original);
       onSelectedRowsChange(selectedData);
     }
-  }, [rowSelection]);
+  }, [enableRowSelection, onSelectedRowsChange, rowSelection, table]);
 
   return (
     <div className="space-y-4">

@@ -108,14 +108,25 @@ function ProjectApplying({ project }: { readonly project: Project }) {
         studentId: user.id,
       };
       await createProjectApplication(projectApplication);
-      // podrías redirigir o mostrar success aquí
-      // …
-    } catch (err: any) {
-      if (err?.response?.status === 409) {
-        setErrorMsg("Error al enviar la aplicación: ya hay una aplicación activa.");
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err).response === "object" &&
+        (err).response !== null &&
+        "status" in (err).response
+      ) {
+        const status = (err as { response: { status: number } }).response.status;
+        if (status === 409) {
+          setErrorMsg("Error al enviar la aplicación: ya hay una aplicación activa.");
+        } else {
+          setErrorMsg("Ocurrió un error inesperado. Intenta nuevamente.");
+        }
       } else {
         setErrorMsg("Ocurrió un error inesperado. Intenta nuevamente.");
       }
+
       setOpenError(true);
     }
   };

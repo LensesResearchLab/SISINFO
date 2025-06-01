@@ -32,7 +32,7 @@ const formatRole = (role: string) =>
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-export const columns: ColumnDef<User>[] = [
+const columns: ColumnDef<User>[] = [
   {
     accessorKey: "name",
     header: "Nombre",

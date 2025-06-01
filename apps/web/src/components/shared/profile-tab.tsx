@@ -18,8 +18,8 @@ export function ProfileTab({student}: { readonly student:Student }) {
           <RenderFields label="Estudiante" value={student?.user.name} />
           <RenderFields label="Correo estudiante" value={student?.user.email} />
           {/*<RenderFields label="Perfil" value={student?.profile} /> */}
-          <RenderFields label="Asesor de tesis" value={student?.thesisApplication.thesis.professor.user.name} />
-          <RenderFields label="Semestre inicio tesis 1" value={`${student.thesisApplication.thesis.period.year}-${student.thesisApplication.thesis.period.period}`} />
+          <RenderFields label="Asesor de tesis" value={student?.thesisApplication.thesis.professor!.user.name} />
+          <RenderFields label="Semestre inicio tesis 1" value={`${student.thesisApplication.thesis.period!.year}-${student.thesisApplication.thesis.period!.period}`} />
           <RenderFields label="Semestre inicio tesis 2" value={student?.thesis2?.title} />
         </CardContent>
         <CardFooter className="flex justify-center flex-col space-y-3">

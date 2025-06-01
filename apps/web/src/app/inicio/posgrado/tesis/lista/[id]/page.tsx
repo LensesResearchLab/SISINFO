@@ -271,15 +271,15 @@ function ProfessorInformation({ thesis }: { readonly thesis: Thesis }) {
         <h2 className="text-lg font-semibold">
           Profesor:{" "}
           <span className="text-gray-900 font-normal">
-            {thesis.professor.user.name}
+            {thesis.professor!.user.name}
           </span>
         </h2>
         <a
-          href={`mailto:${thesis.professor.user.email}`}
+          href={`mailto:${thesis.professor!.user.email}`}
           className="text-core-highlight hover:underline inline-flex items-center gap-2"
         >
           <Mail className="h-4 w-4" />
-          {thesis.professor.user.email}
+          {thesis.professor!.user.email}
         </a>
       </div>
     </div>

@@ -22,7 +22,7 @@ import { useState } from "react";
  * - "date": Shows the date the incidence was created
  * - "actions": Contains a "Completar" button that is only active when the incidence is not completed
  */
-export const columns: ColumnDef<Incidence>[] = [
+const columns: ColumnDef<Incidence>[] = [
   {
     accessorKey: "description",
     header: "Descripción",
@@ -116,7 +116,7 @@ function ActionCell({ incidence }: { readonly incidence: Incidence }) {
   const handleClose = async () => {
     setIsClosing(true);
     try {
-      await closeIncidence(incidence.id);
+      await closeIncidence(incidence.id!);
       await queryClient.invalidateQueries({ queryKey: ['incidences'] });
     } catch (error) {
       console.error("Error al cerrar la incidencia:", error);

@@ -1,5 +1,5 @@
 export interface Incidence {
-  id: string;
+  id?: string;
   type: string;
   description: string;
   isClosed?: boolean;

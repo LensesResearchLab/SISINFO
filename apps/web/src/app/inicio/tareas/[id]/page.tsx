@@ -17,6 +17,7 @@ import { createTask, getTask } from "@/app/services/tasks.service"
 import { TaskType } from "../flows"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
+import { CreateTask } from "@/app/types/entities/task.type"
 
 const taskSchema = z.object({
   type: z.nativeEnum(TaskType),
@@ -31,7 +32,7 @@ export default function TaskForm() {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [task, setTask] = useState<any>(null)
+  const [task, setTask] = useState<CreateTask  | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [pdfLoading, setPdfLoading] = useState(false)
 
@@ -73,7 +74,7 @@ export default function TaskForm() {
     return () => {
       if (pdfUrl) URL.revokeObjectURL(pdfUrl)
     }
-  }, [id])
+  }, [form, id, pdfUrl])
 
   async function onSubmit(values: z.infer<typeof taskSchema>) {
     if (!id) return
@@ -81,8 +82,8 @@ export default function TaskForm() {
       type: values.type,
       state: "pending",
       date: new Date(),
-      comment: values.comment,
-      approved: values.isApproved,
+      comment: values.comment ?? '',
+      approved: values.isApproved ?? false,
     }
     await createTask(id as string, taskData, values.document)
     router.push(`${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`)

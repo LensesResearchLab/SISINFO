@@ -14,7 +14,7 @@ export function mapProjectsToStudentTable(
     };
 
     if (category === "professor") {
-      const identifier = `${project.professor?.user.name ?? 'Nombre no encontrado'} - ${project.professor?.user.email ?? "Correo no encontrado"}`;
+      const identifier = `${project.professor!.user.name} - ${project.professor!.user.email}`;
       if (!acc[identifier]) {
         acc[identifier] = [];
       }

@@ -125,7 +125,7 @@ function getSections(statusInformation: ThesisApplication) {
   return [
     {
       title: "Semestre de inicio",
-      description: `${statusInformation.thesis.period.year}-${statusInformation.thesis.period.semester}`,
+      description: `${statusInformation.thesis.period!.year}-${statusInformation.thesis.period!.semester}`,
       icon: <Calendar className="h-5 w-5 text-core mt-1" />,
     },
     {
@@ -135,7 +135,7 @@ function getSections(statusInformation: ThesisApplication) {
     },
     {
       title: "Asesor",
-      description: statusInformation.thesis.professor.user.name,
+      description: statusInformation.thesis.professor!.user.name,
       icon: <User className="h-5 w-5 text-core mt-1" />,
     },
     {

@@ -8,7 +8,7 @@ export async function ProjectApplicationToProjectStatusInformation(
     id: projectApplication.id,
     project: projectApplication.project,
     period: projectApplication.period,
-    professor: projectApplication.project.professor,
+    professor: projectApplication.project.professor!,
     student: projectApplication.student,
     grade: projectApplication.grade,
     lastStep: projectApplication.status,

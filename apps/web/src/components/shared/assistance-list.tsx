@@ -191,7 +191,7 @@ export function AssistanceList({
           const isOwnAssistance =
             role === "estudiante" ||
             (professorName &&
-              row.original.professor.user.name === professorName);
+              row.original.professor!.user.name === professorName);
 
           return isOwnAssistance ? (
             <Button

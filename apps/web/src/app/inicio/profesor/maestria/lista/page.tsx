@@ -75,7 +75,7 @@ export default function ThesisProjects() {
     {
       accessorKey: "professor.user.name",
       header: "Asesor",
-      cell: ({ row }) => row.original.professor.user.name,
+      cell: ({ row }) => row.original.professor!.user.name,
     },
     {
       accessorKey: "period",

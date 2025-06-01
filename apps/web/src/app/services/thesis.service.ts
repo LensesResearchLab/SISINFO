@@ -63,7 +63,7 @@ export async function postThesisApplication(
 /* Postgraduate Theses for professor create */
 export async function postNewThesis(
   userId: string,
-  thesisData: any,
+  thesisData: Thesis,
   periodId: string
 ): Promise<Thesis[]> {
   const url = `${API_ROUTES.BASE}/${API_ROUTES.THESIS}?professorId=${userId}&period=${periodId}`;
