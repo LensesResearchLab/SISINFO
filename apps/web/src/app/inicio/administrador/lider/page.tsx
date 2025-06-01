@@ -6,20 +6,17 @@ import { ColumnDef } from "@tanstack/react-table";
 import SpinnerPage from "@/components/shared/spinner-page";
 import ErrorPage from "@/components/shared/error-page";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandEmpty,
-} from "@/components/ui/command";
 import { useState } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { assignProfessorAsCourseLeader, findAllWithMainProfessor, findProfessorsForCourseInCurrentPeriod } from "@/app/services/courses.service";
+import {
+  assignProfessorAsCourseLeader,
+  findAllWithMainProfessor,
+  findProfessorsForCourseInCurrentPeriod,
+} from "@/app/services/courses.service";
 import { LeaderPerCourse } from "@/app/types/leader-per-course.type";
 import { User } from "@/app/types/entities/user.type";
 
@@ -84,13 +81,18 @@ function ProfessorListPopover({
   readonly onAssigned?: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<User | null>(null);
+
   const { data } = useQuery({
     queryKey: ["professors-by-course", courseId],
     queryFn: () => findProfessorsForCourseInCurrentPeriod(courseId),
     enabled: open,
   });
 
-  const [selected, setSelected] = useState<User | null>(null);
+  const filtered = data?.filter((prof: User) =>
+    prof.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   const handleAssign = async (professor: User) => {
     try {
@@ -110,21 +112,31 @@ function ProfessorListPopover({
           {selected ? selected.name : "Asignar"}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
-        <Command>
-          <CommandInput placeholder="Buscar profesor..." />
-          <CommandList>
-            <CommandEmpty>No se encontraron profesores.</CommandEmpty>
-            {data?.map((prof: User) => (
-              <CommandItem className="cursor-pointer"
+      <PopoverContent className="w-[300px]">
+        <input
+          type="text"
+          placeholder="Buscar profesor..."
+          className="w-full border rounded-md p-2 mb-2 text-sm"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <ul className="max-h-60 overflow-y-auto space-y-1">
+          {filtered?.length === 0 ? (
+            <li className="text-sm text-muted-foreground px-2">
+              No se encontraron profesores.
+            </li>
+          ) : (
+            filtered?.map((prof: User) => (
+              <li
                 key={prof.id}
-                onSelect={() => handleAssign(prof)}
+                onClick={() => handleAssign(prof)}
+                className="cursor-pointer hover:bg-muted px-2 py-1 rounded-md text-sm"
               >
                 {prof.name}
-              </CommandItem>
-            ))}
-          </CommandList>
-        </Command>
+              </li>
+            ))
+          )}
+        </ul>
       </PopoverContent>
     </Popover>
   );
