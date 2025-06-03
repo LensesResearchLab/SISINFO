@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DataTable } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import SpinnerPage from "@/components/shared/spinner-page";
@@ -21,7 +21,9 @@ import { LeaderPerCourse } from "@/app/types/leader-per-course.type";
 import { User } from "@/app/types/entities/user.type";
 
 export default function CourseList() {
-  const { data, isFetching, isError, refetch } = useQuery({
+  const queryClient = useQueryClient();
+
+  const { data, isFetching, isError } = useQuery({
     queryKey: ["courses-leaders"],
     queryFn: () => findAllWithMainProfessor(),
   });
@@ -50,8 +52,21 @@ export default function CourseList() {
       cell: ({ row }) => (
         <ProfessorListPopover
           courseId={row.original.courseId}
-          onAssigned={() => {
-            refetch();
+          onAssigned={(newProfessor) => {
+            queryClient.setQueryData<LeaderPerCourse[]>(
+              ["courses-leaders"],
+              (oldData) =>
+                oldData?.map((course) =>
+                  course.courseId === row.original.courseId
+                    ? {
+                        ...course,
+                        professorId: newProfessor.id,
+                        professorName: newProfessor.name,
+                        email: newProfessor.email,
+                      }
+                    : course
+                ) ?? []
+            );
           }}
         />
       ),
@@ -78,7 +93,8 @@ function ProfessorListPopover({
   onAssigned,
 }: {
   readonly courseId: string;
-  readonly onAssigned?: () => void;
+  readonly currentProfessorId?: string;
+  readonly onAssigned?: (newProfessor: User) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -99,7 +115,7 @@ function ProfessorListPopover({
       await assignProfessorAsCourseLeader(professor.id, courseId);
       setSelected(professor);
       setOpen(false);
-      onAssigned?.();
+      onAssigned?.(professor);
     } catch (error) {
       console.error("Error al asignar profesor:", error);
     }
@@ -109,7 +125,7 @@ function ProfessorListPopover({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button className="w-full">
-          {selected ? selected.name : "Asignar"}
+          {selected?.name ?? "Asignar"}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[300px]">
@@ -130,7 +146,7 @@ function ProfessorListPopover({
               <li
                 key={prof.id}
                 onClick={() => handleAssign(prof)}
-                className="cursor-pointer hover:bg-muted px-2 py-1 rounded-md text-sm"
+                className="cursor-pointer hover:bg-core-highlight px-2 py-1 rounded-md text-sm"
               >
                 {prof.name}
               </li>

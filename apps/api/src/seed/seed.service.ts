@@ -304,7 +304,7 @@ export class SeedService {
             ),
           );
         } catch (error) {
-          console.error(`Error creating thesis: ${error.message}`);
+          console.error(`Error creating thesis`);
         }
       }
     }
@@ -320,12 +320,14 @@ export class SeedService {
       const randomProject =
         projects[Math.floor(Math.random() * projects.length)];
       insertPromises.push(
-        this.projectApplicationsService.create({
-          motivation: faker.lorem.sentence(),
-          wasContacted: faker.datatype.boolean(),
-          projectId: randomProject.id,
-          studentId: student.user.id,
-        }),
+        this.projectApplicationsService.create(
+          {
+            motivation: faker.lorem.sentence(),
+            wasContacted: faker.datatype.boolean(),
+            projectId: randomProject.id,
+          },
+          student.id,
+        ),
       );
     }
     await Promise.all(insertPromises);
@@ -374,12 +376,14 @@ export class SeedService {
     for (const student of students) {
       const randomThesis = theses[Math.floor(Math.random() * theses.length)];
       insertPromises.push(
-        this.projectApplicationsService.create({
-          motivation: faker.lorem.sentence(),
-          wasContacted: faker.datatype.boolean(),
-          projectId: randomThesis.id,
-          studentId: student.user.id,
-        }),
+        this.projectApplicationsService.create(
+          {
+            motivation: faker.lorem.sentence(),
+            wasContacted: faker.datatype.boolean(),
+            projectId: randomThesis.id,
+          },
+          student.user.id,
+        ),
       );
     }
 

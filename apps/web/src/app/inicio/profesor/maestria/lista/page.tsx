@@ -19,25 +19,21 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { Search, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/data-table";
 import SpinnerPage from "@/components/shared/spinner-page";
-import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
 import { getThesesByProfessor } from "@/app/services/thesis.service";
 import { useProfessorThesisListStore } from "./store";
 import { getUserInfo } from "@/app/auth/auth-service";
 import { ColumnDef } from "@tanstack/react-table";
 import { ROUTES } from "@/app/routes";
 import { Thesis } from "@/app/types/entities/thesis.type";
+import { Eye } from "lucide-react";
 
 export default function ThesisProjects() {
   const reset = useProfessorThesisListStore((state) => state.reset);
   const sortDirection = useProfessorThesisListStore((state) => state.sortDirection);
   const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
-  const setSearchQuery = useProfessorThesisListStore((state) => state.setSearchQuery);
-  const toggleSortDirection = useProfessorThesisListStore((state) => state.toggleSortDirection);
   const router = useRouter();
 
   useEffect(() => reset, [reset]);
@@ -48,6 +44,7 @@ export default function ThesisProjects() {
     error,
   } = useQuery({
     queryKey: ["theses-professor-list"],
+    refetchOnWindowFocus: true,
     queryFn: async () => {
       const userData = await getUserInfo();
       return getThesesByProfessor(userData.user.id);
@@ -107,16 +104,6 @@ export default function ThesisProjects() {
           >
             Crear tema
           </Button>
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Buscar una tesis"
-              className="pl-10 border-gray-300"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <AlphabeticSortButton onclick={toggleSortDirection} sortDirection={sortDirection} />
         </div>
         <DataTable columns={columns} data={filtered} />
       </div>

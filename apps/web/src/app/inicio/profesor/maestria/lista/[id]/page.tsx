@@ -42,7 +42,14 @@ export default function StudentDetail() {
   console.log(student)
   
   if (isLoading) return <SpinnerPage />;
-  if (error || !student) return <p>student not found</p>;
+  if (error || !student) {
+    return (
+      <div className="max-w-2xl mx-auto mt-12 text-center text-muted-foreground">
+        <p className="text-lg font-medium">No se encontró ningún estudiante para esta tesis.</p>
+        <p className="text-sm mt-2">Intenta más tarde o contacta a soporte.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto p-4 bg-subtable">

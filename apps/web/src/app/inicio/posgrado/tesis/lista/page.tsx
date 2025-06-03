@@ -6,19 +6,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { File, User, Search } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getPostgraduateThesis } from "@/app/services/thesis.service";
-import { Thesis } from "@/app/types/entities/thesis.type";
 
 import {
   Select,
@@ -37,6 +28,10 @@ import { cn } from "@/lib/utils";
 import { ROUTES } from "@/app/routes";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
 import { getPeriods } from "@/app/services/period.service";
+import { DataTable } from "@/components/data-table";
+import { ThesesStudentTable } from "@/app/types/theses-by-professor.type";
+import { ColumnDef } from "@tanstack/react-table";
+import { Thesis } from "@/app/types/entities/thesis.type";
 
 /**
  * ThesisList Component
@@ -63,7 +58,7 @@ export default function ThesisList() {
 
   const { data: thesisList, isFetching: isFetchingThesis } = useQuery({
     queryKey: ["postgraduate-thesis-projects", searchCategory, searchTerm],
-    queryFn: () => getPostgraduateThesis(),
+    queryFn: () => getPostgraduateThesis({category: searchCategory, period: searchTerm}),
   });
 
   const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
@@ -71,60 +66,16 @@ export default function ThesisList() {
     queryFn: getPeriods,
   });
 
-  // Filtrar la lista de tesis por semestre
-  const filteredThesisList = useMemo(() => {
-    return Array.isArray(thesisList)
-      ? thesisList.filter(
-          (thesis) =>
-            !searchTerm ||
-            `${thesis.period.year}${thesis.period.period}` === searchTerm
-        )
-      : [];
-  }, [thesisList, searchTerm]);
-
-  // Agrupar tesis por profesor
-  const groupedByProfessor = useMemo(() => {
-    return filteredThesisList.reduce(
-      (acc, thesis) => {
-        const profName =
-          thesis.professor?.user?.name &&
-          typeof thesis.professor.user.name === "string"
-            ? thesis.professor.user.name
-            : "Sin profesor";
-        if (!acc[profName]) acc[profName] = [];
-        acc[profName].push(thesis);
-        return acc;
-      },
-      {} as { [professor: string]: Thesis[] }
-    );
-  }, [filteredThesisList]);
-
-  // Agrupar tesis por área de investigación
-  const groupedByArea = useMemo(() => {
-    return filteredThesisList.reduce(
-      (acc, thesis) => {
-        const area = thesis.investigationSubarea;
-        if (!acc[area]) acc[area] = [];
-        acc[area].push(thesis);
-        return acc;
-      },
-      {} as { [area: string]: Thesis[] }
-    );
-  }, [filteredThesisList]);
-
-  // Calcular el orden usando useMemo
-  const order = useMemo(() => {
-    const keys =
-      searchCategory === "investigation_subarea"
-        ? Object.keys(groupedByArea)
-        : Object.keys(groupedByProfessor);
-    return keys.sort((a, b) => sortDirection * a.localeCompare(b));
-  }, [groupedByArea, groupedByProfessor, searchCategory, sortDirection]);
-
-  // Actualizar el estado global con el orden calculado
   useEffect(() => {
-    setOrder(order);
-  }, [order, setOrder]);
+    if (thesisList) {
+      const sortedOrder = Object.keys(thesisList).sort(
+        (a, b) => sortDirection * a.localeCompare(b)
+      );
+      setOrder(sortedOrder);
+    }
+  }, [thesisList, sortDirection, setOrder]);
+
+  if (isLoadingSemesters) return <SpinnerPage />;
 
   if (isLoadingSemesters) return <SpinnerPage />;
 
@@ -148,13 +99,10 @@ export default function ThesisList() {
             sortDirection={sortDirection}
           />
         </div>
-        {isFetchingThesis ? (
+        {isFetchingThesis ? 
           <SkeletonAccordion />
-        ) : searchCategory === "investigation_subarea" ? (
-          <AreaOfInterestAccordionList thesisList={groupedByArea} />
-        ) : (
-          <ProfessorAccordionList thesisList={groupedByProfessor} />
-        )}
+         : <AccordionList thesisList={thesisList ?? {}} />
+        }
       </Accordion>
     </div>
   );
@@ -227,189 +175,115 @@ function SelectSearchCategory({ className }: { readonly className?: string }) {
         <SelectGroup>
           <SelectLabel>Buscar categoria</SelectLabel>
           <SelectItem value="professor">Profesor</SelectItem>
-          <SelectItem value="investigation_subarea">Area de interés</SelectItem>
+          <SelectItem value="investigation_subarea">Subarea de investigación</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
   );
 }
-
 /**
- * AreaOfInterestAccordionList Component
+ * AccordionList Component
  *
- * Renders an accordion list grouped by areas of interest.
- * Each section displays theses related to a specific field.
- *
- * @param {Object} props - Component properties
- * @param {Object} props.thesisList - Thesis data grouped by field
- * @param {string[]} props.order - Sorted order of fields
- * @returns {JSX.Element} Area of interest based accordion list
+ * Renders an accordion item for each category group (e.g., professor name or interest area).
  */
-function AreaOfInterestAccordionList({
+function AccordionList({
   thesisList,
 }: {
-  readonly thesisList: { [field: string]: Thesis[] };
+  readonly thesisList: ThesesStudentTable;
 }) {
   const order = useThesisListStore((state) => state.order);
+  const hasNoResults =
+    order.length === 0 ||
+    order.every((field) => !thesisList[field] || thesisList[field].length === 0);
+
+  if (hasNoResults) {
+    return (
+      <div className="text-center py-6 text-muted-foreground text-sm">
+        No se encontraron resultados.
+      </div>
+    );
+  }
   return (
-    <div className="py-10">
+    <>
       {order.map((field) => (
-        <ElementAccordion
-          element={field}
-          key={field}
-          icon={<File className="mr-2 h-5 w-5 text-core-highlight" />}
-        >
-          {field in thesisList ? (
-            <ElementThesisTable thesisList={thesisList[field]} />
-          ) : (
-            <SkeletonAccordion />
-          )}
-        </ElementAccordion>
+        <AccordionItem value={field} key={field}>
+          <AccordionTrigger className="hover:bg-core-soft cursor-pointer dark:hover:bg-core-highlight">
+            <div className="flex items-center">
+              <File className="mr-2 h-5 w-5 text-core-highlight" />
+              <span>{field}</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            {thesisList[field]?.length ? (
+              <ThesisTable data={thesisList[field]} />
+            ) : (
+              <div className="text-center py-4 text-muted-foreground">
+                No hay proyectos disponibles
+              </div>
+            )}
+          </AccordionContent>
+        </AccordionItem>
       ))}
-    </div>
+    </>
   );
 }
 
 /**
- * ProfessorAccordionList Component
+ * ThesisTable Component
  *
- * Renders an accordion list grouped by professors.
- * Each section displays theses supervised by a specific professor.
- *
- * @param {Object} props - Component properties
- * @param {Object} props.thesisList - Thesis data grouped by professor
- * @param {string[]} props.order - Sorted order of professors
- * @returns {JSX.Element} Professor based accordion list
+ * Displays thesis data using reusable DataTable component.
+ * Enables column sorting, pagination and custom cell rendering.
  */
-function ProfessorAccordionList({
-  thesisList,
-}: {
-  readonly thesisList: { [professor: string]: Thesis[] };
-}) {
-  const order = useThesisListStore((state) => state.order);
-  return (
-    <div className="py-10">
-      {order.map((professor) => (
-        <ElementAccordion
-          element={professor}
-          key={professor}
-          icon={<User className="mr-2 h-5 w-5 text-core-highlight" />}
-        >
-          {professor in thesisList ? (
-            <ElementThesisTable thesisList={thesisList[professor]} />
-          ) : (
-            <SkeletonAccordion />
-          )}
-        </ElementAccordion>
-      ))}
-    </div>
-  );
-}
-
-/**
- * ElementAccordion Component
- *
- * Generic accordion item component with customizable trigger and content.
- *
- * @param {Object} props - Component properties
- * @param {string} props.element - Display text for accordion trigger
- * @param {React.ReactNode} props.children - Content to display when expanded
- * @param {React.ReactNode} props.icon - Icon to display in trigger
- * @returns {JSX.Element} Accordion item component
- */
-function ElementAccordion({
-  element,
-  children,
-  icon,
-}: {
-  readonly element: string;
-  readonly children?: React.ReactNode;
-  readonly icon?: React.ReactNode;
-}) {
-  return (
-    <AccordionItem value={element}>
-      <AccordionTrigger className="hover:bg-core-soft cursor-pointer dark:hover:bg-core-highlight">
-        <div className="flex items-cente">
-          {icon}
-          <span>{element}</span>
-        </div>
-      </AccordionTrigger>
-      <AccordionContent>{children}</AccordionContent>
-    </AccordionItem>
-  );
-}
-
-/**
- * ElementThesisTable Component
- *
- * Displays thesis projects in a tabular format with details and actions.
- *
- * Features:
- * - Sortable columns
- * - Project details including title, category, student count
- * - View action button for each project
- * - Responsive table layout
- *
- * @param {Object} props - Component properties
- * @param {Thesis[]} props.thesisList - Array of thesis projects to display
- * @returns {JSX.Element} Thesis data table
- */
-function ElementThesisTable({ thesisList }: { readonly thesisList: Thesis[] }) {
+function ThesisTable({ data }: { readonly data: Thesis[] }) {
   const router = useRouter();
-  const handleClick = (id: string) => {
-    router.push(`${ROUTES.HOME}/${ROUTES.POSTGRADUATE_THESIS_LIST}/${id}`);
-  };
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="bg-core-highlight text-white text-center">
-            Nombre del proyecto
-          </TableHead>
-          <TableHead className="bg-core-highlight text-white text-center">
-            Subarea de investigación
-          </TableHead>
-          <TableHead className="bg-core-highlight text-white text-center">
-            Ver
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody className="text-center">
-        {thesisList.map((thesis) => (
-          <TableRow key={thesis.id}>
-            <TableCell className="font-medium">{thesis.title}</TableCell>
-            <TableCell className="font-medium">
-              {thesis.investigationSubarea}
-            </TableCell>
-            <TableCell className="font-medium">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleClick(thesis.id!)}
-              >
-                <Search className="w-4 h-4" />
-              </Button>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
+
+  const columns: ColumnDef<Thesis>[] = [
+    {
+      accessorKey: "title",
+      header: "Nombre del proyecto",
+      cell: ({ row }) => <ThesisSpan text={row.original.title} />,
+    },
+    {
+      accessorKey: "investigationSubarea",
+      header: "Subarea de investigación",
+      cell: ({ row }) => <ThesisSpan text={row.original.investigationSubarea} />,
+    },
+    {
+      id: "actions",
+      header: "Ver",
+      cell: ({ row }) => (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() =>
+            router.push(
+              `${ROUTES.HOME}/${ROUTES.POSTGRADUATE_THESIS_LIST}/${row.original.id}`
+            )
+          }
+        >
+          <Search className="w-4 h-4" />
+        </Button>
+      ),
+    },
+  ];
+
+  return <DataTable columns={columns} data={data} />;
+}
+
+function ThesisSpan({ text }: { readonly text: string }) {
+  return <span className="text-primary font-medium">{text}</span>;
 }
 
 /**
  * SkeletonAccordion Component
  *
- * Renders loading placeholder UI for accordion items.
- * Displays 8 skeleton items with animated loading effects.
- *
- * @returns {JSX.Element} Loading skeleton UI component
+ * Displays loading skeleton while thesis data is being fetched.
  */
 function SkeletonAccordion() {
   return (
     <>
-      {Array.from({ length: 8 }).map((_, index) => (
-        <AccordionItem key={index} value="loading">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <AccordionItem key={i} value="loading">
           <AccordionTrigger>
             <div className="flex items-center w-full">
               <User className="mr-2 h-5 w-5 text-core-highlight" />

@@ -12,6 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Application } from "@/app/types/project-application.type";
 import { ROUTES } from "@/app/routes";
 import { ColumnDef } from "@tanstack/react-table";
+import SpinnerPage from "@/components/shared/spinner-page";
+import ErrorPage from "@/components/shared/error-page";
 
 export default function ProjectDetail({
   params,
@@ -24,9 +26,11 @@ export default function ProjectDetail({
   const [newStatus, setNewStatus] = useState<string | null>(null);
 
   const { data, isFetching, error } = useQuery<Application[]>({
-    queryKey: ["student-project-application", id],
-    queryFn: () =>
-      getUndergraduateProjectById(id).then((res) => res.projectApplications),
+    queryKey: ["students-applications-project", id],
+    queryFn: async () => {
+      const res = await getUndergraduateProjectById(id);
+      return Array.isArray(res.projectApplications) ? res.projectApplications : [];
+    },
   });
 
   const handleOpenModal = (ids: string[], status: string) => {
@@ -101,15 +105,12 @@ export default function ProjectDetail({
       cell: ({ row }) => (
         <div className="flex gap-2">
           <Button
-            variant="ghost"
-            size="icon"
             onClick={() => handleOpenModal([row.original.id], "Inscrito")}
           >
             Aceptar
           </Button>
           <Button
             variant="destructive"
-            size="icon"
             onClick={() => handleOpenModal([row.original.id], "Rechazado")}
           >
             Rechazar
@@ -120,11 +121,10 @@ export default function ProjectDetail({
   ];
 
   if (isFetching)
-    return <div className="text-center py-10">Cargando...</div>;
+    return <SpinnerPage />
   if (error || !data)
-    return <div className="text-center py-10">Error al cargar los datos.</div>;
-
-  const approvedData = data.filter((applicant) => applicant.status === "Aceptado");
+    return <ErrorPage />
+  const approvedData = (data ?? []).filter((applicant) => applicant.status === "Aceptado");
 
   return (
     <div className="min-h-full w-full container max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">

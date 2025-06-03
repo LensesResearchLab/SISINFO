@@ -1,13 +1,32 @@
+import { mapThesesToStudentTable } from "../mappers/thesis.mapper";
 import { API_ROUTES } from "../routes";
 import { Thesis } from "../types/entities/thesis.type";
 
-export async function getPostgraduateThesis() {
-  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS}`);
+export async function getPostgraduateThesis({
+  category,
+  period,
+}: {
+  category: string,
+  period: string
+}) {
+  const queryParams = new URLSearchParams({
+    period
+  });
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.THESIS}?${queryParams.toString()}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: 'include'
+  });
   if (!response.ok) {
-    throw new Error("Failed to fetch graduated thesis data.");
+    throw new Error("Failed to fetch undergraduate thesis data.");
   }
-  return response.json();
+  return mapThesesToStudentTable(await response.json(), category);
 }
+
+
 
 export async function getPostgraduateThesisById(id: string) {
   const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS}/${id}`);
@@ -17,9 +36,12 @@ export async function getPostgraduateThesisById(id: string) {
   return response.json();
 }
 
-export async function getPostgraduateThesisStatus(id?: string) {
+export async function getPostgraduateThesisStatus() {
   const response = await fetch(
-    `${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/${id}`
+    `${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/status`, 
+    {
+      credentials: 'include',
+    }
   );
 
   if (response.status === 404) {
@@ -34,16 +56,16 @@ export async function getPostgraduateThesisStatus(id?: string) {
 
 export async function postThesisApplication(
   thesisId: string,
-  studentId: string
 ) {
   try {
     await fetch(
-      `${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/${studentId}`,
+      `${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include',
         body: JSON.stringify({
           thesisId,
           status: "Postulado",

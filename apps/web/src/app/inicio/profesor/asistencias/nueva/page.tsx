@@ -29,8 +29,11 @@ import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { ROUTES } from "@/app/routes";
 import { createGraduatedAssistance } from "../../../../services/assistance.service";
 import { addDays } from "date-fns";
-import DateRangePicker from "@/components/shared/datepicker";
 import { mapStringtoPeriod } from "@/app/mappers/period.mapper";
+import { getPeriods } from "@/app/services/period.service";
+import ErrorPage from "@/components/shared/error-page";
+import SpinnerPage from "@/components/shared/spinner-page";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * GraduateAssistanceForm Component
@@ -71,16 +74,13 @@ const thesisSchema = z.object({
     .min(10, "La descripción debe tener al menos 10 caracteres"),
   category: z.string().min(1, "Debe seleccionar una categoría"),
   period: z.string().min(1, "Debe seleccionar un período"),
-  dateRange: z.object({
-    from: z.date({ required_error: "Debes seleccionar una fecha de inicio" }),
-    to: z.date({
-      required_error: "Debes seleccionar una fecha de finalización",
-    }),
-  }),
+  startDate: z.date({ required_error: "Debes seleccionar una fecha de inicio" }),
+  endDate: z.date({ required_error: "Debes seleccionar una fecha de finalización" }),
   requirements: z
     .array(z.object({ description: z.string() }))
     .min(1, "Debe agregar al menos un requisito"),
 });
+
 
 export default function GraduateAssistanceForm() {
   const form = useForm<z.infer<typeof thesisSchema>>({
@@ -89,13 +89,12 @@ export default function GraduateAssistanceForm() {
       title: "",
       description: "",
       category: "",
-      period: "2025-10",
-      dateRange: {
-        from: new Date(),
-        to: addDays(new Date(), 1),
-      },
+      period: "202510",
+      startDate: new Date(),
+      endDate: addDays(new Date(), 1),
       requirements: [],
-    },
+    }
+
   });
 
   const dialogText = {
@@ -123,8 +122,8 @@ export default function GraduateAssistanceForm() {
     const payload = {
       ...data,
       period: mapStringtoPeriod(data.period),
-      startDate: data.dateRange.from.toISOString(),
-      endDate: data.dateRange.to.toISOString(),
+      startDate: data.startDate.toISOString(),
+      endDate: data.endDate.toISOString(),
     };
     createGraduatedAssistance(payload)
       .then(() => {
@@ -136,6 +135,19 @@ export default function GraduateAssistanceForm() {
         console.log(error);
       });
   };
+
+
+  const {
+    data: periods,
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: ["periods"],
+    queryFn: async () => getPeriods()
+  });
+
+  if (isFetching) return <SpinnerPage />
+  if (error) return <ErrorPage />
 
   return (
     <div
@@ -231,8 +243,11 @@ export default function GraduateAssistanceForm() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="2025-10">2025-10</SelectItem>
-                          <SelectItem value="2026-01">2026-01</SelectItem>
+                          {
+                            (periods ?? []).map(
+                              (period: string) => <SelectItem value={period} key={period}>{period}</SelectItem>
+                            )
+                          }
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -241,25 +256,44 @@ export default function GraduateAssistanceForm() {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="dateRange"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Rango de fechas</FormLabel>
-                    <FormControl>
-                      <DateRangePicker
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage>
-                      {form.formState.errors.dateRange?.from?.message ??
-                        form.formState.errors.dateRange?.to?.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Fecha de inicio</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          value={field.value.toISOString().split("T")[0]}
+                          onChange={(e) => field.onChange(new Date(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Fecha de finalización</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          value={field.value.toISOString().split("T")[0]}
+                          onChange={(e) => field.onChange(new Date(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+              </div>
 
               <FormField
                 control={form.control}

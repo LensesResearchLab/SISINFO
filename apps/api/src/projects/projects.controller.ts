@@ -7,21 +7,25 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(
     @Body() createProjectDto: CreateProjectDto,
-    @Query('professorId') professorId: string,
+    @Req() req: Request & { user: { id: string } },
   ) {
-    return this.projectsService.create(createProjectDto, professorId);
+    return this.projectsService.create(createProjectDto, req.user.id);
   }
 
   @Get()
@@ -29,9 +33,10 @@ export class ProjectController {
     return this.projectsService.findAll(period);
   }
 
-  @Get('professor/:id')
-  findByProfessor(@Param('id') id: string) {
-    return this.projectsService.findByProfessor(id);
+  @Get('professor')
+  @UseGuards(JwtAuthGuard)
+  findByProfessor(@Req() req: Request & { user: { id: string } }) {
+    return this.projectsService.findByProfessor(req.user.id);
   }
 
   @Get(':id')

@@ -1,6 +1,8 @@
-const API_URL = "http://localhost:8000/api/graduated-assistances";
-const API_URL_REQUIREMENT = "http://localhost:8000/api/requirements";
-const API_URL_APPLICATION = "http://localhost:8000/api/assistance-applications";
+import { API_ROUTES } from "../routes";
+
+const API_URL = `${API_ROUTES.BASE}/graduated-assistances`;
+const API_URL_REQUIREMENT = `${API_ROUTES.BASE}/requirements`;
+const API_URL_APPLICATION = `${API_ROUTES.BASE}/assistance-applications`;
 
 export async function createGraduatedAssistance(
   data: object,

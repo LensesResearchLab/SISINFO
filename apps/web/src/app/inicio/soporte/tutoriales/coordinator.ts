@@ -15,7 +15,7 @@ export const coordinatorVideos: Tutorial[] = [
         link: "https://www.youtube.com/watch?v=d4IoXr_TOGs"
     },
     {
-        id: "Coordinator 1",
+        id: "Coordinator 3",
         title: "Video 3",
         description: "Tutorial para realizar {accion}",
         link: "https://www.youtube.com/watch?v=d4IoXr_TOGs"

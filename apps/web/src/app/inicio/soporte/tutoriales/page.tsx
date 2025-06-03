@@ -13,8 +13,10 @@ import { undergraduateVideos } from "./undergraduate";
 import { professorVideos } from "./professor";
 import { InformationCard } from "../../components/information-section";
 import SpinnerPage from "@/components/shared/spinner-page";
+import { administratorVideos } from "./administrator";
 
 const roleMap: Record<string, React.ReactNode> = {
+  administrador: <AdministratorTutorials key="administrador" />,
   estudiante: <UndergraduateTutorials key="estudiante" />,
   estudiante_maestria: <PostgraduateTutorials key="estudiante_maestria" />,
   profesor: <ProfessorTutorials key="profesor" />,
@@ -93,6 +95,10 @@ function PostgraduateTutorials() {
 
 function UndergraduateTutorials() {
   return <TutorialsGrid tutorials={undergraduateVideos} />;
+}
+
+function AdministratorTutorials() {
+  return <TutorialsGrid tutorials={administratorVideos} />;
 }
 
 /**

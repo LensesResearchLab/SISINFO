@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:8000/api/project-applications"
+import { API_ROUTES } from "../routes";
+
+const API_URL = `${API_ROUTES.BASE}/project-applications`
 
 export async function getProjectApplicationsReport() {
     const response = await fetch(`${API_URL}/projects-report`);

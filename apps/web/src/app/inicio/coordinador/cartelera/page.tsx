@@ -125,10 +125,12 @@ function UploadedBillboard({
 
   if (loadError) return <BillboardNotFound />;
 
+
+  
   return (
     <div className="min-h-full min-w-full">
       <div className="bg-card rounded-lg shadow-lg p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-primary text-center">
+        <h2 className="text-2xl font-bold text-core text-center">
           Cartelera cargada
         </h2>
         <DataTable
@@ -144,10 +146,10 @@ function BillboardNotFound() {
   return (
     <div className="min-h-full min-w-full">
       <div className="bg-card rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold mb-4 text-primary text-center">
+        <h2 className="text-2xl font-bold mb-4 text-core text-center">
           Error al cargar la cartelera
         </h2>
-        <p className="text-primary text-center">
+        <p className="text-core text-center">
           No se pudo cargar la cartelera. Por favor, intenta nuevamente.
         </p>
       </div>

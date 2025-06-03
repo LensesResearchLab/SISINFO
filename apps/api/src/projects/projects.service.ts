@@ -9,6 +9,7 @@ import { PeriodsService } from '../periods/periods.service';
 import { Student } from '../students/entities/student.entity';
 import { AreasOfInterestService } from '../areas-of-interest/areas-of-interest.service';
 import { AreasOfInterest } from '../areas-of-interest/entities/areas-of-interest.entity';
+import { deletePasswordFromUser } from 'src/common/utils/deletePasswordFromUser';
 
 @Injectable()
 export class ProjectsService {
@@ -86,9 +87,13 @@ export class ProjectsService {
   async findByProfessor(professorId: string) {
     const projects = await this.projectRepository.find({
       where: { professor: { id: professorId } },
+      relations: ['professor', 'professor.user'],
     });
     if (!projects) {
       throw new NotFoundException(`Projects with professor id ${professorId}`);
+    }
+    for (const project of projects) {
+      project.professor.user = deletePasswordFromUser(project.professor.user);
     }
     return projects;
   }
@@ -106,6 +111,7 @@ export class ProjectsService {
     if (!project) {
       throw new NotFoundException(`Project with id ${id} not found`);
     }
+    console.debug(JSON.stringify(project));
     return project;
   }
 

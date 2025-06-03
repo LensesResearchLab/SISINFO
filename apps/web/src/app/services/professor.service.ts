@@ -20,14 +20,15 @@ export async function getTeachingAssistants(period: string): Promise<Section[]> 
     return response.json();
 }
 
-export async function createUndergraduateProject(bodyData: CreateProject, id: string) {
-  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}?professorId=${encodeURIComponent(id)}`;
+export async function createUndergraduateProject(bodyData: CreateProject) {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}`;
   const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(bodyData)
+      body: JSON.stringify(bodyData),
+      credentials: 'include'
     });
   
     if (!response.ok) {

@@ -33,12 +33,13 @@ export class ProjectApplicationsService {
     private readonly coordinatorService: CoordinatorsService,
     @InjectRepository(ProjectApplication)
     private readonly projectApplicationRepository: Repository<ProjectApplication>,
-  ) { }
+  ) {}
 
   async create(
     createProjectApplicationDto: CreateProjectApplicationDto,
+    studentId: string,
   ): Promise<ProjectApplication> {
-    const { studentId, projectId } = createProjectApplicationDto;
+    const { projectId } = createProjectApplicationDto;
     const coordinators = await this.coordinatorService.findAll();
     const result = await this.projectApplicationRepository.manager.transaction(
       async (manager) => {
@@ -81,7 +82,7 @@ export class ProjectApplicationsService {
           if (c.isActive) {
             coordinator = c;
           }
-        })
+        });
 
         const task = await this.tasksService.create(TaskType.SEND_APPROVE, {
           flow: 'proyectoPregrado',

@@ -1,7 +1,17 @@
-import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { ThesisApplicationsService } from './thesis-applications.service';
 import { CreateThesisApplicationDto } from './dto/create-thesis-application.dto';
 import { ThesisStatusEnum } from './enums/thesis_status.enum';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('thesis-applications')
 export class ThesisApplicationsController {
@@ -9,15 +19,18 @@ export class ThesisApplicationsController {
     private readonly thesisApplicationsService: ThesisApplicationsService,
   ) {}
 
-  @Post(':studentId')
+  @Post()
+  @UseGuards(JwtAuthGuard)
   create(
-    @Param('studentId') studentId: string,
+    @Req() req: Request & { user: { id: string } },
     @Body() createThesisApplicationDto: CreateThesisApplicationDto,
   ) {
-    return this.thesisApplicationsService.create({
-      ...createThesisApplicationDto,
-      studentId,
-    });
+    return this.thesisApplicationsService.create(
+      {
+        ...createThesisApplicationDto,
+      },
+      req.user.id,
+    );
   }
 
   @Get()
@@ -30,9 +43,10 @@ export class ThesisApplicationsController {
     return this.thesisApplicationsService.getThesisApplicationsReport();
   }
 
-  @Get(':studentId')
-  findOne(@Param('studentId') studentId: string) {
-    return this.thesisApplicationsService.findOne(studentId);
+  @Get('status')
+  @UseGuards(JwtAuthGuard)
+  findOne(@Req() req: Request & { user: { id: string } }) {
+    return this.thesisApplicationsService.findOne(req.user.id);
   }
 
   @Get('/applicants/:thesisId')

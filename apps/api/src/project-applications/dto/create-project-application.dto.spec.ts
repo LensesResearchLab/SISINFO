@@ -12,7 +12,6 @@ describe('CreateProjectApplicationDto validation', () => {
     dto.motivation = 'I am passionate about this topic.';
     dto.wasContacted = true;
     dto.projectId = '1';
-    dto.studentId = '1';
     return Object.assign(dto, overrides);
   };
 

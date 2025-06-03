@@ -37,7 +37,10 @@ import { useState } from 'react'
 import { CategoryTag } from '@/components/shared/category-tag'
 import { CreateProject } from '@/app/types/entities/project.type'
 import { createUndergraduateProject } from '@/app/services/professor.service'
-import { getUserInfo } from '@/app/auth/auth-service'
+import SpinnerPage from '@/components/shared/spinner-page'
+import { getPeriods } from '@/app/services/period.service'
+import { useQuery } from '@tanstack/react-query'
+import ErrorPage from '@/components/shared/error-page'
 
 
 const thesisSchema = z.object({
@@ -58,7 +61,7 @@ export default function ThesisForm() {
       students: 3,
       category: "",
       tags: [],
-      lastPeriod: "2025-10",
+      lastPeriod: "202510",
     },
   })
 
@@ -81,18 +84,20 @@ export default function ThesisForm() {
       areasOfInterest: values.tags,
       period: values.lastPeriod
     };
-
-    let userId ="";
-
-    await getUserInfo().then((data)=>{
-      userId = data.user?.id;
-    })
-
-    createUndergraduateProject(bodyProject, userId);
-    
+    createUndergraduateProject(bodyProject);
   }
+  const {
+    data: periods,
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: ["periods"],
+    queryFn: async () => getPeriods()
+  });
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  if (isFetching) return <SpinnerPage />
+  if (error) return <ErrorPage />
 
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
@@ -100,7 +105,7 @@ export default function ThesisForm() {
 
 
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-core-highlight">Nuevo Tema de Tesis</h1>
+          <h1 className="text-2xl font-bold text-core-highlight">Nuevo tema de proyecto de grado</h1>
         </div>
 
         <Form {...form}>
@@ -115,7 +120,7 @@ export default function ThesisForm() {
                     <FormItem>
                       <FormLabel className="text-primary font-semibold">Título del Proyecto</FormLabel>
                       <FormControl>
-                        <Input 
+                        <Input
                           {...field}
                           placeholder="Ej: Desarrollo de un producto de datos para..."
                           className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg text-primary"
@@ -223,7 +228,7 @@ export default function ThesisForm() {
                           </Select>
                           <div className="flex flex-wrap gap-2 mt-3">
                             {field.value.map((tag) => (
-                              <CategoryTag 
+                              <CategoryTag
                                 key={tag}
                                 tag={tag}
                                 onClic={() => {
@@ -254,9 +259,11 @@ export default function ThesisForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="202510">2025-10</SelectItem>
-                        <SelectItem value="202520">2025-20</SelectItem>
-                        <SelectItem value="202610">2026-10</SelectItem>
+                        {
+                          (periods ?? []).map(
+                            (period: string) => <SelectItem value={period} key={period}>{period}</SelectItem>
+                          )
+                        }
                       </SelectContent>
                     </Select>
                     <FormMessage className="text-red-500" />
@@ -271,7 +278,7 @@ export default function ThesisForm() {
                 onClick={async () => {
                   const isValid = await form.trigger()
                   if (isValid) {
-                    setIsModalOpen(true) 
+                    setIsModalOpen(true)
                   }
                 }}
                 className="bg-core text-white hover:bg-core-dark"

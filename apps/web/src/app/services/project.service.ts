@@ -52,6 +52,7 @@ export async function createProjectApplication(
       "Content-Type": "application/json",
     },
     body: JSON.stringify(application),
+    credentials: 'include',
   });
   if (!response.ok) {
     throw new Error("Failed to create project application.");
@@ -103,13 +104,14 @@ export async function getUndergraduateThesisDates() {
 
 
 
-export async function getProjectsByProfessor(userId:string): Promise<Project[]> {
-  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}/professor/${userId}`;
+export async function getProjectsByProfessor(): Promise<Project[]> {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}/professor`;
   const response = await fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: 'include'
   });
   if (!response.ok) {
     throw new Error("Failed to fetch thesis data.");

@@ -23,7 +23,6 @@ import {
 
 import { ROUTES } from "@/app/routes";
 import { getUndergraduateProjectById, createProjectApplication } from "@/app/services/project.service";
-import { getUserInfo } from "@/app/auth/auth-service";
 
 import { useProjectInscriptionStore } from "./store";
 import { Project } from "@/app/types/entities/project.type";
@@ -100,12 +99,10 @@ function ProjectApplying({ project }: { readonly project: Project }) {
     if (e) e.preventDefault();
     setErrorMsg(null);
     try {
-      const user = (await getUserInfo()).user;
       const projectApplication: CreateProjectApplication = {
         motivation,
         wasContacted: contacted,
         projectId: project.id,
-        studentId: user.id,
       };
       await createProjectApplication(projectApplication);
     } catch (err: unknown) {

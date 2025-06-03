@@ -179,6 +179,17 @@ function AccordionList({
   readonly thesisList: ProjectsStudentTable;
 }) {
   const order = useThesisListStore((state) => state.order);
+  const hasNoResults =
+    order.length === 0 ||
+    order.every((field) => !thesisList[field] || thesisList[field].length === 0);
+
+  if (hasNoResults) {
+    return (
+      <div className="text-center py-6 text-muted-foreground text-sm">
+        No se encontraron resultados.
+      </div>
+    );
+  }
   return (
     <>
       {order.map((field) => (

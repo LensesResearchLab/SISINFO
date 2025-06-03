@@ -33,14 +33,7 @@ const columns: ColumnDef<Incidence>[] = [
   },
   {
     accessorKey: "isClosed",
-    header: ({ column }) => (
-      <div
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="cursor-pointer select-none"
-      >
-        Estado {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : ""}
-      </div>
-    ),
+    header: 'Estado',
     cell: ({ getValue }) => {
       const completed = getValue<boolean>();
       return (

@@ -18,6 +18,7 @@ import { TaskType } from "../flows"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import { CreateTask } from "@/app/types/entities/task.type"
+import SpinnerPage from "@/components/shared/spinner-page"
 
 const taskSchema = z.object({
   type: z.nativeEnum(TaskType),
@@ -89,7 +90,7 @@ export default function TaskForm() {
     router.push(`${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`)
   }
 
-  if (loading) return <div className="text-center py-10">Cargando tarea…</div>
+  if (loading) return <SpinnerPage />
   if (!task) return <div className="text-center py-10 text-red-500">Tarea no encontrada</div>
 
   const isViewOnly = task.type === TaskType.VIEW_COMMENTS

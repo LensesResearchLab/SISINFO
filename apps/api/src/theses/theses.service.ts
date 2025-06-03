@@ -47,24 +47,31 @@ export class ThesesService {
     return thesis;
   }
 
-  async findAll() {
-    const thesisData = await this.thesisRepository.find({
-      relations: {
-        professor: {
-          user: true,
+  async findAll(period?: string) {
+    let whereCondition = {};
+
+    if (period) {
+      if (!/^\d{6}$/.test(period)) {
+        throw new Error(
+          'El parámetro semestre debe tener el formato YYYYSS (por ejemplo, 202510)',
+        );
+      }
+      const year = period.slice(0, 4);
+      const periodPart = period.slice(4, 6);
+      whereCondition = {
+        period: {
+          year,
+          period: periodPart,
         },
-        tags: true,
-        period: true,
+      };
+    }
+
+    return this.thesisRepository.find({
+      where: whereCondition,
+      relations: {
+        professor: true,
       },
     });
-
-    thesisData.forEach((thesis) => {
-      if (thesis.professor?.user) {
-        thesis.professor.user = deletePasswordFromUser(thesis.professor.user);
-      }
-    });
-
-    return thesisData;
   }
 
   async findAllByProfessorId(id: string) {

@@ -15,7 +15,7 @@ export const professorVideos: Tutorial[] = [
         link: "https://www.youtube.com/watch?v=d4IoXr_TOGs"
     },
     {
-        id: "Professor 1",
+        id: "Professor 3",
         title: "Video 9",
         description: "Tutorial para realizar {accion}",
         link: "https://www.youtube.com/watch?v=d4IoXr_TOGs"

@@ -22,6 +22,10 @@ import { ROUTES } from '@/app/routes'
 import { useState } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { postNewThesis } from '@/app/services/thesis.service'
+import { getPeriods } from '@/app/services/period.service'
+import SpinnerPage from '@/components/shared/spinner-page'
+import ErrorPage from '@/components/shared/error-page'
+import { useQuery } from '@tanstack/react-query'
 
 /**
  * @file ThesisForm.tsx
@@ -53,9 +57,19 @@ export default function ThesisForm() {
       students: 3,
       category: "",
       tags: [],
-      lastPeriod: "2025-10",
+      lastPeriod: "202510",
     },
   })
+
+  const {
+    data: periods,
+    isFetching,
+    error,
+  } = useQuery({
+    queryKey: ["periods"],
+    queryFn: async () => getPeriods()
+  });
+
 
 
   const dialogText = {
@@ -72,7 +86,7 @@ export default function ThesisForm() {
       if (!user?.id) {
         throw new Error("User ID not found");
       }
-      
+
       /* Transform form values to match API  */
       const thesisData = {
         title: values.title,
@@ -82,20 +96,22 @@ export default function ThesisForm() {
         investigationSubarea: values.tags.join(", "),
         isEnded: false
       };
-      
+
       // Send the data to the API with the user ID and period like: 202510
       await postNewThesis(
-        user.id, 
-        thesisData, 
+        user.id,
+        thesisData,
         values.lastPeriod.replace("-", "")
       );
-      
+
     } catch (error) {
       console.error("Error submitting thesis:", error);
     }
   }
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  if (isFetching) return <SpinnerPage />
+  if (error) return <ErrorPage />
 
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
@@ -118,7 +134,7 @@ export default function ThesisForm() {
                     <FormItem>
                       <FormLabel className="text-primary font-semibold">Título del Proyecto</FormLabel>
                       <FormControl>
-                        <Input 
+                        <Input
                           {...field}
                           placeholder="Ej: Desarrollo de un producto de datos para..."
                           className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg text-primary"
@@ -264,9 +280,11 @@ export default function ThesisForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="2025-10">2025-10</SelectItem>
-                        <SelectItem value="2025-20">2025-20</SelectItem>
-                        <SelectItem value="2026-10">2026-10</SelectItem>
+                        {
+                          (periods ?? []).map(
+                            (period: string) => <SelectItem value={period} key={period}>{period}</SelectItem>
+                          )
+                        }
                       </SelectContent>
                     </Select>
                     <FormMessage className="text-red-500" />
@@ -281,7 +299,7 @@ export default function ThesisForm() {
                 onClick={async () => {
                   const isValid = await form.trigger()
                   if (isValid) {
-                    setIsModalOpen(true) 
+                    setIsModalOpen(true)
                   }
                 }}
                 className="bg-core text-white hover:bg-core-dark"

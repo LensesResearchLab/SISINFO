@@ -11,6 +11,7 @@ import {
   MaxFileSizeValidator,
   FileTypeValidator,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ProjectApplicationsService } from './project-applications.service';
 import { CreateProjectApplicationDto } from './dto/create-project-application.dto';
@@ -52,8 +53,15 @@ export class ProjectApplicationsController {
   }
 
   @Post()
-  create(@Body() createProjectApplicationDto: CreateProjectApplicationDto) {
-    return this.projectApplicationsService.create(createProjectApplicationDto);
+  @UseGuards(JwtAuthGuard)
+  create(
+    @Body() createProjectApplicationDto: CreateProjectApplicationDto,
+    @Req() req: Request & { user: { id: string } },
+  ) {
+    return this.projectApplicationsService.create(
+      createProjectApplicationDto,
+      req.user.id,
+    );
   }
 
   @Get()

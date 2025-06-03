@@ -22,8 +22,9 @@ export class ThesisApplicationsService {
 
   async create(
     createThesisApplicationDto: CreateThesisApplicationDto,
+    studentId: string,
   ): Promise<ThesisApplication> {
-    const { studentId, thesisId, ...rest } = createThesisApplicationDto;
+    const { thesisId, ...rest } = createThesisApplicationDto;
 
     const student = await this.studentRepository.findOne({
       where: { id: studentId },
@@ -135,8 +136,7 @@ export class ThesisApplicationsService {
     /* Dont return passwords */
     applications.forEach((app) => {
       if (app.student?.user) {
-        const { password, ...userWithoutPassword } = app.student.user;
-        app.student.user = userWithoutPassword as unknown as User;
+        app.student.user = deletePasswordFromUser(app.student.user);
       }
       if (app.thesis?.professor?.user) {
         app.thesis.professor.user = deletePasswordFromUser(

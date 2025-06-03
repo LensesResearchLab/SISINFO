@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getUserInfo } from "@/app/auth/auth-service";
 import { AssistanceList } from "@/components/shared/assistance-list";
+import SpinnerPage from "@/components/shared/spinner-page";
 
 /**
  * ProfessorAssistanceList Component
@@ -51,11 +52,7 @@ export default function ProfessorAssistanceList() {
 
   // Show loading placeholder while fetching user info
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Cargando...
-      </div>
-    );
+    return <SpinnerPage />
   }
 
   // Pass the professor name and role to filter the assistance list

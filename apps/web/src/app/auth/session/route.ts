@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { API_ROUTES } from "@/app/routes";
 
 /* Here are the endpoint functions for login, fetching the role of the current user and logout */
 
@@ -15,7 +16,7 @@ import { cookies } from "next/headers";
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
-    const response = await fetch(`http://localhost:8000/api/users/login`, {
+    const response = await fetch(`${API_ROUTES.BASE}/users/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

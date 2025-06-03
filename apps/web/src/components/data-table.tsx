@@ -31,7 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowUpDown, ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
@@ -72,15 +72,15 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
+  const selectedData = useMemo(() => {
+    return table.getSelectedRowModel().rows.map((row) => row.original);
+  }, [table]);
 
   useEffect(() => {
     if (enableRowSelection && onSelectedRowsChange) {
-      const selectedData = table
-        .getSelectedRowModel()
-        .rows.map((row) => row.original);
       onSelectedRowsChange(selectedData);
     }
-  }, [enableRowSelection, onSelectedRowsChange, rowSelection, table]);
+  }, [enableRowSelection, onSelectedRowsChange, selectedData]);
 
   return (
     <div className="space-y-4">
@@ -132,11 +132,10 @@ export function DataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className={`text-white whitespace-normal break-words p-4 ${
-                        header.column.getCanSort()
-                          ? "cursor-pointer select-none"
-                          : ""
-                      }`}
+                      className={`text-white whitespace-normal break-words p-4 ${header.column.getCanSort()
+                        ? "cursor-pointer select-none"
+                        : ""
+                        }`}
                       onClick={
                         header.column.getCanSort()
                           ? header.column.getToggleSortingHandler()
@@ -217,17 +216,16 @@ export function DataTable<TData, TValue>({
           </Button>
 
           <div className="text-sm text-muted-foreground">
-            {`Mostrando ${
-              (table?.getRowModel()?.rows?.length || 0) > 0
-                ? table.getState().pagination.pageIndex *
-                    table.getState().pagination.pageSize +
-                  1
-                : 0
-            } - ${Math.min(
-              (table.getState().pagination.pageIndex + 1) *
+            {`Mostrando ${(table?.getRowModel()?.rows?.length || 0) > 0
+              ? table.getState().pagination.pageIndex *
+              table.getState().pagination.pageSize +
+              1
+              : 0
+              } - ${Math.min(
+                (table.getState().pagination.pageIndex + 1) *
                 table.getState().pagination.pageSize,
-              table?.getFilteredRowModel()?.rows?.length || 0
-            )} de ${table?.getFilteredRowModel()?.rows?.length || 0} resultados`}
+                table?.getFilteredRowModel()?.rows?.length || 0
+              )} de ${table?.getFilteredRowModel()?.rows?.length || 0} resultados`}
           </div>
 
           <Button

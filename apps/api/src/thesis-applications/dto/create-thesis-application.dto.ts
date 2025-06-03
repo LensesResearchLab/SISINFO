@@ -8,10 +8,6 @@ export class CreateThesisApplicationDto {
 
   @IsString()
   @IsNotEmpty()
-  studentId: string;
-
-  @IsString()
-  @IsNotEmpty()
   @IsOptional()
   status?: ThesisStatusEnum;
 }

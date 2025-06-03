@@ -4,7 +4,6 @@ import { getPostgraduateThesisStatus } from "@/app/services/thesis.service";
 import SpinnerPage from "@/components/shared/spinner-page";
 import TabStatus from "@/components/shared/tab-status";
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/use-auth";
 import { ThesisApplication } from "@/app/types/entities/thesis-application.type";
 
 /**
@@ -36,17 +35,13 @@ import { ThesisApplication } from "@/app/types/entities/thesis-application.type"
  * @returns {JSX.Element} A tabbed interface showing thesis status and information
  */
 export default function ThesisStatus() {
-  const { user, isLoading: isAuthLoading } = useAuth();
-
   const { data: statusInformation, isFetching, error } = useQuery({
-    queryKey: ["student-thesis-status", user?.id],
-    queryFn: () => getPostgraduateThesisStatus(user?.id),
-    enabled: !!user && !isAuthLoading,
+    queryKey: ["student-thesis-status"],
+    queryFn: () => getPostgraduateThesisStatus(),
   });
 
   if (isFetching) return <SpinnerPage />;
   if (error || !statusInformation) return <ThesisNotFound />;
-
   const sections = getSections(statusInformation);
   const steps = ["Postulado", "Aceptado", "Inscrito", "Informe", "Finalizado"];
   const messagePerStep = getMessagesPerStep();

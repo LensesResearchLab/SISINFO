@@ -18,6 +18,5 @@ export interface ProjectApplication {
 export interface CreateProjectApplication {
   motivation: string;
   wasContacted: boolean;
-  studentId: string;
   projectId: string;
 }

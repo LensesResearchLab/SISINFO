@@ -16,8 +16,8 @@ export class ThesesController {
   }
 
   @Get()
-  findAll() {
-    return this.thesesService.findAll();
+  findAll(@Query('period') period?: string) {
+    return this.thesesService.findAll(period);
   }
 
   @Get('/professor/:professorId')
