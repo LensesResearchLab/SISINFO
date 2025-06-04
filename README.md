@@ -52,7 +52,6 @@ npm run test:e2e
 ```
 
 ### Ejecutar monkeys
-Debe dejar ejecutando la aplicación en producción pero usando una base de datos de prueba.
 
 ```bash
 npx playwright test 'gremlins.test.js'
