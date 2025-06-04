@@ -123,8 +123,6 @@ function ApplicantsTable({ applicants, handleDetails }: { readonly applicants: G
   const [newStatus, setNewStatus] = useState<string | null>(null);
 
   const handleConfirmAccepted = async () => {
-    console.log(selectedApplicantIds)
-    console.log(newStatus)
     if (!selectedApplicantIds) return;
     try {
       // Update multiple applicants status or just one

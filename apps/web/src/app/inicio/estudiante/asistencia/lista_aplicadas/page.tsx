@@ -77,7 +77,6 @@ const columns: ColumnDef<StatusInformation>[] = [
     id: "ver",
     header: "Ver",
     cell: ({ row }) => {
-      console.log(row.original.id); // Application id
       return (
         <Link
           href={`${ROUTES.HOME}/${ROUTES.ASSISTANCE_APPLIED_LIST}/${row.original.id}`}

@@ -138,21 +138,19 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
   const handleSubmit = async () => {
     const thesisId = thesis.id;
     const userId = user?.id;
-    console.log(userId);
+
 
     if (!thesisId || !userId) {
-      console.log("Error: Missing thesis ID or user ID.");
       return;
     }
 
-    const userApplications = await getPostgraduateThesisStatus(userId);
+    const userApplications = await getPostgraduateThesisStatus();
     if (userApplications) {
-      console.log("Error: You have already applied to a thesis.");
       setHasExistingApplication(true);
       return;
-    } // Check if the user has already applied to this thesis
+    }
     else {
-      await postThesisApplication(thesisId, userId);
+      await postThesisApplication(thesisId);
     }
   };
 

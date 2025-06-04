@@ -276,7 +276,6 @@ export class SeedService {
     );
 
     if (validPeriods.length === 0) {
-      console.log('No valid periods found for thesis creation');
       return false;
     }
 

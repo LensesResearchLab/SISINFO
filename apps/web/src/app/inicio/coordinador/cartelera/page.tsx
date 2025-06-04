@@ -46,9 +46,6 @@ export default function UploadBillboard() {
       setLoadError(true);
       return;
     }
-
-    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-    console.log(jsonData);
   };
   const handlePeriodChange = (value: string) => {
     getBillboard(value)

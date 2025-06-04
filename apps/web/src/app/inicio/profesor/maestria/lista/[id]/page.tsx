@@ -38,8 +38,6 @@ export default function StudentDetail() {
     queryFn: () => getStudentbyId(id),
     enabled: !!id,
   });
-
-  console.log(student)
   
   if (isLoading) return <SpinnerPage />;
   if (error || !student) {

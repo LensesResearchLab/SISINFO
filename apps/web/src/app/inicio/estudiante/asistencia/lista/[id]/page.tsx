@@ -384,8 +384,6 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
       );
 
       if (response.ok) {
-        const result = await response.json();
-        console.log("Aplicación creada:", result);
         setIsConfirmed(false);
         setIsApplying(false);
       } else {

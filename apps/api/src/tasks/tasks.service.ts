@@ -60,10 +60,8 @@ export class TasksService {
       coordinator = await this.coordinatorService.findOne(
         overrides?.coordinatorId,
       );
-      console.log(coordinator);
       if (coordinator) {
         entity.coordinator = coordinator;
-        console.log(entity);
       }
     }
     if (overrides?.documentId) {

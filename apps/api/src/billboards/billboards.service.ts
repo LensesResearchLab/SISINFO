@@ -38,8 +38,6 @@ export class BillboardsService {
       const rawPeriod = section.period.slice(4, 6);
       const periodStr = mapPeriod(rawPeriod);
 
-      console.log(year, semester, periodStr);
-
       let periodFound = await this.periodsService.findOneByPeriodAndYear(
         periodStr,
         year,
@@ -71,7 +69,6 @@ export class BillboardsService {
 
         await Promise.all(
           professorsArr.map(async (prof) => {
-            console.log(prof);
             const cleanedName = cleanName(prof);
             const searchProfessor = await this.professorService.findByName(
               normalizeName(cleanedName),
@@ -109,8 +106,6 @@ export class BillboardsService {
           const newSectionDto = new CreateSectionDto();
           newSectionDto.NRC = section.NRC;
           newSectionDto.section = section.section;
-          console.log(findedProfessors);
-          console.log(supportProfessors);
           if (findedProfessors.length === 0 && supportProfessors.length === 0) {
             throw new Error('No professors found for the section');
           }
@@ -173,7 +168,6 @@ export class BillboardsService {
     const billboardExisting = await this.findOne(
       billboard.period.year + billboard.period.period,
     );
-    console.log(billboardExisting);
     if (billboardExisting) {
       const combinedCourses = [
         ...billboardExisting.courses,

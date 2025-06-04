@@ -91,9 +91,8 @@ export async function createRequirimentForGraduatedAssistance(
   });
 
   const newRequirement = await response_post_req.json();
-  console.log(newRequirement);
   const response_link_req = await fetch(
-    `${API_URL_REQUIREMENT}/${newRequirement.id}/assistance/${graduatedAssistanceId}`, // api/requirements/reqID/assistance/assistanceID
+    `${API_URL_REQUIREMENT}/${newRequirement.id}/assistance/${graduatedAssistanceId}`,
     {
       method: "POST",
       headers: {
