@@ -1,10 +1,22 @@
+import path from "path";
 import { Page } from "playwright/test";
+import dotenv from 'dotenv'
+
+dotenv.config({
+  path: path.resolve(__dirname, '../../config/.env'),
+});
+
+const BASE_URL = process.env.FRONT_URL;
+
+if (!BASE_URL) {
+  throw new Error('❌ FRONT_URL not found');
+}
 
 export class AuthPage {
   constructor(private readonly page: Page) {}
 
   async gotoLogin() {
-    await this.page.goto('http://localhost:3000/auth');
+    await this.page.goto(`${BASE_URL}/auth`);
   }
 
   async fillEmail(email: string) {

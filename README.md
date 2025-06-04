@@ -31,15 +31,11 @@ Sisinfo está construido con las siguientes tecnologías:
 
 Antes de realizar cualquier **commit** o desplegar a **producción**, asegúrate de que todas las pruebas pasen correctamente.
 
-### Ejecutar pruebas unitarias y de extremo a extremo
+### Ejecutar pruebas unitarias
 
 ```bash
 npm run test
 ```
-
-Este comando ejecuta todas las pruebas definidas en el proyecto.
-
-### Pruebas con cobertura
 
 Para verificar qué partes del código están cubiertas por pruebas:
 
@@ -49,6 +45,19 @@ npm run test:cov
 
 Este comando genera un informe de cobertura que permite mejorar la calidad del código.
 
+### Ejecutar pruebas de extremo a extremo
+
+```bash
+npm run test:e2e
+```
+
+### Ejecutar monkeys
+Debe dejar ejecutando la aplicación en producción pero usando una base de datos de prueba.
+
+```bash
+npx playwright test 'gremlins.test.js'
+
+```
 ---
 
 ## ⚙️ Instalación básica
@@ -109,13 +118,18 @@ docker-compose up -d
 cd ..
 ```
 
-4. Inicia el servidor de desarrollo:
+4. Open the file located at `apps/api/app.module.ts`.
+   **Remove** the line:
+   ```typescript
+   ssl: { rejectUnauthorized: false },
+
+5. Inicia el servidor de desarrollo:
 
 ```bash
 npm run dev
 ```
 
-5. Abre el navegador y visita los siguientes endpoints para cargar los datos de prueba aleatorios:
+6. Abre el navegador y visita los siguientes endpoints para cargar los datos de prueba aleatorios:
 
 - http://localhost:8000/api/seed/all
 - http://localhost:8000/api/seed/static
@@ -128,7 +142,7 @@ npm run dev
 
 Alternativamente, puedes correr el archivo `data/all_insert.sql` desde algún manejador de bases de datos.
 
-6. Visita la app en: [http://localhost:3000](http://localhost:3000)
+7. Visita la app en: [http://localhost:3000](http://localhost:3000) o en la ip que especificaste en el `.env`.
 
 ### Credenciales de prueba
 
@@ -163,4 +177,4 @@ npm run prod
 
 ---
 
-Este proyecto fue desarrollado por estudiantes de pregrado del programa de Ingeniería de Sistemas y Computación como parte de su proyecto de grado, con la asesoría de Camilo Escobar-Velásquez, Ph.D.
+Este proyecto fue desarrollado por estudiantes de pregrado del programa de Ingeniería de Sistemas y Computación de la Universidad de Los Andes como parte de su proyecto de grado, con la asesoría de Camilo Escobar-Velásquez, Ph.D.

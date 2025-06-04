@@ -21,11 +21,11 @@ describe('Student Entity', () => {
     const mockThesis = new Thesis();
     const mockProject = new Project();
     const mockThesisApplication = new ThesisApplication();
-    const mockProjectApplication = new ProjectApplication();
     const mockAssistance = new GraduatedAssistance();
     const mockTeachingAssistance = new TeachingAssistance();
     const mockTask = new Task();
     const mockAssistanceApplication = new AssistanceApplication();
+    const mockProjectApplication = new ProjectApplication();
 
     const student = new Student();
     student.code = mockCode;
@@ -37,11 +37,11 @@ describe('Student Entity', () => {
     student.thesis2 = mockThesis;
     student.project = mockProject;
     student.thesisApplication = mockThesisApplication;
-    student.projectApplication = mockProjectApplication;
     student.assistance = mockAssistance;
     student.teachingAssistances = [mockTeachingAssistance];
     student.tasks = [mockTask];
     student.assistanceApplications = [mockAssistanceApplication];
+    student.projectApplication = [mockProjectApplication];
 
     expect(student).toBeInstanceOf(Student);
     expect(student.code).toBe(mockCode);
@@ -54,7 +54,7 @@ describe('Student Entity', () => {
     expect(student.thesis2).toBeInstanceOf(Thesis);
     expect(student.project).toBeInstanceOf(Project);
     expect(student.thesisApplication).toBeInstanceOf(ThesisApplication);
-    expect(student.projectApplication).toBeInstanceOf(ProjectApplication);
+    expect(student.projectApplication[0]).toBeInstanceOf(ProjectApplication);
     expect(student.assistance).toBeInstanceOf(GraduatedAssistance);
     expect(student.teachingAssistances).toHaveLength(1);
     expect(student.teachingAssistances[0]).toBeInstanceOf(TeachingAssistance);

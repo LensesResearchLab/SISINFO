@@ -9,7 +9,7 @@ import { Period } from '../periods/entities/period.entity';
 import { PeriodsService } from '../periods/periods.service';
 import { Document } from '../documents/entities/document.entity';
 import { ProfessorsService } from '../professors/professors.service';
-import { Professor } from 'src/professors/entities/professor.entity';
+import { Professor } from '../professors/entities/professor.entity';
 import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 
 @Injectable()

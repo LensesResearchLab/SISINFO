@@ -11,7 +11,7 @@ import {
 import { ThesisApplicationsService } from './thesis-applications.service';
 import { CreateThesisApplicationDto } from './dto/create-thesis-application.dto';
 import { ThesisStatusEnum } from './enums/thesis_status.enum';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('thesis-applications')
 export class ThesisApplicationsController {

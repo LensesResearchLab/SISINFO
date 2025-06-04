@@ -5,6 +5,31 @@ import { AuthPage } from "../pages/auth.page";
 
 let authPage: AuthPage;
 
+Given('I am logged in as an {string}', async function (this: CustomWorld, role: string) {
+    authPage = new AuthPage(this.page);
+    switch(role) {
+        case 'administrator':
+            
+            await authPage.login('admin@admin.com', 'admin');
+            break;
+        case 'coordinator':
+            await authPage.login('coordinator@example.com', 'password');
+            break;
+        case 'professor':
+            await authPage.login('professor@example.com', 'password');
+            break;
+        case 'student':
+            await authPage.login('student@example.com', 'password');
+            break;
+        case 'master_student':
+            await authPage.login('master@example.com', 'password');
+            break;
+        default:
+            throw new Error(`Login for role '${role}' is not implemented.`);
+    }
+});
+
+
 Given('the user navigates to the login page', async function (this: CustomWorld) {
     authPage = new AuthPage(this.page);
     await authPage.gotoLogin();

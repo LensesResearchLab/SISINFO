@@ -6,7 +6,6 @@ describe('CreateThesisApplicationDto validation', () => {
   it('should validate with basic values', async () => {
     const dto = new CreateThesisApplicationDto();
     dto.thesisId = '123456789';
-    dto.studentId = '987654321';
     dto.status = ThesisStatusEnum.APPLICANT;
     const errors = await validate(dto);
     expect(errors).toHaveLength(0);

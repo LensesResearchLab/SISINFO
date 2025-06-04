@@ -9,7 +9,7 @@ import { PeriodsService } from '../periods/periods.service';
 import { Student } from '../students/entities/student.entity';
 import { AreasOfInterestService } from '../areas-of-interest/areas-of-interest.service';
 import { AreasOfInterest } from '../areas-of-interest/entities/areas-of-interest.entity';
-import { deletePasswordFromUser } from 'src/common/utils/deletePasswordFromUser';
+import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 
 @Injectable()
 export class ProjectsService {
