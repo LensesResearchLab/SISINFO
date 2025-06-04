@@ -20,62 +20,103 @@ Sisinfo está construido con las siguientes tecnologías:
 - **Tailwind CSS**: Un framework de CSS utilitario que permite diseñar interfaces de manera rápida y eficiente.
 - **Zustand**: Una solución ligera y flexible para el manejo del estado global de la aplicación.
 - **TanStack Query**: Una librería para gestionar, almacenar en caché y sincronizar datos del servidor.
-- **Docker**: Usado para desplegar la base de datos en un contenedor.
+- **Docker**: Usado para desplegar la base de datos en desarrollo.
 - **Nest.js**: Servidor REST.
 - **Turborepo**: Manejador de monorepositorios. 
 - **npm/yarn**: Gestores de paquetes para manejar dependencias del proyecto.
 
 ---
 
-## 🔨 Instalación
+## 🧪 Pruebas
 
-Sigue estos pasos para configurar el proyecto en tu entorno local.
+Antes de realizar cualquier **commit** o desplegar a **producción**, asegúrate de que todas las pruebas pasen correctamente.
+
+### Ejecutar pruebas unitarias y de extremo a extremo
+
+```bash
+npm run test
+```
+
+Este comando ejecuta todas las pruebas definidas en el proyecto.
+
+### Pruebas con cobertura
+
+Para verificar qué partes del código están cubiertas por pruebas:
+
+```bash
+npm run test:cov
+```
+
+Este comando genera un informe de cobertura que permite mejorar la calidad del código.
+
+---
+
+## ⚙️ Instalación básica
+
+Sigue estos pasos para preparar el entorno local de desarrollo:
 
 ### Prerrequisitos
 
-Asegúrate de tener instalado lo siguiente:
-
 - **Node.js** (Versión ≥ 16)
-- **npm** o **yarn** (Gestores de paquetes)
-- **Git** (Opcional, para clonar el repositorio)
-- **Docker** (Para desplegar la base de datos)
+- **npm** o **yarn**
+- **Git** (opcional, para clonar el repositorio)
 
-### Pasos para la instalación
+### Pasos
 
-1. Clona el repositorio (o descarga el código fuente):
-   ```bash
-   git clone https://github.com/TheSoftwareDesignLab/SISINFO
-   ```
+1. Clona el repositorio:
+
+```bash
+git clone https://github.com/TheSoftwareDesignLab/SISINFO
+```
+
 2. Navega al directorio del proyecto:
-    ```bash
-    cd SISINFO
-    ```
+
+```bash
+cd SISINFO
+```
 
 3. Instala las dependencias:
-    ```bash
-    npm install
-    # o
-    yarn install
-    ```
-4. Navega a la carpeta config:
-    ```bash
-    cd config
-    ```
-5. Ingresa el archivo `.env` basado en el archivo `.env.template` y configura las variables de entorno necesarias.
 
-6. Despliega la base de datos en un contenedor de Docker:
-    ```bash
-    docker-compose up -d
-    ```
-7. Navega a la carpeta principal:
-    ```bash
-    cd ..
-    ```
-8. Inicia el servidor de desarrollo:
-    ```bash
-    npm run dev
-    ```
-9. Abre tu navegador y visita el enlace a continuación para cargar los datos de prueba (generados de forma aleatoria).
+```bash
+npm install
+# o
+yarn install
+```
+
+4. Crea el archivo `.env` en la carpeta `config`, basado en `.env.template` y configura las variables necesarias:
+
+```bash
+cd config
+cp .env.template .env
+```
+
+---
+
+## 🛠️ Despliegue en desarrollo
+
+Para ejecutar el entorno de desarrollo completo con base de datos en Docker y datos de prueba:
+
+1. Asegúrate de haber creado el archivo `.env` como se indicó anteriormente.
+2. Inicia la base de datos con Docker:
+
+```bash
+docker-compose up -d
+```
+
+3. Regresa al directorio principal:
+
+```bash
+cd ..
+```
+
+4. Inicia el servidor de desarrollo:
+
+```bash
+npm run dev
+```
+
+5. Abre el navegador y visita los siguientes endpoints para cargar los datos de prueba aleatorios:
+
 - http://localhost:8000/api/seed/all
 - http://localhost:8000/api/seed/static
 - http://localhost:8000/api/seed/users
@@ -84,28 +125,42 @@ Asegúrate de tener instalado lo siguiente:
 - http://localhost:8000/api/seed/graduated-assistances
 - http://localhost:8000/api/seed/courses
 - http://localhost:8000/api/seed/other
-10. Visita http://localhost:3000 para ver la aplicación en funcionamiento.
 
-11. Ingresa con alguno de los usuarios generados. Asimismo, puedes ingresar con las siguientes credenciales de prueba:
-- email: admin@admin.com
-- password: admin
+Alternativamente, puedes correr el archivo `data/all_insert.sql` desde algún manejador de bases de datos.
 
-> Si deseas liberar los puertos 3000 y 8000, puedes usar el comando `npm run kill`.
+6. Visita la app en: [http://localhost:3000](http://localhost:3000)
 
-### Pruebas
+### Credenciales de prueba
 
-Antes de realizar cualquier commit, asegúrate de ejecutar las pruebas unitarias y de extremo a extremo. Para ello, ejecuta el siguiente comando en la raíz del proyecto:
+- email: `admin@admin.com`
+- password: `admin`
 
-  ```bash
-    npm run test    
-  ```
-Este comando ejecutará todas las pruebas definidas en el proyecto. Verifica que todas las pruebas se ejecuten correctamente antes de realizar cualquier cambio significativo en el código.
+> Para liberar los puertos `3000` y `8000`, puedes usar el comando:
+```bash
+npm run kill
+```
 
-### Pruebas con cobertura
-También puedes ejecutar las pruebas con cobertura para asegurarte de que tu código esté bien cubierto por pruebas. Para ello, usa el siguiente comando:
+---
 
-  ```bash
-    npm run test:cov   
-  ```
+## 🚢 Despliegue en producción
 
-Este comando generará un informe de cobertura que indicará qué partes del código están cubiertas por pruebas y cuáles no, permitiéndote mejorar la calidad del código en cada aplicación.
+Para un entorno de producción se requiere una base de datos real provisionada (por ejemplo, Heroku.).
+
+### Pasos
+
+1. Crea y configura el archivo `.env` con las variables reales de producción.
+2. Construye el proyecto:
+
+```bash
+npm run build
+```
+
+3. Inicia el servidor en modo producción:
+
+```bash
+npm run prod
+```
+
+---
+
+Este proyecto fue desarrollado por estudiantes de pregrado del programa de Ingeniería de Sistemas y Computación como parte de su proyecto de grado, con la asesoría de Camilo Escobar-Velásquez, Ph.D.
