@@ -128,18 +128,7 @@ cd ..
 npm run dev
 ```
 
-6. Abre el navegador y visita los siguientes endpoints para cargar los datos de prueba aleatorios:
-
-- http://localhost:8000/api/seed/all
-- http://localhost:8000/api/seed/static
-- http://localhost:8000/api/seed/users
-- http://localhost:8000/api/seed/projects
-- http://localhost:8000/api/seed/theses
-- http://localhost:8000/api/seed/graduated-assistances
-- http://localhost:8000/api/seed/courses
-- http://localhost:8000/api/seed/other
-
-Alternativamente, puedes correr el archivo `data/all_insert.sql` desde algún manejador de bases de datos.
+6. Ejecuta el archivo `data/all_insert.sql` desde algún manejador de bases de datos.
 
 7. Visita la app en: [http://localhost:3000](http://localhost:3000) o en la ip que especificaste en el `.env`.
 
