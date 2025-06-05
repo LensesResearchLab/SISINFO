@@ -415,7 +415,7 @@ export class SeedService {
         title: faker.lorem.word(),
         category: faker.lorem.word(),
         description: faker.lorem.sentence(),
-        period: randomPeriod,
+        period: randomPeriod.period + randomPeriod.year,
         requirements: randomRequirements,
         startDate: faker.date.recent(),
         endDate: faker.date.recent(),

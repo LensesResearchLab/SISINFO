@@ -29,7 +29,6 @@ import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { ROUTES } from "@/app/routes";
 import { createGraduatedAssistance } from "../../../../services/assistance.service";
 import { addDays } from "date-fns";
-import { mapStringtoPeriod } from "@/app/mappers/period.mapper";
 import { getPeriods } from "@/app/services/period.service";
 import ErrorPage from "@/components/shared/error-page";
 import SpinnerPage from "@/components/shared/spinner-page";
@@ -98,11 +97,11 @@ export default function GraduateAssistanceForm() {
   });
 
   const dialogText = {
-    title: "Publicar Proyecto",
-    description: "¿Estás seguro de que deseas publicar este proyecto?",
-    buttonText: "Publicar Proyecto",
-    successTitle: "Proyecto Publicado",
-    successText: "Tu proyecto ha sido publicado exitosamente",
+    title: "Publicar asistencia",
+    description: "¿Estás seguro de que deseas publicar esta asistencia?",
+    buttonText: "Publicar asistencia",
+    successTitle: "Asistencia Publicada",
+    successText: "Tu asistencia ha sido publicada exitosamente",
     url: `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST}`,
   };
 
@@ -121,7 +120,7 @@ export default function GraduateAssistanceForm() {
   const onSubmit = async (data: z.infer<typeof thesisSchema>) => {
     const payload = {
       ...data,
-      period: mapStringtoPeriod(data.period),
+      period: data.period,
       startDate: data.startDate.toISOString(),
       endDate: data.endDate.toISOString(),
     };

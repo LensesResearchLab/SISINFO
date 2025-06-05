@@ -30,7 +30,12 @@ export class UsersService {
     const users = await this.userRepository.find({
       relations: ['coordinator', 'professor', 'administrator'],
     });
-    return users.map((user) =>
+
+    const filteredUsers = users.filter(
+      (user) => user.coordinator || user.professor || user.administrator,
+    );
+
+    return filteredUsers.map((user) =>
       deletePasswordFromUser(user, this.getUserRoles(user)),
     );
   }

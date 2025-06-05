@@ -14,10 +14,10 @@ export async function createGraduatedAssistance(
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: 'include',
       body: JSON.stringify(data),
     }
   );
-
   if (!response.ok) {
     throw new Error("Failed to create assistance.");
   }

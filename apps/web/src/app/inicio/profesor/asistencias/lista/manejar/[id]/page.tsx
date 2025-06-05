@@ -12,6 +12,7 @@ import {
   getGraduatedAssistanceById,
 } from "@/app/services/assistance.service";
 import { GraduatedAssistance } from "@/app/types/entities/graduated-assistance.type";
+import SpinnerPage from "@/components/shared/spinner-page";
 
 /**
  * AssistanceManagePage Component
@@ -39,7 +40,7 @@ export default function AssistanceManagePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [assistance, setAssistance] =
-  useState<GraduatedAssistance | null>(null);
+    useState<GraduatedAssistance | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -113,69 +114,60 @@ export default function AssistanceManagePage() {
     }
   };
 
+  if (isLoading) return <SpinnerPage />
 
   return (
     <div className="container mx-auto py-6 px-4">
-      {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 text-core-highlight">
-            &quot;
+      <h1 className="sr-only">Detalle asistencia graduada</h1>
+      <TabApplicants general={generalProps} status={statusProps} handleDetails={handleDetails}>
+        <div className="mt-8">
+          <h3 className="text-xl font-medium text-core-highlight">
+            Requisitos
+          </h3>
+          <ul className="space-y-3 p-4">
+            {assistance?.requirements?.map((req) => (
+              <li key={req.id} className="flex items-start gap-3">
+                <CircleCheck className="w-10 h-7 mb-0.1 text-core-highlight" />
+                <div>
+                  <p className="text-primary">{req.description}</p>
+                  <hr className="h-[1px] w-[750px] my-2 border-0 bg-ring" />
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex gap-4 mt-8 justify-center justify-items-center">
+            <Button
+              className="px-8 w-32"
+              onClick={() => {
+                if (assistance) {
+                  handleEditClick(assistance.id);
+                }
+              }}
+            >
+              Editar
+            </Button>
+            <Button
+              variant="destructive"
+              className="hover:bg-red-700 px-8 w-32"
+              onClick={() => setIsModalOpen(true)}
+            >
+              Eliminar
+            </Button>
+
+            <ConfirmationModal
+              dialogText={dialogTextAccepted}
+              onConfirm={() => {
+                if (assistance) {
+                  handleConfirmDeletion(assistance.id);
+                }
+              }}
+              open={isModalOpen}
+              setIsOpen={setIsModalOpen}
+            />
           </div>
         </div>
-      ) : (
-        <>
-          <h1 className="sr-only">Detalle asistencia graduada</h1>
-          <TabApplicants general={generalProps} status={statusProps} handleDetails={handleDetails}>
-            <div className="mt-8">
-              <h3 className="text-xl font-medium text-core-highlight">
-                Requisitos
-              </h3>
-              <ul className="space-y-3 p-4">
-                {assistance?.requirements?.map((req) => (
-                  <li key={req.id} className="flex items-start gap-3">
-                    <CircleCheck className="w-10 h-7 mb-0.1 text-core-highlight" />
-                    <div>
-                      <p className="text-primary">{req.description}</p>
-                      <hr className="h-[1px] w-[750px] my-2 border-0 bg-ring" />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="flex gap-4 mt-8 justify-center justify-items-center">
-                <Button
-                  className="px-8 w-32"
-                  onClick={() => {
-                    if (assistance) {
-                      handleEditClick(assistance.id);
-                    }
-                  }}
-                >
-                  Editar
-                </Button>
-                <Button
-                  variant="destructive"
-                  className="hover:bg-red-700 px-8 w-32"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  Eliminar
-                </Button>
-
-                <ConfirmationModal
-                  dialogText={dialogTextAccepted}
-                  onConfirm={() => {
-                    if (assistance) {
-                      handleConfirmDeletion(assistance.id);
-                    }
-                  }}
-                  open={isModalOpen}
-                  setIsOpen={setIsModalOpen}
-                />
-              </div>
-            </div>
-          </TabApplicants>
-        </>
-      )}
+      </TabApplicants>
     </div>
   );
 }

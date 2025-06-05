@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { GraduatedAssistancesService } from './graduated-assistances.service';
 import { CreateGraduatedAssistanceDto } from './dto/create-graduated-assistance.dto';
 import { UpdateGraduatedAssistanceDto } from './dto/update-graduated-assistance.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('graduated-assistances')
 export class GraduatedAssistancesController {
@@ -19,13 +21,14 @@ export class GraduatedAssistancesController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(
     @Body() createGraduatedAssistanceDto: CreateGraduatedAssistanceDto,
-    @Query('professorDocument') professorDocument: string,
+    @Req() req: Request & { user: { id: string } },
   ) {
     return this.graduatedAssistancesService.create(
       createGraduatedAssistanceDto,
-      professorDocument,
+      req.user.id,
     );
   }
 

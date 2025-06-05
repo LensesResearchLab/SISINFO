@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { CreatePeriodDto } from '../../periods/dto/create-period.dto';
 
 export class CreateGraduatedAssistanceDto {
   @IsString()
@@ -15,7 +14,9 @@ export class CreateGraduatedAssistanceDto {
   @IsNotEmpty()
   description: string;
 
-  period: CreatePeriodDto;
+  @IsString()
+  @IsNotEmpty()
+  period: string;
 
   @IsNotEmpty()
   requirements: string[];

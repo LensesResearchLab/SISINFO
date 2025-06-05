@@ -1,10 +1,12 @@
 "use client";
 
-import { getAssistanceStatusByIdWithDocument } from "@/app/services/assistance.service";
+import { getAssistanceStatusByIdWithDocument, updateAssistanceApplication } from "@/app/services/assistance.service";
 import { useQuery } from "@tanstack/react-query";
 import { use, useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, FileText } from "lucide-react";
+/* import { ArrowLeft, ArrowRight, FileText } from "lucide-react"; */
+import { FileText } from "lucide-react";
 import SpinnerPage from "@/components/shared/spinner-page";
+import { Button } from "@/components/ui/button";
 
 /**
  * ApplicationDetail Component
@@ -36,6 +38,7 @@ export default function ApplicationDetail({
 }) {
   const { applicationId } = use(params);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
 
   const {
     data: application,
@@ -45,6 +48,7 @@ export default function ApplicationDetail({
     queryKey: [`assitance-application-${applicationId}`],
     queryFn: () => getAssistanceStatusByIdWithDocument(applicationId),
   });
+
 
   useEffect(() => {
     if (application?.document?.file?.data) {
@@ -56,6 +60,14 @@ export default function ApplicationDetail({
     }
   }, [application]);
   if (isFetching) return <SpinnerPage />
+  const onAccept = () => {
+    setStatus('Aceptado');
+    updateAssistanceApplication(applicationId, { status: "Aceptado" });
+  }
+  const onReject = () => {
+    setStatus('Rechazado');
+    updateAssistanceApplication(applicationId, { status: "Rechazado" });
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 min-h-full p-6 w-full">
@@ -69,6 +81,9 @@ export default function ApplicationDetail({
             pdfUrl={pdfUrl ?? "#"}
             name={application?.student?.name}
             email={application?.student?.email}
+            onAccept={onAccept}
+            onReject={onReject}
+            status={status ?? application.status}
           />
         )}
       </div>
@@ -97,6 +112,7 @@ interface StudentProfileProps {
   readonly name?: string;
   readonly email?: string;
   readonly pdfUrl?: string;
+  readonly status?: string;
   readonly onAccept?: () => void;
   readonly onReject?: () => void;
   readonly onPrevious?: () => void;
@@ -109,8 +125,9 @@ function StudentProfileCard({
   pdfUrl = "#",
   onAccept = () => console.log("Accepted"),
   onReject = () => console.log("Rejected"),
-  onPrevious = () => console.log("Previous applicant"),
-  onNext = () => console.log("Next applicant"),
+  status = '',
+  /*   onPrevious = () => console.log("Previous applicant"),
+    onNext = () => console.log("Next applicant"), */
 }: StudentProfileProps) {
   return (
     <div className="w-full">
@@ -121,6 +138,9 @@ function StudentProfileCard({
 
           <p className="text-lg font-medium mb-1">Correo:</p>
           <p className="text-xl mb-4 font-semibold text-foreground">{email}</p>
+
+          <p className="text-lg font-medium mb-1">Estado:</p>
+          <p className="text-xl mb-4 font-semibold text-foreground">{status}</p>
 
           <a
             href={pdfUrl}
@@ -135,24 +155,23 @@ function StudentProfileCard({
           <div className="border-b border-gray-300 mb-6"></div>
 
           <div className="space-y-3">
-            <button
+            <Button
               onClick={onAccept}
-              className="w-full py-3 bg-core text-white font-medium rounded-lg hover:bg-core-highlight transition-colors"
+              className="w-full py-3 text-white font-medium rounded-lg transition-colors"
             >
               Aceptar solicitud
-            </button>
-
-            <button
+            </Button>
+            <Button
               onClick={onReject}
               className="w-full py-3 bg-[#e56b6b] text-white font-medium rounded-lg hover:bg-[#d45c5c] transition-colors"
             >
               Rechazar solicitud
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
-      <div className="flex justify-between gap-2">
+      {/*       <div className="flex justify-between gap-2">
         <button
           onClick={onPrevious}
           className="flex items-center gap-2 bg-core text-white px-4 py-2 rounded-lg hover:bg-core-highlight transition-colors flex-1"
@@ -176,7 +195,7 @@ function StudentProfileCard({
           </span>
           <ArrowRight className="w-5 h-5" />
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

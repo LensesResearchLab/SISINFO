@@ -2,7 +2,6 @@ import 'reflect-metadata';
 
 import { validate } from 'class-validator';
 import { CreateGraduatedAssistanceDto } from './create-graduated-assistance.dto';
-import { CreatePeriodDto } from '../../periods/dto/create-period.dto';
 
 export function createValidGraduatedAssistanceDto(
   overrides: Partial<CreateGraduatedAssistanceDto> = {},
@@ -11,7 +10,7 @@ export function createValidGraduatedAssistanceDto(
   dto.category = 'Investigation';
   dto.description = 'Description 1';
   dto.endDate = new Date();
-  dto.period = {} as CreatePeriodDto;
+  dto.period = '202510';
   dto.requirements = [];
   dto.startDate = new Date();
   dto.title = 'assistance 1';
@@ -30,12 +29,13 @@ describe('CreateCourseDto validation', () => {
       category: '',
       description: '',
       title: '',
+      period: '',
     });
 
     const errors = await validate(dto);
     expect(errors.length).toBeGreaterThan(0);
 
-    ['category', 'description', 'title'].forEach((field) => {
+    ['category', 'description', 'title', 'period'].forEach((field) => {
       const error = errors.find((error) => error.property === field);
       expect(error?.constraints).toBeDefined();
       expect(error?.constraints).toHaveProperty('isNotEmpty');

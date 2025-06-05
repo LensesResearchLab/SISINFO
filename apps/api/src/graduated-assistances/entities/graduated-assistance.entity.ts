@@ -33,7 +33,9 @@ export class GraduatedAssistance extends Base {
   @Column({ type: 'date', nullable: true })
   endDate: Date;
 
-  @ManyToMany(() => Requirement, (requirement) => requirement.assistances)
+  @ManyToMany(() => Requirement, (requirement) => requirement.assistances, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable({ name: 'graduated_assistance_requirements' })
   requirements: Requirement[];
 
@@ -54,6 +56,9 @@ export class GraduatedAssistance extends Base {
   @OneToMany(
     () => AssistanceApplication,
     (assistanceApplication) => assistanceApplication.graduatedAssistance,
+    {
+      onDelete: 'CASCADE',
+    },
   )
   assistanceApplications: AssistanceApplication[];
 }

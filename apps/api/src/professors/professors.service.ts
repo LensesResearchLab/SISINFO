@@ -61,8 +61,12 @@ export class ProfessorsService implements RoleService {
     return filteredSections;
   }
 
-  findOne(id: string) {
-    return this.professorRepository.findOne({ where: { id } });
+  async findOne(id: string) {
+    const professor = await this.professorRepository.findOne({ where: { id } });
+    if (!professor) {
+      throw new NotFoundException(`Professor with id ${id} not found`);
+    }
+    return professor;
   }
 
   findByName(name: string) {

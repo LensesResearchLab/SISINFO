@@ -33,30 +33,16 @@ export class GraduatedAssistancesService {
     professorDocument: string,
   ): Promise<GraduatedAssistance> {
     const requirements = createGraduatedAssistanceDto.requirements;
-    let period = await this.periodsService.findOneByPeriodAndYear(
-      createGraduatedAssistanceDto.period.period,
-      createGraduatedAssistanceDto.period.year,
+    const period = await this.periodsService.findOneByPeriodAndYearString(
+      createGraduatedAssistanceDto.period,
     );
     const professor = await this.professorsService.findOne(professorDocument);
-
-    if (!period) {
-      period = await this.periodsService.create(
-        createGraduatedAssistanceDto.period,
-      );
-    }
-    if (!professor) {
-      throw new NotFoundException(
-        `Professor with document ${professorDocument} not found`,
-      );
-    }
-
     const requirementsCreated: Requirement[] = [];
     for (const requirement of requirements) {
       const descriptionValue =
         typeof requirement === 'object' && requirement !== null
           ? (requirement as { description: string }).description
           : requirement;
-
       const createRequirementDto: CreateRequirementDto = {
         description: descriptionValue,
       };
@@ -70,7 +56,6 @@ export class GraduatedAssistancesService {
       professor: professor,
       requirements: requirementsCreated,
     });
-
     const savedAssistance =
       await this.graduatedAssistanceRepository.save(graduatedAssistance);
     return savedAssistance;
@@ -131,23 +116,7 @@ export class GraduatedAssistancesService {
   }
 
   async remove(id: string): Promise<void> {
-    const assistance = await this.graduatedAssistanceRepository.findOne({
-      where: { id },
-      relations: ['requirements', 'assistanceApplications'],
-    });
-
-    if (!assistance) {
-      throw new Error(`GraduatedAssistance with ID ${id} not found`);
-    }
-
-    // Deletes first requirements and applications linked
-    await this.requirementRepository.delete({
-      id: In(assistance.requirements.map((r) => r.id)),
-    });
-
-    await this.applicationRepository.delete({
-      id: In(assistance.assistanceApplications.map((r) => r.id)),
-    });
-    await this.graduatedAssistanceRepository.delete(id);
+    const assistance = await this.findOne(id);
+    await this.graduatedAssistanceRepository.remove(assistance);
   }
 }

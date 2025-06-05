@@ -228,7 +228,6 @@ export default function EditAssistancePage() {
               ))}
               <Button
                 type="button"
-                variant="outline"
                 onClick={addRequirement}
                 className="w-full"
               >
@@ -241,7 +240,6 @@ export default function EditAssistancePage() {
           <div className="flex gap-4 justify-center mt-8">
             <Button
               type="button"
-              variant="outline"
               onClick={() => router.back()}
               className="w-32"
               disabled={isSaving}
