@@ -119,9 +119,9 @@ cd ..
 
 4. Abre el archivo ubicado en `apps/api/app.module.ts`.
    **Elimina** la linea:
-   ```typescript
-   ssl: { rejectUnauthorized: false },
-
+```typescript
+ssl: { rejectUnauthorized: false },
+```
 5. Inicia el servidor de desarrollo:
 
 ```bash
