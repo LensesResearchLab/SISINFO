@@ -12,7 +12,7 @@ import {
 import { GraduatedAssistancesService } from './graduated-assistances.service';
 import { CreateGraduatedAssistanceDto } from './dto/create-graduated-assistance.dto';
 import { UpdateGraduatedAssistanceDto } from './dto/update-graduated-assistance.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('graduated-assistances')
 export class GraduatedAssistancesController {
