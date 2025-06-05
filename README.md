@@ -117,8 +117,8 @@ docker-compose up -d
 cd ..
 ```
 
-4. Open the file located at `apps/api/app.module.ts`.
-   **Remove** the line:
+4. Abre el archivo ubicado en `apps/api/app.module.ts`.
+   **Elimina** la linea:
    ```typescript
    ssl: { rejectUnauthorized: false },
 
@@ -152,7 +152,6 @@ Para un entorno de producción se requiere una base de datos real provisionada (
 
 1. Crea y configura el archivo `.env` con las variables reales de producción.
 2. Construye el proyecto e inicia el servidor en modo producción:
-
 ```bash
 npm run prod
 ```
