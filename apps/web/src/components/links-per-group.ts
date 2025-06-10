@@ -158,7 +158,7 @@ export const administratorData = [
 
 export const professorData = [
   {
-    title: "Proyecto de pregrado",
+    title: "Proyecto de grado",
     url: "pregrado",
     icon: GraduationCap,
     items: [

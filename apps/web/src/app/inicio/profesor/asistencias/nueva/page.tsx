@@ -127,7 +127,6 @@ export default function GraduateAssistanceForm() {
     createGraduatedAssistance(payload)
       .then(() => {
         setIsModalOpen(false);
-        console.log("Assistance created");
       })
       .catch((error) => {
         setIsModalOpen(false);
@@ -150,7 +149,7 @@ export default function GraduateAssistanceForm() {
 
   return (
     <div
-      className="max-w-3xl mx-auto p-4 bg-subtable"
+      className="max-w-3xl mx-auto p-4"
     >
       <Card className="border-none w-3xl">
         <CardHeader className="text-core">

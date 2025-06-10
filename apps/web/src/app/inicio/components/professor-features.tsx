@@ -25,7 +25,7 @@ export default function ProfessorFeatures({
 }) {
   // List of professor-related feature titles to be displayed
   const professorFeatures = [
-    "Proyecto de pregrado",
+    "Proyecto de grado",
     "Proyecto de maestría",
     "Asistencias graduadas",
     "Monitores",

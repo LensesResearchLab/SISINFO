@@ -49,7 +49,7 @@ const columns: ColumnDef<User>[] = [
       return (
         <div className="flex flex-wrap gap-2">
           {(roles ?? []).map((role: string) => {
-            const colorClasses = roleColorMap[role] || "bg-gray-100 text-gray-800 border border-gray-800";
+            const colorClasses = roleColorMap[role] ?? "bg-gray-100 text-gray-800 border border-gray-800";
             return (
               <Badge
                 key={role}
@@ -106,7 +106,7 @@ export default function UserList() {
   );
 }
 
-function RoleSelector({ user }: { user: User }) {
+function RoleSelector({ user }: { readonly user: User }) {
   const [roles, setRoles] = useState(user.roles ?? []);
   const [loading, setLoading] = useState(false);
   const userId = useRolesStore((state) => state.userId);

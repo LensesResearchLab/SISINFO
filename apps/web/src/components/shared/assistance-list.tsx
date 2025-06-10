@@ -83,7 +83,7 @@ export function AssistanceList({
 }: AssistanceListProps) {
   const [data, setData] = useState<GraduatedAssistance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedSemester, setSelectedSemester] = useState("all");
+  const [selectedSemester, setSelectedSemester] = useState("");
   const [showOnlyMyAssistance, setShowOnlyMyAssistance] = useState(false);
   const [nameFilter, setNameFilter] = useState("");
   const router = useRouter();
@@ -164,7 +164,7 @@ export function AssistanceList({
   const filteredData = useMemo(() => {
     let result = [...data];
 
-    if (selectedSemester !== "all") {
+    if (selectedSemester !== "") {
       result = result.filter((item) => {
         const date = new Date(item.startDate);
         const year = date.getFullYear();

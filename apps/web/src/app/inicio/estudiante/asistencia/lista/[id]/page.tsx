@@ -535,19 +535,18 @@ function UploadCV({
         </p>
       </div>
 
-      <div
-        role="button"
-        tabIndex={0}
+      <button
+        type="button"
         onClick={handleActivateInput}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
+            event.preventDefault(); // opcional con <button>
             handleActivateInput();
           }
         }}
-        className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
+        className="w-full border-2 border-dashed rounded-lg p-6 text-center cursor-pointer"
       >
         {!file ? (
           <div>
@@ -584,7 +583,7 @@ function UploadCV({
             </Button>
           </div>
         )}
-      </div>
+      </button>
     </div>
   );
 }

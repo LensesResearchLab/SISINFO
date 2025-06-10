@@ -111,7 +111,6 @@ export class ProjectsService {
     if (!project) {
       throw new NotFoundException(`Project with id ${id} not found`);
     }
-    console.debug(JSON.stringify(project));
     return project;
   }
 

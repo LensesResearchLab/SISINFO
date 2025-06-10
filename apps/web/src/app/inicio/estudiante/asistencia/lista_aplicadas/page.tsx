@@ -1,51 +1,19 @@
 "use client";
 import * as React from "react";
-import {
-  ColumnDef,
-  SortingState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { Search } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { StatusInformation } from "@/app/types/entities/graduated-assistance.type";
 import Link from "next/link";
-import { ROUTES } from "@/app/routes";
-import SpinnerPage from "@/components/shared/spinner-page";
-import { getAssistanceApplications } from "@/app/services/assistance.service";
-import { useEffect } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useEffect, useMemo, useState } from "react";
+import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { getAssistanceApplications } from "@/app/services/assistance.service";
 import { getPeriods } from "@/app/services/period.service";
+import { useAuth } from "@/hooks/use-auth";
+import SpinnerPage from "@/components/shared/spinner-page";
+import { ROUTES } from "@/app/routes";
+import { StatusInformation } from "@/app/types/entities/graduated-assistance.type";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DataTable } from "@/components/data-table";
+import type { ColumnDef } from "@tanstack/react-table";
 
-/**
- * Column definitions for the AssistanceAppliedList table
- *
- * Defines the structure and behavior of each column in the table,
- * including custom cell rendering for dates and the "Ver" (View) column.
- *
- * @type {ColumnDef<StatusInformation>[]}
- */
 const columns: ColumnDef<StatusInformation>[] = [
   {
     id: "title",
@@ -54,7 +22,7 @@ const columns: ColumnDef<StatusInformation>[] = [
   },
   {
     accessorKey: "graduatedAssistance.category",
-    header: "Clasificacion",
+    header: "Clasificación",
   },
   {
     accessorKey: "graduatedAssistance.professor.user.name",
@@ -62,7 +30,7 @@ const columns: ColumnDef<StatusInformation>[] = [
   },
   {
     accessorKey: "graduatedAssistance.startDate",
-    header: "Fecha de Inscripcion",
+    header: "Fecha de Inscripción",
     cell: ({ getValue }) => {
       const dateStr = getValue() as string;
       const date = new Date(dateStr);
@@ -76,41 +44,23 @@ const columns: ColumnDef<StatusInformation>[] = [
   {
     id: "ver",
     header: "Ver",
-    cell: ({ row }) => {
-      return (
-        <Link
-          href={`${ROUTES.HOME}/${ROUTES.ASSISTANCE_APPLIED_LIST}/${row.original.id}`}
-          className="inline-flex items-center justify-cente hover:underline"
-        >
-          <Search className="w-5 h-5 text-core" />
-        </Link>
-      );
-    },
+    cell: ({ row }) => (
+      <Link
+        href={`${ROUTES.HOME}/${ROUTES.ASSISTANCE_APPLIED_LIST}/${row.original.id}`}
+        className="inline-flex items-center justify-center hover:underline"
+      >
+        <Search className="w-5 h-5 text-core" />
+      </Link>
+    ),
   },
 ];
 
-/**
- * AssistanceAppliedList Component
- *
- * Displays a table of applied graduate assistances with filtering, sorting, and pagination capabilities.
- *
- * Features:
- * - Fetches and displays assistance application data
- * - Allows filtering by semester
- * - Provides search functionality by assistance name
- * - Supports column visibility toggling
- * - Implements table sorting and pagination
- *
- * @returns {JSX.Element} A div containing the assistance applied list table and its controls
- */
 export default function AssistanceAppliedList() {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [data, setData] = React.useState<StatusInformation[]>([]);
-  const [selectedSemester, setSelectedSemester] = React.useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<StatusInformation[]>([]);
+  const [selectedSemester, setSelectedSemester] = useState<string>("");
 
   const { user, isLoading: isAuthLoading } = useAuth();
-
   const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
     queryKey: ["undergraduate-semesters"],
     queryFn: getPeriods,
@@ -118,11 +68,10 @@ export default function AssistanceAppliedList() {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!user?.id) return;
       try {
-        if (!user?.id) return;
-        const userId = user?.id;
-        const assistanceData = await getAssistanceApplications(userId);
-        setData(assistanceData);
+        const result = await getAssistanceApplications(user.id);
+        setData(result);
       } catch (error) {
         console.error("Error fetching assistance data:", error);
       } finally {
@@ -130,12 +79,10 @@ export default function AssistanceAppliedList() {
       }
     };
 
-    if (!isAuthLoading) {
-      fetchData();
-    }
+    if (!isAuthLoading) fetchData();
   }, [isAuthLoading, user]);
 
-  const filteredData = React.useMemo(() => {
+  const filteredData = useMemo(() => {
     if (!selectedSemester) return data;
 
     return data.filter((item) => {
@@ -143,24 +90,9 @@ export default function AssistanceAppliedList() {
       const year = date.getFullYear();
       const month = date.getMonth() + 1;
       const semester = month <= 6 ? "10" : "20";
-      const formattedSemester = `${year}${semester}`;
-
-      return formattedSemester === selectedSemester;
+      return `${year}${semester}` === selectedSemester;
     });
   }, [selectedSemester, data]);
-
-  const table = useReactTable({
-    data: filteredData,
-    columns,
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-    },
-  });
 
   if (isLoading || isLoadingSemesters) {
     return <SpinnerPage />;
@@ -169,120 +101,26 @@ export default function AssistanceAppliedList() {
   return (
     <div className="min-h-full min-w-full p-20">
       <div className="bg-card rounded-lg shadow-lg p-6">
-        <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center gap-4">
-              <Select
-                value={selectedSemester}
-                onValueChange={setSelectedSemester}
-              >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Elige un semestre" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.isArray(semesters) &&
-                    semesters.map((semester: string) => (
-                      <SelectItem value={semester} key={semester}>
-                        {semester}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-left gap-4">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar una asistencia"
-                  className="pl-8 w-[300px]"
-                  value={
-                    (table.getColumn("title")?.getFilterValue() as string) ?? ""
-                  }
-                  onChange={(event) =>
-                    table.getColumn("title")?.setFilterValue(event.target.value)
-                  }
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader className="bg-core">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead
-                          className="text-card font-bold"
-                          key={header.id}
-                        >
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
+        <div className="flex items-center justify-between mb-4">
+          <Select
+            value={selectedSemester}
+            onValueChange={setSelectedSemester}
+          >
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Elige un semestre" />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.isArray(semesters) &&
+                semesters.map((semester: string) => (
+                  <SelectItem value={semester} key={semester}>
+                    {semester}
+                  </SelectItem>
                 ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      className="bg-card text-primary"
-                      data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center bg-card text-primary"
-                    >
-                      Sin resultados.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-          <div className="flex items-center justify-end space-x-2 py-4">
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-card  text-primary"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Anterior
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-card text-primary"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                Siguiente
-              </Button>
-            </div>
-          </div>
+            </SelectContent>
+          </Select>
         </div>
+
+        <DataTable columns={columns} data={filteredData} enableRowSelection={false} />
       </div>
     </div>
   );

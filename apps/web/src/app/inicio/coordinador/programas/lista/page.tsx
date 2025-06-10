@@ -76,7 +76,7 @@ export default function ProgramsList() {
     <div className="min-w-full mx-auto p-4">
       <Card className="bg-card border-none">
         <CardHeader>
-          <CardTitle className="text-center">Listado de Programas</CardTitle>
+          <CardTitle className="text-center text-core">Listado de Programas</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">

@@ -46,7 +46,7 @@ const baseColumns: ColumnDef<Task>[] = [
     accessorKey: "date",
     header: "Fecha",
     cell: ({ row }) => {
-      const parsed = new Date(row.getValue("date") as string);
+      const parsed = new Date(row.getValue("date"));
       return isNaN(parsed.getTime()) ? "Sin fecha" : parsed.toLocaleDateString();
     },
   },
@@ -60,8 +60,8 @@ const baseColumns: ColumnDef<Task>[] = [
       if (!user) return "—";
       return (
         <div>
-          <div className="font-semibold">{user.name || "Sin nombre"}</div>
-          <div className="text-xs text-muted-foreground">{code || "Sin código"}</div>
+          <div className="font-semibold">{user.name ?? "Sin nombre"}</div>
+          <div className="text-xs text-muted-foreground">{code ?? "Sin código"}</div>
         </div>
       );
     },
@@ -74,7 +74,7 @@ const baseColumns: ColumnDef<Task>[] = [
 ];
 
 
-function ActionsCell({ row }: { row: { original: Task } }) {
+function ActionsCell({ row }: { readonly row: { original: Task } }) {
   const router = useRouter();
   const task = row.original;
   return (
@@ -132,8 +132,8 @@ export default function Tasks() {
           return {
             ...task,
             step: stepNumber,
-            title: stepInfo?.title || "Sin título",
-            description: stepInfo?.description || "Sin descripción",
+            title: stepInfo?.title ?? "Sin título",
+            description: stepInfo?.description ?? "Sin descripción",
             date: task.date ? new Date(task.date) : new Date(),
           } as Task;
         });
@@ -169,7 +169,7 @@ export default function Tasks() {
 }
 
 interface TasksTableProps {
-  role: string;
+  readonly role: string;
 }
 
 function TasksTable({ role }: TasksTableProps) {

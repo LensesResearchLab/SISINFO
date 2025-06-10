@@ -81,7 +81,7 @@ export function ConfirmationModal({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction onClick={handleConfirm}>
-            {dialogText.buttonText || "Confirmar"}
+            {dialogText.buttonText ?? "Confirmar"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

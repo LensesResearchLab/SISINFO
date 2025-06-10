@@ -59,11 +59,11 @@ export default function CourseList() {
                 oldData?.map((course) =>
                   course.courseId === row.original.courseId
                     ? {
-                        ...course,
-                        professorId: newProfessor.id,
-                        professorName: newProfessor.name,
-                        email: newProfessor.email,
-                      }
+                      ...course,
+                      professorId: newProfessor.id,
+                      professorName: newProfessor.name,
+                      email: newProfessor.email,
+                    }
                     : course
                 ) ?? []
             );
@@ -75,7 +75,6 @@ export default function CourseList() {
 
   if (isFetching) return <SpinnerPage />;
   if (isError) return <ErrorPage />;
-
   return (
     <div className="min-h-full mx-auto p-4 space-y-8 container">
       <div className="w-full bg-card text-foreground shadow-lg rounded-xl p-5 h-full space-y-4">
@@ -93,7 +92,6 @@ function ProfessorListPopover({
   onAssigned,
 }: {
   readonly courseId: string;
-  readonly currentProfessorId?: string;
   readonly onAssigned?: (newProfessor: User) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -108,7 +106,7 @@ function ProfessorListPopover({
 
   const filtered = data?.filter((prof: User) =>
     prof.name.toLowerCase().includes(search.toLowerCase())
-  );
+  ) ?? [];
 
   const handleAssign = async (professor: User) => {
     try {
@@ -142,13 +140,14 @@ function ProfessorListPopover({
               No se encontraron profesores.
             </li>
           ) : (
-            filtered?.map((prof: User) => (
-              <li
-                key={prof.id}
-                onClick={() => handleAssign(prof)}
-                className="cursor-pointer hover:bg-core-highlight px-2 py-1 rounded-md text-sm"
-              >
-                {prof.name}
+            filtered.map((prof: User) => (
+              <li key={prof.id}>
+                <button
+                  onClick={() => handleAssign(prof)}
+                  className="w-full text-left cursor-pointer hover:bg-core-highlight px-2 py-1 rounded-md text-sm"
+                >
+                  {prof.name}
+                </button>
               </li>
             ))
           )}

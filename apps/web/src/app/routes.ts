@@ -75,7 +75,6 @@ export const ROUTES: Record<string, string> = {
 
   TASK_LIST: "/tareas",
 };
-console.log("ENV:", process.env.NEXT_PUBLIC_API_URL);
 export const API_ROUTES: Record<string, string> = {
   
   BASE: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api",

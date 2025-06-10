@@ -198,7 +198,7 @@ function AccordionList({
 
   if (hasNoResults) {
     return (
-      <div className="text-center py-6 text-muted-foreground text-sm">
+      <div className="text-center py-6 text-foreground text-sm">
         No se encontraron resultados.
       </div>
     );
