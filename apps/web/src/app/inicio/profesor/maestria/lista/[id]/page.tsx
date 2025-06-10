@@ -50,7 +50,7 @@ export default function StudentDetail() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-4 bg-subtable">
+    <div className="max-w-3xl mx-auto p-4">
       <Tabs defaultValue="profile" className="w-3xl">
         <StudentTabList/>
         <ProfileTab student={student} />
@@ -76,20 +76,20 @@ function PlanDetailsTab({others, courses}: {readonly others: Course[], readonly 
         <CardContent className="w-full space-y-6">
           <div className="grid grid-cols-[2fr_3fr] gap-8 w-full pt-6">
             <div className="space-y-6 w-full">
-              {courses?.map((item, index) => (
-                <RenderFields key={index} label="Curso" value={item.name} />
+              {courses?.map((course) => (
+                <RenderFields key={course.id} label="Curso" value={course.name} />
               ))}
             </div>
             <div className="space-y-6 w-full">
-              {courses?.map((item) => (
+              {courses?.map((course) => (
                 <div
-                  key={item.id}
+                  key={course.id}
                   className="flex w-full columns-2 items-center space-x-4"
                 >
                   <RenderFields
                     label="Semestre"
                     className="flex-grow"
-                    value={item.name}
+                    value={course.name}
                   />
                   <Check className="flex-shrink-0 text-core-highlight"/>
                 </div>

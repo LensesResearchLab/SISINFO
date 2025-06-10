@@ -51,7 +51,6 @@ export class PeriodsService {
 
   async findCurrentPeriod(): Promise<Period> {
     const periods = await this.periodRepository.find();
-
     if (periods.length === 0) {
       throw new Error('No periods found');
     }
@@ -71,13 +70,19 @@ export class PeriodsService {
         return current;
       }
       return prev;
-    });
+    }, periods[0]);
 
     return currentPeriod;
   }
 
   async findOneByPeriodAndYear(period: string, year: number) {
-    return await this.periodRepository.findOne({ where: { period, year } });
+    const periodFound = await this.periodRepository.findOne({
+      where: { period, year },
+    });
+    if (!periodFound) {
+      throw new PreconditionFailedException('Periodo no encontrado');
+    }
+    return periodFound;
   }
 
   async findOneByPeriodAndYearString(periodStr: string) {
@@ -86,11 +91,7 @@ export class PeriodsService {
     }
     const yearInt = Number(periodStr.slice(0, 4));
     const periodInt = periodStr.slice(4);
-    const period = await this.findOneByPeriodAndYear(periodInt, yearInt);
-    if (!period) {
-      throw new PreconditionFailedException('Periodo no encontrado');
-    }
-    return period;
+    return await this.findOneByPeriodAndYear(periodInt, yearInt);
   }
 
   update(id: number, updatePeriodDto: UpdatePeriodDto) {

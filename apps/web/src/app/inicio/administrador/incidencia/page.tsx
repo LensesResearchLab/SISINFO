@@ -104,7 +104,7 @@ function ActionCell({ incidence }: { readonly incidence: Incidence }) {
   const [isClosing, setIsClosing] = useState(false);
   const queryClient = useQueryClient();
 
-  const completed = incidence.isClosed || isClosing;
+  const completed = incidence.isClosed? true: isClosing;
 
   const handleClose = async () => {
     setIsClosing(true);

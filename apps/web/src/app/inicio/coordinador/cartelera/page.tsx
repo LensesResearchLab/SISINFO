@@ -44,7 +44,6 @@ export default function UploadBillboard() {
 
     if (!worksheet) {
       setLoadError(true);
-      return;
     }
   };
   const handlePeriodChange = (value: string) => {

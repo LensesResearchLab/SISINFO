@@ -147,7 +147,6 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
     const userApplications = await getPostgraduateThesisStatus();
     if (userApplications) {
       setHasExistingApplication(true);
-      return;
     }
     else {
       await postThesisApplication(thesisId);
@@ -311,7 +310,7 @@ function MotivationTextArea({
 }) {
   return (
     <div className="space-y-2">
-      <label className="text-sm text-gray-600">
+      <label htmlFor="motivation-textarea" className="text-sm text-gray-600">
         Escribe aquí las razones por las que quieres aplicar y tus conocimientos
         relevantes
       </label>

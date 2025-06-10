@@ -105,7 +105,7 @@ export function InformationCard({
           <div className="flex items-start gap-4 h-full">
             {/* Icon container */}
             <div className="p-2 rounded-full bg-core-soft">
-              <Icon className="w-6 h-6 text-primary" aria-hidden="true" />
+              <Icon className="w-6 h-6 text-black" aria-hidden="true" />
             </div>
             {/* Title and description */}
             <div className="space-y-2 flex-1">
