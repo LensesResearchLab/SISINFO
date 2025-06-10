@@ -36,7 +36,6 @@ export class SidebarPage {
   }
 
   async clickMenuItem(itemText: string): Promise<void> {
-    console.log(itemText)
     await this.page.locator(`span:has-text("${itemText.trim()}")`).click();
 
   }

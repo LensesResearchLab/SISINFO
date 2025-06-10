@@ -11,6 +11,7 @@ import { CoursesService } from '../courses/courses.service';
 import { SectionsService } from '../sections/sections.service';
 import { ProfessorsService } from '../professors/professors.service';
 import { Professor } from '../professors/entities/professor.entity';
+import { Period } from '../periods/entities/period.entity';
 
 @Injectable()
 export class BillboardsService {
@@ -24,166 +25,190 @@ export class BillboardsService {
     private readonly professorService: ProfessorsService,
   ) {}
 
-  async create(sectionsDto: CreateSectionDto[]) {
-    const billboardCoursesMap = new Map<string, Course>();
+  async getOrCreatePeriodBySectionDto(sectionDto: CreateSectionDto) {
+    const mapPeriod = (raw: string) => (raw.startsWith('1') ? '10' : '20');
+    const year = Number(sectionDto.period.slice(0, 4));
+    const semester = sectionDto.period.slice(4, 5);
+    const rawPeriod = sectionDto.period.slice(4, 6);
+    const periodStr = mapPeriod(rawPeriod);
 
+    let foundPeriod = await this.periodsService.findOneByPeriodAndYear(
+      periodStr,
+      year,
+    );
+
+    foundPeriod ??= await this.periodsService.create({
+      period: periodStr,
+      year: year,
+      semester: semester === '1' ? 1 : 2,
+    });
+
+    return foundPeriod;
+  }
+
+  async getOrCreateSectionBySectionDto(
+    sectionDto: CreateSectionDto,
+    period: Period,
+    foundProfessors: Professor[],
+    supportProfessors: Professor[],
+  ) {
+    const existingSection = await this.sectionService.findByNRCAndPeriod(
+      sectionDto.NRC,
+      period,
+    );
+
+    let sectionToUse: Section;
+    if (existingSection != null) {
+      sectionToUse = await this.sectionService.updateProfessorsSection(
+        existingSection,
+        foundProfessors,
+        supportProfessors,
+      );
+    } else {
+      const newSectionDto = new CreateSectionDto();
+      newSectionDto.NRC = sectionDto.NRC;
+      newSectionDto.section = sectionDto.section;
+      if (foundProfessors.length === 0 && supportProfessors.length === 0) {
+        throw new Error('No professors found for the section');
+      }
+      sectionToUse = await this.sectionService.create(
+        newSectionDto,
+        supportProfessors,
+        foundProfessors,
+        period,
+      );
+    }
+    return sectionToUse;
+  }
+
+  async getOrCreateCourseBySectionDto(
+    sectionDto: CreateSectionDto,
+    period: Period,
+    sectionToUse: Section,
+  ) {
+    let existingCourse = await this.courseService.findByCodeAndPeriod(
+      sectionDto.code,
+      period,
+    );
+    if (existingCourse) {
+      const sectionAlreadyIncluded = existingCourse.sections?.some(
+        (sec) => sec.NRC === sectionToUse.NRC,
+      );
+      if (!sectionAlreadyIncluded) {
+        existingCourse = await this.courseService.updateSections(
+          sectionToUse,
+          existingCourse,
+        );
+      }
+    } else {
+      const courseDto = new CreateCourseDto();
+      courseDto.code = sectionDto.code;
+      courseDto.credits = +sectionDto.credits;
+      courseDto.departament = sectionDto.departament;
+      courseDto.name = sectionDto.name;
+      existingCourse = await this.courseService.create(courseDto, sectionToUse);
+    }
+    return existingCourse;
+  }
+
+  async getProfessors(section: CreateSectionDto) {
     const normalizeName = (name: string) =>
       name.toLowerCase().trim().replace(/\s+/g, ' ');
+    const professorsArr = section.professors.split('|');
+    const supportProfessors: Professor[] = [];
+    const foundProfessors: Professor[] = [];
 
-    const mapPeriod = (raw: string) => (raw.startsWith('1') ? '10' : '20');
+    await Promise.all(
+      professorsArr.map(async (prof) => {
+        const cleanedName = cleanName(prof);
+        const searchProfessor = await this.professorService.findByName(
+          normalizeName(cleanedName),
+        );
+        if (searchProfessor) {
+          if (/\(01\)/.test(prof)) {
+            if (
+              !foundProfessors.find(
+                (p) => p.user.id === searchProfessor.user.id,
+              )
+            ) {
+              foundProfessors.push(searchProfessor);
+            }
+          } else if (/\(02\)/.test(prof)) {
+            if (
+              !supportProfessors.find(
+                (p) => p.user.id === searchProfessor.user.id,
+              )
+            ) {
+              supportProfessors.push(searchProfessor);
+            }
+          }
+        }
+      }),
+    );
+    return [supportProfessors, foundProfessors];
+  }
+
+  async mergeCourses(billboardExisting: Billboard, billboard: Billboard) {
+    const combinedCourses = [
+      ...billboardExisting.courses,
+      ...billboard.courses,
+    ];
+    const uniqueCoursesMap = new Map(
+      combinedCourses.map((course) => [course.code, course]),
+    );
+    billboardExisting.courses = Array.from(uniqueCoursesMap.values());
+
+    billboardExisting.period = billboard.period;
+    billboardExisting.publicated = true;
+    await this.billboardRepository.save(billboardExisting);
+    return billboardExisting;
+  }
+
+  async getBillboardFromSectionsDto(sectionsDto: CreateSectionDto[]) {
+    const billboard: Billboard = new Billboard();
+    const billboardCoursesMap = new Map<string, Course>();
 
     for (const section of sectionsDto) {
-      const year = Number(section.period.slice(0, 4));
-      const semester = section.period.slice(4, 5);
-      const rawPeriod = section.period.slice(4, 6);
-      const periodStr = mapPeriod(rawPeriod);
-
-      let periodFound = await this.periodsService.findOneByPeriodAndYear(
-        periodStr,
-        year,
-      );
-      if (!periodFound) {
-        periodFound = await this.periodsService.create({
-          period: periodStr,
-          year: year,
-          semester: semester === '1' ? 1 : 2,
-        });
-      }
-      if (!periodFound) {
-        throw new Error('Period not found');
-      }
-
-      let existingCourse = await this.courseService.findByCodeAndPeriod(
-        section.code,
-        periodFound,
-      );
-      const existingSection = await this.sectionService.findByNRCAndPeriod(
-        section.NRC,
-        periodFound,
-      );
-
+      const foundPeriod = await this.getOrCreatePeriodBySectionDto(section);
       if (section.professors != null && section.professors !== '') {
-        const professorsArr = section.professors.split('|');
-        const supportProfessors: Professor[] = [];
-        const findedProfessors: Professor[] = [];
+        const [supportProfessors, foundProfessors] =
+          await this.getProfessors(section);
 
-        await Promise.all(
-          professorsArr.map(async (prof) => {
-            const cleanedName = cleanName(prof);
-            const searchProfessor = await this.professorService.findByName(
-              normalizeName(cleanedName),
-            );
-            if (searchProfessor) {
-              if (/\(01\)/.test(prof)) {
-                if (
-                  !findedProfessors.find(
-                    (p) => p.user.id === searchProfessor.user.id,
-                  )
-                ) {
-                  findedProfessors.push(searchProfessor);
-                }
-              } else if (/\(02\)/.test(prof)) {
-                if (
-                  !supportProfessors.find(
-                    (p) => p.user.id === searchProfessor.user.id,
-                  )
-                ) {
-                  supportProfessors.push(searchProfessor);
-                }
-              }
-            }
-          }),
+        const sectionToUse = await this.getOrCreateSectionBySectionDto(
+          section,
+          foundPeriod,
+          foundProfessors,
+          supportProfessors,
         );
 
-        let sectionToUse: Section;
-        if (existingSection != null) {
-          sectionToUse = await this.sectionService.updateProfessorsSection(
-            existingSection,
-            findedProfessors,
-            supportProfessors,
-          );
-        } else {
-          const newSectionDto = new CreateSectionDto();
-          newSectionDto.NRC = section.NRC;
-          newSectionDto.section = section.section;
-          if (findedProfessors.length === 0 && supportProfessors.length === 0) {
-            throw new Error('No professors found for the section');
-          }
-          sectionToUse = await this.sectionService.create(
-            newSectionDto,
-            supportProfessors,
-            findedProfessors,
-            periodFound,
-          );
-        }
+        const existingCourse = await this.getOrCreateCourseBySectionDto(
+          section,
+          foundPeriod,
+          sectionToUse,
+        );
 
-        if (existingCourse) {
-          const sectionAlreadyIncluded = existingCourse.sections?.some(
-            (sec) => sec.NRC === sectionToUse.NRC,
-          );
-          if (!sectionAlreadyIncluded) {
-            existingCourse = await this.courseService.updateSections(
-              sectionToUse,
-              existingCourse,
-            );
-          }
-          billboardCoursesMap.set(existingCourse.code, existingCourse);
-        } else {
-          const courseDto = new CreateCourseDto();
-          courseDto.code = section.code;
-          courseDto.credits = +section.credits;
-          courseDto.departament = section.departament;
-          courseDto.name = section.name;
-          existingCourse = await this.courseService.create(
-            courseDto,
-            sectionToUse,
-          );
-          billboardCoursesMap.set(section.code, existingCourse);
-        }
+        billboardCoursesMap.set(existingCourse.code, existingCourse);
       }
     }
 
-    const firstsection = sectionsDto[0];
-    const billboardYear = Number(firstsection.period.slice(0, 4));
-    const firstRawPeriod = firstsection.period.slice(4, 6);
-    const firstPeriodStr = mapPeriod(firstRawPeriod);
-
-    let periodForBillboard = await this.periodsService.findOneByPeriodAndYear(
-      firstPeriodStr,
-      billboardYear,
+    const periodForBillboard = await this.getOrCreatePeriodBySectionDto(
+      sectionsDto[0],
     );
-    if (!periodForBillboard) {
-      periodForBillboard = await this.periodsService.create({
-        period: firstPeriodStr,
-        year: billboardYear,
-        semester: firstsection.period.slice(4, 5) === '1' ? 1 : 2,
-      });
-    }
 
-    const billboard: Billboard = new Billboard();
     billboard.publicated = true;
     billboard.period = periodForBillboard;
     billboard.courses = Array.from(billboardCoursesMap.values());
+    return billboard;
+  }
 
-    const billboardExisting = await this.findOne(
+  async create(sectionsDto: CreateSectionDto[]) {
+    const billboard = await this.getBillboardFromSectionsDto(sectionsDto);
+    const existingBillboard = await this.findOne(
       billboard.period.year + billboard.period.period,
     );
-    if (billboardExisting) {
-      const combinedCourses = [
-        ...billboardExisting.courses,
-        ...billboard.courses,
-      ];
-      const uniqueCoursesMap = new Map(
-        combinedCourses.map((course) => [course.code, course]),
-      );
-      billboardExisting.courses = Array.from(uniqueCoursesMap.values());
-
-      billboardExisting.period = billboard.period;
-      billboardExisting.publicated = true;
-      await this.billboardRepository.save(billboardExisting);
-      return billboardExisting;
+    if (existingBillboard) {
+      return await this.mergeCourses(existingBillboard, billboard);
     }
-
     return await this.billboardRepository.save(billboard);
   }
 

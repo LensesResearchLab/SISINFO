@@ -50,13 +50,13 @@ export class TaskFactory {
         dto.documentId = '';
         return dto;
 
-      case TaskType.SEND_APPROVE ||
-        TaskType.VIEW_COMMENTS ||
-        TaskType.SEND_COMMENTS:
+      case TaskType.SEND_APPROVE:
+      case TaskType.VIEW_COMMENTS:
+      case TaskType.SEND_COMMENTS:
         return dto;
 
       default:
-        throw new BadRequestException(`Tipo de tarea desconocido: ${type}`);
+        throw new BadRequestException(`Tipo de tarea desconocido`);
     }
   }
 }

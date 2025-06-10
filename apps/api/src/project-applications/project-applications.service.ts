@@ -53,14 +53,13 @@ export class ProjectApplicationsService {
             `Estudiante con documento ${studentId} no encontrado`,
           );
         }
-        const hasActive = await this.projectApplicationRepository.exist({
+        const hasActive = await this.projectApplicationRepository.exists({
           where: {
             student: { id: studentId },
             period: { id: period.id },
             status: Not(ProjecStatusEnum.REJECTED),
           },
         });
-
         if (hasActive) {
           throw new ConflictException(
             'El estudiante ya tiene una aplicación activa en este periodo',
@@ -78,11 +77,11 @@ export class ProjectApplicationsService {
 
         let coordinator;
 
-        coordinators.map((c) => {
+        for (const c of coordinators) {
           if (c.isActive) {
             coordinator = c;
           }
-        });
+        }
 
         const task = await this.tasksService.create(TaskType.SEND_APPROVE, {
           flow: 'proyectoPregrado',

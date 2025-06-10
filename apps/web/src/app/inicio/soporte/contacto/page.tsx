@@ -43,9 +43,9 @@ export default function AcademicCoordinators() {
           </h2>
         </CardHeader>
         <CardContent className="flex flex-wrap justify-center gap-6">
-          {coordinators.map((coordinator, index) => (
+          {coordinators.map((coordinator) => (
             <Card
-              key={index}
+              key={coordinator.email}
               className="flex items-center p-6 w-96 shadow-lg rounded-lg border-none"
             >
               <Image

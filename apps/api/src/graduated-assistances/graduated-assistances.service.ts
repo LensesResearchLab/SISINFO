@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGraduatedAssistanceDto } from './dto/create-graduated-assistance.dto';
 import { UpdateGraduatedAssistanceDto } from './dto/update-graduated-assistance.dto';
 import { GraduatedAssistance } from './entities/graduated-assistance.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PeriodsService } from '../periods/periods.service';
 import { RequirementsService } from '../requirements/requirements.service';

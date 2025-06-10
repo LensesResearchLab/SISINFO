@@ -87,7 +87,7 @@ function TemplateCard({handleDownload, title, description, footer} : TemplateCar
         <CardTitle className="text-core">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Button onClick={handleDownload} className="bg-core text-card hover:bg-core">
+        <Button onClick={handleDownload}>
           <Download />
           {description}
         </Button>

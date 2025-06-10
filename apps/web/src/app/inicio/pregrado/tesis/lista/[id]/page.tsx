@@ -218,7 +218,7 @@ function ProfessorInformation({ project }: { readonly project: Project }) {
   );
 }
 
-function MotivationTextArea({
+function MotivationTextArea({ 
   motivation,
   setMotivation,
 }: {
@@ -227,10 +227,11 @@ function MotivationTextArea({
 }) {
   return (
     <div className="space-y-2">
-      <label className="text-sm text-gray-600">
+      <label htmlFor="motivation-textarea" className="text-sm text-gray-600">
         Escribe aquí las razones por las que quieres aplicar y tus conocimientos relevantes
       </label>
       <Textarea
+        id="motivation-textarea"
         value={motivation}
         onChange={(e) => setMotivation(e.target.value)}
         placeholder="Describe tus motivaciones y experiencia"

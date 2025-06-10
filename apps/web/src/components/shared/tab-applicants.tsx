@@ -147,7 +147,7 @@ function ApplicantsTable({ applicants, handleDetails }: { readonly applicants: G
 
   const filteredApplicants = applicants.filter(
     (applicant) =>
-      applicant.student.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      applicant.student.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ? true :
       applicant.student.user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 

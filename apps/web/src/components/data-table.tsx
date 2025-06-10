@@ -73,7 +73,7 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
   });
   const selectedData = useMemo(() => {
-    return table.getSelectedRowModel().rows.map((row) => row.original);
+    return table.getSelectedRowModel()?.rows?.map((row) => row.original);
   }, [table]);
 
   useEffect(() => {
@@ -180,7 +180,7 @@ export function DataTable<TData, TValue>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="whitespace-normal break-words p-4"
+                      className="whitespace-normal break-words p-4 text-foreground"
                       style={{ maxWidth: "300px", verticalAlign: "top" }}
                     >
                       {flexRender(
@@ -194,8 +194,8 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns?.length || 1}
-                  className="h-24 text-center"
+                  colSpan={columns?.length ?? 1}
+                  className="h-24 text-center text-foreground"
                 >
                   No se encontraron resultados.
                 </TableCell>
@@ -216,7 +216,7 @@ export function DataTable<TData, TValue>({
           </Button>
 
           <div className="text-sm text-muted-foreground">
-            {`Mostrando ${(table?.getRowModel()?.rows?.length || 0) > 0
+            {`Mostrando ${(table?.getRowModel()?.rows?.length ?? 0) > 0
               ? table.getState().pagination.pageIndex *
               table.getState().pagination.pageSize +
               1
@@ -224,8 +224,8 @@ export function DataTable<TData, TValue>({
               } - ${Math.min(
                 (table.getState().pagination.pageIndex + 1) *
                 table.getState().pagination.pageSize,
-                table?.getFilteredRowModel()?.rows?.length || 0
-              )} de ${table?.getFilteredRowModel()?.rows?.length || 0} resultados`}
+                table?.getFilteredRowModel()?.rows?.length ?? 0
+              )} de ${table?.getFilteredRowModel()?.rows?.length ?? 0} resultados`}
           </div>
 
           <Button

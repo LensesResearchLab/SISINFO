@@ -87,8 +87,8 @@ export default function Home() {
             return {
               ...task,
               step: stepNumber,
-              title: stepInfo?.title || "Sin título",
-              description: stepInfo?.description || "Sin descripción",
+              title: stepInfo?.title ?? "Sin título",
+              description: stepInfo?.description ?? "Sin descripción",
               date: task.date ? new Date(task.date) : new Date(),
             };
           });
