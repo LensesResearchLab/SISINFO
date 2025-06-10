@@ -62,6 +62,8 @@ npx playwright test 'gremlins.test.js'
 ## 📓 SonarQube
 Puede ejecutar SonarQube siguiendo el siguiente [tutorial](https://github.com/TheSoftwareDesignLab/SISINFO/wiki/SonarQube).
 
+---
+
 ## ⚙️ Instalación básica
 
 Sigue estos pasos para preparar el entorno local de desarrollo:
