@@ -34,8 +34,8 @@ export async function POST(request: NextRequest) {
 
     const userData = await response.json();
     const token = userData.access_token; // Use the backend JWT token
-    console.log("ACCESS TOKEN" + token.toString());
 
+  
     /* Set the token as an HTTP-only cookie */
     (await cookies()).set({
       name: "auth-token",

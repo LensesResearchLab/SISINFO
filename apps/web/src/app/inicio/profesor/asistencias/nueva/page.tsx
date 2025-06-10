@@ -127,7 +127,6 @@ export default function GraduateAssistanceForm() {
     createGraduatedAssistance(payload)
       .then(() => {
         setIsModalOpen(false);
-        console.log("Assistance created");
       })
       .catch((error) => {
         setIsModalOpen(false);
