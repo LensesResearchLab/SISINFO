@@ -17,6 +17,9 @@ export class AssistanceApplication extends Base {
   @ManyToOne(() => Student, (student) => student.assistanceApplications)
   student: Student;
 
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
   @ManyToOne(
     () => GraduatedAssistance,
     (graduatedAssistance) => graduatedAssistance.assistanceApplications,

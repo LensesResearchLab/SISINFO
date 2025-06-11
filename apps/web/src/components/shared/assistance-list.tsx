@@ -24,8 +24,6 @@ interface AssistanceListProps {
 interface FilterBarProps {
   readonly selectedSemester: string;
   readonly setSelectedSemester: (value: string) => void;
-  readonly nameFilter: string;
-  readonly setNameFilter: (value: string) => void;
   readonly showOnlyMyAssistance: boolean;
   readonly setShowOnlyMyAssistance: (value: boolean) => void;
   readonly role: "estudiante" | "profesor";
@@ -85,7 +83,6 @@ export function AssistanceList({
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSemester, setSelectedSemester] = useState("");
   const [showOnlyMyAssistance, setShowOnlyMyAssistance] = useState(false);
-  const [nameFilter, setNameFilter] = useState("");
   const router = useRouter();
 
   const handleClick = React.useCallback(
@@ -173,19 +170,12 @@ export function AssistanceList({
         return `${year}${semester}` === selectedSemester;
       });
     }
-
-    if (nameFilter) {
-      result = result.filter((item) =>
-        item.title.toLowerCase().includes(nameFilter.toLowerCase())
-      );
-    }
-
     if (role === "profesor" && showOnlyMyAssistance && professorName) {
       result = result.filter((item) => item.professor?.user.name === professorName);
     }
 
     return result;
-  }, [data, nameFilter, professorName, role, selectedSemester, showOnlyMyAssistance]);
+  }, [data, professorName, role, selectedSemester, showOnlyMyAssistance]);
 
   if (isLoading) return <SpinnerPage />;
 
@@ -195,8 +185,6 @@ export function AssistanceList({
         <FilterBar
           selectedSemester={selectedSemester}
           setSelectedSemester={setSelectedSemester}
-          nameFilter={nameFilter}
-          setNameFilter={setNameFilter}
           showOnlyMyAssistance={showOnlyMyAssistance}
           setShowOnlyMyAssistance={setShowOnlyMyAssistance}
           role={role}

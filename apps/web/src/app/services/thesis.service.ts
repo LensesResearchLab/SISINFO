@@ -73,8 +73,6 @@ export async function postThesisApplication(
         }),
       }
     );
-
-    // TODO: Return response for modal
   } catch (error) {
     console.error("Error:", error);
     alert("Error al enviar la aplicación");

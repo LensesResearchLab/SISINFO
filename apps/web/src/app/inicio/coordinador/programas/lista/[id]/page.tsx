@@ -37,7 +37,7 @@ export default function ApplicationDetail() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null); // Blob URL for the PDF document
 
   // Fetch course data using React Query
-  const { data: course, isFetching, error } = useQuery({
+  const { data: course, isFetching, isError } = useQuery({
     queryKey: ["course-program", id],
     queryFn: () => getCourseWithDocument(String(id)),
   });
@@ -59,6 +59,7 @@ export default function ApplicationDetail() {
 
   // Show loading spinner while data is being fetched
   if (isFetching) return <SpinnerPage />;
+  if (isError) return <p className="text-red-500 p-4">Error al cargar el documento</p>
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -66,19 +67,18 @@ export default function ApplicationDetail() {
         {/* Left section: PDF document or error/loading message */}
         <section className="lg:col-span-2 flex flex-col">
           <div className="flex-1 border rounded-lg overflow-hidden">
-            {error ? (
-              <p className="text-red-500 p-4">Error al cargar el documento</p>
-            ) : pdfUrl ? (
-              <iframe
-                src={pdfUrl}
-                width="100%"
-                height="100%"
-                title="Documento PDF"
-                className="min-h-[400px] md:min-h-[600px]"
-              />
-            ) : (
-              <p className="text-center py-4 text-gray-500">Cargando documento…</p>
-            )}
+            {
+              pdfUrl ? (
+                <iframe
+                  src={pdfUrl}
+                  width="100%"
+                  height="100%"
+                  title="Documento PDF"
+                  className="min-h-[400px] md:min-h-[600px]"
+                />
+              ) : (
+                <p className="text-center py-4 text-gray-500">Cargando documento…</p>
+              )}
           </div>
         </section>
 

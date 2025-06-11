@@ -413,7 +413,7 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
       </CardHeader>
       <CardContent>
         <form className="space-y-6">
-          <UploadCV assistance={assistance} file={file} setFile={setFile} />
+          <UploadCV file={file} setFile={setFile} />
           {error && (
             <div className="text-red-600 text-center font-semibold">
               {error}
@@ -498,7 +498,6 @@ function UploadCV({
   setFile,
   file,
 }: {
-  readonly assistance: GraduatedAssistance;
   readonly file: File | null;
   readonly setFile: (file: File | null) => void;
 }) {
@@ -509,7 +508,7 @@ function UploadCV({
     }
   };
 
-  const handleDrop = (event: React.DragEvent) => {
+  const handleDrop = (event: React.DragEvent<HTMLButtonElement>) => {
     event.preventDefault();
     const droppedFile = event.dataTransfer.files[0];
     if (droppedFile && droppedFile.type === "application/pdf") {
@@ -517,13 +516,12 @@ function UploadCV({
     }
   };
 
-  const handleDragOver = (event: React.DragEvent) => {
+  const handleDragOver = (event: React.DragEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
 
   const handleActivateInput = () => {
-    const fileInput = document.getElementById("cv");
-    if (fileInput) fileInput.click();
+    document.getElementById("cv")?.click();
   };
 
   return (
@@ -534,24 +532,22 @@ function UploadCV({
           Adjunta tu hoja de vida en formato PDF para aplicar a esta asistencia
         </p>
       </div>
-
-      <button
-        type="button"
-        onClick={handleActivateInput}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault(); // opcional con <button>
-            handleActivateInput();
-          }
-        }}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        className="w-full border-2 border-dashed rounded-lg p-6 text-center cursor-pointer"
-      >
+      <div className="w-full border-2 border-dashed rounded-lg text-center">
         {!file ? (
-          <div>
+          <button
+            className="p-6 w-full cursor-pointer"
+            type="button"
+            onClick={handleActivateInput}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                handleActivateInput();
+              }
+            }}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+          >
             <Upload className="mx-auto h-12 w-12 text-ring" />
-            <Label htmlFor="cv" className="mt-4 block text-sm font-medium">
+            <Label htmlFor="cv" className="mt-4 block text-sm font-medium cursor-pointer">
               <span className="text-core-highlight">Click para subir</span> o
               arrastra y suelta
             </Label>
@@ -564,26 +560,23 @@ function UploadCV({
               name="cv"
             />
             <p className="text-xs text-ring mt-2">Solo archivos PDF</p>
-          </div>
+          </button>
         ) : (
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between p-6 w-full">
             <div className="flex items-center">
               <FileText className="h-6 w-6 text-core-highlight mr-2" />
               <span>{file.name}</span>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-destructive"
-              onClick={() => {
-                setFile(null);
-              }}
+            <button
+              type="button"
+              className="text-destructive cursor-pointer"
+              onClick={() => setFile(null)}
             >
               <X className="h-4 w-4" />
-            </Button>
+            </button>
           </div>
         )}
-      </button>
+      </div>
     </div>
   );
 }
