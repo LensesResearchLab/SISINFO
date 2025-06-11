@@ -157,6 +157,7 @@ Para un entorno de producción se requiere una base de datos real provisionada (
 
 1. Crea y configura el archivo `.env` con las variables reales de producción.
 2. Construye el proyecto e inicia el servidor en modo producción:
+
 ```bash
 npm run prod
 ```
