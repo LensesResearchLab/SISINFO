@@ -28,7 +28,7 @@ export default function ProjectStatus() {
     isFetching,
     error,
   } = useQuery({
-    queryKey: ["student-thesis-status"],
+    queryKey: ["student-project-status"],
     queryFn: async () => {
       const userData = await getUserInfo();
       const thesisStatus = await getUndergraduateThesisStatusInformation(userData.user.id);

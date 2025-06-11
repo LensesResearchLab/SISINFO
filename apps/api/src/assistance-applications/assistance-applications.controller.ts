@@ -71,7 +71,7 @@ export class AssistanceApplicationsController {
 
   @Get(':id/document')
   findOneDocument(@Param('id') id: string) {
-    return this.assistanceApplicationsService.findOne(id, true);
+    return this.assistanceApplicationsService.findOneDocument(id);
   }
 
   @Patch(':id')

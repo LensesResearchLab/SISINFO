@@ -156,7 +156,6 @@ function AssistanceInscription({
           </div>
         </div>
         <Button
-          className="w-40 mx-auto block"
           onClick={() => setIsApplying(true)}
         >
           Aplicar
@@ -423,7 +422,6 @@ function AssistanceApplying({ assistance, setIsApplying }: AssistanceProps) {
             <Button
               type="button"
               onClick={handleApplyClick}
-              className="bg-core hover:bg-core-highlight text-card px-10 py-5 rounded-xl text-lg font-semibold transition-colors shadow-lg hover:shadow-core-soft"
             >
               Aplicar
             </Button>

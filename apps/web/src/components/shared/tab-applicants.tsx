@@ -189,7 +189,7 @@ function ApplicantsTable({ applicants, handleDetails }: { readonly applicants: G
               className="h-9 px-3 bg-core text-card hover:bg-core-highlight"
               onClick={() => setSortAscending(!sortAscending)}
             >
-              <span className="mr-1">A - Z</span>
+              <span className="mr-1 text-foreground">A - Z</span>
               <ChevronDown
                 className={`h-4 w-4 transform ${sortAscending ? "" : "rotate-180"}`}
               />

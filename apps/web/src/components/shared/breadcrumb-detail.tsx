@@ -36,6 +36,7 @@ const EXCLUDED_ROUTES = undergraduateData
     "aplicantes",
     "manejar",
     "programas",
+    "asistencias"
   ]);
 
 function getBreadcrumbText(pathname: string) {

@@ -162,22 +162,22 @@ function StudentProfileCard({
 }: StudentProfileProps) {
   return (
     <div className="w-full">
-      <div className="bg-white rounded-3xl shadow-lg p-6 mb-4">
+      <div className="bg-card rounded-3xl shadow-lg p-6 mb-4">
         <div className="mb-6">
-          <p className="text-lg font-medium mb-1">Nombre estudiante:</p>
+          <p className="text-lg font-medium mb-1 text-foreground">Nombre estudiante:</p>
           <p className="text-xl mb-4 font-semibold text-foreground">{name}</p>
 
-          <p className="text-lg font-medium mb-1">Correo:</p>
+          <p className="text-lg font-medium mb-1 text-foreground">Correo:</p>
           <p className="text-xl mb-4 font-semibold text-foreground">{email}</p>
 
-          <p className="text-lg font-medium mb-1">Estado:</p>
+          <p className="text-lg font-medium mb-1 text-foreground">Estado:</p>
           <p className="text-xl mb-4 font-semibold text-foreground">{status}</p>
 
           <a
             href={pdfUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full py-3 bg-gray-100 text-foreground font-medium rounded-lg hover:bg-gray-200 transition-colors mb-4"
+            className="flex items-center justify-center gap-2 w-full py-3 bg-gray-100 text-black font-medium rounded-lg hover:bg-gray-200 transition-colors mb-4"
           >
             <FileText className="w-5 h-5" />
             Ver PDF en nueva pestaña
@@ -186,12 +186,12 @@ function StudentProfileCard({
           <div className="border-b border-gray-300 mb-6"></div>
 
           <div className="space-y-3">
-            <Button onClick={onAccept} className="w-full py-3 text-white font-medium rounded-lg transition-colors">
+            <Button onClick={onAccept} className="w-full py-3 font-medium rounded-lg transition-colors">
               Aceptar solicitud
             </Button>
             <Button
               onClick={onReject}
-              className="w-full py-3 bg-[#e56b6b] text-white font-medium rounded-lg hover:bg-[#d45c5c] transition-colors"
+              className="w-full py-3 bg-[#e56b6b] font-medium rounded-lg hover:bg-[#d45c5c] transition-colors"
             >
               Rechazar solicitud
             </Button>

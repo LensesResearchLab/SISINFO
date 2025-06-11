@@ -5,7 +5,7 @@ import { StatusInformation } from "@/app/types/entities/graduated-assistance.typ
 import TabStatus, { SectionProps } from "@/components/shared/tab-status";
 import { useRouter } from "next/navigation";
 import SpinnerPage from "@/components/shared/spinner-page";
-import { getAssistanceStatusByIdWithDocument } from "@/app/services/assistance.service";
+import { getAssistanceStatusById } from "@/app/services/assistance.service";
 
 /**
  * AssistanceStatus Component
@@ -78,7 +78,7 @@ export default function AssistanceStatus({
     const fetchData = async () => {
       if (!id) return router.push("/404");
       try {
-        const data = await getAssistanceStatusByIdWithDocument(id);
+        const data = await getAssistanceStatusById(id);
         setStatusInformation(data);
         setIsLoading(false);
       } catch {

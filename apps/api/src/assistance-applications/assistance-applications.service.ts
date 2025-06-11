@@ -69,7 +69,7 @@ export class AssistanceApplicationsService {
     return results;
   }
 
-  async findOne(id: string, withDocument: boolean = false) {
+  async findOne(id: string) {
     const application = await this.assistanceApplicationRepository.findOne({
       where: { id },
       relations: {
@@ -77,7 +77,7 @@ export class AssistanceApplicationsService {
           professor: true,
         },
         student: true,
-        document: withDocument,
+        document: true,
       },
     });
     if (!application) {
@@ -89,7 +89,7 @@ export class AssistanceApplicationsService {
   }
 
   async findOneDocument(id: string) {
-    const application = await this.findOne(id, true);
+    const application = await this.findOne(id);
     const graduatedAssistanceId = application.graduatedAssistance.id;
 
     const applications = await this.assistanceApplicationRepository
