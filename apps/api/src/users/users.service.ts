@@ -64,13 +64,11 @@ export class UsersService {
 
   getUserRoles(user: User) {
     const roles: string[] = [];
-    if (user.administrator && user.administrator.isActive)
-      roles.push('administrador');
-    if (user.coordinator && user.coordinator.isActive)
-      roles.push('coordinador');
-    if (user.professor && user.professor.isActive) roles.push('profesor');
-    if (user.student && user.student.isActive) {
-      if (user.administrator && user.administrator.isActive) {
+    if (user.administrator?.isActive) roles.push('administrador');
+    if (user.coordinator?.isActive) roles.push('coordinador');
+    if (user.professor?.isActive) roles.push('profesor');
+    if (user.student?.isActive) {
+      if (user.administrator?.isActive) {
         roles.push('estudiante');
         roles.push('estudiante_maestria');
       } else if (user.student.isUndergraduate) {

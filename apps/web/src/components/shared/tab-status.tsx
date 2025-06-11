@@ -160,17 +160,22 @@ interface StepSphereProps {
 }
 
 function StepSphere({ name, completed, current }: StepSphereProps) {
+  const getDivStyles = (completed: boolean, current: boolean) => {
+    if (completed) return "bg-core text-primary-foreground";
+    return current ? "bg-core-soft dark:bg-core text-primary border-2 border-core" : "bg-gray-100 text-gray-400 dark:bg-gray-800"
+  }
+  const getTextStyles = (completed: boolean, current: boolean) => {
+    if (current) return "";
+    return completed ? "text-foreground" : "text-muted-foreground"
+  }
+
   return (
     <div className="flex md:flex-col flex-row md:items-center items-start gap-3">
       <div className="relative">
         <div
           className={cn(
             "w-10 h-10 rounded-full flex items-center justify-center z-10 relative",
-            completed
-              ? "bg-core text-primary-foreground"
-              : current
-                ? "bg-core-soft dark:bg-core text-primary border-2 border-core"
-                : "bg-gray-100 text-gray-400 dark:bg-gray-800",
+            getDivStyles(completed, current)
           )}
         >
           {completed ? (<Check/>) : (<span>{name.charAt(0)}</span>)}
@@ -180,7 +185,7 @@ function StepSphere({ name, completed, current }: StepSphereProps) {
         <p
           className={cn(
             "font-medium",
-            current ? "text-primary" : completed ? "text-foreground" : "text-muted-foreground",
+            getTextStyles(completed, current)
           )}
         >
           {name}

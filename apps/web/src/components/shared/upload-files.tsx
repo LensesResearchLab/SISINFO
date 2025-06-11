@@ -30,20 +30,24 @@ export default function UploadFiles({
     setIsModalOpen(true)
   }
 
+  const isNonNull = (row: CsvRow) => {
+    return Object.values(row).some(
+      (value) => typeof value === "string" && value.trim() !== ""
+    )
+  }
+
   const onConfirmUpload = () => {
     if (!file) return setIsModalOpen(false);
 
     const extension = file.name.split(".").pop()?.toLowerCase();
 
     if (extension === "csv") {
-      Papa.parse<Record<string, string | number | boolean | null>>(file, {
+      Papa.parse<CsvRow>(file, {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
           const filteredData = results.data.filter((row) =>
-            Object.values(row).some(
-              (value) => typeof value === "string" && value.trim() !== ""
-            )
+            isNonNull(row)
           );
           handleUploadCsv(filteredData);
           setIsModalOpen(false);

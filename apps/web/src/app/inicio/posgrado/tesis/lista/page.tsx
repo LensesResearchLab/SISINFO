@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { File, User, Search } from "lucide-react";
+import { File, Search } from "lucide-react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getPostgraduateThesis } from "@/app/services/thesis.service";
@@ -21,7 +21,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SpinnerPage from "@/components/shared/spinner-page";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useThesisListStore } from "./store";
 import { cn } from "@/lib/utils";
@@ -30,8 +29,10 @@ import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
 import { getPeriods } from "@/app/services/period.service";
 import { DataTable } from "@/components/data-table";
 import { ThesesStudentTable } from "@/app/types/theses-by-professor.type";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { Thesis } from "@/app/types/entities/thesis.type";
+import SkeletonAccordion from "@/components/shared/skeleton-accordion";
+
 
 /**
  * ThesisList Component
@@ -58,7 +59,7 @@ export default function ThesisList() {
 
   const { data: thesisList, isFetching: isFetchingThesis } = useQuery({
     queryKey: ["postgraduate-thesis-projects", searchCategory, searchTerm],
-    queryFn: () => getPostgraduateThesis({category: searchCategory, period: searchTerm}),
+    queryFn: () => getPostgraduateThesis({ category: searchCategory, period: searchTerm }),
   });
 
   const { data: semesters, isLoading: isLoadingSemesters } = useQuery({
@@ -99,9 +100,9 @@ export default function ThesisList() {
             sortDirection={sortDirection}
           />
         </div>
-        {isFetchingThesis ? 
+        {isFetchingThesis ?
           <SkeletonAccordion />
-         : <AccordionList thesisList={thesisList ?? {}} />
+          : <AccordionList thesisList={thesisList ?? {}} />
         }
       </Accordion>
     </div>
@@ -228,6 +229,8 @@ function AccordionList({
   );
 }
 
+
+
 /**
  * ThesisTable Component
  *
@@ -237,33 +240,37 @@ function AccordionList({
 function ThesisTable({ data }: { readonly data: Thesis[] }) {
   const router = useRouter();
 
+  const rowToName = ({ row }: { row: Row<Thesis> }) => <ThesisSpan text={row.original.title} />
+  const rowToSubarea = ({ row }: { row: Row<Thesis> }) => <ThesisSpan text={row.original.investigationSubarea} />
+  const rowToButton = ({ row }: { row: Row<Thesis> }) => (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() =>
+        router.push(
+          `${ROUTES.HOME}/${ROUTES.POSTGRADUATE_THESIS_LIST}/${row.original.id}`
+        )
+      }
+    >
+      <Search className="w-4 h-4" />
+    </Button>
+  )
+
   const columns: ColumnDef<Thesis>[] = [
     {
       accessorKey: "title",
       header: "Nombre del proyecto",
-      cell: ({ row }) => <ThesisSpan text={row.original.title} />,
+      cell: rowToName,
     },
     {
       accessorKey: "investigationSubarea",
       header: "Subarea de investigación",
-      cell: ({ row }) => <ThesisSpan text={row.original.investigationSubarea} />,
+      cell: rowToSubarea,
     },
     {
       id: "actions",
       header: "Ver",
-      cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            router.push(
-              `${ROUTES.HOME}/${ROUTES.POSTGRADUATE_THESIS_LIST}/${row.original.id}`
-            )
-          }
-        >
-          <Search className="w-4 h-4" />
-        </Button>
-      ),
+      cell: rowToButton
     },
   ];
 
@@ -272,26 +279,4 @@ function ThesisTable({ data }: { readonly data: Thesis[] }) {
 
 function ThesisSpan({ text }: { readonly text: string }) {
   return <span className="text-primary font-medium">{text}</span>;
-}
-
-/**
- * SkeletonAccordion Component
- *
- * Displays loading skeleton while thesis data is being fetched.
- */
-function SkeletonAccordion() {
-  return (
-    <>
-      {Array.from({ length: 8 }).map((_, i) => (
-        <AccordionItem key={i} value="loading">
-          <AccordionTrigger>
-            <div className="flex items-center w-full">
-              <User className="mr-2 h-5 w-5 text-core-highlight" />
-              <Skeleton className="w-40 h-4" />
-            </div>
-          </AccordionTrigger>
-        </AccordionItem>
-      ))}
-    </>
-  );
 }

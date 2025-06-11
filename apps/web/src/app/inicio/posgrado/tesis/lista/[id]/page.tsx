@@ -193,7 +193,7 @@ function ThesisApplying({ thesis }: { readonly thesis: Thesis }) {
           />
 
           <div className="flex justify-center pt-3.5">
-            <Button type="button" onClick={() => setIsConfirmed(true)}>
+            <Button onClick={() => setIsConfirmed(true)}>
               Aplicar
             </Button>
             <ConfirmationModal
