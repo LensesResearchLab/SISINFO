@@ -48,7 +48,8 @@ const columns: ColumnDef<Incidence>[] = [
     sortingFn: (rowA, rowB, columnId) => {
       const a = rowA.getValue<boolean>(columnId);
       const b = rowB.getValue<boolean>(columnId);
-      return a === b ? 0 : a ? 1 : -1;
+      if (a === b) return 0;
+      return a ? 1 : -1;
     }
   },
   {
@@ -107,9 +108,10 @@ function ActionCell({ incidence }: { readonly incidence: Incidence }) {
   const completed = incidence.isClosed? true: isClosing;
 
   const handleClose = async () => {
+    if (!incidence.id) return;
     setIsClosing(true);
     try {
-      await closeIncidence(incidence.id!);
+      await closeIncidence(incidence.id);
       await queryClient.invalidateQueries({ queryKey: ['incidences'] });
     } catch (error) {
       console.error("Error al cerrar la incidencia:", error);

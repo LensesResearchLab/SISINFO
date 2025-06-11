@@ -32,7 +32,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SpinnerPage from "@/components/shared/spinner-page";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useTeachingAssistantListStore } from "./store";
 import { cn } from "@/lib/utils";
@@ -42,6 +41,7 @@ import { getTeachingAssistants } from "@/app/services/professor.service";
 import { mapSectionsToProfessorTable } from "@/app/mappers/section.mapper";
 import { ProfessorTA, TeachingAssistantshipProfessorSection } from "@/app/types/teachingAssistantshipProfessorSection";
 import { toast } from "sonner";
+import SkeletonAccordion from "@/components/shared/skeleton-accordion";
 
 
 
@@ -386,35 +386,6 @@ function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAs
           </DialogContent>
         </Dialog>
       )}
-    </>
-  );
-}
-
-
-
-
-
-/**
- * SkeletonAccordion Component
- *
- * Renders loading placeholder UI for accordion items.
- * Displays 8 skeleton items with animated loading effects.
- *
- * @returns {JSX.Element} Loading skeleton UI component
- */
-function SkeletonAccordion() {
-  return (
-    <>
-      {Array.from({ length: 8 }).map((_, index) => (
-        <AccordionItem key={index} value="loading">
-          <AccordionTrigger>
-            <div className="flex items-center w-full">
-              <User className="mr-2 h-5 w-5 text-core-highlight" />
-              <Skeleton className="w-40 h-4" />
-            </div>
-          </AccordionTrigger>
-        </AccordionItem>
-      ))}
     </>
   );
 }

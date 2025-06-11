@@ -3,10 +3,10 @@
 import { getAssistanceStatusByIdWithDocument, updateAssistanceApplication } from "@/app/services/assistance.service";
 import { useQuery } from "@tanstack/react-query";
 import { use, useEffect, useState } from "react";
-/* import { ArrowLeft, ArrowRight, FileText } from "lucide-react"; */
-import { FileText } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText } from "lucide-react";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { Button } from "@/components/ui/button";
+import { usePathname, useRouter } from "next/navigation";
 
 /**
  * ApplicationDetail Component
@@ -39,9 +39,11 @@ export default function ApplicationDetail({
   const { applicationId } = use(params);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const {
-    data: application,
+    data,
     isFetching,
     error,
   } = useQuery({
@@ -49,6 +51,7 @@ export default function ApplicationDetail({
     queryFn: () => getAssistanceStatusByIdWithDocument(applicationId),
   });
 
+  const { application, previousId, nextId } = data ?? {};
 
   useEffect(() => {
     if (application?.document?.file?.data) {
@@ -59,16 +62,36 @@ export default function ApplicationDetail({
       return () => URL.revokeObjectURL(url);
     }
   }, [application]);
-  if (isFetching) return <SpinnerPage />
-  const onAccept = () => {
-    setStatus('Aceptado');
-    updateAssistanceApplication(applicationId, { status: "Aceptado" });
-  }
-  const onReject = () => {
-    setStatus('Rechazado');
-    updateAssistanceApplication(applicationId, { status: "Rechazado" });
-  }
 
+  if (isFetching) return <SpinnerPage />;
+
+  const onAccept = () => {
+    setStatus("Aceptado");
+    updateAssistanceApplication(applicationId, { status: "Aceptado" });
+  };
+  const onReject = () => {
+    setStatus("Rechazado");
+    updateAssistanceApplication(applicationId, { status: "Rechazado" });
+  };
+
+  const navigateTo = (targetId: string) => {
+    const pathSegments = pathname.split("/");
+    pathSegments[pathSegments.length - 1] = targetId;
+    const newPath = pathSegments.join("/");
+    router.push(newPath);
+  };
+
+  const onPrevious = () => {
+    if (previousId) {
+      navigateTo(previousId);
+    }
+  };
+
+  const onNext = () => {
+    if (nextId) {
+      navigateTo(nextId);
+    }
+  };
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 min-h-full p-6 w-full">
       <div className="col-span-1 lg:col-span-2 flex flex-col">
@@ -79,11 +102,15 @@ export default function ApplicationDetail({
         {!error && (
           <StudentProfileCard
             pdfUrl={pdfUrl ?? "#"}
-            name={application?.student?.name}
-            email={application?.student?.email}
+            name={application?.student?.user?.name}
+            email={application?.student?.user?.email}
             onAccept={onAccept}
             onReject={onReject}
             status={status ?? application.status}
+            onPrevious={onPrevious}
+            onNext={onNext}
+            disablePrevious={!previousId}
+            disableNext={!nextId}
           />
         )}
       </div>
@@ -117,6 +144,8 @@ interface StudentProfileProps {
   readonly onReject?: () => void;
   readonly onPrevious?: () => void;
   readonly onNext?: () => void;
+  readonly disablePrevious?: boolean;
+  readonly disableNext?: boolean;
 }
 
 function StudentProfileCard({
@@ -125,9 +154,11 @@ function StudentProfileCard({
   pdfUrl = "#",
   onAccept = () => console.log("Accepted"),
   onReject = () => console.log("Rejected"),
-  status = '',
-  /*   onPrevious = () => console.log("Previous applicant"),
-    onNext = () => console.log("Next applicant"), */
+  status = "",
+  onPrevious = () => console.log("Previous applicant"),
+  onNext = () => console.log("Next applicant"),
+  disablePrevious = false,
+  disableNext = false,
 }: StudentProfileProps) {
   return (
     <div className="w-full">
@@ -155,10 +186,7 @@ function StudentProfileCard({
           <div className="border-b border-gray-300 mb-6"></div>
 
           <div className="space-y-3">
-            <Button
-              onClick={onAccept}
-              className="w-full py-3 text-white font-medium rounded-lg transition-colors"
-            >
+            <Button onClick={onAccept} className="w-full py-3 text-white font-medium rounded-lg transition-colors">
               Aceptar solicitud
             </Button>
             <Button
@@ -171,10 +199,13 @@ function StudentProfileCard({
         </div>
       </div>
 
-      {/*       <div className="flex justify-between gap-2">
+      <div className="flex gap-2">
         <button
           onClick={onPrevious}
-          className="flex items-center gap-2 bg-core text-white px-4 py-2 rounded-lg hover:bg-core-highlight transition-colors flex-1"
+          disabled={disablePrevious}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg flex-1 ${
+            disablePrevious ? "bg-gray-300 cursor-not-allowed" : "bg-core text-white hover:bg-core-highlight"
+          }`}
         >
           <ArrowLeft className="w-5 h-5" />
           <span className="text-left">
@@ -186,7 +217,10 @@ function StudentProfileCard({
 
         <button
           onClick={onNext}
-          className="flex items-center gap-2 bg-core text-white px-4 py-2 rounded-lg hover:bg-core-highlight transition-colors flex-1"
+          disabled={disableNext}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg flex-1 ${
+            disableNext ? "bg-gray-300 cursor-not-allowed" : "bg-core text-white hover:bg-core-highlight"
+          }`}
         >
           <span className="text-right">
             Siguiente
@@ -195,7 +229,7 @@ function StudentProfileCard({
           </span>
           <ArrowRight className="w-5 h-5" />
         </button>
-      </div> */}
+      </div>
     </div>
   );
 }

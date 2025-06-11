@@ -88,6 +88,37 @@ export class AssistanceApplicationsService {
     return application;
   }
 
+  async findOneDocument(id: string) {
+    const application = await this.findOne(id, true);
+    const graduatedAssistanceId = application.graduatedAssistance.id;
+
+    const applications = await this.assistanceApplicationRepository
+      .createQueryBuilder('app')
+      .select(['app.id'])
+      .where('app.graduatedAssistanceId = :graduatedAssistanceId', {
+        graduatedAssistanceId,
+      })
+      .orderBy('app.createdAt', 'ASC')
+      .addOrderBy('app.id', 'ASC')
+      .getMany();
+
+    const applicationIds = applications.map((app) => app.id);
+    const currentIndex = applicationIds.indexOf(application.id);
+
+    const previousId =
+      currentIndex > 0 ? applicationIds[currentIndex - 1] : null;
+    const nextId =
+      currentIndex < applicationIds.length - 1
+        ? applicationIds[currentIndex + 1]
+        : null;
+
+    return {
+      application,
+      previousId,
+      nextId,
+    };
+  }
+
   async update(
     id: string,
     updateAssistanceApplicationDto: UpdateAssistanceApplicationDto,

@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DataTable } from "@/components/data-table";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import SpinnerPage from "@/components/shared/spinner-page";
 import ErrorPage from "@/components/shared/error-page";
 import { Button } from "@/components/ui/button";
@@ -20,58 +20,37 @@ import {
 import { LeaderPerCourse } from "@/app/types/leader-per-course.type";
 import { User } from "@/app/types/entities/user.type";
 
+const columns: ColumnDef<LeaderPerCourse>[] = [
+  {
+    accessorKey: "code",
+    header: "Código",
+  },
+  {
+    accessorKey: "courseName",
+    header: "Nombre curso",
+  },
+  {
+    accessorKey: "professorName",
+    header: "Nombre profesor",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    id: "assign",
+    header: "Asignar",
+    enableSorting: false,
+    cell: ({ row }: { row: Row<LeaderPerCourse> }) => <PopoverPerCourse row={row} />
+  },
+];
+
 export default function CourseList() {
-  const queryClient = useQueryClient();
 
   const { data, isFetching, isError } = useQuery({
     queryKey: ["courses-leaders"],
     queryFn: () => findAllWithMainProfessor(),
   });
-
-  const columns: ColumnDef<LeaderPerCourse>[] = [
-    {
-      accessorKey: "code",
-      header: "Código",
-    },
-    {
-      accessorKey: "courseName",
-      header: "Nombre curso",
-    },
-    {
-      accessorKey: "professorName",
-      header: "Nombre profesor",
-    },
-    {
-      accessorKey: "email",
-      header: "Email",
-    },
-    {
-      id: "assign",
-      header: "Asignar",
-      enableSorting: false,
-      cell: ({ row }) => (
-        <ProfessorListPopover
-          courseId={row.original.courseId}
-          onAssigned={(newProfessor) => {
-            queryClient.setQueryData<LeaderPerCourse[]>(
-              ["courses-leaders"],
-              (oldData) =>
-                oldData?.map((course) =>
-                  course.courseId === row.original.courseId
-                    ? {
-                      ...course,
-                      professorId: newProfessor.id,
-                      professorName: newProfessor.name,
-                      email: newProfessor.email,
-                    }
-                    : course
-                ) ?? []
-            );
-          }}
-        />
-      ),
-    },
-  ];
 
   if (isFetching) return <SpinnerPage />;
   if (isError) return <ErrorPage />;
@@ -87,6 +66,31 @@ export default function CourseList() {
   );
 }
 
+function PopoverPerCourse({ row }: { readonly row: Row<LeaderPerCourse> }) {
+  const queryClient = useQueryClient();
+  return (
+    <ProfessorListPopover
+      courseId={row.original.courseId}
+      onAssigned={(newProfessor) => {
+        queryClient.setQueryData<LeaderPerCourse[]>(
+          ["courses-leaders"],
+          (oldData) =>
+            oldData?.map((course) =>
+              course.courseId === row.original.courseId
+                ? {
+                  ...course,
+                  professorId: newProfessor.id,
+                  professorName: newProfessor.name,
+                  email: newProfessor.email,
+                }
+                : course
+            ) ?? []
+        );
+      }}
+    />
+  )
+}
+
 function ProfessorListPopover({
   courseId,
   onAssigned,
@@ -96,7 +100,6 @@ function ProfessorListPopover({
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<User | null>(null);
 
   const { data } = useQuery({
     queryKey: ["professors-by-course", courseId],
@@ -111,7 +114,6 @@ function ProfessorListPopover({
   const handleAssign = async (professor: User) => {
     try {
       await assignProfessorAsCourseLeader(professor.id, courseId);
-      setSelected(professor);
       setOpen(false);
       onAssigned?.(professor);
     } catch (error) {
@@ -123,7 +125,7 @@ function ProfessorListPopover({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button className="w-full">
-          {selected?.name ?? "Asignar"}
+          Asignar
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[300px]">

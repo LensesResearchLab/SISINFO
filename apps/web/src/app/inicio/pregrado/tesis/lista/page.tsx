@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import SpinnerPage from "@/components/shared/spinner-page";
 import AlphabeticSortButton from "@/components/shared/alphabetic-sort-button";
 import { getPeriods } from "@/app/services/period.service";
@@ -33,7 +32,8 @@ import { cn } from "@/lib/utils";
 import { ROUTES } from "@/app/routes";
 import { DataTable } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { File, Search, User } from "lucide-react";
+import { File, Search } from "lucide-react";
+import SkeletonAccordion from "@/components/shared/skeleton-accordion";
 
 /**
  * ThesisList Component
@@ -264,26 +264,4 @@ function ThesisTable({ data }: { readonly data: ProjectsStudentTableRow[] }) {
 
 function ThesisSpan({ text }: { readonly text: string }) {
   return <span className="text-primary font-medium">{text}</span>;
-}
-
-/**
- * SkeletonAccordion Component
- *
- * Displays loading skeleton while thesis data is being fetched.
- */
-function SkeletonAccordion() {
-  return (
-    <>
-      {Array.from({ length: 8 }).map((_, i) => (
-        <AccordionItem key={i} value="loading">
-          <AccordionTrigger>
-            <div className="flex items-center w-full">
-              <User className="mr-2 h-5 w-5 text-core-highlight" />
-              <Skeleton className="w-40 h-4" />
-            </div>
-          </AccordionTrigger>
-        </AccordionItem>
-      ))}
-    </>
-  );
 }

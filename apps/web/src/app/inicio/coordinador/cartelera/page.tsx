@@ -69,15 +69,48 @@ export default function UploadBillboard() {
             handleUploadXlsm(file);
           }
         }}
-      dialogText={dialogText}
+        dialogText={dialogText}
       >
-      <UploadedBillboard classesData={coursesData} loadError={loadError} />
-    </UploadFilePage >
+        <UploadedBillboard classesData={coursesData} loadError={loadError} />
+      </UploadFilePage >
 
       <AlertDialogError open={loadError} onOpenChange={setLoadError} />
     </>
   );
 }
+
+const columns: ColumnDef<Course>[] = [
+  {
+    accessorKey: "name",
+    header: "Clase",
+  },
+  {
+    accessorKey: "code",
+    header: "Código",
+  },
+  {
+    accessorFn: (row) => row.sections.length,
+    header: "Secciones",
+  },
+  {
+    accessorKey: "credits",
+    header: "Créditos",
+  },
+  {
+    id: "professors",
+    header: "Profesores",
+    cell: ({ row }) => {
+      const professors = row.original.sections.flatMap((section) =>
+        section.professors.map((p) => p.user.name)
+      );
+      return (
+        <span>
+          {professors.length > 0 ? professors.join(", ") : "No asignados"}
+        </span>
+      );
+    },
+  },
+];
 
 function UploadedBillboard({
   classesData,
@@ -86,43 +119,7 @@ function UploadedBillboard({
   readonly classesData: Course[];
   readonly loadError: boolean;
 }) {
-  const columns: ColumnDef<Course>[] = [
-    {
-      accessorKey: "name",
-      header: "Clase",
-    },
-    {
-      accessorKey: "code",
-      header: "Código",
-    },
-    {
-      accessorFn: (row) => row.sections.length,
-      header: "Secciones",
-    },
-    {
-      accessorKey: "credits",
-      header: "Créditos",
-    },
-    {
-      id: "professors",
-      header: "Profesores",
-      cell: ({ row }) => {
-        const professors = row.original.sections.flatMap((section) =>
-          section.professors.map((p) => p.user.name)
-        );
-        return (
-          <span>
-            {professors.length > 0 ? professors.join(", ") : "No asignados"}
-          </span>
-        );
-      },
-    },
-  ];
-
   if (loadError) return <BillboardNotFound />;
-
-
-  
   return (
     <div className="min-h-full min-w-full">
       <div className="bg-card rounded-lg shadow-lg p-6 space-y-6">

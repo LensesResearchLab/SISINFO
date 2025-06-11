@@ -28,8 +28,7 @@ import {
   getPendingTasksForProfessor,
   getPendingTasksForCoordinator,
 } from "@/app/services/project-application.service";
-import { flows } from "./tareas/flows";
-import { Task } from "../types/entities/task.type";
+import { mapTasksToTaskTable } from "../mappers/task.mapper";
 
 /**
  * Maps each user role to the corresponding dashboard component.
@@ -80,19 +79,7 @@ export default function Home() {
           getPendingTasksForCoordinator()
         ]).then(([studentTasks, professorTasks, coordinatorTasks]) => {
           const allTasks = [...studentTasks, ...professorTasks, ...coordinatorTasks];
-          const parsedTasks = allTasks.map((task: Task) => {
-            const stepNumber =
-              typeof task.step === "number" ? task.step : Number(task.step);
-            const stepInfo = flows.proyectoPregrado[stepNumber];
-            return {
-              ...task,
-              step: stepNumber,
-              title: stepInfo?.title ?? "Sin título",
-              description: stepInfo?.description ?? "Sin descripción",
-              date: task.date ? new Date(task.date) : new Date(),
-            };
-          });
-
+          const parsedTasks = mapTasksToTaskTable(allTasks);
           setTasks(parsedTasks);
         });
       });
