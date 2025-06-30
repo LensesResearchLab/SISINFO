@@ -79,7 +79,7 @@ Sigue estos pasos para preparar el entorno local de desarrollo:
 1. Clona el repositorio:
 
 ```bash
-git clone https://github.com/TheSoftwareDesignLab/SISINFO
+git clone https://github.com/NoNameLab/SISINFO
 ```
 
 2. Navega al directorio del proyecto:
