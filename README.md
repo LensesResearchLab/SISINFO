@@ -60,7 +60,7 @@ npx playwright test 'gremlins.test.js'
 ---
 
 ## 📓 SonarQube
-Puede ejecutar SonarQube siguiendo el siguiente [tutorial](https://docs.sonarsource.com/sonarqube-server/latest/try-out-sonarqube/).
+Puede ejecutar SonarQube siguiendo el siguiente [tutorial](https://docs.sonarsource.com/sonarqube-server/latest/try-out-sonarqube/) (ver sección con Docker).
 
 ---
 
