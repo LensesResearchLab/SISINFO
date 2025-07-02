@@ -113,16 +113,22 @@ export default function TeachingAssistantList() {
         </div>
         {isFetchingTeachingAssistants ? (
           <SkeletonAccordion />
-        ) : Object.keys(mappedTASList).length === 0 ? (
-          <div className="text-center text-muted-foreground py-10">
-            <p className="text-lg font-medium">No se encontraron monitores asignados.</p>
-            <p className="text-sm mt-2">Verifica si estás en el periodo correcto o ajusta tu búsqueda.</p>
-          </div>
-        ) : (
-          <SectionAccordionList sectionsList={mappedTASList} />
-        )}
+        ) : <AccordionList mappedTASList={mappedTASList} />}
       </Accordion>
     </div>
+  );
+}
+
+function AccordionList({ mappedTASList }: { mappedTASList: TeachingAssistantshipProfessorSection }) {
+  return (
+    Object.keys(mappedTASList).length === 0 ? (
+      <div className="text-center text-muted-foreground py-10">
+        <p className="text-lg font-medium">No se encontraron monitores asignados.</p>
+        <p className="text-sm mt-2">Verifica si estás en el periodo correcto o ajusta tu búsqueda.</p>
+      </div>
+    ) : (
+      <SectionAccordionList sectionsList={mappedTASList} />
+    )
   );
 }
 

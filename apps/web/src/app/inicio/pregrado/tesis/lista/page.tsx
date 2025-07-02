@@ -31,7 +31,7 @@ import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/app/routes";
 import { DataTable } from "@/components/data-table";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { File, Search } from "lucide-react";
 import SkeletonAccordion from "@/components/shared/skeleton-accordion";
 
@@ -223,27 +223,10 @@ function AccordionList({
  */
 function ThesisTable({ data }: { readonly data: ProjectsStudentTableRow[] }) {
   const router = useRouter();
-
-  const columns: ColumnDef<ProjectsStudentTableRow>[] = [
-    {
-      accessorKey: "title",
-      header: "Nombre del proyecto",
-      cell: ({ row }) => <ThesisSpan text={row.original.title} />,
-    },
-    {
-      accessorKey: "category",
-      header: "Categoría",
-      cell: ({ row }) => <ThesisSpan text={row.original.category} />,
-    },
-    {
-      accessorKey: "maxStudents",
-      header: "Número de estudiantes",
-      cell: ({ row }) => <ThesisSpan text={String(row.original.maxStudents)} />,
-    },
-    {
-      id: "actions",
-      header: "Ver",
-      cell: ({ row }) => (
+    const rowToName = ({ row }: { row: Row<ProjectsStudentTableRow> }) => <ThesisSpan text={row.original.title} />
+    const rowToCategory = ({ row }: { row: Row<ProjectsStudentTableRow> }) => <ThesisSpan text={row.original.category} />
+    const rowToMaxStudents = ({ row }: { row: Row<ProjectsStudentTableRow> }) => <ThesisSpan text={row.original.maxStudents.toString()} />
+    const rowToButton = ({ row }: { row: Row<ProjectsStudentTableRow> }) => (
         <Button
           variant="ghost"
           size="icon"
@@ -255,7 +238,29 @@ function ThesisTable({ data }: { readonly data: ProjectsStudentTableRow[] }) {
         >
           <Search className="w-4 h-4" />
         </Button>
-      ),
+    )
+  
+
+  const columns: ColumnDef<ProjectsStudentTableRow>[] = [
+    {
+      accessorKey: "title",
+      header: "Nombre del proyecto",
+      cell: rowToName,
+    },
+    {
+      accessorKey: "category",
+      header: "Categoría",
+      cell: rowToCategory,
+    },
+    {
+      accessorKey: "maxStudents",
+      header: "Número de estudiantes",
+      cell: rowToMaxStudents,
+    },
+    {
+      id: "actions",
+      header: "Ver",
+      cell: rowToButton
     },
   ];
 

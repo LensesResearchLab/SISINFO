@@ -25,7 +25,7 @@ import SpinnerPage from "@/components/shared/spinner-page";
 import { getThesesByProfessor } from "@/app/services/thesis.service";
 import { useProfessorThesisListStore } from "./store";
 import { getUserInfo } from "@/app/auth/auth-service";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { ROUTES } from "@/app/routes";
 import { Thesis } from "@/app/types/entities/thesis.type";
 import { Eye } from "lucide-react";
@@ -38,6 +38,16 @@ export default function ThesisProjects() {
 
   useEffect(() => reset, [reset]);
 
+  const rowToTitle = ({ row }: { row: Row<Thesis> }) => <ThesisSpan text={row.original.title} />
+  const rowToBtn = ({ row }: { row: Row<Thesis> }) => (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_STUDENT}/${row.original.id}`)}
+        >
+          <Eye className="w-4 h-4" />
+        </Button>
+      )
   const {
     data: thesisList,
     isFetching,
@@ -59,11 +69,12 @@ export default function ThesisProjects() {
     ? sortedList.filter((t) => t.title.toLowerCase().includes(searchQuery.toLowerCase()))
     : sortedList;
 
+    
   const columns: ColumnDef<Thesis>[] = [
     {
       accessorKey: "title",
       header: "Tema del Proyecto",
-      cell: ({ row }) => <ThesisSpan text={row.original.title} />,
+      cell: rowToTitle,
     },
     {
       accessorKey: "investigationSubarea",
@@ -82,15 +93,7 @@ export default function ThesisProjects() {
     {
       id: "actions",
       header: "Estudiantes",
-      cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_POSTGRADUATE_THESIS_STUDENT}/${row.original.id}`)}
-        >
-          <Eye className="w-4 h-4" />
-        </Button>
-      ),
+      cell: rowToBtn,
     },
   ];
 

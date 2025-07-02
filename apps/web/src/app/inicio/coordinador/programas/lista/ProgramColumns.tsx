@@ -34,7 +34,7 @@ export const getProgramColumns = (handleDetail: (id: string) => void): ColumnDef
     header: "Profesor",
     cell: ({ row }) => (
       <span className="text-primary">
-        {row.original.mainProfessor?.user?.name || "Profesor no asignado"}
+        {row.original.mainProfessor?.user?.name ?? "Profesor no asignado"}
       </span>
     ),
   },

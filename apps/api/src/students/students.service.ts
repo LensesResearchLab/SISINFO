@@ -40,18 +40,18 @@ export class StudentsService implements RoleService {
 
     if (student?.user && 'password' in student.user) {
       const { password, ...userWithoutPassword } = student.user;
-      student.user = userWithoutPassword as typeof student.user;
+      student.user = userWithoutPassword;
     }
 
     const professorUser = student?.thesisApplication?.thesis?.professor?.user;
     if (professorUser && 'password' in professorUser) {
       const { password, ...userWithoutPassword } = professorUser;
-      student.thesisApplication.thesis.professor.user = userWithoutPassword as typeof professorUser;
+      student.thesisApplication.thesis.professor.user = userWithoutPassword;
     }
 
     if (student?.thesisApplication?.thesis && 'thesisApplications' in student.thesisApplication.thesis) {
       const { thesisApplications, ...thesisWithoutApplications } = student.thesisApplication.thesis;
-      student.thesisApplication.thesis = thesisWithoutApplications as typeof student.thesisApplication.thesis;
+      student.thesisApplication.thesis = thesisWithoutApplications;
     }
 
     return student;

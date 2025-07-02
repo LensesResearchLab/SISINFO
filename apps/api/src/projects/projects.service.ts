@@ -28,11 +28,11 @@ export class ProjectsService {
     const areasInterest: AreasOfInterest[] = [];
 
     for (const tag of createProjectDto.areasOfInterest) {
-      let findedTag = await this.areaInterestService.findByDescription(tag);
-      if (!findedTag) {
-        findedTag = await this.areaInterestService.create({ description: tag });
-      }
-      areasInterest.push(findedTag);
+      let foundTag = await this.areaInterestService.findByDescription(tag);
+      foundTag ??= await this.areaInterestService.create({
+        description: tag,
+      });
+      areasInterest.push(foundTag);
     }
 
     if (!professor) {

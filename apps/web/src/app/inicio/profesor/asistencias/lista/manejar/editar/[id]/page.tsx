@@ -211,7 +211,7 @@ export default function EditAssistancePage() {
                   <Input
                     value={req.description}
                     onChange={(e) => handleRequirementChange(index, e.target.value)}
-                    placeholder={req.description || "Descripción del requisito"}
+                    placeholder={req.description ?? "Descripción del requisito"}
                     required
                   />
                   {formData.requirements.length > 1 && (
