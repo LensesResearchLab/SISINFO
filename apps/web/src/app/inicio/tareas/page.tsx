@@ -5,7 +5,7 @@ import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
 
 import { useRouter } from "next/navigation";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row, Table } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
@@ -181,24 +181,28 @@ function TasksTable({ role }: TasksTableProps) {
    * useMemo avoids recreating on every render.
    */
   const columns: ColumnDef<Task>[] = useMemo(() => {
+    const getHeader = ({ table }: { table: Table<Task> }) => (
+      <input
+        type="checkbox"
+        checked={table.getIsAllPageRowsSelected()}
+        onChange={table.getToggleAllPageRowsSelectedHandler()}
+        className="cursor-pointer"
+      />
+    )
+
+    const getCell = ({ row }: { row: Row<Task> }) => (
+      <input
+        type="checkbox"
+        checked={row.getIsSelected()}
+        onChange={row.getToggleSelectedHandler()}
+        className="cursor-pointer"
+      />
+    )
+
     const selectColumn: ColumnDef<Task> = {
       id: "select",
-      header: ({ table }) => (
-        <input
-          type="checkbox"
-          checked={table.getIsAllPageRowsSelected()}
-          onChange={table.getToggleAllPageRowsSelectedHandler()}
-          className="cursor-pointer"
-        />
-      ),
-      cell: ({ row }) => (
-        <input
-          type="checkbox"
-          checked={row.getIsSelected()}
-          onChange={row.getToggleSelectedHandler()}
-          className="cursor-pointer"
-        />
-      ),
+      header: ({ table }) => getHeader({ table }),
+      cell: ({ row }) => getCell({ row }),
       enableSorting: false,
       enableHiding: false,
     };

@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { Student } from './entities/student.entity';
 import { User } from '../users/entities/user.entity';
 import { RoleService } from '../common/interfaces/role.service';
+import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 
 @Injectable()
 export class StudentsService implements RoleService {
@@ -35,25 +36,19 @@ export class StudentsService implements RoleService {
         'thesisApplication.thesis',
         'thesisApplication.thesis.professor',
         'thesisApplication.thesis.professor.user',
-        'projectApplication']
+        'projectApplication',
+      ],
     });
 
     if (student?.user && 'password' in student.user) {
-      const { password, ...userWithoutPassword } = student.user;
-      student.user = userWithoutPassword;
+      student.user = deletePasswordFromUser(student.user);
     }
 
     const professorUser = student?.thesisApplication?.thesis?.professor?.user;
     if (professorUser && 'password' in professorUser) {
-      const { password, ...userWithoutPassword } = professorUser;
-      student.thesisApplication.thesis.professor.user = userWithoutPassword;
+      student.thesisApplication.thesis.professor.user =
+        deletePasswordFromUser(professorUser);
     }
-
-    if (student?.thesisApplication?.thesis && 'thesisApplications' in student.thesisApplication.thesis) {
-      const { thesisApplications, ...thesisWithoutApplications } = student.thesisApplication.thesis;
-      student.thesisApplication.thesis = thesisWithoutApplications;
-    }
-
     return student;
   }
 

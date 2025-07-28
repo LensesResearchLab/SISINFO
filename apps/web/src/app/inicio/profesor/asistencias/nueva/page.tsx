@@ -117,6 +117,12 @@ export default function GraduateAssistanceForm() {
     setNewRequirement("");
   };
 
+  const handleRemoveRequirement = (indexToRemove: number) => {
+    const current = form.getValues("requirements");
+    const updated = current.filter((_, index) => index !== indexToRemove);
+    form.setValue("requirements", updated);
+  };
+
   const onSubmit = async (data: z.infer<typeof thesisSchema>) => {
     const payload = {
       ...data,
@@ -312,24 +318,21 @@ export default function GraduateAssistanceForm() {
                     <div className="flex flex-wrap gap-2 mt-3">
                       {field.value.map((tag, index) => (
                         <Badge
-                          key={`${tag}-${index}`}
+                          key={`${tag.description}-${index}`}
                           variant="secondary"
                           className="px-3 py-1 rounded-full transition-colors bg-core-soft text-foreground-soft"
                         >
                           {tag.description}
                           <button
                             type="button"
-                            onClick={() =>
-                              field.onChange(
-                                field.value.filter((t) => t !== tag)
-                              )
-                            }
+                            onClick={() => handleRemoveRequirement(index)}
                             className="ml-1 text-core-highlight"
                           >
                             <X size={14} className="inline-block" />
                           </button>
                         </Badge>
                       ))}
+
                     </div>
                     <FormMessage />
                   </FormItem>

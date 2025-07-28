@@ -12,7 +12,7 @@ import { getPeriods } from "@/app/services/period.service";
 import { ROUTES } from "@/app/routes";
 import SpinnerPage from "@/components/shared/spinner-page";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { DataTable } from "../data-table";
 import { Search } from "lucide-react";
 
@@ -96,53 +96,59 @@ export function AssistanceList({
     [role, router]
   );
 
-  const columns = useMemo<ColumnDef<GraduatedAssistance>[]>(() => [
-    {
-      accessorKey: "title",
-      header: "Nombre",
-    },
-    {
-      accessorKey: "category",
-      header: "Clasificación",
-    },
-    {
-      accessorKey: "professor.user.name",
-      header: "Oferente",
-      cell: ({ row }) => row.original.professor?.user.name ?? "-",
-    },
-    {
-      accessorKey: "startDate",
-      header: "Fecha publicación",
-      cell: ({ getValue }) => formatDate(new Date(getValue() as string)),
-    },
-    {
-      accessorKey: "endDate",
-      header: "Fecha fin",
-      cell: ({ getValue }) => formatDate(new Date(getValue() as string)),
-    },
-    {
-      id: "ver",
-      header: "Ver",
-      cell: ({ row }) => {
-        const isOwn =
-          role === "estudiante" ||
-          (professorName && row.original.professor?.user.name === professorName);
+  const columns = useMemo<ColumnDef<GraduatedAssistance>[]>(() => {
+    const getAssistantshipsButton = ({ row }: { row: Row<GraduatedAssistance> }) => {
+      const isOwn =
+        role === "estudiante" ||
+        (professorName && row.original.professor?.user.name === professorName);
 
-        return isOwn ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleClick(row.original.id)}
-            className="cursor-pointer"
-          >
-            <Search className="w-4 h-4" />
-          </Button>
-        ) : (
-          <span className="text-gray-400">-</span>
-        );
+      return isOwn ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleClick(row.original.id)}
+          className="cursor-pointer"
+        >
+          <Search className="w-4 h-4" />
+        </Button>
+      ) : (
+        <span className="text-gray-400">-</span>
+      );
+    };
+
+    return [
+      {
+        accessorKey: "title",
+        header: "Nombre",
       },
-    },
-  ], [handleClick, professorName, role]);
+      {
+        accessorKey: "category",
+        header: "Clasificación",
+      },
+      {
+        accessorFn: (row) => row.professor?.user.name ?? "-",
+        id: "professorName",
+        header: "Oferente",
+      },
+      {
+        accessorKey: "startDate",
+        header: "Fecha publicación",
+        cell: ({ getValue }) => formatDate(new Date(getValue() as string)),
+      },
+      {
+        accessorKey: "endDate",
+        header: "Fecha fin",
+        cell: ({ getValue }) => formatDate(new Date(getValue() as string)),
+      },
+      {
+        id: "ver",
+        header: "Ver",
+        cell: getAssistantshipsButton,
+      },
+    ];
+  }, [handleClick, professorName, role]);
+
+
 
   useEffect(() => {
     const fetchData = async () => {

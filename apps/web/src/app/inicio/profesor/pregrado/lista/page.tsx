@@ -20,7 +20,7 @@ import { DataTable } from "@/components/data-table";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { getProjectsByProfessor } from "@/app/services/project.service";
 import { useProfessorThesisListStore } from "./store";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { ROUTES } from "@/app/routes";
 import { Project } from "@/app/types/entities/project.type";
 import { Eye } from "lucide-react";
@@ -55,11 +55,40 @@ export default function UndergraduateProjects() {
     ? sortedList.filter((p) => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
     : sortedList;
 
+
+  const getCell = ({ row }: { row: Row<Project> }) => (
+    <span className="font-medium">{row.original.title}</span>
+  );
+
+  const getActionsButton = ({ row }: { row: Row<Project> }) => (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() =>
+        router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST}/${row.original.id}`)
+      }
+    >
+      <Eye className="w-4 h-4" />
+    </Button>
+  );
+
+  const getAplicantsButton = ({ row }: { row: Row<Project> }) => (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() =>
+        router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST}/${row.original.id}/aplicantes`)
+      }
+    >
+      <Eye className="w-4 h-4" />
+    </Button>
+  );
+
   const columns: ColumnDef<Project>[] = [
     {
       accessorKey: "title",
       header: "Tema del Proyecto",
-      cell: ({ row }) => <span className="font-medium">{row.original.title}</span>,
+      cell: getCell,
     },
     {
       accessorKey: "description",
@@ -78,32 +107,12 @@ export default function UndergraduateProjects() {
     {
       id: "actions",
       header: "Detalle",
-      cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST}/${row.original.id}`)
-          }
-        >
-          <Eye className="w-4 h-4" />
-        </Button>
-      ),
+      cell: getActionsButton
     },
     {
       id: "aplicantes",
       header: "Estudiantes",
-      cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            router.push(`${ROUTES.HOME}/${ROUTES.PROFESSOR_UNDERGRADUATE_THESIS_LIST}/${row.original.id}/aplicantes`)
-          }
-        >
-          <Eye className="w-4 h-4" />
-        </Button>
-      ),
+      cell: getAplicantsButton
     },
   ];
 

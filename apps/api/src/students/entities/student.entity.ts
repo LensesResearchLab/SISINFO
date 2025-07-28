@@ -87,7 +87,7 @@ export class Student extends Role {
   )
   teachingAssistances: TeachingAssistance[];
 
-  @OneToMany(()=>Task, (t)=>t.student)
+  @OneToMany(() => Task, (t) => t.student)
   tasks: Task[];
 
   @OneToMany(

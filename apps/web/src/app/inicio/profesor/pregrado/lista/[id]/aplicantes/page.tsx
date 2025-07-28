@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Application } from "@/app/types/project-application.type";
 import { ROUTES } from "@/app/routes";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row, Table } from "@tanstack/react-table";
 import SpinnerPage from "@/components/shared/spinner-page";
 import ErrorPage from "@/components/shared/error-page";
 
@@ -63,25 +63,45 @@ export default function ProjectDetail({
     );
   };
 
+  const getHeader = ({ table }: { table: Table<Application> }) => (
+    <Checkbox
+      checked={table.getIsAllPageRowsSelected()}
+      onCheckedChange={(checked) => handleSelectAll(Boolean(checked))}
+      aria-label="Select all"
+    />
+  );
+
+  const getCell = ({ row }: { row: Row<Application> }) => (
+    <Checkbox
+      checked={selectedApplicantIds.includes(row.original.id)}
+      onCheckedChange={(checked) =>
+        handleSelectApplicant(row.original.id, Boolean(checked))
+      }
+      aria-label="Select row"
+    />
+  );
+
+  const getRow = ({ row }: { row: Row<Application> }) => (
+    <div className="flex gap-2">
+      <Button
+        onClick={() => handleOpenModal([row.original.id], "Inscrito")}
+      >
+        Aceptar
+      </Button>
+      <Button
+        variant="destructive"
+        onClick={() => handleOpenModal([row.original.id], "Rechazado")}
+      >
+        Rechazar
+      </Button>
+    </div>
+  );
+
   const columns: ColumnDef<Application>[] = [
     {
       id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(checked) => handleSelectAll(Boolean(checked))}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={selectedApplicantIds.includes(row.original.id)}
-          onCheckedChange={(checked) =>
-            handleSelectApplicant(row.original.id, Boolean(checked))
-          }
-          aria-label="Select row"
-        />
-      ),
+      header: getHeader,
+      cell: getCell,
       enableSorting: false,
       enableHiding: false,
     },
@@ -102,21 +122,7 @@ export default function ProjectDetail({
     {
       id: "actions",
       header: "Acciones",
-      cell: ({ row }) => (
-        <div className="flex gap-2">
-          <Button
-            onClick={() => handleOpenModal([row.original.id], "Inscrito")}
-          >
-            Aceptar
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => handleOpenModal([row.original.id], "Rechazado")}
-          >
-            Rechazar
-          </Button>
-        </div>
-      ),
+      cell: getRow,
     },
   ];
 
