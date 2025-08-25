@@ -152,6 +152,13 @@ export const administratorData = [
           "Aquí puedes asignar y consultar los profesores lideres de cada materia.",
         url: ROUTES.ADMINISTRATOR_COURSE_LEADERS,
       },
+      {
+        Icon: Calendar,
+        title: "Cargar profesores ",
+        description:
+          "Aquí puedes cargar y consultar los profesores.",
+        url: ROUTES.ADMINISTRATOR_UPLOAD_TEACHERS,
+      },
     ],
   },
 ];

@@ -4,3 +4,9 @@ export interface User {
   name: string;
   roles?: string[];
 }
+
+export interface CreateUser {
+  email: string;
+  name: string;
+  password: string;
+}

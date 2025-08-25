@@ -9,30 +9,34 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 
 interface UploadFilePageProps {
   readonly title: string
+  readonly period?: boolean ;
   readonly handlePeriodChange: (value: string) => void;
   readonly handleDownload: () => void;
   readonly handleUploadCsv: (data: Record<string, string | number | boolean | null>[]) => void;
   readonly dialogText: DialogTextProps;
   readonly children?: React.ReactNode;
+  readonly typeUpload: string;
 }
 
 export function UploadFilePage({
     title,
+    period=true,
     handlePeriodChange,
     handleDownload,
     handleUploadCsv,
     dialogText,
-    children
+    children,
+    typeUpload
   }: UploadFilePageProps) {
     return (
       <div className="grid grid-rows-3 w-full h-full gap-4 p-4">
-        <div className="grid grid-cols-2 row-span-1 gap-4 h-4">
-          <TermCard handlePeriodChange={handlePeriodChange} footer={""} />
+         <div  className="grid grid-cols-2 row-span-1 gap-4 h-4">
+          {period &&<TermCard handlePeriodChange={handlePeriodChange} footer={""} />}
           <TemplateCard handleDownload={handleDownload} title="Plantillas" description="Descargar plantilla" footer="" />
         </div>
   
         <div className="row-span-3">
-          <UploadFiles title={title} handleUploadCsv={handleUploadCsv} dialogText={dialogText} />
+          <UploadFiles title={title} handleUploadCsv={handleUploadCsv} dialogText={dialogText} typeUpload={typeUpload} />
         </div>
   
         <div className="row-span-3">

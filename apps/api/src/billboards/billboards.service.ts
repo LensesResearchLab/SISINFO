@@ -30,6 +30,7 @@ export class BillboardsService {
     const year = Number(sectionDto.period.slice(0, 4));
     const semester = sectionDto.period.slice(4, 5);
     const rawPeriod = sectionDto.period.slice(4, 6);
+    console.log(rawPeriod, year, semester);
     const periodStr = mapPeriod(rawPeriod);
 
     let foundPeriod = await this.periodsService.findOneByPeriodAndYear(

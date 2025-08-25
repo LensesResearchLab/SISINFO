@@ -8,6 +8,7 @@ import Papa from "papaparse"
 import * as XLSX from "xlsx";
 import { ConfirmationModal, DialogTextProps } from "./confirmation-modal"
 import { createBillboard } from "@/app/services/billboard.service"
+import { uploadProfessors } from "@/app/services/professor.service"
 
 type CsvRow = Record<string, string | number | boolean | null>;
 
@@ -15,12 +16,15 @@ interface UploadFilesProps {
   readonly title: string;
   readonly handleUploadCsv: (data: CsvRow[]) => void;
   readonly dialogText: DialogTextProps;
+  readonly typeUpload : string;
 }
 
 export default function UploadFiles({
   title,
   handleUploadCsv,
   dialogText,
+  typeUpload='billboard'
+
 }: UploadFilesProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
@@ -35,6 +39,9 @@ export default function UploadFiles({
       (value) => typeof value === "string" && value.trim() !== ""
     )
   }
+  function normalizeName(name: string): string {
+  return name.trim().replace(/\s+/g, " ");
+ }
 
   const onConfirmUpload = () => {
     if (!file) return setIsModalOpen(false);
@@ -66,19 +73,35 @@ export default function UploadFiles({
 
           const jsonData = XLSX.utils.sheet_to_json<Record<string, string | number | boolean | null>>(sheet);
           handleUploadCsv(jsonData);
-          const billboardData = jsonData.map((row) => ({
-            NRC: String(row["NRC"] ?? ""),
-            code: String(row["code"] ?? ""),
-            name: String(row["name"] ?? ""),
-            departament: String(row["departament"] ?? ""),
+          if (typeUpload === "billboard") {
+            const billboardData = jsonData.map((row) => ({
+              NRC: String(row["NRC"] ?? ""),
+              code: String(row["code"] ?? ""),
+              name: String(row["name"] ?? ""),
+              departament: String(row["departament"] ?? ""),
             credits: typeof row["credits"] === "number" ? row["credits"] : Number(row["credits"] ?? 0),
             section: String(row["section"] ?? ""),
             period: String(row["period"] ?? ""),
             professors: formatProfessors(row["professors"]),
             publicated: formatPublicated(row["publicated"])
+
           }));
           createBillboard(billboardData);
-        } catch (error) {
+          }
+        else if (typeUpload === "professors") {
+          const professorsData = jsonData.map((row) => (
+            {
+              user: {
+                name: normalizeName(String(row["Personal"] ?? "")),
+                email: String(row["Correo"] ?? "").toLowerCase().trim(),
+                password : String(row["Correo"])
+              }
+            }
+          ));
+          uploadProfessors(professorsData);
+        }
+      }
+         catch (error) {
           console.error("Error al leer el archivo XLSX/XLSM:", error);
         } finally {
           setIsModalOpen(false);

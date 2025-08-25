@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { RoleService } from '../common/interfaces/role.service';
 import { PeriodsService } from '../periods/periods.service';
+import { UploadProfessorDto } from './dto/upload-professor.dto';
 
 @Injectable()
 export class ProfessorsService implements RoleService {
@@ -70,11 +71,12 @@ export class ProfessorsService implements RoleService {
   }
 
   findByName(name: string) {
-    return this.professorRepository
+    const qb = this.professorRepository
       .createQueryBuilder('professor')
       .innerJoinAndSelect('professor.user', 'user')
-      .where('LOWER(user.name) = LOWER(:name)', { name })
-      .getOne();
+      .where('LOWER(user.name) = LOWER(:name)', { name });
+
+    return qb.getOne();
   }
 
   async update(id: string, updateProfessorDto: UpdateProfessorDto) {
@@ -85,6 +87,27 @@ export class ProfessorsService implements RoleService {
     Object.assign(professor, updateProfessorDto);
     await this.professorRepository.save(professor);
     return professor;
+  }
+
+  async uploadProfessors(professors: UploadProfessorDto[]) {
+    const existingProfessors = await this.professorRepository.find();
+    const existingEmails = new Set(existingProfessors.map((p) => p.user.email));
+    // 2. Set temporal para esta lista
+    const seen = new Set<string>();
+
+    const newProfessors = professors.filter((professor) => {
+      const email = professor.user.email;
+      if (existingEmails.has(email)) return false; // Already in BD
+      if (seen.has(email)) return false; // input duplicated
+      seen.add(email); // mark as seen
+      return true;
+    });
+
+    if (newProfessors.length > 0) {
+      await this.professorRepository.save(newProfessors);
+    }
+
+    return newProfessors;
   }
 
   async addRole<T>(user: User, roleInfo: T): Promise<void> {

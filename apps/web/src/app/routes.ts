@@ -36,6 +36,7 @@ export const ROUTES: Record<string, string> = {
 
   /*  Professor  */
   APPLICANTS: "aplicantes",
+  
 
   PROFESSOR_UNDERGRADUATE_THESIS_LIST: "/profesor/pregrado/lista",
   PROFESSOR_UNDERGRADUATE_THESIS_NEW: "/profesor/pregrado/nuevo",
@@ -71,6 +72,7 @@ export const ROUTES: Record<string, string> = {
   ADMINISTRATOR_INCIDENCES: "/administrador/incidencia",
   ADMINISTRATOR_USERS: "/administrador/usuario",
   ADMINISTRATOR_COURSE_LEADERS: "/administrador/lider",
+  ADMINISTRATOR_UPLOAD_TEACHERS: "/administrador/cargar_profesores",
   /*  General  */
 
   TASK_LIST: "/tareas",

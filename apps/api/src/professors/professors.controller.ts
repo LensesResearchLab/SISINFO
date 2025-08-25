@@ -14,6 +14,7 @@ import { CreateProfessorDto } from './dto/create-professor.dto';
 import { UpdateProfessorDto } from './dto/update-professor.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
+import { UploadProfessorDto } from './dto/upload-professor.dto';
 
 @Controller('professors')
 export class ProfessorsController {
@@ -22,6 +23,11 @@ export class ProfessorsController {
   @Post()
   create(@Body() createProfessorDto: CreateProfessorDto) {
     return this.professorsService.create(createProfessorDto);
+  }
+
+  @Post('upload')
+  upload(@Body() professors: UploadProfessorDto[]) {
+    return this.professorsService.uploadProfessors(professors);
   }
 
   @Get()

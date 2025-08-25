@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Course } from "@/app/types/entities/billboard.type";
 import {
   getBillboard,
 } from "@/app/services/billboard.service";
@@ -11,9 +10,10 @@ import { AlertDialogError } from "@/components/shared/alert-dialog-error";
 import { DataTable } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import * as XLSX from "xlsx";
+import { Professor } from "@/app/types/entities/professor.type";
 
-export default function UploadBillboard() {
-  const [coursesData, setCoursesData] = useState<Course[]>([]);
+export default function UploadProfessors() {
+  const [profesorsData, setProfesorsData] = useState<Professor[]>([]);
   const [loadError, setLoadError] = useState(false);
 
   const dialogText = {
@@ -28,7 +28,7 @@ export default function UploadBillboard() {
 
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = "/plantilla.xlsm";
+    link.href = "/plantillap.xlsm";
     link.download = "plantilla.xlsm";
     document.body.appendChild(link);
     link.click();
@@ -49,11 +49,11 @@ export default function UploadBillboard() {
   const handlePeriodChange = (value: string) => {
     getBillboard(value)
       .then((data) => {
-        setCoursesData(data.courses);
+        setProfesorsData(data.professors);
         setLoadError(false);
       })
       .catch(() => {
-        setCoursesData([]);
+        setProfesorsData([]);
         setLoadError(true);
       });
   };
@@ -61,7 +61,8 @@ export default function UploadBillboard() {
   return (
     <>
       <UploadFilePage
-        title="Cargar cartelera"
+        title="Cargar Profesores "
+        period={false}
         handlePeriodChange={handlePeriodChange}
         handleDownload={handleDownload}
         handleUploadCsv={(file) => {
@@ -70,9 +71,9 @@ export default function UploadBillboard() {
           }
         }}
         dialogText={dialogText}
-        typeUpload="billboard"
+        typeUpload="professors"
       >
-        <UploadedBillboard classesData={coursesData} loadError={loadError} />
+        <UploadedProfessors profesorsData={profesorsData} loadError={loadError} />
       </UploadFilePage >
 
       <AlertDialogError open={loadError} onOpenChange={setLoadError} />
@@ -80,44 +81,24 @@ export default function UploadBillboard() {
   );
 }
 
-const columns: ColumnDef<Course>[] = [
+const columns: ColumnDef<Professor>[] = [
   {
     accessorKey: "name",
-    header: "Clase",
+    header: "Nombre",
   },
   {
-    accessorKey: "code",
-    header: "Código",
+    accessorKey: "email",
+    header: "Correo",
   },
-  {
-    accessorFn: (row) => row.sections.length,
-    header: "Secciones",
-  },
-  {
-    accessorKey: "credits",
-    header: "Créditos",
-  },
-  {
-    id: "professors",
-    header: "Profesores",
-    cell: ({ row }) => {
-      const professors = row.original.sections.flatMap((section) =>
-        section.professors.map((p) => p.user.name)
-      );
-      return (
-        <span>
-          {professors.length > 0 ? professors.join(", ") : "No asignados"}
-        </span>
-      );
-    },
-  },
+  
+  
 ];
 
-function UploadedBillboard({
-  classesData,
+function UploadedProfessors({
+  profesorsData,
   loadError,
 }: {
-  readonly classesData: Course[];
+  readonly profesorsData: Professor[];
   readonly loadError: boolean;
 }) {
   if (loadError) return <BillboardNotFound />;
@@ -125,11 +106,11 @@ function UploadedBillboard({
     <div className="min-h-full min-w-full">
       <div className="bg-card rounded-lg shadow-lg p-6 space-y-6">
         <h2 className="text-2xl font-bold text-core text-center">
-          Cartelera cargada
+          Profesores cargados
         </h2>
         <DataTable
           columns={columns}
-          data={classesData}
+          data={profesorsData}
         />
       </div>
     </div>

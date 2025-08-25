@@ -17,7 +17,7 @@ INSERT INTO "user" VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb63c', 'Daniel Felip
 
 select * from student;
 
-INSERT INTO student VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb61c', true, true, '202020782');
+INSERT INTO student VALUES ('b3cb0b7a-15f8-4aca-9c89-3067ay2dfb61c', true, true, '202020782');
 INSERT INTO student VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb62c', true, true, '202020782');
 INSERT INTO student VALUES ('b3cb0b7a-15f8-4aca-9c89-3067a2dfb63c', true, false, '202020782');
 
