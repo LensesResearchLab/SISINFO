@@ -18,6 +18,7 @@ export interface Billboard {
   
 
 export interface Course {
+  professors: never[];
   id: string;
   name: string;
   code: string;
@@ -25,6 +26,17 @@ export interface Course {
   credits: number;
   mainProfessor: Professor;
   program: string;
+}
+
+export interface CourseShow {
+  id: string;
+  name: string;
+  code: string;
+  sections: Section[];
+  credits: number;
+  mainProfessor: Professor;
+  program: string;
+  professors:Professor[]
 }
 
 export interface Professor {

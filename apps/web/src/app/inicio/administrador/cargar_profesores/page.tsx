@@ -17,11 +17,11 @@ export default function UploadProfessors() {
   const [loadError, setLoadError] = useState(false);
 
   const dialogText = {
-    title: "Publicar cartelera",
-    description: "¿Estás seguro de que deseas publicar esta cartelera?",
-    buttonText: "Publicar cartelera",
-    successTitle: "Cartelera Publicado",
-    successText: "Tu cartelera ha sido publicada exitosamente",
+    title: "Cargar Profesores",
+    description: "¿Estás seguro de que deseas cargar estos profesores?",
+    buttonText: "Cargar",
+    successTitle: "Profesores Cargados",
+    successText: "Tus profesores han sido cargados con exito",
     url: `${ROUTES.HOME}/${ROUTES.BULLETIN_BOARD}`,
   };
 

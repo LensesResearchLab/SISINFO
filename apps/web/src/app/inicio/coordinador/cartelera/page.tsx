@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Course } from "@/app/types/entities/billboard.type";
+import { Course, CourseShow } from "@/app/types/entities/billboard.type";
 import {
   getBillboard,
 } from "@/app/services/billboard.service";
@@ -73,14 +73,15 @@ export default function UploadBillboard() {
         typeUpload="billboard"
       >
         <UploadedBillboard classesData={coursesData} loadError={loadError} />
+        
       </UploadFilePage >
-
+        
       <AlertDialogError open={loadError} onOpenChange={setLoadError} />
     </>
   );
 }
 
-const columns: ColumnDef<Course>[] = [
+const columns: ColumnDef<CourseShow>[] = [
   {
     accessorKey: "name",
     header: "Clase",
@@ -98,19 +99,18 @@ const columns: ColumnDef<Course>[] = [
     header: "Créditos",
   },
   {
-    id: "professors",
-    header: "Profesores",
-    cell: ({ row }) => {
-      const professors = row.original.sections.flatMap((section) =>
-        section.professors.map((p) => p.user.name)
-      );
-      return (
-        <span>
-          {professors.length > 0 ? professors.join(", ") : "No asignados"}
-        </span>
-      );
-    },
+  id: "professorsName",
+  header: "Profesores",
+  accessorFn: (row) =>
+    (row.professors ?? [])
+      .map((p) => p.user?.name)
+      .filter(Boolean)
+      .join(", "),
+  cell: ({ getValue }) => {
+    const names = getValue<string>() ?? "";
+    return names || "—";
   },
+}
 ];
 
 function UploadedBillboard({

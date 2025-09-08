@@ -15,7 +15,7 @@ export async function getBillboard(periodId: string) {
   if (!response.ok) {
     throw new Error("Failed to get billboard.");
   }
-
+  
   return response.json();
 }
 

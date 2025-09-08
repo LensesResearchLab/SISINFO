@@ -79,6 +79,7 @@ export default function UploadTeachingAssistants() {
         handleUploadCsv(teachingAssistantsData);
       }}
       dialogText={dialogText}
+      typeUpload=''
     >
       <TeachingAssistantsTable teachingAssistantships={teachingAssistantships} />
     </UploadFilePage>

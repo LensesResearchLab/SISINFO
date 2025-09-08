@@ -97,6 +97,7 @@ export class ProfessorsService implements RoleService {
 
     const newProfessors = professors.filter((professor) => {
       const email = professor.user.email;
+      if (!email) return false;
       if (existingEmails.has(email)) return false; // Already in BD
       if (seen.has(email)) return false; // input duplicated
       seen.add(email); // mark as seen

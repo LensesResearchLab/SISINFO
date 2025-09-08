@@ -30,7 +30,6 @@ export class BillboardsService {
     const year = Number(sectionDto.period.slice(0, 4));
     const semester = sectionDto.period.slice(4, 5);
     const rawPeriod = sectionDto.period.slice(4, 6);
-    console.log(rawPeriod, year, semester);
     const periodStr = mapPeriod(rawPeriod);
 
     let foundPeriod = await this.periodsService.findOneByPeriodAndYear(
@@ -246,6 +245,13 @@ export class BillboardsService {
         'courses.sections.period',
       ],
     });
+    if (!billboard) return null;
+    //Obtenemos los cursos sin profesores repetidos
+    billboard.courses =
+      billboard.courses?.map((course: Course) => ({
+        ...course,
+        professors: uniqueProfessorsOfCourse(course),
+      })) ?? [];
     return billboard;
   }
 
@@ -273,4 +279,14 @@ function cleanName(prof: string): string {
     name = name.slice(0, lastOpen).trim();
   }
   return name;
+}
+
+function uniqueProfessorsOfCourse(course: Course): Professor[] {
+  const byId = new Map<string, Professor>();
+  for (const sec of course.sections ?? []) {
+    for (const p of sec.professors ?? []) {
+      if (!byId.has(p.id)) byId.set(p.id, p);
+    }
+  }
+  return Array.from(byId.values());
 }

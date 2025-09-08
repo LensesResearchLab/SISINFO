@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Upload } from "lucide-react"
@@ -9,6 +9,8 @@ import * as XLSX from "xlsx";
 import { ConfirmationModal, DialogTextProps } from "./confirmation-modal"
 import { createBillboard } from "@/app/services/billboard.service"
 import { uploadProfessors } from "@/app/services/professor.service"
+import { AlertDialogSuccess } from "./alert-dialog-sucess"
+
 
 type CsvRow = Record<string, string | number | boolean | null>;
 
@@ -17,17 +19,28 @@ interface UploadFilesProps {
   readonly handleUploadCsv: (data: CsvRow[]) => void;
   readonly dialogText: DialogTextProps;
   readonly typeUpload : string;
+  readonly setError :  Dispatch<SetStateAction<boolean>>;
+  readonly setErrorMessage : Dispatch<SetStateAction<string>>;
 }
 
 export default function UploadFiles({
   title,
   handleUploadCsv,
   dialogText,
-  typeUpload='billboard'
+  typeUpload='billboard',
+  setError,
+  setErrorMessage,
 
 }: UploadFilesProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
+  const [loadSucess,setLoadSucess] = useState({'sucess':false,'message':dialogText.successText});
+
+  function toErrorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === "string") return err;
+  try { return JSON.stringify(err); } catch { return "Unexpected error"; }
+}
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -74,19 +87,40 @@ export default function UploadFiles({
           const jsonData = XLSX.utils.sheet_to_json<Record<string, string | number | boolean | null>>(sheet);
           handleUploadCsv(jsonData);
           if (typeUpload === "billboard") {
-            const billboardData = jsonData.map((row) => ({
-              NRC: String(row["NRC"] ?? ""),
-              code: String(row["code"] ?? ""),
-              name: String(row["name"] ?? ""),
-              departament: String(row["departament"] ?? ""),
-            credits: typeof row["credits"] === "number" ? row["credits"] : Number(row["credits"] ?? 0),
-            section: String(row["section"] ?? ""),
-            period: String(row["period"] ?? ""),
-            professors: formatProfessors(row["professors"]),
-            publicated: formatPublicated(row["publicated"])
+            const billboardData = jsonData.map((row, idx) => {
+                const obj = {
+                  NRC: String(row["NRC"] ?? ""),
+                  code: String(row["code"] ?? ""),
+                  name: String(row["name"] ?? ""),
+                  departament: String(row["departament"] ?? ""),
+                  credits:
+                    typeof row["credits"] === "number"
+                      ? row["credits"]
+                      : Number(row["credits"] ?? 0),
+                  section: String(row["section"] ?? ""),
+                  period: String(row["period"] ?? ""),
+                  professors: formatProfessors(row["professors"]),
+                  publicated: formatPublicated(row["publicated"]),
+                };
 
-          }));
+                // check if any field is invalid
+                const emptyFields = Object.entries(obj)
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  .filter(([_, v]) => v === "" || v === null || v === undefined || (typeof v === "number" && isNaN(v)))
+                  .map(([k]) => k);
+                
+                if (emptyFields.length > 0) {
+                  throw new Error(
+                    `Fila ${idx + 1} tiene estos campos vacios: ${emptyFields.join(", ")}`
+                  );
+                }
+
+                return obj;
+              });
+
+          console.log(billboardData)
           createBillboard(billboardData);
+          setLoadSucess(prev => ({ ...prev, sucess: true }));
           }
         else if (typeUpload === "professors") {
           const professorsData = jsonData.map((row) => (
@@ -99,10 +133,12 @@ export default function UploadFiles({
             }
           ));
           uploadProfessors(professorsData);
+          setLoadSucess(prev => ({ ...prev, sucess: true }))
         }
       }
          catch (error) {
-          console.error("Error al leer el archivo XLSX/XLSM:", error);
+          setError(true)
+          setErrorMessage(toErrorMessage(error)); 
         } finally {
           setIsModalOpen(false);
         }
@@ -124,6 +160,14 @@ export default function UploadFiles({
   }
 
   return (
+    <>
+    <AlertDialogSuccess
+  open={loadSucess.sucess}
+  onOpenChange={(open) =>
+    setLoadSucess((prev) => ({ ...prev, sucess: open }))
+  }
+  message={loadSucess.message}
+/>
     <Card className="border-none">
       <CardHeader>
         <CardTitle className="text-core">{title}</CardTitle>
@@ -166,6 +210,7 @@ export default function UploadFiles({
         />
       )}
     </Card>
+    </>
   )
 }
 
