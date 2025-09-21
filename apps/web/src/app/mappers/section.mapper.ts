@@ -9,8 +9,8 @@ export function mapSectionsToProfessorTable(
 
     const assistants = section.teachingAssistances.map((ta) => ({
       id: ta.id,
-      code: ta.student.code,
-      name: ta.student.user.name,
+      code: ta.studentCode,
+      name: ta.studentName,
       grade: ta.grade,
       gradeDescription: ta.gradeDescription,
     }));
@@ -27,8 +27,8 @@ export function mapSectionsToProfessorSection(
 
   const assistants = section.teachingAssistances.map((ta) => ({
     id: ta.id,
-    code: ta.student.code,
-    name: ta.student.user.name,
+    code: ta.studentCode,
+    name: ta.studentName,
     grade: ta.grade,
     gradeDescription: ta.gradeDescription,
   }));

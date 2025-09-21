@@ -1,6 +1,5 @@
 export interface TeachingAssistantshipRow {
-    studentCode: string, 
-    contratNumber: number, 
+    studentCode: string,  
     studentName: string, 
     professorsName: string[], 
     courseCode: string, 

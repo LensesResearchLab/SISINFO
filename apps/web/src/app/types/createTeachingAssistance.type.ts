@@ -1,6 +1,6 @@
 export interface CreateTeachingAssistance {
-  contractNumber: number;
   studentCode: string;
+  studentName: string;
   courseCode: string;
   sectionNumber: number;
 }

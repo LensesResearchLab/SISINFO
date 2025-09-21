@@ -10,6 +10,9 @@ import { ConfirmationModal, DialogTextProps } from "./confirmation-modal"
 import { createBillboard } from "@/app/services/billboard.service"
 import { uploadProfessors } from "@/app/services/professor.service"
 import { AlertDialogSuccess } from "./alert-dialog-sucess"
+import { uploadTeachingAssistantsFile } from "@/app/services/teaching-assistantship.service"
+
+import { sanitizeRow } from "@/lib/utils"
 
 
 type CsvRow = Record<string, string | number | boolean | null>;
@@ -21,6 +24,7 @@ interface UploadFilesProps {
   readonly typeUpload : string;
   readonly setError :  Dispatch<SetStateAction<boolean>>;
   readonly setErrorMessage : Dispatch<SetStateAction<string>>;
+  readonly selectedPeriod?: string;
 }
 
 export default function UploadFiles({
@@ -30,6 +34,7 @@ export default function UploadFiles({
   typeUpload='billboard',
   setError,
   setErrorMessage,
+  selectedPeriod=''
 
 }: UploadFilesProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -135,7 +140,23 @@ export default function UploadFiles({
           uploadProfessors(professorsData);
           setLoadSucess(prev => ({ ...prev, sucess: true }))
         }
-      }
+        else if (typeUpload === "monitores") {
+          const cleanedRows = jsonData
+  .map((r) => sanitizeRow(r))
+  // elimina filas completamente vacías (todas las columnas null)
+  .filter((r) => Object.values(r).some((v) => v !== null));
+
+          const teachingAssistantsData = cleanedRows.map((row) => (
+            {
+              studentName: String(row["NOMBRE"] ?? ""),
+              studentCode: String(row["CODIGO"] ?? ""),
+              courseCode: String(row["MATERIA"] ?? ""),
+              sectionNumber: Number(row["SECCION"] ?? 0),
+            }
+          ));
+          uploadTeachingAssistantsFile(teachingAssistantsData, selectedPeriod);
+          setLoadSucess(prev => ({ ...prev, sucess: true }));
+        }}
          catch (error) {
           setError(true)
           setErrorMessage(toErrorMessage(error)); 

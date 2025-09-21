@@ -15,19 +15,18 @@ export function mapCswRowTwoCreateTeachingAssistance(rows: CsvTASRow[]){
 function csvRowToCreateTeachingAssistance(row: CsvTASRow):CreateTeachingAssistance {
   return (
     {
-      contractNumber: +row["NUM. CONT."],
-      studentCode: row["CÓDIGO"],
+      studentCode: row["CODIGO"],
       courseCode: row['MATERIA'],
-      sectionNumber: +row["SECCIÓN"]
+      sectionNumber: +row["SECCION"],
+      studentName: row["NOMBRE"]
     }
   )
 }
 
 export function mapTeachingAssistantShipToRow(teachingAssistantship: TeachingAssistantship): TeachingAssistantshipRow {
   return {
-    studentCode: teachingAssistantship.student.code, 
-    contratNumber: teachingAssistantship.contractNumber, 
-    studentName: teachingAssistantship.student.user.name, 
+    studentCode: teachingAssistantship.studentCode, 
+    studentName: teachingAssistantship.studentName, 
     professorsName: teachingAssistantship.section.professors.map((professor) => professor.user.name), 
     courseCode: teachingAssistantship.section.course.code, 
     section: teachingAssistantship.section.section

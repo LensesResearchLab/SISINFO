@@ -13,6 +13,7 @@ export async function getTeachingAssistants(period: string): Promise<Section[]> 
       },
       credentials: "include",
     });
+    
   
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

@@ -13,7 +13,7 @@ const convertToCsv = () => {
   sampleData.forEach(row => {
     const values = [
       row.studentCode,
-      row.contractNumber,
+      row.studentName,
       row.courseCode,
       row.sectionNumber,
     ];

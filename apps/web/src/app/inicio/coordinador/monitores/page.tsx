@@ -1,6 +1,6 @@
 "use client";
 
-import { handleDownload } from './utils';
+
 import { UploadFilePage } from '@/components/shared/upload-files-page';
 import { CreateTeachingAssistance } from '../../../types/createTeachingAssistance.type';
 import { useState } from 'react';
@@ -69,6 +69,15 @@ export default function UploadTeachingAssistants() {
     });
   };
 
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = "/monitores.xlsx";
+    link.download = "plantilla.xlsx";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <UploadFilePage
       title="Cargar monitores"
@@ -79,7 +88,7 @@ export default function UploadTeachingAssistants() {
         handleUploadCsv(teachingAssistantsData);
       }}
       dialogText={dialogText}
-      typeUpload=''
+      typeUpload='monitores'
     >
       <TeachingAssistantsTable teachingAssistantships={teachingAssistantships} />
     </UploadFilePage>

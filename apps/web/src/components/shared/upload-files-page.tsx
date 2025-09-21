@@ -11,6 +11,7 @@ import { useState } from "react";
 interface UploadFilePageProps {
   readonly title: string
   readonly period?: boolean ;
+  readonly selectedPeriod?: string;
   readonly handlePeriodChange: (value: string) => void;
   readonly handleDownload: () => void;
   readonly handleUploadCsv: (data: Record<string, string | number | boolean | null>[]) => void;
@@ -22,6 +23,7 @@ interface UploadFilePageProps {
 export function UploadFilePage({
     title,
     period=true,
+    selectedPeriod,
     handlePeriodChange,
     handleDownload,
     handleUploadCsv,
@@ -40,7 +42,7 @@ export function UploadFilePage({
         </div>
   
         <div className="row-span-3">
-          <UploadFiles title={title} handleUploadCsv={handleUploadCsv} dialogText={dialogText} setError={setError} setErrorMessage={setErrorMessage} typeUpload={typeUpload} />
+          <UploadFiles title={title} handleUploadCsv={handleUploadCsv} dialogText={dialogText} setError={setError} setErrorMessage={setErrorMessage} typeUpload={typeUpload} selectedPeriod={selectedPeriod} />
         </div>
   
         <div className="row-span-3">

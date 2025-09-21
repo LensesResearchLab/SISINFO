@@ -8,11 +8,6 @@ export const columns: ColumnDef<TeachingAssistantshipRow>[] = [
       enableSorting: true,
     },
     {
-      accessorKey: "contratNumber",
-      header: 'Número de Contrato',
-      enableSorting: true,
-    },
-    {
       accessorKey: "studentName",
       header: 'Nombre del Estudiante',
       enableSorting: true,

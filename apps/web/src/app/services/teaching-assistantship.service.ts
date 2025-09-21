@@ -3,6 +3,7 @@ import { CreateTeachingAssistance } from "../types/createTeachingAssistance.type
 
 const API = `${API_ROUTES.BASE}/${API_ROUTES.TEACHING_ASSISTANTS}`
 export async function uploadTeachingAssistantsFile(teachingAssistantList: CreateTeachingAssistance[], period: string) {
+  
   const response = await fetch(API, {
     method: 'POST',
     headers: {
@@ -13,11 +14,15 @@ export async function uploadTeachingAssistantsFile(teachingAssistantList: Create
       assistants: teachingAssistantList
     })
   });
+  
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
+    console.error('Error details:', errorData);
     throw new Error(`Error uploading teaching assistants: ${response.statusText}`, { cause: errorData });
+    
   }
+  
 
   return response.json();
 }

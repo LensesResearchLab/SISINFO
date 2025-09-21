@@ -70,7 +70,7 @@ export default function TeachingAssistantList() {
     queryKey: ["undergraduate-semesters"],
     queryFn: getPeriods,
   });
-
+  console.log(semesters);
 
 
   const { data: sectionsList, isFetching: isFetchingTeachingAssistants } = useQuery({
@@ -78,6 +78,7 @@ export default function TeachingAssistantList() {
     queryFn: () =>
       getTeachingAssistants(searchTerm),
   });
+  console.log(sectionsList);
 
   const mappedTASList = mapSectionsToProfessorTable(sectionsList ?? []);
 

@@ -4,13 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateTeachingAssistanceDto } from './dto/create-teaching-assistance.dto';
-import { UpdateTeachingAssistanceDto } from './dto/update-teaching-assistance.dto';
 import { TeachingAssistance } from './entities/teaching-assistance.entity';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PeriodsService } from '../periods/periods.service';
 import { SectionsService } from '../sections/sections.service';
-import { StudentsService } from '../students/students.service';
+import { UpdateTeachingAssistanceDto } from './dto/update-teaching-assistance.dto';
 
 @Injectable()
 export class TeachingAssistancesService {
@@ -19,7 +18,6 @@ export class TeachingAssistancesService {
     private readonly teachingAssistanceRepository: Repository<TeachingAssistance>,
     private readonly periodsService: PeriodsService,
     private readonly sectionsService: SectionsService,
-    private readonly studentsService: StudentsService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -38,13 +36,6 @@ export class TeachingAssistancesService {
     const newAssistances: TeachingAssistance[] = [];
 
     for (const dto of createTeachingAssistanceDtoList) {
-      const student = await this.studentsService.findOneByCode(dto.studentCode);
-      if (!student) {
-        throw new NotFoundException(
-          `Estudiante con código ${dto.studentCode} no encontrado.`,
-        );
-      }
-
       const section = await this.sectionsService.findOneBySectionNumber(
         dto.courseCode,
         dto.sectionNumber,
@@ -56,19 +47,23 @@ export class TeachingAssistancesService {
         );
       }
 
+      if (!dto.studentName) {
+        throw new BadRequestException(
+          'El nombre del estudiante es obligatorio',
+        );
+      }
+      const studentCode = Number(dto.studentCode);
       const exists = await this.teachingAssistanceRepository.findOne({
-        where: { student, section, period },
+        where: { studentCode, section, period },
       });
 
       if (exists) {
-        throw new BadRequestException(
-          `Ya existe una monitoria registrada para el estudiante ${dto.studentCode} en la sección ${dto.sectionNumber} del curso ${dto.courseCode}.`,
-        );
+        continue;
       }
 
       const newAssistance = this.teachingAssistanceRepository.create({
-        contractNumber: dto.contractNumber,
-        student,
+        studentCode,
+        studentName: dto.studentName,
         section,
         period,
       });
@@ -120,13 +115,7 @@ export class TeachingAssistancesService {
           id: period.id,
         },
       },
-      relations: [
-        'student',
-        'section',
-        'period',
-        'section.course',
-        'section.professors',
-      ],
+      relations: ['section', 'period', 'section.course', 'section.professors'],
     });
   }
 

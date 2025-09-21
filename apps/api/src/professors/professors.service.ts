@@ -44,8 +44,6 @@ export class ProfessorsService implements RoleService {
         'sections.course',
         'sections.period',
         'sections.teachingAssistances',
-        'sections.teachingAssistances.student',
-        'sections.teachingAssistances.student.user',
       ],
     });
 

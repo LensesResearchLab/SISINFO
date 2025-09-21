@@ -10,14 +10,6 @@ import {
 
 export class CreateTeachingAssistanceDto {
   @ApiProperty({
-    example: 12345,
-    description: 'Valid contract number (positive integer)',
-  })
-  @IsInt({ message: 'contractNumber debe ser un número entero' })
-  @Min(1, { message: 'contractNumber debe ser mayor que 0' })
-  contractNumber: number;
-
-  @ApiProperty({
     example: '202210111',
     description: 'Student code (only numeric characters)',
   })
@@ -47,4 +39,5 @@ export class CreateTeachingAssistanceDto {
   @IsInt({ message: 'sectionNumber debe ser un número entero' })
   @Min(1, { message: 'sectionNumber debe ser mayor que 0' })
   sectionNumber: number;
+  studentName: string | undefined;
 }

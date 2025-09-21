@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TeachingAssistance } from './entities/teaching-assistance.entity';
 import { SectionsModule } from '../sections/sections.module';
 import { PeriodsModule } from '../periods/periods.module';
-import { StudentsModule } from '../students/students.module';
 
 @Module({
   controllers: [TeachingAssistancesController],
@@ -13,7 +12,6 @@ import { StudentsModule } from '../students/students.module';
   imports: [
     TypeOrmModule.forFeature([TeachingAssistance]),
     PeriodsModule,
-    StudentsModule,
     SectionsModule,
   ],
   exports: [TypeOrmModule, TeachingAssistancesService],

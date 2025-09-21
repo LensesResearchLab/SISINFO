@@ -1,6 +1,6 @@
 export interface CsvTASRow {
-  "CÓDIGO":       string;
-  "NUM. CONT.": string;
-  "MATERIA":      string;
-  "SECCIÓN":      string;
+  "CODIGO":string;
+  "NOMBRE":string;
+  "MATERIA":string;
+  "SECCION":string;
 }

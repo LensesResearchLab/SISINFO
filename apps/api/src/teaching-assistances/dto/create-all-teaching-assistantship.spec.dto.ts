@@ -4,7 +4,7 @@ import { CreateTeachingAssistanceDto } from './create-teaching-assistance.dto';
 describe('CreateAllTeachingAssistantshipDto validation', () => {
   it('should create a valid instance', () => {
     const mockAssistant: CreateTeachingAssistanceDto = {
-      contractNumber: 1,
+      studentName: 'Juan Perez',
       studentCode: '202210000',
       courseCode: 'ISIS-3710',
       sectionNumber: 3,

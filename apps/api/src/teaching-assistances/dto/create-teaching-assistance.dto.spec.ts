@@ -6,7 +6,6 @@ function createValidTeachingAssistanceDto(
   overrides: Partial<CreateTeachingAssistanceDto> = {},
 ): CreateTeachingAssistanceDto {
   const dto = new CreateTeachingAssistanceDto();
-  dto.contractNumber = 12345;
   dto.studentCode = '202210111';
   dto.courseCode = 'ISIS-3710';
   dto.sectionNumber = 1;
@@ -40,7 +39,6 @@ describe('CreateTeachingAssistanceDto validation', () => {
     const dto = createValidTeachingAssistanceDto({
       studentCode: 'abc123',
       courseCode: 'is-123',
-      contractNumber: 0,
       sectionNumber: -1,
     });
 

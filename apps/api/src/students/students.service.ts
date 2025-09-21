@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -35,7 +36,8 @@ export class StudentsService implements RoleService {
         'thesisApplication.thesis',
         'thesisApplication.thesis.professor',
         'thesisApplication.thesis.professor.user',
-        'projectApplication']
+        'projectApplication',
+      ],
     });
 
     if (student?.user && 'password' in student.user) {
@@ -46,12 +48,18 @@ export class StudentsService implements RoleService {
     const professorUser = student?.thesisApplication?.thesis?.professor?.user;
     if (professorUser && 'password' in professorUser) {
       const { password, ...userWithoutPassword } = professorUser;
-      student.thesisApplication.thesis.professor.user = userWithoutPassword as typeof professorUser;
+      student.thesisApplication.thesis.professor.user =
+        userWithoutPassword as typeof professorUser;
     }
 
-    if (student?.thesisApplication?.thesis && 'thesisApplications' in student.thesisApplication.thesis) {
-      const { thesisApplications, ...thesisWithoutApplications } = student.thesisApplication.thesis;
-      student.thesisApplication.thesis = thesisWithoutApplications as typeof student.thesisApplication.thesis;
+    if (
+      student?.thesisApplication?.thesis &&
+      'thesisApplications' in student.thesisApplication.thesis
+    ) {
+      const { thesisApplications, ...thesisWithoutApplications } =
+        student.thesisApplication.thesis;
+      student.thesisApplication.thesis =
+        thesisWithoutApplications as typeof student.thesisApplication.thesis;
     }
 
     return student;
