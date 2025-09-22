@@ -39,6 +39,7 @@ export default function UploadFiles({
 }: UploadFilesProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
+  const [, setIsDragging] = useState(false);
   const [loadSucess,setLoadSucess] = useState({'sucess':false,'message':dialogText.successText});
 
   function toErrorMessage(err: unknown): string {
@@ -180,6 +181,24 @@ export default function UploadFiles({
     }
   }
 
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+  e.preventDefault(); // evita que el navegador abra el archivo
+  setIsDragging(true);
+};
+
+const handleDragLeave = () => {
+  setIsDragging(false);
+};
+
+const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+  e.preventDefault();
+  setIsDragging(false);
+  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    setFile(e.dataTransfer.files[0]);
+    e.dataTransfer.clearData();
+  }
+};
+
   return (
     <>
     <AlertDialogSuccess
@@ -198,6 +217,9 @@ export default function UploadFiles({
         <form onSubmit={handleSubmit} className="grid gap-4">
           <div className="flex items-center justify-center w-full">
             <label
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
               htmlFor="dropzone-file"
               className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
             >
