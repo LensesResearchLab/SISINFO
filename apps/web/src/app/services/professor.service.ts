@@ -1,6 +1,6 @@
 import { API_ROUTES } from "../routes";
 import { Section } from "../types/entities/billboard.type";
-import {  ProfessorCreate } from "../types/entities/professor.type";
+import { Professor, ProfessorCreate } from "../types/entities/professor.type";
 import { CreateProject } from "../types/entities/project.type";
 
 
@@ -54,6 +54,23 @@ export async function uploadProfessors(professors: ProfessorCreate[]) {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(`Error subiendo los profesores: ${response.statusText}`, { cause: errorData });
+  }
+  return response.json();
+}
+
+export async function getProfessors(): Promise<Professor[]> {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.PROFESSORS}`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(`Error obteniendo los profesores: ${response.statusText}`, { cause: errorData });
   }
   return response.json();
 }

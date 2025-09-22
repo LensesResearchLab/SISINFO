@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   getBillboard,
 } from "@/app/services/billboard.service";
@@ -11,6 +11,7 @@ import { DataTable } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import * as XLSX from "xlsx";
 import { Professor } from "@/app/types/entities/professor.type";
+import { getProfessors } from "@/app/services/professor.service";
 
 export default function UploadProfessors() {
   const [profesorsData, setProfesorsData] = useState<Professor[]>([]);
@@ -24,6 +25,16 @@ export default function UploadProfessors() {
     successText: "Tus profesores han sido cargados con exito",
     url: `${ROUTES.HOME}/${ROUTES.BULLETIN_BOARD}`,
   };
+
+  // Cargar profesores ya registrados al montar la página
+  useEffect(() => {
+    getProfessors()
+      .then((list) => {
+        setProfesorsData(list ?? []);
+        setLoadError(false);
+      })
+      .catch(() => setLoadError(true));
+  }, []);
 
 
   const handleDownload = () => {
@@ -83,11 +94,13 @@ export default function UploadProfessors() {
 
 const columns: ColumnDef<Professor>[] = [
   {
-    accessorKey: "name",
+    id: "name",
+    accessorFn: (row) => row.user?.name ?? "",
     header: "Nombre",
   },
   {
-    accessorKey: "email",
+    id: "email",
+    accessorFn: (row) => row.user?.email ?? "",
     header: "Correo",
   },
   
@@ -122,10 +135,10 @@ function BillboardNotFound() {
     <div className="min-h-full min-w-full">
       <div className="bg-card rounded-lg shadow-lg p-6">
         <h2 className="text-2xl font-bold mb-4 text-core text-center">
-          Error al cargar la cartelera
+          Error al cargar los profesores
         </h2>
         <p className="text-core text-center">
-          No se pudo cargar la cartelera. Por favor, intenta nuevamente.
+          No se pudo cargar la información. Por favor, intenta nuevamente.
         </p>
       </div>
     </div>
