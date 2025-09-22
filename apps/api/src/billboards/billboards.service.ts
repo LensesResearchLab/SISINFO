@@ -217,6 +217,7 @@ export class BillboardsService {
       relations: [
         'courses',
         'courses.mainProfessor',
+        'courses.program',
         'courses.sections',
         'courses.sections.professors',
         'courses.sections.period',
@@ -240,6 +241,7 @@ export class BillboardsService {
       relations: [
         'courses',
         'courses.mainProfessor',
+        'courses.program',
         'courses.sections',
         'courses.sections.professors',
         'courses.sections.period',

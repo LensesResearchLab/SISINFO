@@ -57,6 +57,9 @@ export const ROUTES: Record<string, string> = {
 
   PROFESSOR_TEACHING_ASSISTANCE_LIST: "/profesor/monitores/",
 
+  // Professor course programs
+  PROFESSOR_COURSE_PROGRAMS: "/profesor/programas",
+
   /*  Coordinators  */
 
   COURSE_PROGRAMS: "/coordinador/programas/lista",

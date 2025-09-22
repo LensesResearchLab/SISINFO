@@ -11,6 +11,7 @@ import { Document } from '../documents/entities/document.entity';
 import { ProfessorsService } from '../professors/professors.service';
 import { Professor } from '../professors/entities/professor.entity';
 import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
+import { DocumentsService } from '../documents/documents.service';
 
 @Injectable()
 export class CoursesService {
@@ -21,6 +22,7 @@ export class CoursesService {
     private readonly sectionRepository: Repository<Section>,
     private readonly periodsService: PeriodsService,
     private readonly professorsService: ProfessorsService,
+    private readonly documentsService: DocumentsService,
   ) {}
 
   async create(createCourseDto: CreateCourseDto, section: Section) {
@@ -133,6 +135,32 @@ export class CoursesService {
       return await this.courseRepository.save(course);
     }
     throw new Error('Course not found');
+  }
+
+  // Verify if a user (by userId) is the leader (mainProfessor.user.id) of the given course
+  async isUserLeaderOfCourse(userId: string, courseId: string): Promise<boolean> {
+    const course = await this.courseRepository.findOne({
+      where: { id: courseId },
+      relations: ['mainProfessor', 'mainProfessor.user'],
+    });
+    if (!course?.mainProfessor?.user?.id) return false;
+    return course.mainProfessor.user.id === userId;
+  }
+
+  // Create a Document from uploaded file and attach it as program to the course
+  async uploadProgram(courseId: string, file: Express.Multer.File) {
+    const course = await this.courseRepository.findOne({ where: { id: courseId } });
+    if (!course) {
+      throw new Error('Course not found');
+    }
+
+    const savedDocument = await this.documentsService.create({
+      name: file.originalname,
+      file: Buffer.from(file.buffer),
+    });
+
+    course.program = savedDocument;
+    return this.courseRepository.save(course);
   }
 
   updateSections(section: Section, course: Course) {
