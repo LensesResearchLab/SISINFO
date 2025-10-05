@@ -35,6 +35,11 @@ export class TeachingAssistancesController {
     return this.teachingAssistancesService.findAll(period);
   }
 
+  @Get('monitors-report')
+  getMonitorsReport(@Query('period') period: string) {
+    return this.teachingAssistancesService.getMonitorsReport(period);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.teachingAssistancesService.findOne(+id);

@@ -119,6 +119,50 @@ export class TeachingAssistancesService {
     });
   }
 
+  async getMonitorsReport(periodStr: string) {
+    const period =
+      await this.periodsService.findOneByPeriodAndYearString(periodStr);
+    if (!period) {
+      throw new NotFoundException(
+        `No se encontró el periodo con el identificador: ${periodStr}`,
+      );
+    }
+
+    const monitors = await this.teachingAssistanceRepository.find({
+      where: {
+        period: {
+          id: period.id,
+        },
+      },
+      relations: [
+        'section',
+        'section.course',
+        'section.professors',
+        'section.professors.user',
+      ],
+    });
+
+    return monitors.map((monitor) => ({
+      id: monitor.id,
+      studentCode: monitor.studentCode,
+      studentName: monitor.studentName,
+      courseCode: monitor.section.course.code,
+      courseName: monitor.section.course.name,
+      section: monitor.section.section,
+      nrc: monitor.section.NRC,
+      professorName:
+        monitor.section.professors && monitor.section.professors.length > 0
+          ? monitor.section.professors[0].user.name
+          : 'Sin asignar',
+      professorEmail:
+        monitor.section.professors && monitor.section.professors.length > 0
+          ? monitor.section.professors[0].user.email
+          : 'Sin asignar',
+      grade: monitor.grade ?? 'Sin calificar',
+      gradeDescription: monitor.gradeDescription ?? 'Sin descripción',
+    }));
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} teachingAssistance`;
   }

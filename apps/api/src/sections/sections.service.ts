@@ -90,6 +90,50 @@ export class SectionsService {
       ],
     });
 
+    // Para el reporte de programa, agrupar por curso en lugar de por sección
+    if (reportType === 'program') {
+      const coursesMap = new Map<string, any>();
+
+      sections.forEach((section) => {
+        const courseKey = section.course.id;
+
+        if (!coursesMap.has(courseKey)) {
+          coursesMap.set(courseKey, {
+            id: section.course.id,
+            courseCode: section.course.code,
+            courseName: section.course.name,
+            professorName: section.course.mainProfessor?.user.name,
+            professorEmail: section.course.mainProfessor?.user.email,
+            sections: [],
+          });
+        }
+
+        const courseData = coursesMap.get(courseKey);
+        courseData.sections.push({
+          crn: section.NRC,
+          section: section.section,
+        });
+      });
+
+      return Array.from(coursesMap.values()).map((course) => {
+        const sectionsStr = course.sections
+          .map((s: any) => `${s.section}`)
+          .join(', ');
+        const crnsStr = course.sections.map((s: any) => s.crn).join(', ');
+
+        return {
+          id: course.id,
+          crn: crnsStr,
+          section: sectionsStr,
+          courseCode: course.courseCode,
+          courseName: course.courseName,
+          professorName: course.professorName,
+          professorEmail: course.professorEmail,
+        };
+      });
+    }
+
+    // Para reportes de notas parciales y finales, mantener el formato por sección
     return sections.map((section) => {
       const result = {
         id: section.id,

@@ -45,6 +45,9 @@ export default function Reports() {
       case "thesis2-inscription":
         path = "/inicio/coordinador/reportes/tesis2";
         break;
+      case "monitors":
+        path = "/inicio/coordinador/reportes/monitores";
+        break;
       case "sections-syllabus":
         path = "/inicio/coordinador/reportes/secciones-programa";
         break;
@@ -149,6 +152,28 @@ export default function Reports() {
             </CardContent>
           </Card>
 
+          {/* Monitors Report */}
+          <Card
+            className="hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => handleClick("monitors")}
+          >
+            <CardContent className="pt-6 pb-4 px-6">
+              <div className="flex items-center gap-4">
+                <div className="rounded-lg p-2 bg-indigo-50">
+                  <Users className="h-10 w-10 text-indigo-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">
+                    Reporte de monitores
+                  </CardTitle>
+                  <CardDescription>
+                    Visualizar y generar reporte de monitores académicos.
+                  </CardDescription>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Sections Without Program File */}
           <Card
             className="hover:shadow-md transition-shadow cursor-pointer"
@@ -161,10 +186,10 @@ export default function Reports() {
                 </div>
                 <div>
                   <CardTitle className="text-lg">
-                    Reporte de secciones sin archivos de programa
+                    Reporte de cursos sin archivos de programa
                   </CardTitle>
                   <CardDescription>
-                    Reporte de secciones sin programa académico cargado.
+                    Reporte de cursos sin programa académico cargado.
                   </CardDescription>
                 </div>
               </div>

@@ -10,9 +10,46 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
+
+/**
+ * TruncatedCell Component
+ * 
+ * Displays a truncated text with tooltip showing full content on hover
+ */
+function TruncatedCell({ content, maxItems = 3 }: { readonly content: string; readonly maxItems?: number }) {
+  const items = content.split(",").map((item) => item.trim());
+  const shouldTruncate = items.length > maxItems;
+  const displayedItems = shouldTruncate ? items.slice(0, maxItems) : items;
+  const displayText = shouldTruncate
+    ? `${displayedItems.join(", ")} (...)`
+    : content;
+
+  if (!shouldTruncate) {
+    return <span>{content}</span>;
+  }
+
+  return (
+    <TooltipProvider delayDuration={100}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="cursor-help">{displayText}</span>
+        </TooltipTrigger>
+        <TooltipContent className="max-w-md">
+          <p>{content}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 interface CourseReportTableProps {
   readonly title: string;
@@ -104,10 +141,10 @@ export default function CourseReportTable({
               {data.map((course) => (
                 <TableRow key={course.id} className="bg-white">
                   <TableCell className="border-r font-medium">
-                    {course.crn}
+                    <TruncatedCell content={course.crn} maxItems={3} />
                   </TableCell>
                   <TableCell className="border-r font-medium">
-                    {course.section}
+                    <TruncatedCell content={course.section} maxItems={3} />
                   </TableCell>
                   <TableCell className="border-r">
                     {course.courseCode}
