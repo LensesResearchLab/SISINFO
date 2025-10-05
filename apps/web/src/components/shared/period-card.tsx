@@ -5,18 +5,34 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 
 export function TermCard({handlePeriodChange, footer}: {readonly handlePeriodChange: (period: string) => void, readonly footer: string}) {
   const [periods, setPeriods] = useState<string[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
+
   useEffect(() => {
     getPeriods()
-      .then((data) => setPeriods(data))
+      .then((data) => {
+        setPeriods(data);
+        // Seleccionar automáticamente el último período disponible (el más reciente)
+        if (data && data.length > 0) {
+          const lastPeriod = data[data.length - 1];
+          setSelectedPeriod(lastPeriod);
+          handlePeriodChange(lastPeriod);
+        }
+      })
       .catch((error) => console.error("Error fetching periods:", error));
-  }, []);
+  }, [handlePeriodChange]);
+
+  const handleChange = (period: string) => {
+    setSelectedPeriod(period);
+    handlePeriodChange(period);
+  };
+
   return (
     <Card className="border-none">
     <CardHeader>
       <CardTitle className="text-core">Periodo académico</CardTitle>
     </CardHeader>
     <CardContent>
-      <Select onValueChange={handlePeriodChange}>
+      <Select onValueChange={handleChange} value={selectedPeriod}>
         <SelectTrigger>
           <SelectValue placeholder="Selecciona una periodo" />
         </SelectTrigger>

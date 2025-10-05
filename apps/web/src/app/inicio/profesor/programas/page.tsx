@@ -42,6 +42,14 @@ export default function ProfessorCourseProgramsPage() {
   });
   const periods = useMemo(() => (fetchedPeriods ?? []).map(mapPeriodToString), [fetchedPeriods]);
 
+  // Seleccionar automáticamente el último período disponible (el más reciente)
+  useEffect(() => {
+    if (periods && periods.length > 0 && !selectedPeriod) {
+      const lastPeriod = periods[periods.length - 1];
+      setSelectedPeriod(lastPeriod);
+    }
+  }, [periods, selectedPeriod]);
+
   // Courses for selected period (billboard)
   const { data: billboard, isFetching: billboardLoading } = useQuery({
     queryKey: ["billboard", selectedPeriod],

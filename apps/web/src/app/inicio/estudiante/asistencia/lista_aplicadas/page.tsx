@@ -66,6 +66,14 @@ export default function AssistanceAppliedList() {
     queryFn: getPeriods,
   });
 
+  // Seleccionar automáticamente el último período disponible (el más reciente)
+  useEffect(() => {
+    if (semesters && semesters.length > 0 && !selectedSemester) {
+      const lastSemester = semesters[semesters.length - 1];
+      setSelectedSemester(lastSemester);
+    }
+  }, [semesters, selectedSemester]);
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user?.id) return;

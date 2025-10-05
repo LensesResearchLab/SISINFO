@@ -42,9 +42,16 @@ export default function ProgramsList() {
   // Set periods when they are fetched
   useEffect(() => {
     if (fetchedPeriods) {
-      setPeriods(fetchedPeriods.map(mapPeriodToString))
+      const mappedPeriods = fetchedPeriods.map(mapPeriodToString);
+      setPeriods(mappedPeriods);
+      
+      // Seleccionar automáticamente el último período disponible (el más reciente)
+      if (mappedPeriods.length > 0 && !period) {
+        const lastPeriod = mappedPeriods[mappedPeriods.length - 1];
+        setPeriod(lastPeriod);
+      }
     }
-  }, [fetchedPeriods])
+  }, [fetchedPeriods, period, setPeriod])
 
   // Fetch courses when a period is selected
   useEffect(() => {

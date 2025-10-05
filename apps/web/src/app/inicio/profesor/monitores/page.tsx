@@ -60,6 +60,7 @@ import SkeletonAccordion from "@/components/shared/skeleton-accordion";
  */
 export default function TeachingAssistantList() {
   const searchTerm = useTeachingAssistantListStore((state) => state.searchTerm);
+  const setSearchTerm = useTeachingAssistantListStore((state) => state.setSearchTerm);
   const sortDirection = useTeachingAssistantListStore((state) => state.sortDirection);
   const setSortDirection = useTeachingAssistantListStore(
     (state) => state.setSortDirection
@@ -72,6 +73,14 @@ export default function TeachingAssistantList() {
   });
   console.log(semesters);
 
+  // Seleccionar automáticamente el último período disponible (el mas reciente)
+  useEffect(() => {
+    if (semesters && semesters.length > 0) {
+      const lastSemester = semesters[semesters.length - 1];
+      console.log("Seleccionando automáticamente el semestre:", lastSemester);
+      setSearchTerm(lastSemester);
+    } 
+  }, [semesters, searchTerm, setSearchTerm]);
 
   const { data: sectionsList, isFetching: isFetchingTeachingAssistants } = useQuery({
     queryKey: ["teaching-assistants-professor", searchTerm],
@@ -95,14 +104,14 @@ export default function TeachingAssistantList() {
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
       <Accordion
-        type="single"
-        collapsible
+        type="multiple"
         className="w-full bg-card shadow-lg rounded-xl p-5 h-full text-primary "
       >
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
             <SelectSemester
               semesters={semesters ?? []}
+              selectedSemester={searchTerm}
               className="w-full sm:w-auto"
             />
           </div>
@@ -135,13 +144,16 @@ export default function TeachingAssistantList() {
  *
  * @param {Object} props - Component properties
  * @param {string[]} props.semesters - Array of available semester options
+ * @param {string} props.selectedSemester - Currently selected semester
  * @returns {JSX.Element} Semester selection dropdown
  */
 function SelectSemester({
   semesters,
+  selectedSemester,
   className,
 }: {
   readonly semesters: string[];
+  readonly selectedSemester: string;
   readonly className?: string;
 }) {
   const setSearchTerm = useTeachingAssistantListStore((state) => state.setSearchTerm);
@@ -149,7 +161,7 @@ function SelectSemester({
     setSearchTerm(category);
   };
   return (
-    <Select onValueChange={handleClick}>
+    <Select onValueChange={handleClick} value={selectedSemester}>
       <SelectTrigger className={cn("w-[180px]", className)}>
         <SelectValue placeholder="Semestre" />
       </SelectTrigger>

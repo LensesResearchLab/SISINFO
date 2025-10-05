@@ -51,6 +51,7 @@ import SkeletonAccordion from "@/components/shared/skeleton-accordion";
 export default function ThesisList() {
   const searchCategory = useThesisListStore((state) => state.searchCategory);
   const searchTerm = useThesisListStore((state) => state.searchTerm);
+  const setSearchTerm = useThesisListStore((state) => state.setSearchTerm);
   const sortDirection = useThesisListStore((state) => state.sortDirection);
   const setSortDirection = useThesisListStore(
     (state) => state.setSortDirection
@@ -66,6 +67,14 @@ export default function ThesisList() {
     queryKey: ["undergraduate-semesters"],
     queryFn: getPeriods,
   });
+
+  // Seleccionar automáticamente el último período disponible (el más reciente)
+  useEffect(() => {
+    if (semesters && semesters.length > 0 && !searchTerm) {
+      const lastSemester = semesters[semesters.length - 1];
+      setSearchTerm(lastSemester);
+    }
+  }, [semesters, searchTerm, setSearchTerm]);
 
   useEffect(() => {
     if (thesisList) {
@@ -92,6 +101,7 @@ export default function ThesisList() {
             <SelectSearchCategory className="w-full sm:w-auto" />
             <SelectSemester
               semesters={semesters ?? []}
+              selectedSemester={searchTerm}
               className="w-full sm:w-auto"
             />
           </div>
@@ -117,13 +127,16 @@ export default function ThesisList() {
  *
  * @param {Object} props - Component properties
  * @param {string[]} props.semesters - Array of available semester options
+ * @param {string} props.selectedSemester - Currently selected semester
  * @returns {JSX.Element} Semester selection dropdown
  */
 function SelectSemester({
   semesters,
+  selectedSemester,
   className,
 }: {
   readonly semesters: string[];
+  readonly selectedSemester: string;
   readonly className?: string;
 }) {
   const setSearchTerm = useThesisListStore((state) => state.setSearchTerm);
@@ -134,7 +147,7 @@ function SelectSemester({
   const uniqueSemesters = Array.from(new Set(semesters));
 
   return (
-    <Select onValueChange={handleClick}>
+    <Select onValueChange={handleClick} value={selectedSemester}>
       <SelectTrigger className={cn("w-[180px]", className)}>
         <SelectValue placeholder="Semestre" />
       </SelectTrigger>
