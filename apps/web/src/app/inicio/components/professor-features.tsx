@@ -1,4 +1,4 @@
-import InformationSection, { InformationSectionProps } from "@/app/inicio/components/information-section";
+import InformationSection, { InformationSectionProps, InformationCard } from "@/app/inicio/components/information-section";
 import { professorData } from "@/components/links-per-group";
 
 /**
@@ -28,7 +28,6 @@ export default function ProfessorFeatures({
     "Proyecto de grado",
     "Proyecto de maestría",
     "Asistencias graduadas",
-    "Monitores",
   ];
 
   // Map each feature title to its corresponding props for the InformationSection
@@ -39,6 +38,16 @@ export default function ProfessorFeatures({
       features: feature.items,
     });
   });
+
+  // Get features for Monitores and Programa sections
+  const monitoresInfo = informationPerFeature.get("Monitores");
+  const programaInfo = informationPerFeature.get("Programa");
+  
+  // Combine features from both sections for the grid
+  const combinedFeatures = [
+    ...(monitoresInfo?.features || []),
+    ...(programaInfo?.features || []),
+  ];
 
   return (
     <div className='min-h-full min-w-full mx-auto p-4 space-y-8'>
@@ -55,6 +64,37 @@ export default function ProfessorFeatures({
           />
         );
       })}
+
+      {/* Monitores and Programa sections side by side */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Monitores Section */}
+        {monitoresInfo && (
+          <section className="space-y-2 w-full">
+            <h2 className="text-lg font-bold p-3 text-white rounded-lg transition-colors duration-300 bg-core-highlight">
+              {monitoresInfo.title}
+            </h2>
+            <div className="grid grid-cols-1 gap-4">
+              {monitoresInfo.features.map((feature, index) => (
+                <InformationCard key={`monitores-${index}`} {...feature} />
+              ))}
+            </div>
+          </section>
+        )}
+        
+        {/* Programa Section */}
+        {programaInfo && (
+          <section className="space-y-2 w-full">
+            <h2 className="text-lg font-bold p-3 text-white rounded-lg transition-colors duration-300 bg-core-highlight">
+              {programaInfo.title}
+            </h2>
+            <div className="grid grid-cols-1 gap-4">
+              {programaInfo.features.map((feature, index) => (
+                <InformationCard key={`programa-${index}`} {...feature} />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
 
       {/* Optional child components rendered after the sections */}
       {children}

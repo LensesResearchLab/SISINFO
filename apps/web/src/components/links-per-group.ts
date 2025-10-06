@@ -251,6 +251,13 @@ export const professorData = [
           "Aquí puedes consultar los monitores de los distintos cursos.",
         url: ROUTES.PROFESSOR_TEACHING_ASSISTANCE_LIST,
       },
+    ],
+  },
+  {
+    title: "Programa",
+    url: "programa",
+    icon: FileText,
+    items: [
       {
         Icon: FileText,
         title: "Subir programas de curso",
