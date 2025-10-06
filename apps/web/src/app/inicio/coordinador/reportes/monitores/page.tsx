@@ -114,7 +114,7 @@ export default function MonitorsReport() {
               Reporte de Monitores
             </h2>
             <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[200px] text-foreground">
                 <SelectValue placeholder="Seleccionar período" />
               </SelectTrigger>
               <SelectContent>

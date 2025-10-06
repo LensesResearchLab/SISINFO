@@ -102,7 +102,7 @@ export default function UndergraduateProjectsReport() {
               Reporte de Proyectos de Grado
             </h2>
             <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[200px] text-foreground">
                 <SelectValue placeholder="Seleccionar período" />
               </SelectTrigger>
               <SelectContent>

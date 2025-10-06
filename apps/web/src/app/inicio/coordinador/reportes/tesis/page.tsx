@@ -109,7 +109,7 @@ export default function ThesisReports() {
           <div className="flex items-center gap-4">
             <h2 className="text-2xl font-bold text-core">Reporte de Tesis 1</h2>
             <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[200px] text-foreground">
                 <SelectValue placeholder="Seleccionar período" />
               </SelectTrigger>
               <SelectContent>

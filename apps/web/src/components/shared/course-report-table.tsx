@@ -146,7 +146,7 @@ export default function CourseReportTable({
             <h2 className="text-2xl font-bold text-core">{title}</h2>
             {showPeriodSelector && (
               <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-                <SelectTrigger className="w-[200px]">
+                <SelectTrigger className="w-[200px] text-foreground">
                   <SelectValue placeholder="Seleccionar período" />
                 </SelectTrigger>
                 <SelectContent>
@@ -171,7 +171,7 @@ export default function CourseReportTable({
         <div className="overflow-hidden rounded-md border">
           <Table>
             <TableHeader>
-              <TableRow className="bg-core">
+              <TableRow className="bg-core hover:!bg-core-highlight">
                 <TableHead className="border-r text-center text-white">
                   CRN
                 </TableHead>

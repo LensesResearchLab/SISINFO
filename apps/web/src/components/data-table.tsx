@@ -124,7 +124,7 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}
-                className="bg-core hover:bg-core-highlight"
+                className="bg-core hover:!bg-core-highlight"
               >
                 {headerGroup.headers.map((header) => {
                   const isSorted = header.column.getIsSorted();
