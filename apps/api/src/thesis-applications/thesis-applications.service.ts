@@ -8,6 +8,7 @@ import { Thesis } from '../theses/entities/thesis.entity';
 import { User } from '../users/entities/user.entity';
 import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 import { ThesisStatusEnum } from './enums/thesis_status.enum';
+import { PeriodsService } from '../periods/periods.service';
 
 @Injectable()
 export class ThesisApplicationsService {
@@ -18,6 +19,7 @@ export class ThesisApplicationsService {
     private readonly studentRepository: Repository<Student>,
     @InjectRepository(Thesis)
     private readonly thesisRepository: Repository<Thesis>,
+    private readonly periodsService: PeriodsService,
   ) {}
 
   async create(
@@ -148,13 +150,28 @@ export class ThesisApplicationsService {
     return applications;
   }
 
-  async getThesisApplicationsReport() {
-    const applications = await this.thesisApplicationRepository.find({
-      where: {
-        student: {
-          isUndergraduate: false,
-        },
+  async getThesisApplicationsReport(periodStr?: string) {
+    const whereClause: any = {
+      student: {
+        isUndergraduate: false,
       },
+    };
+
+    // Si se especifica periodo, filtrar por él
+    if (periodStr) {
+      const period = await this.periodsService.findOneByPeriodAndYearString(periodStr);
+      if (!period) {
+        throw new NotFoundException(`No se encontró el periodo: ${periodStr}`);
+      }
+      whereClause.thesis = {
+        period: {
+          id: period.id,
+        },
+      };
+    }
+
+    const applications = await this.thesisApplicationRepository.find({
+      where: whereClause,
       relations: {
         student: {
           user: true,

@@ -7,6 +7,7 @@ import {
   Patch,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { ThesisApplicationsService } from './thesis-applications.service';
 import { CreateThesisApplicationDto } from './dto/create-thesis-application.dto';
@@ -39,8 +40,8 @@ export class ThesisApplicationsController {
   }
 
   @Get('thesis-report')
-  getThesisApplicationsReport() {
-    return this.thesisApplicationsService.getThesisApplicationsReport();
+  getThesisApplicationsReport(@Query('period') period?: string) {
+    return this.thesisApplicationsService.getThesisApplicationsReport(period);
   }
 
   @Get('status')

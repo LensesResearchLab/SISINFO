@@ -12,6 +12,7 @@ import {
   FileTypeValidator,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { ProjectApplicationsService } from './project-applications.service';
 import { CreateProjectApplicationDto } from './dto/create-project-application.dto';
@@ -70,8 +71,8 @@ export class ProjectApplicationsController {
   }
 
   @Get('projects-report')
-  getProjectApplicationsReport() {
-    return this.projectApplicationsService.getProjectApplicationsReport();
+  getProjectApplicationsReport(@Query('period') period?: string) {
+    return this.projectApplicationsService.getProjectApplicationsReport(period);
   }
 
   @Get(':id')

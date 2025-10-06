@@ -24,6 +24,7 @@ export default function ProgramsReport() {
         fetchData={getProgramUploadedReport}
         excelFileName="reporte_cursos_sin_programa"
         excelSheetName="Reporte cursos sin programa"
+        showPeriodSelector={true}
       />
     </div>
   );

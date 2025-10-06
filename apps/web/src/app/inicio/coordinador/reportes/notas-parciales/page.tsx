@@ -24,6 +24,7 @@ export default function PartialGradesReport() {
         fetchData={getPartialGradesReport}
         excelFileName="reporte_secciones_sin_notas_parciales"
         excelSheetName="Reporte notas parciales"
+        showPeriodSelector={true}
       />
     </div>
   );

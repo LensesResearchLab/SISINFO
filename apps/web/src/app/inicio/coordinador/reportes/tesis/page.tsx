@@ -2,9 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { getThesisApplicationsReport } from "@/app/services/thesis.service";
+import { getPeriods } from "@/app/services/period.service";
 import { ThesisReport } from "@/app/types/thesis-report.type";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Download } from "lucide-react";
 import * as XLSX from "xlsx";
 import { DataTable } from "@/components/data-table";
@@ -21,14 +29,39 @@ import { columns } from "./ThesisReportColumns";
 export default function ThesisReports() {
   const [data, setData] = useState<ThesisReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [periods, setPeriods] = useState<string[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
 
   /**
-   * Fetch report data on initial mount
+   * Fetch available periods on mount
    */
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchPeriods = async () => {
       try {
-        const result = await getThesisApplicationsReport();
+        const periodsData = await getPeriods();
+        setPeriods(periodsData);
+        // Select the most recent period by default
+        if (periodsData && periodsData.length > 0) {
+          const lastPeriod = periodsData[periodsData.length - 1];
+          setSelectedPeriod(lastPeriod);
+        }
+      } catch (error) {
+        console.error("Error fetching periods:", error);
+      }
+    };
+    fetchPeriods();
+  }, []);
+
+  /**
+   * Fetch report data when period changes
+   */
+  useEffect(() => {
+    if (!selectedPeriod) return;
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const result = await getThesisApplicationsReport(selectedPeriod);
         setData(result);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -37,7 +70,7 @@ export default function ThesisReports() {
       }
     };
     fetchData();
-  }, []);
+  }, [selectedPeriod]);
 
   /**
    * Downloads the current data as an Excel file with formatted headers
@@ -63,7 +96,7 @@ export default function ThesisReports() {
     );
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte Tesis");
-    XLSX.writeFile(workbook, "reporte_tesis1.xlsx");
+    XLSX.writeFile(workbook, `reporte_tesis1_${selectedPeriod}.xlsx`);
   };
 
   if (isLoading) return <SpinnerPage />;
@@ -71,9 +104,23 @@ export default function ThesisReports() {
   return (
     <div className="container mx-auto py-10 px-8">
       <div className="bg-card rounded-lg shadow-lg p-6 space-y-6">
-        {/* Header with title and Excel download */}
+        {/* Header with title, period selector and Excel download */}
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-core">Reporte de Tesis 1</h2>
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold text-core">Reporte de Tesis 1</h2>
+            <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Seleccionar período" />
+              </SelectTrigger>
+              <SelectContent>
+                {periods.map((period) => (
+                  <SelectItem key={period} value={period}>
+                    {period}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <Button
             onClick={downloadExcel}
             className="bg-core-highlight hover:bg-core text-white"

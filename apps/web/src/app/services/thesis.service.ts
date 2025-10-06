@@ -133,10 +133,12 @@ export async function getApplicationsByThesisId(
 
 /* Posgraduate Report */
 /* API GET for coordinators report of thesis */
-export async function getThesisApplicationsReport() {
-  const response = await fetch(
-    `${API_ROUTES.BASE}/${API_ROUTES.THESIS_REPORT}`
-  );
+export async function getThesisApplicationsReport(period?: string) {
+  const url = period 
+    ? `${API_ROUTES.BASE}/${API_ROUTES.THESIS_REPORT}?period=${encodeURIComponent(period)}`
+    : `${API_ROUTES.BASE}/${API_ROUTES.THESIS_REPORT}`;
+  
+  const response = await fetch(url);
   if (!response.ok) {
     throw new Error("Failed to fetch undergraduate projects data for report.");
   }

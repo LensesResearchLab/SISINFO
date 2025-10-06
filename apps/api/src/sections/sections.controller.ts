@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { SectionsService } from './sections.service';
 import { UpdateSectionDto } from './dto/update-section.dto';
 
@@ -12,18 +12,18 @@ export class SectionController {
   }
 
   @Get('program-report')
-  getProgramReport() {
-    return this.sectionsService.getProgramReport();
+  getProgramReport(@Query('period') period?: string) {
+    return this.sectionsService.getProgramReport(period);
   }
 
   @Get('partial-report')
-  getPartialReport() {
-    return this.sectionsService.getPartialReport();
+  getPartialReport(@Query('period') period?: string) {
+    return this.sectionsService.getPartialReport(period);
   }
 
   @Get('final-report')
-  getFinalReport() {
-    return this.sectionsService.getFinalReport();
+  getFinalReport(@Query('period') period?: string) {
+    return this.sectionsService.getFinalReport(period);
   }
 
   @Get(':id')

@@ -11,6 +11,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -19,6 +26,7 @@ import {
 import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
+import { getPeriods } from "@/app/services/period.service";
 
 /**
  * TruncatedCell Component
@@ -53,9 +61,10 @@ function TruncatedCell({ content, maxItems = 3 }: { readonly content: string; re
 
 interface CourseReportTableProps {
   readonly title: string;
-  readonly fetchData: () => Promise<CourseReports[]>;
+  readonly fetchData: (period?: string) => Promise<CourseReports[]>;
   readonly excelFileName: string;
   readonly excelSheetName: string;
+  readonly showPeriodSelector?: boolean;
 }
 
 export default function CourseReportTable({
@@ -63,14 +72,41 @@ export default function CourseReportTable({
   fetchData,
   excelFileName,
   excelSheetName,
+  showPeriodSelector = false,
 }: CourseReportTableProps) {
   const [data, setData] = useState<CourseReports[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [periods, setPeriods] = useState<string[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
 
+  // Fetch periods if selector is enabled
   useEffect(() => {
-    const loadData = async () => {
+    if (!showPeriodSelector) return;
+
+    const fetchPeriods = async () => {
       try {
-        const result = await fetchData();
+        const periodsData = await getPeriods();
+        setPeriods(periodsData);
+        if (periodsData && periodsData.length > 0) {
+          const lastPeriod = periodsData[periodsData.length - 1];
+          setSelectedPeriod(lastPeriod);
+        }
+      } catch (error) {
+        console.error("Error fetching periods:", error);
+      }
+    };
+    fetchPeriods();
+  }, [showPeriodSelector]);
+
+  // Fetch data when period changes or on mount
+  useEffect(() => {
+    // Only fetch if period selector is disabled, or if a period is selected
+    if (showPeriodSelector && !selectedPeriod) return;
+
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        const result = await fetchData(showPeriodSelector ? selectedPeriod : undefined);
         setData(result);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -79,7 +115,7 @@ export default function CourseReportTable({
       }
     };
     loadData();
-  }, [fetchData]);
+  }, [fetchData, showPeriodSelector, selectedPeriod]);
 
   if (isLoading) {
     return <SpinnerPage />;
@@ -96,14 +132,33 @@ export default function CourseReportTable({
     );
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, excelSheetName);
-    XLSX.writeFile(workbook, `${excelFileName}.xlsx`);
+    const fileName = showPeriodSelector && selectedPeriod 
+      ? `${excelFileName}_${selectedPeriod}.xlsx`
+      : `${excelFileName}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
   };
 
   return (
     <div className="min-h-full min-w-full p-10">
       <div className="bg-card rounded-lg shadow-lg p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-core">{title}</h2>
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold text-core">{title}</h2>
+            {showPeriodSelector && (
+              <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Seleccionar período" />
+                </SelectTrigger>
+                <SelectContent>
+                  {periods.map((period) => (
+                    <SelectItem key={period} value={period}>
+                      {period}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
           <Button
             onClick={downloadExcel}
             className="bg-core-highlight hover:bg-core text-white"

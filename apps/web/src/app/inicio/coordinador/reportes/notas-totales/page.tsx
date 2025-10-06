@@ -24,6 +24,7 @@ export default function FinalGradesReport() {
         fetchData={getFinalGradesReport}
         excelFileName="reporte_secciones_sin_calificaciones_finales"
         excelSheetName="Reporte calificaciones finales"
+        showPeriodSelector={true}
       />
     </div>
   );

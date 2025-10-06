@@ -2,8 +2,12 @@ import { API_ROUTES } from "../routes";
 
 const API_URL = `${API_ROUTES.BASE}/project-applications`
 
-export async function getProjectApplicationsReport() {
-    const response = await fetch(`${API_URL}/projects-report`);
+export async function getProjectApplicationsReport(period?: string) {
+    const url = period 
+      ? `${API_URL}/projects-report?period=${encodeURIComponent(period)}`
+      : `${API_URL}/projects-report`;
+    
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error("Failed to fetch undergraduate projects data for report.");
     }

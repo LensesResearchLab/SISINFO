@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { IsNull, Repository } from 'typeorm';
@@ -7,12 +7,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Professor } from '../professors/entities/professor.entity';
 import { Period } from '../periods/entities/period.entity';
 import { CreateSimpleSectionDto } from './dto/create-simple-section.dto';
+import { PeriodsService } from '../periods/periods.service';
 
 @Injectable()
 export class SectionsService {
   constructor(
     @InjectRepository(Section)
     private readonly sectionRepository: Repository<Section>,
+    private readonly periodsService: PeriodsService,
   ) {}
 
   async create(
@@ -62,7 +64,7 @@ export class SectionsService {
     return `This action returns a #${id} section`;
   }
 
-  async getReport(reportType: 'program' | 'partial' | 'final') {
+  async getReport(reportType: 'program' | 'partial' | 'final', periodStr?: string) {
     const getField = (reportType: string) => {
       if (reportType === 'program') {
         return reportType;
@@ -73,10 +75,21 @@ export class SectionsService {
     /* Type of report to check */
     const fieldToCheck = getField(reportType);
 
+    // Obtener el periodo a usar
+    let period: Period;
+    if (periodStr) {
+      period = await this.periodsService.findOneByPeriodAndYearString(periodStr);
+      if (!period) {
+        throw new NotFoundException(`No se encontró el periodo: ${periodStr}`);
+      }
+    } else {
+      period = await this.periodsService.findCurrentPeriod();
+    }
+
     const sections = await this.sectionRepository.find({
       where: {
         period: {
-          year: 2025,
+          id: period.id,
         },
         course: {
           [fieldToCheck]: IsNull(),
@@ -149,16 +162,16 @@ export class SectionsService {
     });
   }
 
-  async getProgramReport() {
-    return this.getReport('program');
+  async getProgramReport(periodStr?: string) {
+    return this.getReport('program', periodStr);
   }
 
-  async getPartialReport() {
-    return this.getReport('partial');
+  async getPartialReport(periodStr?: string) {
+    return this.getReport('partial', periodStr);
   }
 
-  async getFinalReport() {
-    return this.getReport('final');
+  async getFinalReport(periodStr?: string) {
+    return this.getReport('final', periodStr);
   }
 
   async findOneBySectionNumber(

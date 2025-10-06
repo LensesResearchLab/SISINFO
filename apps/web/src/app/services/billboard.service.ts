@@ -54,30 +54,36 @@ export async function getCourseWithDocument(id: string) {
   return response.json();
 }
 
-export async function getProgramUploadedReport() {
-  const response = await fetch(
-    `${API_ROUTES.BASE}/${API_ROUTES.SECTIONS_REPORTS}/program-report`
-  );
+export async function getProgramUploadedReport(period?: string) {
+  const url = period 
+    ? `${API_ROUTES.BASE}/${API_ROUTES.SECTIONS_REPORTS}/program-report?period=${encodeURIComponent(period)}`
+    : `${API_ROUTES.BASE}/${API_ROUTES.SECTIONS_REPORTS}/program-report`;
+  
+  const response = await fetch(url);
   if (!response.ok) {
     throw new Error("Failed to fetch data.");
   }
   return response.json();
 }
 
-export async function getPartialGradesReport() {
-  const response = await fetch(
-    `${API_ROUTES.BASE}/${API_ROUTES.SECTIONS_REPORTS}/partial-report`
-  );
+export async function getPartialGradesReport(period?: string) {
+  const url = period 
+    ? `${API_ROUTES.BASE}/${API_ROUTES.SECTIONS_REPORTS}/partial-report?period=${encodeURIComponent(period)}`
+    : `${API_ROUTES.BASE}/${API_ROUTES.SECTIONS_REPORTS}/partial-report`;
+  
+  const response = await fetch(url);
   if (!response.ok) {
     throw new Error("Failed to fetch data.");
   }
   return response.json();
 }
 
-export async function getFinalGradesReport() {
-  const response = await fetch(
-    `${API_ROUTES.BASE}/${API_ROUTES.SECTIONS_REPORTS}/final-report`
-  );
+export async function getFinalGradesReport(period?: string) {
+  const url = period 
+    ? `${API_ROUTES.BASE}/${API_ROUTES.SECTIONS_REPORTS}/final-report?period=${encodeURIComponent(period)}`
+    : `${API_ROUTES.BASE}/${API_ROUTES.SECTIONS_REPORTS}/final-report`;
+  
+  const response = await fetch(url);
   if (!response.ok) {
     throw new Error("Failed to fetch data.");
   }

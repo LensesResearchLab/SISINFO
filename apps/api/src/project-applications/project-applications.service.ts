@@ -265,18 +265,34 @@ export class ProjectApplicationsService {
     return taskList;
   }
 
-  async getProjectApplicationsReport() {
-    const applications = await this.projectApplicationRepository.find({
-      where: {
-        student: {
-          isUndergraduate: true,
-        },
+  async getProjectApplicationsReport(periodStr?: string) {
+    const whereClause: any = {
+      student: {
+        isUndergraduate: true,
       },
+    };
+
+    // Si se especifica periodo, filtrar por él
+    if (periodStr) {
+      const period = await this.periodsService.findOneByPeriodAndYearString(periodStr);
+      if (!period) {
+        throw new NotFoundException(`No se encontró el periodo: ${periodStr}`);
+      }
+      whereClause.project = {
+        period: {
+          id: period.id,
+        },
+      };
+    }
+
+    const applications = await this.projectApplicationRepository.find({
+      where: whereClause,
       relations: {
         student: {
           user: true,
         },
         project: {
+          period: true,
           professor: {
             user: true,
           },
