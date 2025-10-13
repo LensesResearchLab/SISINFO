@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { useProgramsStore } from "./store"
 import { Course } from "@/app/types/entities/billboard.type"
-import { getBillboard } from "@/app/services/billboard.service"
+import { getBillboardWithUploadedProgram } from "@/app/services/billboard.service"
 import { getPeriodsWMap } from "@/app/services/period.service"
 import { mapPeriodToString } from "@/app/mappers/period.mapper"
 import { useRouter } from "next/navigation"
@@ -56,7 +56,7 @@ export default function ProgramsList() {
   // Fetch courses when a period is selected
   useEffect(() => {
     if (!period) return
-    getBillboard(period)
+    getBillboardWithUploadedProgram(period)
       .then((data) => {
         setCourses(data.courses)
         setIds(data.courses.map((c: { id: string }) => c.id))

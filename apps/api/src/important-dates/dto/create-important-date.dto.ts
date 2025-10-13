@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateImportantDateDto {
@@ -5,6 +6,7 @@ export class CreateImportantDateDto {
   @IsNotEmpty()
   name: string;
 
+  @Type(() => Date)
   @IsDate()
   date: Date;
 

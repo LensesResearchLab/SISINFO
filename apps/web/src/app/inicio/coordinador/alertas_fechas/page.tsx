@@ -1,13 +1,15 @@
 "use client"
+import ImportantDatesManager from "@/components/importat-date-manager";
 import { TermCard } from "@/components/shared/period-card";
 
 
 export default function Alertas(){
     return (
-        <div className="grid grid-rows-3 w-full h-full  p-4">
-            <div  className="grid grid-cols-2 row-span-1 gap-4 h-4">
-            <TermCard handlePeriodChange={(value) => console.log(value)} footer={""} />
-              </div>
-        </div>
+       <div className="grid w-full p-4 gap-4">
+  <div className="grid grid-cols-2 gap-4">
+    <TermCard handlePeriodChange={(v) => console.log(v)} footer="" />
+  </div>
+  <ImportantDatesManager />
+</div>
     )
 }

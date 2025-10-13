@@ -105,4 +105,5 @@ export const API_ROUTES: Record<string, string> = {
   COURSE_LEADERS: "courses/leaders/",
   USER_ROLES: "users/roles/",
   DATES: "important-sections",
+  IMPORTAT_DATE : "important-dates"
 };

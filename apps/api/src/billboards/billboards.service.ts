@@ -226,6 +226,44 @@ export class BillboardsService {
     return response;
   }
 
+  async findOneWithCoursesProgram(period: string) {
+    const year = Number(period.slice(0, 4));
+    const periodDigit = period.slice(4, 6);
+    const periodBillboard = await this.periodsService.findOneByPeriodAndYear(
+      periodDigit,
+      year,
+    );
+    if (!periodBillboard) {
+      throw new Error('Period not found');
+    }
+    const billboard = await this.billboardRepository.findOne({
+      where: { period: periodBillboard },
+      relations: [
+        'courses',
+        'courses.mainProfessor',
+        'courses.program',
+        'courses.sections',
+        'courses.sections.professors',
+        'courses.sections.period',
+      ],
+    });
+    if (!billboard) return null;
+    //Obtenemos los cursos sin profesores repetidos
+    billboard.courses = (billboard.courses ?? [])
+      .filter((course: Course) => {
+        const program = course.program;
+
+        // No obtener los cursos que no tienen programa
+        if (program != null) return true;
+      })
+      .map((course: Course) => ({
+        ...course,
+        professors: uniqueProfessorsOfCourse(course),
+      }));
+
+    return billboard;
+  }
+
   async findOne(period: string) {
     const year = Number(period.slice(0, 4));
     const periodDigit = period.slice(4, 6);

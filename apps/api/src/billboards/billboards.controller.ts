@@ -21,6 +21,11 @@ export class BillboardsController {
     return this.billboardsService.findOne(period);
   }
 
+  @Get('/coursesProgram/:period')
+  findOneCoursesWithProgram(@Param('period') period: string) {
+    return this.billboardsService.findOneWithCoursesProgram(period);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.billboardsService.remove(id);

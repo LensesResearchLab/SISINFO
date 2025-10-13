@@ -35,7 +35,7 @@ export class ImportantDatesController {
     @Param('id') id: string,
     @Body() updateImportantDateDto: UpdateImportantDateDto,
   ) {
-    return this.importantDatesService.update(+id, updateImportantDateDto);
+    return this.importantDatesService.update(id, updateImportantDateDto);
   }
 
   @Delete(':id')

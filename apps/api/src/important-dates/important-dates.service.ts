@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateImportantDateDto } from './dto/create-important-date.dto';
 import { UpdateImportantDateDto } from './dto/update-important-date.dto';
 import { Repository } from 'typeorm/repository/Repository';
@@ -36,8 +36,26 @@ export class ImportantDatesService {
     return `This action returns a #${id} importantDate`;
   }
 
-  update(id: number, updateImportantDateDto: UpdateImportantDateDto) {
-    return `This action updates a #${id} importantDate`;
+  async update(id: string, dto: UpdateImportantDateDto) {
+    const current = await this.importantDateRepository.findOne({
+      where: { id },
+    });
+    if (!current) throw new NotFoundException('Important date not found');
+
+    const { name, date, importantSectionId } = dto;
+
+    const entity: Partial<ImportantDate> = { id };
+    if (name !== undefined) entity.name = name;
+    if (date !== undefined) entity.date = date;
+
+    if (importantSectionId !== undefined) {
+      const section =
+        await this.importantSectionsService.findOne(importantSectionId);
+      if (!section) throw new NotFoundException('Important section not found');
+      entity.importantSection = section;
+    }
+
+    return this.importantDateRepository.save(entity);
   }
 
   remove(id: number) {

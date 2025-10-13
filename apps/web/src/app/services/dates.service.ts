@@ -1,5 +1,6 @@
 import { API_ROUTES } from '../routes';
 import { ImportantSection } from '../types/entities/important-section';
+import { updateImportantDateDto } from '../types/updateImportantDate.type';
 
 
 export async function findByAcademicProcessAndPeriod(academicProcess: string, periodStr?: string): Promise<ImportantSection[]> {
@@ -16,5 +17,26 @@ export async function findByAcademicProcessAndPeriod(academicProcess: string, pe
   if (!response.ok) {
     throw new Error("Failed to fetch dates.");
   }
+  return response.json();
+}
+
+
+
+export async function updateImportantDate(dateId: string, updateData:updateImportantDateDto): Promise<ImportantSection[]> {
+  
+  
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.IMPORTAT_DATE}/${dateId}`;
+  console.log(JSON.stringify(updateData));
+  const response = await fetch(url,{
+    method:'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body:JSON.stringify(updateData)
+  })
+  if (!response.ok) {
+    throw new Error("Failed to fetch dates.");
+  }
+  
   return response.json();
 }

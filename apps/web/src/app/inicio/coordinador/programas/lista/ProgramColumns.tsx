@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Course } from "@/app/types/entities/billboard.type"
-import { MoreHorizontal } from "lucide-react"
+import { Eye} from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 /**
@@ -47,7 +47,8 @@ export const getProgramColumns = (handleDetail: (id: string) => void): ColumnDef
         size="icon"
         onClick={() => handleDetail(row.original.id)}
       >
-        <MoreHorizontal className="w-4 h-4 text-primary" />
+        
+        <Eye></Eye>
       </Button>
     ),
   },

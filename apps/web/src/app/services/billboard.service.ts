@@ -19,6 +19,24 @@ export async function getBillboard(periodId: string) {
   return response.json();
 }
 
+export async function getBillboardWithUploadedProgram(periodId: string) {
+  const response = await fetch(
+    `${API_ROUTES.BASE}/${API_ROUTES.COORDINATOR_BILLBOARD}/coursesProgram/${periodId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to get billboard.");
+  }
+  
+  return response.json();
+}
+
 
 export async function createBillboard(coursesInformation: Billboard[]) {
   const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.COORDINATOR_BILLBOARD}`, {
