@@ -19,8 +19,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, MoreVertical, Search } from "lucide-react";
-import { useState } from "react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, MoreVertical, Search } from "lucide-react";
+import { useMemo, useState } from "react";
 import { ConfirmationModal } from "./confirmation-modal";
 import { ROUTES } from "@/app/routes";
 import { GraduatedAssistanceApplication } from "@/app/types/entities/graduated-assistance-application.type";
@@ -117,10 +117,58 @@ export default function TabStatus({
 function ApplicantsTable({ applicants, handleDetails }: { readonly applicants: GraduatedAssistanceApplication[], readonly handleDetails?: (id:string) => void }) {
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortAscending, setSortAscending] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedApplicantIds, setSelectedApplicantIds] = useState<string[]>([]);
   const [newStatus, setNewStatus] = useState<string | null>(null);
+  const [sortConfig, setSortConfig] = useState<{
+    key: "name" | "email" | "status" | null;
+    direction: "asc" | "desc";
+  }>({ key: "name", direction: "asc" });
+
+  const collator = useMemo(
+    () => new Intl.Collator("es", { sensitivity: "base" }),
+    []
+  );
+
+  const resolveValue = (
+    applicant: GraduatedAssistanceApplication,
+    key: "name" | "email" | "status"
+  ) => {
+    switch (key) {
+      case "email":
+        return applicant.student.user.email;
+      case "status":
+        return applicant.status;
+      default:
+        return applicant.student.user.name;
+    }
+  };
+
+  const filteredApplicants = useMemo(
+    () =>
+      applicants.filter((applicant) =>
+        applicant.student.user.name.toLowerCase().includes(searchQuery.toLowerCase())
+          ? true
+          : applicant.student.user.email
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+      ),
+    [applicants, searchQuery]
+  );
+
+  const sortedApplicants = useMemo(() => {
+    if (!sortConfig.key) {
+      return [...filteredApplicants];
+    }
+
+    const key = sortConfig.key;
+    return [...filteredApplicants].sort((a, b) => {
+      const aValue = resolveValue(a, key);
+      const bValue = resolveValue(b, key);
+      const comparison = collator.compare(aValue, bValue);
+      return sortConfig.direction === "asc" ? comparison : -comparison;
+    });
+  }, [collator, filteredApplicants, sortConfig]);
 
   const handleConfirmAccepted = async () => {
     if (!selectedApplicantIds) return;
@@ -145,12 +193,6 @@ function ApplicantsTable({ applicants, handleDetails }: { readonly applicants: G
   };
 
 
-  const filteredApplicants = applicants.filter(
-    (applicant) =>
-      applicant.student.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ? true :
-      applicant.student.user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   const handleSelectAll = (checked: boolean) => {
     setSelectedApplicants(checked ? filteredApplicants.map((a) => a.id) : []);
   };
@@ -163,11 +205,45 @@ function ApplicantsTable({ applicants, handleDetails }: { readonly applicants: G
     );
   };
 
-  const sortedApplicants = [...filteredApplicants].sort((a, b) => {
-    return sortAscending
-      ? a.student.user.name.localeCompare(b.student.user.name)
-      : b.student.user.name.localeCompare(a.student.user.name);
-  });
+  const handleSort = (key: "name" | "email" | "status") => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        if (prev.direction === "asc") {
+          return { key, direction: "desc" };
+        }
+        return { key: null, direction: "asc" };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  const toggleNameSortFromButton = () => {
+    setSortConfig((prev) => {
+      if (prev.key === "name") {
+        return {
+          key: "name",
+          direction: prev.direction === "asc" ? "desc" : "asc",
+        };
+      }
+      return { key: "name", direction: "asc" };
+    });
+  };
+
+  const getAriaSort = (key: "name" | "email" | "status") => {
+    if (sortConfig.key !== key) return "none" as const;
+    return sortConfig.direction === "asc" ? "ascending" : "descending";
+  };
+
+  const renderSortIcon = (key: "name" | "email" | "status") => {
+    if (sortConfig.key !== key) {
+      return <ArrowUpDown className="h-4 w-4 opacity-50" />;
+    }
+    return sortConfig.direction === "asc" ? (
+      <ArrowUp className="h-4 w-4" />
+    ) : (
+      <ArrowDown className="h-4 w-4" />
+    );
+  };
 
   return (
     <Card className="border-none max-w-4xl">
@@ -187,11 +263,15 @@ function ApplicantsTable({ applicants, handleDetails }: { readonly applicants: G
               variant="outline"
               size="sm"
               className="h-9 px-3 bg-core text-card hover:bg-core-highlight"
-              onClick={() => setSortAscending(!sortAscending)}
+              onClick={toggleNameSortFromButton}
             >
               <span className="mr-1 text-foreground">A - Z</span>
               <ChevronDown
-                className={`h-4 w-4 transform ${sortAscending ? "" : "rotate-180"}`}
+                className={`h-4 w-4 transform ${
+                  sortConfig.key === "name" && sortConfig.direction === "desc"
+                    ? "rotate-180"
+                    : ""
+                }`}
               />
             </Button>
             <Button
@@ -216,9 +296,36 @@ function ApplicantsTable({ applicants, handleDetails }: { readonly applicants: G
                       className="border-card data-[state=checked]:bg-card data-[state=checked]:text-core"
                     />
                   </TableHead>
-                  <TableHead className="text-card">Nombre</TableHead>
-                  <TableHead className="text-card">Correo</TableHead>
-                  <TableHead className="text-card">Estado</TableHead>
+                  <TableHead
+                    className="text-card cursor-pointer select-none"
+                    onClick={() => handleSort("name")}
+                    aria-sort={getAriaSort("name")}
+                  >
+                    <span className="flex items-center gap-2">
+                      Nombre
+                      {renderSortIcon("name")}
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-card cursor-pointer select-none"
+                    onClick={() => handleSort("email")}
+                    aria-sort={getAriaSort("email")}
+                  >
+                    <span className="flex items-center gap-2">
+                      Correo
+                      {renderSortIcon("email")}
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-card cursor-pointer select-none"
+                    onClick={() => handleSort("status")}
+                    aria-sort={getAriaSort("status")}
+                  >
+                    <span className="flex items-center gap-2">
+                      Estado
+                      {renderSortIcon("status")}
+                    </span>
+                  </TableHead>
                   <TableHead className="text-card w-12 px-5">
                     Acciones
                   </TableHead>

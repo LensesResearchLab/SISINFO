@@ -3,6 +3,8 @@ import { ImportantDate } from "@/app/types/entities/Important-date";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 
 
 /**
@@ -75,22 +77,88 @@ function DateTable({
   readonly title: string;
   readonly dates: ImportantDate[];
 }) {
+  const [sortConfig, setSortConfig] = useState<{
+    key: "name" | "date" | null;
+    direction: "asc" | "desc";
+  }>({ key: null, direction: "asc" });
+
+  const collator = useMemo(
+    () => new Intl.Collator("es", { sensitivity: "base" }),
+    []
+  );
+
+  const sortedDates = useMemo(() => {
+    if (!sortConfig.key) return dates;
+
+    const sorted = [...dates].sort((a, b) => {
+      if (sortConfig.key === "date") {
+        const aDate = Date.parse(a.date);
+        const bDate = Date.parse(b.date);
+        const comparison = (aDate || 0) - (bDate || 0);
+        return sortConfig.direction === "asc" ? comparison : -comparison;
+      }
+
+      const comparison = collator.compare(a.name, b.name);
+      return sortConfig.direction === "asc" ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [collator, dates, sortConfig]);
+
+  const handleSort = (key: "name" | "date") => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        if (prev.direction === "asc") return { key, direction: "desc" };
+        return { key: null, direction: "asc" };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  const getAriaSort = (key: "name" | "date") => {
+    if (sortConfig.key !== key) return "none" as const;
+    return sortConfig.direction === "asc" ? "ascending" : "descending";
+  };
+
+  const renderSortIcon = (key: "name" | "date") => {
+    if (sortConfig.key !== key) return <ArrowUpDown className="h-4 w-4 opacity-50" />;
+    return sortConfig.direction === "asc" ? (
+      <ArrowUp className="h-4 w-4" />
+    ) : (
+      <ArrowDown className="h-4 w-4" />
+    );
+  };
+
   return (
     <div>
       <h2 className="text-xl font-semibold text-core">{title}</h2>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="bg-core-highlight text-white text-center">
-              Descripción
+            <TableHead
+              className="bg-core-highlight text-white text-center cursor-pointer select-none"
+              onClick={() => handleSort("name")}
+              aria-sort={getAriaSort("name")}
+            >
+              <span className="flex items-center justify-center gap-2">
+                Descripción
+                {renderSortIcon("name")}
+              </span>
             </TableHead>
-            <TableHead className="bg-core-highlight text-white text-center">
-              Fecha
+            <TableHead
+              className="bg-core-highlight text-white text-center cursor-pointer select-none"
+              onClick={() => handleSort("date")}
+              aria-sort={getAriaSort("date")}
+            >
+              <span className="flex items-center justify-center gap-2">
+                Fecha
+                {renderSortIcon("date")}
+              </span>
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {dates.map((date) => (
+          {sortedDates.map((date) => (
             <TableRow key={date.name}>
               <TableCell className="text-primary">{date.name}</TableCell>
               <TableCell className="text-primary">{date.date}</TableCell>

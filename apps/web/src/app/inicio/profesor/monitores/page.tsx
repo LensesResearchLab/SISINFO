@@ -15,8 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useEffect, useState } from "react";
-import { User } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowDown, ArrowUp, ArrowUpDown, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -272,6 +272,58 @@ function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAs
   const [description, setDescription] = useState('');
   const [selectedGrade, setSelectedGrade] = useState<{ value: number; description: string } | null>(null);
   const [localList, setLocalList] = useState(teachingAssistantList);
+  type SortKey = "name" | "code";
+  const [sortConfig, setSortConfig] = useState<{
+    key: SortKey | null;
+    direction: "asc" | "desc";
+  }>({ key: null, direction: "asc" });
+
+  const collator = useMemo(
+    () => new Intl.Collator("es", { sensitivity: "base" }),
+    []
+  );
+
+  useEffect(() => {
+    setLocalList(teachingAssistantList);
+  }, [teachingAssistantList]);
+
+  const sortedList = useMemo(() => {
+    const key = sortConfig.key;
+    if (!key) return localList;
+
+    const sorted = [...localList].sort((a, b) => {
+      const aValue = a[key] ?? "";
+      const bValue = b[key] ?? "";
+      const comparison = collator.compare(String(aValue), String(bValue));
+      return sortConfig.direction === "asc" ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [collator, localList, sortConfig]);
+
+  const handleSort = (key: SortKey) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        if (prev.direction === "asc") return { key, direction: "desc" };
+        return { key: null, direction: "asc" };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  const getAriaSort = (key: SortKey) => {
+    if (sortConfig.key !== key) return "none" as const;
+    return sortConfig.direction === "asc" ? "ascending" : "descending";
+  };
+
+  const renderSortIcon = (key: SortKey) => {
+    if (sortConfig.key !== key) return <ArrowUpDown className="h-4 w-4 opacity-50" />;
+    return sortConfig.direction === "asc" ? (
+      <ArrowUp className="h-4 w-4" />
+    ) : (
+      <ArrowDown className="h-4 w-4" />
+    );
+  };
 
   const handleSubmit = async () => {
     if (gradingId) {
@@ -310,13 +362,31 @@ function TeachingAssistantTable({ teachingAssistantList }: { readonly teachingAs
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="bg-core-highlight text-white text-center">Nombre del monitor</TableHead>
-            <TableHead className="bg-core-highlight text-white text-center">Código</TableHead>
+            <TableHead
+              className="bg-core-highlight text-white text-center cursor-pointer select-none"
+              onClick={() => handleSort("name")}
+              aria-sort={getAriaSort("name")}
+            >
+              <span className="flex items-center justify-center gap-2">
+                Nombre del monitor
+                {renderSortIcon("name")}
+              </span>
+            </TableHead>
+            <TableHead
+              className="bg-core-highlight text-white text-center cursor-pointer select-none"
+              onClick={() => handleSort("code")}
+              aria-sort={getAriaSort("code")}
+            >
+              <span className="flex items-center justify-center gap-2">
+                Código
+                {renderSortIcon("code")}
+              </span>
+            </TableHead>
             <TableHead className="bg-core-highlight text-white text-center">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="text-center">
-          {localList.map((student) => (
+          {sortedList.map((student) => (
             <TableRow key={student.id}>
               <TableCell className="font-medium">{student.name}</TableCell>
               <TableCell className="font-medium">{student.code}</TableCell>

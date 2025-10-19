@@ -24,9 +24,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Download } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as XLSX from "xlsx";
 import { getPeriods } from "@/app/services/period.service";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 
 /**
  * TruncatedCell Component
@@ -78,6 +79,54 @@ export default function CourseReportTable({
   const [isLoading, setIsLoading] = useState(true);
   const [periods, setPeriods] = useState<string[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<string>("");
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof CourseReports | null;
+    direction: "asc" | "desc";
+  }>({ key: null, direction: "asc" });
+
+  const collator = useMemo(
+    () => new Intl.Collator("es", { sensitivity: "base", numeric: true }),
+    []
+  );
+
+  const sortedData = useMemo(() => {
+    if (!sortConfig.key) return data;
+
+    const sorted = [...data].sort((a, b) => {
+      const aValue = String(a[sortConfig.key!] ?? "");
+      const bValue = String(b[sortConfig.key!] ?? "");
+      const comparison = collator.compare(aValue, bValue);
+      return sortConfig.direction === "asc" ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [collator, data, sortConfig]);
+
+  const handleSort = (key: keyof CourseReports) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        if (prev.direction === "asc") {
+          return { key, direction: "desc" };
+        }
+        return { key: null, direction: "asc" };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  const getAriaSort = (key: keyof CourseReports) => {
+    if (sortConfig.key !== key) return "none" as const;
+    return sortConfig.direction === "asc" ? "ascending" : "descending";
+  };
+
+  const renderSortIcon = (key: keyof CourseReports) => {
+    if (sortConfig.key !== key) return <ArrowUpDown className="h-4 w-4 opacity-50" />;
+    return sortConfig.direction === "asc" ? (
+      <ArrowUp className="h-4 w-4" />
+    ) : (
+      <ArrowDown className="h-4 w-4" />
+    );
+  };
 
   // Fetch periods if selector is enabled
   useEffect(() => {
@@ -172,28 +221,70 @@ export default function CourseReportTable({
           <Table>
             <TableHeader>
               <TableRow className="bg-core hover:!bg-core-highlight">
-                <TableHead className="border-r text-center text-white">
-                  CRN
+                <TableHead
+                  className="border-r text-center text-white cursor-pointer select-none"
+                  onClick={() => handleSort("crn")}
+                  aria-sort={getAriaSort("crn")}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    CRN
+                    {renderSortIcon("crn")}
+                  </span>
                 </TableHead>
-                <TableHead className="border-r text-center text-white">
-                  No. Sección
+                <TableHead
+                  className="border-r text-center text-white cursor-pointer select-none"
+                  onClick={() => handleSort("section")}
+                  aria-sort={getAriaSort("section")}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    No. Sección
+                    {renderSortIcon("section")}
+                  </span>
                 </TableHead>
-                <TableHead className="border-r text-center text-white">
-                  Código
+                <TableHead
+                  className="border-r text-center text-white cursor-pointer select-none"
+                  onClick={() => handleSort("courseCode")}
+                  aria-sort={getAriaSort("courseCode")}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Código
+                    {renderSortIcon("courseCode")}
+                  </span>
                 </TableHead>
-                <TableHead className="border-r text-center text-white">
-                  Curso
+                <TableHead
+                  className="border-r text-center text-white cursor-pointer select-none"
+                  onClick={() => handleSort("courseName")}
+                  aria-sort={getAriaSort("courseName")}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Curso
+                    {renderSortIcon("courseName")}
+                  </span>
                 </TableHead>
-                <TableHead className="border-r text-center text-white">
-                  Nombre
+                <TableHead
+                  className="border-r text-center text-white cursor-pointer select-none"
+                  onClick={() => handleSort("professorName")}
+                  aria-sort={getAriaSort("professorName")}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Nombre
+                    {renderSortIcon("professorName")}
+                  </span>
                 </TableHead>
-                <TableHead className="border-r text-center text-white">
-                  Correo
+                <TableHead
+                  className="border-r text-center text-white cursor-pointer select-none"
+                  onClick={() => handleSort("professorEmail")}
+                  aria-sort={getAriaSort("professorEmail")}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Correo
+                    {renderSortIcon("professorEmail")}
+                  </span>
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((course) => (
+              {sortedData.map((course) => (
                 <TableRow key={course.id} className="bg-white">
                   <TableCell className="border-r font-medium">
                     <TruncatedCell content={course.crn} maxItems={3} />
