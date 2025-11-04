@@ -98,6 +98,58 @@ export class ProjectsService {
     return projects;
   }
 
+  async findHistoryByProfessor(professorId: string, period?: string) {
+    const whereCondition: Record<string, unknown> = {
+      professor: { id: professorId },
+      isEnded: true,
+    };
+
+    if (period) {
+      if (!/^[0-9]{6}$/.test(period)) {
+        throw new Error(
+          'El parámetro semestre debe tener el formato YYYYSS (por ejemplo, 202510)',
+        );
+      }
+
+      const year = period.slice(0, 4);
+      const periodPart = period.slice(4, 6);
+
+      whereCondition.period = {
+        year,
+        period: periodPart,
+      };
+    }
+
+    const projects = await this.projectRepository.find({
+      where: whereCondition,
+      relations: {
+        professor: { user: true },
+        areasOfInterest: true,
+        students: true,
+      },
+      order: {
+        title: 'ASC',
+      },
+    });
+
+    for (const project of projects) {
+      if (project.professor?.user) {
+        project.professor.user = deletePasswordFromUser(project.professor.user);
+      }
+
+      if (project.students?.length) {
+        project.students = project.students.map((student) => {
+          if (student.user) {
+            student.user = deletePasswordFromUser(student.user);
+          }
+          return student;
+        });
+      }
+    }
+
+    return projects;
+  }
+
   async findOne(id: string) {
     const project = await this.projectRepository.findOne({
       where: { id },

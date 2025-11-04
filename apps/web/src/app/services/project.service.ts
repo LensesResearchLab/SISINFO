@@ -118,3 +118,21 @@ export async function getProjectsByProfessor(): Promise<Project[]> {
   }
   return await response.json();
 }
+
+export async function getProfessorProjectsHistory(period?: string): Promise<Project[]> {
+  const baseUrl = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}/professor/history`;
+  const url = period ? `${baseUrl}?period=${period}` : baseUrl;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: 'include'
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch historic projects data.");
+  }
+
+  return await response.json();
+}

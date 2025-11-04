@@ -33,6 +33,15 @@ export class ProjectController {
     return this.projectsService.findAll(period);
   }
 
+  @Get('professor/history')
+  @UseGuards(JwtAuthGuard)
+  findHistoryByProfessor(
+    @Req() req: Request & { user: { id: string } },
+    @Query('period') period?: string,
+  ) {
+    return this.projectsService.findHistoryByProfessor(req.user.id, period);
+  }
+
   @Get('professor')
   @UseGuards(JwtAuthGuard)
   findByProfessor(@Req() req: Request & { user: { id: string } }) {
