@@ -8,17 +8,19 @@ import { findByAcademicProcessAndPeriod, updateImportantDate } from "@/app/servi
 
 
 
-export default function ImportantDatesManager() {
+
+export default function ImportantDatesManager({ selectedPeriod }: { selectedPeriod: string }) {
   const queryClient = useQueryClient()
 
+  
 
   const {
     data: pregradoSections,
     isFetching: isFetchingPregrado,
     error: pregradoError,
   } = useQuery({
-    queryKey: ["student-dates", "PREGRADO"],
-    queryFn: () => findByAcademicProcessAndPeriod("Tesis pregrado"),
+    queryKey: ["student-dates", "PREGRADO", selectedPeriod],
+    queryFn: () => findByAcademicProcessAndPeriod("Tesis pregrado",selectedPeriod),
   })
 
   const {
@@ -26,7 +28,7 @@ export default function ImportantDatesManager() {
     isFetching: isFetchingPosgrado,
     error: posgradoError,
   } = useQuery({
-    queryKey: ["student-dates", "POSGRADO"],
+    queryKey: ["student-dates", "POSGRADO", selectedPeriod],
     queryFn: () => findByAcademicProcessAndPeriod("Tesis postgrado"),
   })
 
@@ -74,7 +76,7 @@ export default function ImportantDatesManager() {
         <div>
           <h1 className="text-balance text-2xl font-bold text-foreground">Fechas Importantes</h1>
           <p className="text-pretty text-muted-foreground mt-1">
-            Gestiona las fechas importantes de ambos procesos académicos
+            Gestiona las fechas importantes del proceso de proyecto de grado para pregrado y posgrado.
           </p>
         </div>
 
@@ -85,9 +87,7 @@ export default function ImportantDatesManager() {
           </TabsList>
 
           <TabsContent value="pregrado" className="space-y-4 mt-6">
-            {pregradoSections?.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">No se han definido fechas para Tesis Pregrado</p>
-            ) : (
+            {(
               pregradoSections?.map((section) => (
                 <DateTable
                   key={section.id}

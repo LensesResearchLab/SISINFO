@@ -23,11 +23,34 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Download } from "lucide-react";
+import { Download, Mail } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import * as XLSX from "xlsx";
 import { getPeriods } from "@/app/services/period.service";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+
+
+ function buildMailto(to: string | string[], opts?: {
+  subject?: string;
+  body?: string;
+  cc?: string | string[];
+  bcc?: string | string[];
+}) {
+  const toPart = Array.isArray(to) ? to.join(",") : to;
+  const params = new URLSearchParams();
+
+
+  if (opts?.subject) params.set("subject", opts.subject);
+  if (opts?.body) params.set("body", opts.body.replace(/\n/g, "\r\n"));
+  if (opts?.cc) params.set("cc", Array.isArray(opts.cc) ? opts.cc.join(",") : opts.cc);
+  if (opts?.bcc) params.set("bcc", Array.isArray(opts.bcc) ? opts.bcc.join(",") : opts.bcc);
+
+  const qs = params.toString().replace(/\+/g, "%20");
+  return qs ? `mailto:${toPart}?${qs}` : `mailto:${toPart}`;
+}
+
+
+
 
 /**
  * TruncatedCell Component
@@ -45,6 +68,10 @@ function TruncatedCell({ content, maxItems = 3 }: { readonly content: string; re
   if (!shouldTruncate) {
     return <span>{content}</span>;
   }
+
+ 
+
+
 
   return (
     <TooltipProvider delayDuration={100}>
@@ -88,6 +115,36 @@ export default function CourseReportTable({
     () => new Intl.Collator("es", { sensitivity: "base", numeric: true }),
     []
   );
+
+  const sendEmailToProfessors = () => {
+  // toma los correos visibles (sortedData) para respetar filtros/orden actual
+  const emails = Array.from(
+    new Set(
+      (sortedData ?? [])
+        .map(r => r.professorEmail?.trim())
+        .filter((e): e is string => !!e)
+    )
+  );
+
+  if (emails.length === 0) {
+    alert("No hay correos para enviar.");
+    return;
+  }
+
+  // Asunto y cuerpo opcionales (ajústalos a tu flujo)
+  const subject = 'Recordatorio: Cargar el Programa de la Materia';
+
+  const body = `Buenas tardes,\n\nSe envia este correo para recordar cargar el programa de la materia.\n\nSaludos cordiales.`;
+
+  // Por privacidad: BCC con todos y TO vacío
+  const href = buildMailto("", { subject, body, bcc: emails });
+
+  // Si los quieres en TO en lugar de BCC, usa:
+  // const href = buildMailto(emails, { subject, body });
+
+  // Abrir el cliente de correo
+  window.location.href = href;
+};
 
   const sortedData = useMemo(() => {
     if (!sortConfig.key) return data;
@@ -208,13 +265,18 @@ export default function CourseReportTable({
               </Select>
             )}
           </div>
+          <div className="flex gap-2">
+          <Button onClick={sendEmailToProfessors}>  
+            <Mail className="mr-2 h-4 w-4" /> 
+          </Button>
           <Button
             onClick={downloadExcel}
-            className="bg-core-highlight hover:bg-core text-white"
+            className=""
           >
             <Download className="mr-2 h-4 w-4" />
             Descargar Excel
           </Button>
+          </div>
         </div>
 
         <div className="overflow-hidden rounded-md border">

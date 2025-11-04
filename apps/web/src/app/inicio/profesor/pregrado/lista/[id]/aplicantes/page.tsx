@@ -60,75 +60,94 @@ export default function ProjectDetail({
   const handleSelectApplicant = (id: string, checked: boolean) => {
     setSelectedApplicantIds((prev) =>
       checked ? [...prev, id] : prev.filter((applicantId) => applicantId !== id)
-    );
+    );  
   };
 
-  const columns: ColumnDef<Application>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(checked) => handleSelectAll(Boolean(checked))}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={selectedApplicantIds.includes(row.original.id)}
-          onCheckedChange={(checked) =>
-            handleSelectApplicant(row.original.id, Boolean(checked))
-          }
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: "student.user.name",
-      header: "Nombre",
-      cell: ({ row }) => row.original.student.user.name,
-    },
-    {
-      accessorKey: "student.code",
-      header: "Código",
-      cell: ({ row }) => row.original.student.code,
-    },
-    {
-      accessorKey: "status",
-      header: "Estado",
-    },
-    {
-      id: "actions",
-      header: "Acciones",
-      cell: ({ row }) => (
-        <div className="flex gap-2">
-          <Button
-            onClick={() => handleOpenModal([row.original.id], "Inscrito")}
-          >
-            Aceptar
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => handleOpenModal([row.original.id], "Rechazado")}
-          >
-            Rechazar
-          </Button>
-        </div>
-      ),
-    },
-  ];
+  const nameCol: ColumnDef<Application> = {
+  id: "name",
+  header: "Nombre",
+  accessorFn: (row) => row.student.user.name,
+};
+
+const codeCol: ColumnDef<Application> = {
+  id: "code",
+  header: "Código",
+  accessorFn: (row) => row.student.code,
+};
+
+const statusCol: ColumnDef<Application> = {
+  accessorKey: "status",
+  header: "Estado",
+};
+
+// 👉 Tabla INSCRITOS: sin acciones (y sin checkbox)
+const inProjectColumns: ColumnDef<Application>[] = [nameCol, codeCol, statusCol];
+
+const selectCol: ColumnDef<Application> = {
+  id: "select",
+  header: ({ table }) => (
+    <Checkbox
+      checked={table.getIsAllPageRowsSelected()}
+      onCheckedChange={(checked) => handleSelectAll(Boolean(checked))}
+      aria-label="Select all"
+    />
+  ),
+  cell: ({ row }) => (
+    <Checkbox
+      checked={selectedApplicantIds.includes(row.original.id)}
+      onCheckedChange={(checked) =>
+        handleSelectApplicant(row.original.id, Boolean(checked))
+      }
+      aria-label="Select row"
+    />
+  ),
+  enableSorting: false,
+  enableHiding: false,
+};
+
+const approvedColumns: ColumnDef<Application>[] = [
+  selectCol,
+  nameCol,
+  codeCol,
+  statusCol,
+  {
+    id: "actions",
+    header: "Acciones",
+    cell: ({ row }) => (
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          onClick={() => handleOpenModal([row.original.id], "Inscrito")}
+        >
+          Aceptar
+        </Button>
+        <Button
+          variant="destructive"
+          onClick={() => handleOpenModal([row.original.id], "Rechazado")}
+        >
+          Rechazar
+        </Button>
+      </div>
+    ),
+  },
+];
 
   if (isFetching)
     return <SpinnerPage />
   if (error || !data)
     return <ErrorPage />
   const approvedData = (data ?? []).filter((applicant) => applicant.status === "Aceptado");
+  const inProyectData = (data ?? []).filter((applicant) => applicant.status === "Inscrito");
+  console.log(data);
 
   return (
     <div className="min-h-full w-full container max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
       <div className="w-full bg-card shadow-lg rounded-xl p-4 sm:p-6 space-y-4">
+        <div>
+          <h2 className="text-core font-semibold text-xl">Lista de usuarios Inscritos </h2>
+
+         <DataTable columns={inProjectColumns} data={inProyectData} />
+        </div>
         <h2 className="text-core font-semibold text-xl">Lista de aplicantes</h2>
         <div className="flex gap-2">
           <Button
@@ -147,7 +166,8 @@ export default function ProjectDetail({
           </Button>
         </div>
 
-        <DataTable columns={columns} data={approvedData} />
+        <DataTable columns={approvedColumns} data={approvedData} />
+        
       </div>
 
       <ConfirmationModal
