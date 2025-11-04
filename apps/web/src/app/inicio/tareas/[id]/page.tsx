@@ -25,6 +25,7 @@ const taskSchema = z.object({
   document: z.instanceof(File).optional(),
   comment: z.string().optional(),
   isApproved: z.boolean().optional(),
+  suggestWithdraw: z.boolean().optional(),
 })
 
 export default function TaskForm() {
@@ -43,47 +44,71 @@ export default function TaskForm() {
       type: TaskType.UPLOAD_FILE,
       document: undefined,
       comment: "",
+      suggestWithdraw: false,
       isApproved: false,
     },
   })
 
   useEffect(() => {
-    async function fetchTask() {
-      if (!id) return
-      try {
-        const response = await getTask(id as string)
-        setTask(response)
+  if (!id) return;
+  let cancelled = false;
 
-        if (response?.document?.file?.data) {
-          setPdfLoading(true)
-          const bytes = new Uint8Array(response.document.file.data)
-          const blob = new Blob([bytes], { type: "application/pdf" })
-          setPdfUrl(URL.createObjectURL(blob))
-          setPdfLoading(false)
-        }
+  (async () => {
+    try {
+      const response = await getTask(id as string);
+      if (cancelled) return;
 
-        form.setValue("type", response.type)
-        form.setValue("isApproved", Boolean(response.approved))
-      } catch (err) {
-        console.error("Error al obtener la tarea:", err)
-      } finally {
-        setLoading(false)
+      setTask(response);
+      form.setValue("type", response.type);
+      form.setValue("isApproved", Boolean(response.approved));
+
+      // Si hay PDF, crea el URL SOLO una vez tras el fetch
+      if (response?.document?.file?.data) {
+        setPdfLoading(true);
+        const bytes = new Uint8Array(response.document.file.data);
+        const blob = new Blob([bytes], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+        setPdfUrl(url);
+        setPdfLoading(false);
+      } else {
+        setPdfUrl(null);
       }
+    } catch (e) {
+      console.error("Error al obtener la tarea:", e);
+    } finally {
+      if (!cancelled) setLoading(false);
     }
+  })();
 
-    fetchTask()
-    return () => {
-      if (pdfUrl) URL.revokeObjectURL(pdfUrl)
-    }
-  }, [form, id, pdfUrl])
+  return () => {
+    cancelled = true;
+  };
+  // ✅ solo depende de id
+}, [form, id]);
+
+// Limpieza del ObjectURL en un efecto aparte
+useEffect(() => {
+  return () => {
+    if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+  };
+}, [pdfUrl]);
 
   async function onSubmit(values: z.infer<typeof taskSchema>) {
+
+    const suggestText = `Se sugiere retirar la materia al estudiante: ${
+    values.suggestWithdraw ? "Sí" : "No"
+  }`;
+
+  const finalComment = [values.comment?.trim(), suggestText]
+    .filter(Boolean)          // elimina undefined / "" si no hay comentario
+    .join("\n");              
+
     if (!id) return
     const taskData = {
       type: values.type,
       state: "pending",
       date: new Date(),
-      comment: values.comment ?? '',
+      comment: finalComment,
       approved: values.isApproved ?? false,
     }
     await createTask(id as string, taskData, values.document)
@@ -166,6 +191,7 @@ export default function TaskForm() {
                 )}
 
                 {task.type === TaskType.SEND_COMMENTS && (
+                  <>
                   <FormField
                     control={form.control}
                     name="comment"
@@ -181,6 +207,26 @@ export default function TaskForm() {
                       </FormItem>
                     )}
                   />
+                  <FormField
+  control={form.control}
+  name="suggestWithdraw"
+  render={({ field }) => (
+    <FormItem className="flex flex-row items-center gap-2 mt-2">
+      <FormControl>
+        <Checkbox
+          id="suggestWithdraw"
+          checked={field.value}
+          onCheckedChange={(v) => field.onChange(Boolean(v))}
+        />
+      </FormControl>
+      <FormLabel htmlFor="suggestWithdraw" className="font-bold m-0">
+        ¿Sugiere retirar la materia?
+      </FormLabel>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+</>
                 )}
 
                 {task.type === TaskType.SEND_APPROVE && (

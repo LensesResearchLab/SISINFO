@@ -8,6 +8,7 @@ import {
   BookOpen,
   Calendar,
   FileBarChart,
+  FileCog,
   FileText,
   GraduationCap,
   Headphones,
@@ -47,6 +48,13 @@ export const undergraduateData = [
         description:
           "Aquí puedes consultar las fechas importantes del proceso.",
         url: ROUTES.UNDERGRADUATE_THESIS_DATES,
+      },
+      {
+        Icon: FileCog,
+        title: "Administrar proyecto de grado",
+        description:
+          "Aquí puedes administrar las tareas de tu proyecto de grado.",
+        url: ROUTES.TASK_LIST
       },
     ],
   },

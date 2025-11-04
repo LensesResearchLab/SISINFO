@@ -32,15 +32,19 @@ export default function ProjectStatus() {
     queryFn: async () => {
       const userData = await getUserInfo();
       const thesisStatus = await getUndergraduateThesisStatusInformation(userData.user.id);
-      return ProjectApplicationToProjectStatusInformation(thesisStatus);
+      console.log("Thesis Status:", thesisStatus);
+      return {
+        statusInfo: await ProjectApplicationToProjectStatusInformation(thesisStatus),
+        lastTask: thesisStatus.actualTask,
+      };
     },
   });
-
+  console.log("Status Info:", statusInfo);
   if (isFetching) return <SpinnerPage />;
   if (error || !statusInfo) return <ProjectNotFound />;
 
-  const infoSections = createStatusSections(statusInfo);
-  const processSteps = ["Postulado", "Pendiente", "Aceptado", "Inscrito"];
+  const infoSections = createStatusSections(statusInfo.statusInfo);
+  const processSteps = ["Postulado", "Pendiente", "Aceptado", "Inscrito",'Propuesta','Treinta-30%','Poster',"Finalizado"];
   const stepMessages = createStepMessages();
 
   const generalInfoProps = {
@@ -48,11 +52,13 @@ export default function ProjectStatus() {
     sections: infoSections,
   };
   const statusTabProps = {
-    currentStatus: statusInfo.lastStep,
-    statusMessage: stepMessages.get(statusInfo.lastStep) ?? "",
+    currentStatus: statusInfo.statusInfo.lastStep,
+
+    statusMessage: stepMessages.get(statusInfo.statusInfo.lastStep) ?? "",
     steps: processSteps,
     title: "Estado de inscripción del proyecto de grado",
   };
+  
 
   return <TabStatus general={generalInfoProps} status={statusTabProps} />;
 }
@@ -136,5 +142,9 @@ function createStepMessages() {
   messages.set("Pendiente", "Tu proyecto está pendiente de revisión, por favor espera la respuesta.");
   messages.set("Aceptado", "Tu proyecto ha sido aceptado.");
   messages.set("Inscrito", "Tu inscripción ha sido completada.");
+  messages.set("Propuesta", "Tienes que realizar una propuesta y esta tiene que ser revisada y aprobada por el profesor.");
+  messages.set("Treinta-30%", "Tu proyecto ha sido revisado y se encuentra en la etapa de 30% y se te dira si se te recomienda retirar el proyecto.");
+  messages.set("Poster", "Tienes que realizar un poster sobre tu proyecto y debe ser aprobado por el profesor.");
+  messages.set("Finalizado", "Tu proyecto ha sido finalizado. Felicitaciones por completar el proceso.");
   return messages;
 }
