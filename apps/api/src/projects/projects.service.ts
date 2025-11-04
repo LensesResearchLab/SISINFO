@@ -125,7 +125,7 @@ export class ProjectsService {
       relations: {
         professor: { user: true },
         areasOfInterest: true,
-        students: true,
+        students: { user: true },
       },
       order: {
         title: 'ASC',
