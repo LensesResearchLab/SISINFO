@@ -14,29 +14,35 @@ export const getProgramColumns = (handleDetail: (id: string) => void): ColumnDef
     accessorKey: "name",
     header: "Clase",
     cell: ({ row }) => <span className="font-semibold text-primary">{row.original.name}</span>,
+    enableSorting: true,
   },
   {
     accessorKey: "code",
     header: "Código",
     cell: ({ row }) => <span className="text-primary">{row.original.code}</span>,
+    enableSorting: true,
   },
   {
     id: "status",
+    accessorFn: (course) => (course.program ? "Cargado" : "Pendiente"),
     header: "Estado",
     cell: ({ row }) => (
       <span className="text-primary">
-        {row.original.program ? "Cargado" : "Pendiente"}
+        {String(row.getValue("status"))}
       </span>
     ),
+    enableSorting: true,
   },
   {
     id: "professor",
+    accessorFn: (course) => course.mainProfessor?.user?.name || "Profesor no asignado",
     header: "Profesor",
     cell: ({ row }) => (
       <span className="text-primary">
-        {row.original.mainProfessor?.user?.name || "Profesor no asignado"}
+        {String(row.getValue("professor"))}
       </span>
     ),
+    enableSorting: true,
   },
   {
     id: "actions",
