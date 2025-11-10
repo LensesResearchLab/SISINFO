@@ -39,7 +39,7 @@ import { Check } from "lucide-react";
    */
   export default function TabStatus({general, status, children}: {readonly general: GeneralProps, readonly status: StatusProps, readonly children?: React.ReactNode}) {
     return (
-      <div className=" mx-auto p-4">
+      <div className=" mx-auto p-10">
         <Tabs defaultValue="general">
           <TabsList className="grid w-full grid-cols-2 bg-core text-white">
             <TabsTrigger value="general" className="cursor-pointer data-[state=active]:bg-core-highlight data-[state=active]:font-semibold data-[state=active]:text-white">Información general</TabsTrigger>
@@ -130,9 +130,9 @@ export function TabStatusCard({ status }: { readonly status: StatusProps }) {
     return { name: step, completed: !found, current: false }
   })
   return (
-    <Card className="border-none max-w-3xl">
+    <Card className="border-none ">
       <CardContent className="p-0">
-        <div className="space-y-8 p-6">
+        <div className="space-y-8 p-3">
           <h2 className="text-2xl font-medium text-core text-center">{status.title}</h2>
           <div className="relative">
             <div className="absolute top-5 left-0 w-full h-[2px] bg-core-soft md:block hidden" />

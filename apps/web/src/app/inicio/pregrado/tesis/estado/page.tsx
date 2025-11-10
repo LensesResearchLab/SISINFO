@@ -9,6 +9,12 @@ import { ProjectStatusInformation } from "@/app/types/status-information.type";
 import { getUserInfo } from "@/app/auth/auth-service";
 import { ProjectApplicationToProjectStatusInformation } from "@/app/mappers/project-status-information";
 import { mapPeriodToString } from "@/app/mappers/period.mapper";
+import { LastTask } from "@/app/types/entities/last-task.type";
+
+
+
+
+
 
 /**
  * ProjectStatus Component
@@ -32,29 +38,74 @@ export default function ProjectStatus() {
     queryFn: async () => {
       const userData = await getUserInfo();
       const thesisStatus = await getUndergraduateThesisStatusInformation(userData.user.id);
-      console.log("Thesis Status:", thesisStatus);
       return {
         statusInfo: await ProjectApplicationToProjectStatusInformation(thesisStatus),
         lastTask: thesisStatus.actualTask,
       };
     },
   });
-  console.log("Status Info:", statusInfo);
   if (isFetching) return <SpinnerPage />;
   if (error || !statusInfo) return <ProjectNotFound />;
 
+  /** Devuelve el label y el índice en processSteps según tus reglas */
+function getCurrentStep(
+  lastTask: LastTask | null | undefined,
+  statusInfo: ProjectStatusInformation
+) {
+  // 1) Si no hay lastTask, usa statusInfo.statusInfo.lastStep (o statusInfo.lastStep)
+  const externalLastStep = statusInfo.lastStep; // ajusta si tu objeto es statusInfo.statusInfo.lastStepç
+  
+  if (!lastTask) {
+    const label = externalLastStep ?? "Postulado";
+    const index = processSteps.indexOf(label);
+    return { label, index };
+  }
+
+  // 2) Si hay lastTask, mapeo por step
+  let label: string;
+
+  if (lastTask.step === 0 || lastTask.step === 1) {
+    label = "Propuesta";
+  } else if (lastTask.step === 2 || lastTask.step === 3) {
+    label = "Treinta-30%";
+  } else if (lastTask.step === 4) {
+    label = "Poster";
+  } else if (lastTask.step === 5 || lastTask.step === 6) {
+    label = "Documento Final";
+  } else {
+    // fallback seguro si viene un step inesperado
+    label = externalLastStep ?? "Postulado";
+  }
+
+  // 3) Regla especial: si es 6 y approved === false -> 'Finalizado'
+  if (lastTask.step === 7 && lastTask.approved === false) {
+    label = "Finalizado";
+  }
+
+  const index = processSteps.indexOf(label);
+  return { label, index };
+}
+
+
+
   const infoSections = createStatusSections(statusInfo.statusInfo);
-  const processSteps = ["Postulado", "Pendiente", "Aceptado", "Inscrito",'Propuesta','Treinta-30%','Poster',"Finalizado"];
+  const processSteps = ["Postulado", "Pendiente", "Aceptado", "Inscrito",'Propuesta','Treinta-30%','Poster','Documento Final',"Finalizado"];
   const stepMessages = createStepMessages();
 
   const generalInfoProps = {
     title: "Información de inscripción del proyecto de grado",
     sections: infoSections,
   };
-  const statusTabProps = {
-    currentStatus: statusInfo.statusInfo.lastStep,
+  const {label} = getCurrentStep(
+  statusInfo.lastTask,                                
+  statusInfo.statusInfo // adapta esta línea a tu shape exacto
+);
+console.log("Current Step Label:", label); // Debugging line
 
-    statusMessage: stepMessages.get(statusInfo.statusInfo.lastStep) ?? "",
+  const statusTabProps = {
+    currentStatus: label,
+
+    statusMessage: stepMessages.get(label) ?? "",
     steps: processSteps,
     title: "Estado de inscripción del proyecto de grado",
   };
@@ -72,7 +123,7 @@ export default function ProjectStatus() {
  */
 function ProjectNotFound() {
   return (
-    <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[900px]">
+    <div className="min-h-full mx-auto p-4 space-y-8 container max-w-[800px]">
       <div className="w-full bg-white shadow-lg rounded-xl p-5 h-full space-y-4">
         <h2 className="text-xl font-bold text-foreground-soft">
           Información de inscripción no encontrada
@@ -145,6 +196,7 @@ function createStepMessages() {
   messages.set("Propuesta", "Tienes que realizar una propuesta y esta tiene que ser revisada y aprobada por el profesor.");
   messages.set("Treinta-30%", "Tu proyecto ha sido revisado y se encuentra en la etapa de 30% y se te dira si se te recomienda retirar el proyecto.");
   messages.set("Poster", "Tienes que realizar un poster sobre tu proyecto y debe ser aprobado por el profesor.");
+  messages.set("Documento Final", "Tu proyecto se encuentra en la etapa final, debes subir el documento final para su revisión.");
   messages.set("Finalizado", "Tu proyecto ha sido finalizado. Felicitaciones por completar el proceso.");
   return messages;
 }
