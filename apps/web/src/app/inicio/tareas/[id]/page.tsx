@@ -16,9 +16,9 @@ import { ROUTES } from "@/app/routes"
 import { createTask, getTask } from "@/app/services/tasks.service"
 import { TaskType } from "../flows"
 import { cn } from "@/lib/utils"
-import { Checkbox } from "@/components/ui/checkbox"
 import { CreateTask } from "@/app/types/entities/task.type"
 import SpinnerPage from "@/components/shared/spinner-page"
+import { YesNoRadioGroup } from "@/components/shared/yes-no-radio-group"
 
 const taskSchema = z.object({
   type: z.nativeEnum(TaskType),
@@ -208,24 +208,24 @@ useEffect(() => {
                     )}
                   />
                   <FormField
-  control={form.control}
-  name="suggestWithdraw"
-  render={({ field }) => (
-    <FormItem className="flex flex-row items-center gap-2 mt-2">
-      <FormControl>
-        <Checkbox
-          id="suggestWithdraw"
-          checked={field.value}
-          onCheckedChange={(v) => field.onChange(Boolean(v))}
-        />
-      </FormControl>
-      <FormLabel htmlFor="suggestWithdraw" className="font-bold m-0">
-        ¿Sugiere retirar la materia?
-      </FormLabel>
-      <FormMessage />
-    </FormItem>
-  )}
-/>
+                    control={form.control}
+                    name="suggestWithdraw"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel className="font-bold">
+                          ¿Sugiere retirar la materia?
+                        </FormLabel>
+                        <FormControl>
+                          <YesNoRadioGroup
+                            name="suggestWithdraw"
+                            value={field.value ?? false}
+                            onChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 </>
                 )}
 
@@ -240,25 +240,18 @@ useEffect(() => {
                       control={form.control}
                       name="isApproved"
                       render={({ field }) => (
-                        <FormItem className="flex flex-col items-center gap-2 text-center">
-                          <FormLabel className="font-semibold text-base">¿Aprobar esta tarea?</FormLabel>
-                          <div className="flex items-center gap-3">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                                id="isApproved"
-                              />
-                            </FormControl>
-                            <span
-                              className={cn(
-                                "text-sm font-medium",
-                                field.value ? "text-green-600" : "text-gray-400"
-                              )}
-                            >
-                              {field.value ? "Sí" : "No"}
-                            </span>
-                          </div>
+                        <FormItem className="space-y-3 text-center">
+                          <FormLabel className="font-semibold text-base">
+                            ¿Aprobar esta tarea?
+                          </FormLabel>
+                          <FormControl>
+                            <YesNoRadioGroup
+                              name="isApproved"
+                              value={field.value ?? false}
+                              onChange={field.onChange}
+                              className="justify-center"
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}

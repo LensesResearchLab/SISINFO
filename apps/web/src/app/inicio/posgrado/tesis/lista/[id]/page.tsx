@@ -10,7 +10,6 @@ import {
 } from "@/app/services/thesis.service";
 import { Thesis } from "@/app/types/entities/thesis.type";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { use, useEffect, useState } from "react";
 import SpinnerPage from "@/components/shared/spinner-page";
@@ -22,6 +21,7 @@ import {
   ThesisNotFound,
 } from "@/components/shared/thesis-detail-card";
 import { useAuth } from "@/hooks/use-auth";
+import { YesNoRadioGroup } from "@/components/shared/yes-no-radio-group";
 
 /**
  * ThesisInscription Component
@@ -350,18 +350,15 @@ function ContactedCheckbox({
   readonly setContacted: (value: boolean) => void;
 }) {
   return (
-    <div className="flex items-center space-x-2">
-      <Checkbox
-        id="contacted"
-        checked={contacted}
-        onCheckedChange={(checked) => setContacted(checked as boolean)}
+    <div className="space-y-2">
+      <span className="text-sm font-medium text-gray-700">
+        ¿Contactaste al profesor por otro medio?
+      </span>
+      <YesNoRadioGroup
+        name="contacted"
+        value={contacted}
+        onChange={setContacted}
       />
-      <label
-        htmlFor="contacted"
-        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      >
-        Contacté al profesor por otro medio
-      </label>
     </div>
   );
 }

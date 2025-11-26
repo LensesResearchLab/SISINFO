@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Mail, FileText } from "lucide-react";
 
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
@@ -27,6 +26,7 @@ import { getUndergraduateProjectById, createProjectApplication } from "@/app/ser
 import { useProjectInscriptionStore } from "./store";
 import { Project } from "@/app/types/entities/project.type";
 import { CreateProjectApplication } from "@/app/types/entities/project-application.type";
+import { YesNoRadioGroup } from "@/components/shared/yes-no-radio-group";
 
 /**
  * ThesisInscription Component – maneja la vista de detalle y la postulación
@@ -150,7 +150,16 @@ function ProjectApplying({ project }: { readonly project: Project }) {
         <form onSubmit={handleSubmit} className="space-y-6">
           <ProfessorInformation project={project} />
           <MotivationTextArea motivation={motivation} setMotivation={setMotivation} />
-          <ContactedCheckbox contacted={contacted} setContacted={setContacted} />
+          <div className="space-y-2">
+            <span className="text-sm font-medium text-gray-700">
+              ¿Contactaste al profesor por otro medio?
+            </span>
+            <YesNoRadioGroup
+              name="contacted"
+              value={contacted}
+              onChange={setContacted}
+            />
+          </div>
 
           <div className="flex justify-center pt-3.5">
             <Button type="button" onClick={() => setIsConfirmed(true)}>
@@ -241,23 +250,3 @@ function MotivationTextArea({
   );
 }
 
-function ContactedCheckbox({
-  contacted,
-  setContacted,
-}: {
-  readonly contacted: boolean;
-  readonly setContacted: (v: boolean) => void;
-}) {
-  return (
-    <div className="flex items-center space-x-2">
-      <Checkbox
-        id="contacted"
-        checked={contacted}
-        onCheckedChange={(checked) => setContacted(!!checked)}
-      />
-      <label htmlFor="contacted" className="text-sm font-medium leading-none">
-        Contacté al profesor por otro medio
-      </label>
-    </div>
-  );
-}
