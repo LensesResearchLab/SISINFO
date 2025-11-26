@@ -68,17 +68,14 @@ function getCurrentStep(
     label = "Propuesta";
   } else if (lastTask.step === 2 || lastTask.step === 3) {
     label = "30%";
-  } else if (lastTask.step === 4) {
+  } else if (lastTask.step >= 4 && lastTask.step <= 6) {
     label = "Poster";
-  } else if (lastTask.step === 5 || lastTask.step === 6) {
-    label = "Documento Final";
   } else {
     // fallback seguro si viene un step inesperado
     label = externalLastStep ?? "Postulado";
   }
 
-  // 3) Regla especial: si es 6 y approved === false -> 'Finalizado'
-  if (lastTask.step === 7 && lastTask.approved === false) {
+  if (lastTask.step >= 7) {
     label = "Finalizado";
   }
 
@@ -89,7 +86,16 @@ function getCurrentStep(
 
 
   const infoSections = createStatusSections(statusInfo.statusInfo);
-  const processSteps = ["Postulado", "Pendiente", "Aceptado", "Inscrito",'Propuesta','30%','Poster','Documento Final',"Finalizado"];
+  const processSteps = [
+    "Postulado",
+    "Pendiente",
+    "Aceptado",
+    "Inscrito",
+    "Propuesta",
+    "30%",
+    "Poster",
+    "Finalizado",
+  ];
   const stepMessages = createStepMessages();
 
   const generalInfoProps = {
@@ -97,10 +103,9 @@ function getCurrentStep(
     sections: infoSections,
   };
   const {label} = getCurrentStep(
-  statusInfo.lastTask,                                
-  statusInfo.statusInfo // adapta esta línea a tu shape exacto
-);
-console.log("Current Step Label:", label); // Debugging line
+    statusInfo.lastTask,                                
+    statusInfo.statusInfo // adapta esta línea a tu shape exacto
+  );
 
   const statusTabProps = {
     currentStatus: label,
@@ -195,8 +200,10 @@ function createStepMessages() {
   messages.set("Inscrito", "Tu inscripción ha sido completada.");
   messages.set("Propuesta", "Tienes que realizar una propuesta y esta tiene que ser revisada y aprobada por el profesor.");
   messages.set("30%", "Tu proyecto ha sido revisado y se encuentra en la etapa de 30% y se te dira si se te recomienda retirar el proyecto.");
-  messages.set("Poster", "Tienes que realizar un poster sobre tu proyecto y debe ser aprobado por el profesor.");
-  messages.set("Documento Final", "Tu proyecto se encuentra en la etapa final, debes subir el documento final para su revisión.");
+  messages.set(
+    "Poster",
+    "Debes preparar y subir el poster de tu proyecto para que el profesor lo revise y apruebe.",
+  );
   messages.set("Finalizado", "Tu proyecto ha sido finalizado. Felicitaciones por completar el proceso.");
   return messages;
 }

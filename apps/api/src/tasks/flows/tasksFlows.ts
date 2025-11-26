@@ -41,8 +41,8 @@ export const flows: Record<string, Step[]> = {
     {
       type: TaskType.UPLOAD_FILE,
       assignee: 'student',
-      title: 'Enviar documento final',
-      description: 'Subir el documento final',
+      title: 'Enviar poster',
+      description: 'Subir el poster del proyecto',
     },
     {
       type: TaskType.SEND_COMMENTS,
