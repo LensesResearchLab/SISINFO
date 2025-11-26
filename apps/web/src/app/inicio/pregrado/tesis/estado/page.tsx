@@ -67,7 +67,7 @@ function getCurrentStep(
   if (lastTask.step === 0 || lastTask.step === 1) {
     label = "Propuesta";
   } else if (lastTask.step === 2 || lastTask.step === 3) {
-    label = "Treinta-30%";
+    label = "30%";
   } else if (lastTask.step === 4) {
     label = "Poster";
   } else if (lastTask.step === 5 || lastTask.step === 6) {
@@ -89,7 +89,7 @@ function getCurrentStep(
 
 
   const infoSections = createStatusSections(statusInfo.statusInfo);
-  const processSteps = ["Postulado", "Pendiente", "Aceptado", "Inscrito",'Propuesta','Treinta-30%','Poster','Documento Final',"Finalizado"];
+  const processSteps = ["Postulado", "Pendiente", "Aceptado", "Inscrito",'Propuesta','30%','Poster','Documento Final',"Finalizado"];
   const stepMessages = createStepMessages();
 
   const generalInfoProps = {
@@ -194,7 +194,7 @@ function createStepMessages() {
   messages.set("Aceptado", "Tu proyecto ha sido aceptado.");
   messages.set("Inscrito", "Tu inscripción ha sido completada.");
   messages.set("Propuesta", "Tienes que realizar una propuesta y esta tiene que ser revisada y aprobada por el profesor.");
-  messages.set("Treinta-30%", "Tu proyecto ha sido revisado y se encuentra en la etapa de 30% y se te dira si se te recomienda retirar el proyecto.");
+  messages.set("30%", "Tu proyecto ha sido revisado y se encuentra en la etapa de 30% y se te dira si se te recomienda retirar el proyecto.");
   messages.set("Poster", "Tienes que realizar un poster sobre tu proyecto y debe ser aprobado por el profesor.");
   messages.set("Documento Final", "Tu proyecto se encuentra en la etapa final, debes subir el documento final para su revisión.");
   messages.set("Finalizado", "Tu proyecto ha sido finalizado. Felicitaciones por completar el proceso.");
