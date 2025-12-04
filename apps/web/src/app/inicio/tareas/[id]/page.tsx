@@ -168,7 +168,7 @@ useEffect(() => {
           ) : (
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                {task.type === TaskType.UPLOAD_FILE && (
+                {(task.type === TaskType.UPLOAD_FILE || task.type === TaskType.ABET_TASK) && (
                   <FormField
                     control={form.control}
                     name="document"
@@ -207,25 +207,7 @@ useEffect(() => {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="suggestWithdraw"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel className="font-bold">
-                          ¿Sugiere retirar la materia?
-                        </FormLabel>
-                        <FormControl>
-                          <YesNoRadioGroup
-                            name="suggestWithdraw"
-                            value={field.value ?? false}
-                            onChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                 
 </>
                 )}
 

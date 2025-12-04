@@ -47,6 +47,7 @@ export class TaskFactory {
 
     switch (type) {
       case TaskType.UPLOAD_FILE:
+      case TaskType.ABET_TASK:
         dto.documentId = '';
         return dto;
 

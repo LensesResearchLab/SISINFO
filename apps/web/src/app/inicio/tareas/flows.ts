@@ -2,7 +2,8 @@ export enum TaskType {
   UPLOAD_FILE = 'UPLOAD_FILE',
   SEND_COMMENTS = 'SEND_COMMENTS',
   SEND_APPROVE = 'SEND_APPROVE',
-  VIEW_COMMENTS = 'VIEW_COMMENTS'
+  VIEW_COMMENTS = 'VIEW_COMMENTS',
+  ABET_TASK = 'ABET_TASK'
 }
 export interface Step {
   type: TaskType;
@@ -60,5 +61,11 @@ export const flows: Record<string, Step[]> = {
       title: 'Revisar 100%',
       description: 'Revisar la nota del 100%',
     },
+    {
+      type: TaskType.ABET_TASK,
+      assignee: 'professor',
+      title: 'Tarea ABET',
+      description: 'Completar la tarea ABET',
+    }
   ],
 };

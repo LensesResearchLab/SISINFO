@@ -109,7 +109,6 @@ function getCurrentStep(
 
   const statusTabProps = {
     currentStatus: label,
-
     statusMessage: stepMessages.get(label) ?? "",
     steps: processSteps,
     title: "Estado de inscripción del proyecto de grado",

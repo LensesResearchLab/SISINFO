@@ -358,7 +358,7 @@ export class ProjectApplicationsService {
         comment = taskDto.comment;
       }
 
-      if (taskDto.type === TaskType.UPLOAD_FILE) {
+      if (taskDto.type === TaskType.UPLOAD_FILE || taskDto.type === TaskType.ABET_TASK) {
         if (!file) {
           throw new BadRequestException(
             'Se requiere un archivo para esta tarea',
