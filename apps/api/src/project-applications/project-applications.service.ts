@@ -20,6 +20,7 @@ import { Task } from '../tasks/entities/task.entity';
 import { CreateTaskDto } from '../tasks/dto/create-task.dto';
 import { DocumentsService } from '../documents/documents.service';
 import { CoordinatorsService } from '../coordinators/coordinators.service';
+import { Project } from '../projects/entities/project.entity';
 
 @Injectable()
 export class ProjectApplicationsService {
@@ -122,17 +123,29 @@ export class ProjectApplicationsService {
     let task;
     // 2. Lógica de negocio
     if (
+      updateProjectApplicationDto.status === ProjecStatusEnum.APPROVED &&
+      projectApplication.status === ProjecStatusEnum.APPLICANT
+    ) {
+      // Coordinador aprueba: crear tarea para que el profesor acepte/rechace
+      task = await this.tasksService.create(TaskType.SEND_APPROVE, {
+        flow: 'proyectoPregrado',
+        step: 1,
+        comment: '',
+        projectApplicationId: id,
+        professorId: projectApplication.project.professor.id,
+      });
+    } else if (
       updateProjectApplicationDto.status === ProjecStatusEnum.ENROLLED &&
       projectApplication.status === ProjecStatusEnum.APPROVED
     ) {
-      // Solo si el estado cambia a 'ENROLLED' y ya ha sido aprobado por coordinadores, actualizamos
+      // El profesor acepta: inscribir y crear tarea de subir propuesta
       await this.projectsService.updateStudents(
         projectApplication.project.id,
         projectApplication.student,
       );
       task = await this.tasksService.create(TaskType.UPLOAD_FILE, {
         flow: 'proyectoPregrado',
-        step: 1,
+        step: 2,
         comment: '',
         projectApplicationId: id,
         studentId: projectApplication.student.id,
@@ -196,6 +209,7 @@ export class ProjectApplicationsService {
   async findTasksByStudent(studentId: string): Promise<Task[]> {
     const period = await this.periodsService.findCurrentPeriod();
 
+    // Buscar tareas que sean actualTask del estudiante
     const apps = await this.projectApplicationRepository.find({
       where: {
         student: { id: studentId },
@@ -211,11 +225,41 @@ export class ProjectApplicationsService {
       ],
     });
 
-    const tasks = apps
+    const mainTasks = apps
       .map((a) => a.actualTask)
       .filter((t): t is Task => t !== null && t.student?.id === studentId);
 
-    return tasks;
+    // Buscar tareas VIEW_COMMENTS pendientes para el estudiante (step 8 opcional)
+    // Estas tareas pueden existir aunque no sean la actualTask del flujo principal
+    const viewCommentsTasks = await this.dataSource.getRepository(Task).find({
+      where: {
+        student: { id: studentId },
+        type: TaskType.VIEW_COMMENTS,
+        step: 8,
+      },
+      relations: [
+        'student',
+        'professor',
+        'coordinator',
+        'projectActualTask',
+        'projectActualTask.student',
+        'projectPreviousTasks',
+      ],
+    });
+
+    // Filtrar las tareas VIEW_COMMENTS que no estén ya en previousTasks (es decir, no completadas)
+    const pendingViewTasks = viewCommentsTasks.filter((t) => {
+      // Si la tarea está en projectPreviousTasks, ya fue completada
+      return !t.projectPreviousTasks;
+    });
+
+    // Combinar y eliminar duplicados
+    const allTasks = [...mainTasks, ...pendingViewTasks];
+    const uniqueTasks = allTasks.filter((task, index, self) =>
+      index === self.findIndex((t) => t.id === task.id)
+    );
+
+    return uniqueTasks;
   }
 
   async findTasksByProfessor(profId: string): Promise<Task[]> {
@@ -339,23 +383,41 @@ export class ProjectApplicationsService {
 
       const steps = flows[actualTask.flow];
       const nextStep = steps[actualIndex + 1];
-      if (!nextStep) {
-        throw new BadRequestException(
-          `Paso siguiente no encontrado en el flujo: ${actualTask.flow}`,
-        );
-      }
+      const isLastStep = !nextStep;
+
+      // Si es el último paso (ABET_TASK), no hay siguiente paso
 
       let documentId: string | undefined;
       let comment = '';
 
-      if (
-        taskDto.type === TaskType.SEND_COMMENTS ||
-        taskDto.type === TaskType.VIEW_COMMENTS
-      ) {
+      if (taskDto.type === TaskType.SEND_COMMENTS) {
         if (!taskDto.comment) {
           throw new BadRequestException('No hay comentarios');
         }
         comment = taskDto.comment;
+        
+        // Si es el step 7 (nota final) y viene la nota, guardarla en projectApplication
+        if (actualIndex === 7 && taskDto.grade) {
+          projectApplication.grade = taskDto.grade;
+        }
+      }
+
+      if (taskDto.type === TaskType.VIEW_COMMENTS) {
+        // VIEW_COMMENTS es opcional (solo lectura), no avanza el flujo principal
+        // El estudiante solo está viendo su nota, no se requiere ninguna acción
+        comment = taskDto.comment || '';
+        
+        // Para VIEW_COMMENTS en step 8, solo marcamos la tarea como vista pero no creamos siguiente tarea
+        // El flujo principal ya avanzó cuando el profesor envió la nota del 100%
+        if (actualIndex === 8) {
+          // Solo guardamos que el estudiante vio la nota, no creamos nueva tarea
+          if (!projectApplication.previousTasks) {
+            projectApplication.previousTasks = [];
+          }
+          projectApplication.previousTasks.push(actualTask);
+          projectApplication.actualTask = null as any; // Ya no hay tarea pendiente para el estudiante
+          return manager.getRepository(ProjectApplication).save(projectApplication);
+        }
       }
 
       if (taskDto.type === TaskType.UPLOAD_FILE || taskDto.type === TaskType.ABET_TASK) {
@@ -372,7 +434,7 @@ export class ProjectApplicationsService {
         documentId = savedDocument.id;
       } else if (
         actualTask.flow === 'proyectoPregrado' &&
-        actualIndex === 1 &&
+        actualIndex === 2 &&
         previousTasks[actualIndex]?.document?.id
       ) {
         documentId = previousTasks[actualIndex]?.document?.id;
@@ -389,6 +451,65 @@ export class ProjectApplicationsService {
         taskDto.approved === true
       ) {
         projectApplication.status = ProjecStatusEnum.APPROVED;
+      }
+
+      if (
+        actualIndex === 1 &&
+        taskDto.type === TaskType.SEND_APPROVE &&
+        taskDto.approved === true
+      ) {
+        projectApplication.status = ProjecStatusEnum.ENROLLED;
+        await this.projectsService.updateStudents(
+          projectApplication.project.id,
+          projectApplication.student,
+        );
+      }
+
+      // Si es el último paso (ABET_TASK), marcar como finalizado y limpiar actualTask
+      if (taskDto.type === TaskType.ABET_TASK) {
+        projectApplication.status = ProjecStatusEnum.FINISHED;
+        projectApplication.actualTask = null as any; // No hay más tareas pendientes
+        
+        // Marcar el proyecto como finalizado para que aparezca en el histórico
+        const project = projectApplication.project;
+        if (project) {
+          project.isEnded = true;
+          await manager.getRepository(Project).save(project);
+        }
+        
+        return manager.getRepository(ProjectApplication).save(projectApplication);
+      }
+
+      // Caso especial: Step 7 (Nota 100%) crea dos tareas simultáneas
+      // Step 8 (VIEW_COMMENTS) para el estudiante (opcional) y Step 9 (ABET) para el profesor
+      if (actualIndex === 7 && taskDto.type === TaskType.SEND_COMMENTS) {
+        const step8 = steps[8]; // VIEW_COMMENTS para estudiante
+        const step9 = steps[9]; // ABET_TASK para profesor
+        
+        // Crear tarea opcional para que el estudiante vea su nota
+        // Incluimos el comentario y la nota del profesor
+        await this.tasksService.create(step8.type, {
+          step: 8,
+          comment,
+          grade: taskDto.grade, // Incluir la nota para que el estudiante pueda verla
+          flow: actualTask.flow,
+          projectApplicationId: projectApplication.id,
+          studentId: projectApplication.student.id,
+        });
+        
+        // Crear tarea ABET para el profesor (esta es la tarea principal que avanza el flujo)
+        const abetTask = await this.tasksService.create(step9.type, {
+          step: 9,
+          comment: '',
+          flow: actualTask.flow,
+          projectApplicationId: projectApplication.id,
+          professorId: projectApplication.project.professor.id,
+        });
+        
+        // La tarea actual del flujo principal es el ABET del profesor
+        projectApplication.actualTask = abetTask;
+        
+        return manager.getRepository(ProjectApplication).save(projectApplication);
       }
 
       const nextStepIndex = actualIndex + 1;

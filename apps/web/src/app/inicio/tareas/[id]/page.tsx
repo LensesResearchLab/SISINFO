@@ -26,6 +26,7 @@ const taskSchema = z.object({
   comment: z.string().optional(),
   isApproved: z.boolean().optional(),
   suggestWithdraw: z.boolean().optional(),
+  grade: z.string().optional(),
 })
 
 export default function TaskForm() {
@@ -46,6 +47,7 @@ export default function TaskForm() {
       comment: "",
       suggestWithdraw: false,
       isApproved: false,
+      grade: "",
     },
   })
 
@@ -94,6 +96,14 @@ useEffect(() => {
 }, [pdfUrl]);
 
   async function onSubmit(values: z.infer<typeof taskSchema>) {
+    const currentStep = typeof task?.step === "string" ? Number(task.step) : task?.step;
+    const isFinalGradeStep = currentStep === 7;
+
+    // Validar nota obligatoria en step 7 (Nota 100%)
+    if (isFinalGradeStep && !values.grade?.trim()) {
+      form.setError("grade", { message: "La nota final es obligatoria" });
+      return;
+    }
 
     const suggestText = `Se sugiere retirar la materia al estudiante: ${
     values.suggestWithdraw ? "Sí" : "No"
@@ -110,6 +120,7 @@ useEffect(() => {
       date: new Date(),
       comment: finalComment,
       approved: values.isApproved ?? false,
+      grade: isFinalGradeStep ? values.grade : undefined,
     }
     await createTask(id as string, taskData, values.document)
     router.push(`${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`)
@@ -146,22 +157,34 @@ useEffect(() => {
               {task.comment && (
                 <>
                   <h2 className="text-lg font-semibold text-center text-primary">
-                    Comentarios
+                    Comentarios y Nota Final
                   </h2>
                   <div className="bg-muted rounded-md p-3 border border-gray-200 text-sm text-gray-700 whitespace-pre-line">
                     {task.comment}
                   </div>
                 </>
               )}
-              {!task.comment && (
+              {task.grade && (
+                <div className="bg-green-50 rounded-md p-4 border border-green-200 text-center">
+                  <span className="text-sm text-green-600 font-medium">Nota Final:</span>
+                  <span className="ml-2 text-2xl font-bold text-green-700">{task.grade}</span>
+                </div>
+              )}
+              {!task.comment && !task.grade && (
                 <div className="text-gray-500 text-sm text-center">No hay comentarios disponibles.</div>
               )}
-              <div className="flex justify-center mt-4">
+              <div className="flex justify-center gap-3 mt-4">
+                <p className="text-sm text-gray-500 text-center">
+                  Esta información es solo de lectura. Puedes volver cuando lo desees.
+                </p>
+              </div>
+              <div className="flex justify-center gap-3 mt-2">
                 <Button
                   onClick={() => router.push(`${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`)}
-                  className="bg-core text-white hover:bg-core-dark"
+                  variant="outline"
+                  className="border-core text-core hover:bg-core/10"
                 >
-                  Volver al inicio
+                  Volver
                 </Button>
               </div>
             </>
@@ -207,7 +230,52 @@ useEffect(() => {
                       </FormItem>
                     )}
                   />
-                 
+                  {task.step === 4 && (
+                    <FormField
+                      control={form.control}
+                      name="suggestWithdraw"
+                      render={({ field }) => (
+                        <FormItem className="space-y-3 text-center">
+                          <FormLabel className="font-semibold text-base">
+                            ¿Sugiere que el estudiante retire la materia?
+                          </FormLabel>
+                          <FormControl>
+                            <YesNoRadioGroup
+                              name="suggestWithdraw"
+                              value={field.value ?? false}
+                              onChange={field.onChange}
+                              className="justify-center"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  {task.step === 7 && (
+                    <FormField
+                      control={form.control}
+                      name="grade"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-primary font-semibold">
+                            Nota Final (Obligatoria)
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.1"
+                              placeholder="Ingrese la nota (0-100)"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 </>
                 )}
 

@@ -13,6 +13,7 @@ export interface FactoryParams {
   studentId?: string;
   professorId?: string;
   coordinatorId?: string;
+  grade?: string;
 }
 
 @Injectable()
@@ -29,6 +30,7 @@ export class TaskFactory {
       studentId,
       professorId,
       coordinatorId,
+      grade,
     } = params;
 
     // Base común
@@ -43,6 +45,7 @@ export class TaskFactory {
       studentId,
       professorId,
       coordinatorId,
+      grade,
     };
 
     switch (type) {

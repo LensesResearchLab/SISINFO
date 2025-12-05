@@ -8,14 +8,19 @@ import { Document } from './document.type'
 export interface Task {
   projectActualTask: Task;
   id: string;
+  type: TaskType;
   status: string;
   date: Date;
   step: number;
   title: string;
   description: string;
+  comment: string;
+  approved: boolean;
   student:Student;
   professor:Professor;
   coordinator:Coordinator;
+  document?: Document;
+  grade?: string;
 }
 
 export interface CreateTask {
@@ -24,5 +29,6 @@ export interface CreateTask {
   comment: string,
   date: Date,
   step?: number,
-  document?: Document
+  document?: Document,
+  grade?: string
 }

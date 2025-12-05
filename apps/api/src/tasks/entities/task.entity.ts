@@ -22,6 +22,9 @@ export class Task extends Base {
   @Column()
   approved: boolean;
 
+  @Column({ nullable: true })
+  grade?: string;
+
   @Column()
   flow: string;
 

@@ -11,9 +11,17 @@ import { ProjectApplicationToProjectStatusInformation } from "@/app/mappers/proj
 import { mapPeriodToString } from "@/app/mappers/period.mapper";
 import { LastTask } from "@/app/types/entities/last-task.type";
 
-
-
-
+// Steps del proceso de proyecto de grado (orden visual para el indicador de progreso)
+const processSteps = [
+  "Postulado",  // Estudiante aplicó, esperando coordinador
+  "Aceptado",   // Coordinador aprobó
+  "Inscrito",   // Estudiante inscrito oficialmente
+  "Propuesta",  // Subiendo/aprobando propuesta
+  "30%",        // Nota del 30%
+  "Poster",     // Poster y presentación
+  "ABET",       // Reporte ABET
+  "Finalizado", // Proyecto completado
+];
 
 
 /**
@@ -41,6 +49,7 @@ export default function ProjectStatus() {
       return {
         statusInfo: await ProjectApplicationToProjectStatusInformation(thesisStatus),
         lastTask: thesisStatus.actualTask,
+        applicationStatus: thesisStatus.status,
       };
     },
   });
@@ -50,52 +59,76 @@ export default function ProjectStatus() {
   /** Devuelve el label y el índice en processSteps según tus reglas */
 function getCurrentStep(
   lastTask: LastTask | null | undefined,
-  statusInfo: ProjectStatusInformation
+  statusInfo: ProjectStatusInformation,
+  applicationStatus?: string
 ) {
-  // 1) Si no hay lastTask, usa statusInfo.statusInfo.lastStep (o statusInfo.lastStep)
-  const externalLastStep = statusInfo.lastStep; // ajusta si tu objeto es statusInfo.statusInfo.lastStepç
+  // Si el proyecto está finalizado (sin tareas pendientes), mostrar "Finalizado"
+  if (!lastTask && applicationStatus === "Finalizado") {
+    return { label: "Finalizado", index: processSteps.indexOf("Finalizado") };
+  }
   
+  // Si no hay lastTask, usar el status de la aplicación
   if (!lastTask) {
-    const label = externalLastStep ?? "Postulado";
+    const label = applicationStatus ?? statusInfo.lastStep ?? "Postulado";
     const index = processSteps.indexOf(label);
-    return { label, index };
+    return { label, index: index >= 0 ? index : 0 };
   }
 
-  // 2) Si hay lastTask, mapeo por step
+  // Mapeo basado en el step de la tarea actual y el applicationStatus
   let label: string;
 
-  if (lastTask.step === 0 || lastTask.step === 1) {
-    label = "Propuesta";
-  } else if (lastTask.step === 2 || lastTask.step === 3) {
-    label = "30%";
-  } else if (lastTask.step >= 4 && lastTask.step <= 6) {
-    label = "Poster";
-  } else {
-    // fallback seguro si viene un step inesperado
-    label = externalLastStep ?? "Postulado";
-  }
-
-  if (lastTask.step >= 7) {
-    label = "Finalizado";
+    // Step 0: Coordinador debe aprobar
+    if (lastTask.step === 0) {
+      if (applicationStatus === "Postulado") {
+        label = "Postulado";
+      } else if (applicationStatus === "Aceptado") {
+        label = "Aceptado";
+      } else {
+        label = applicationStatus ?? "Postulado";
+      }
+    } 
+    // Step 1: Profesor acepta al estudiante
+    else if (lastTask.step === 1) {
+      // Mientras el profesor no apruebe, seguimos en "Aceptado"
+      label = "Aceptado";
+    }
+    // Step 2-3: Propuesta (subir o aprobar)
+    else if (lastTask.step === 2 || lastTask.step === 3) {
+      // Ya fue aceptado por profesor => estado ENROLLED
+      if (applicationStatus === "Inscrito") {
+        label = lastTask.step === 2 ? "Inscrito" : "Propuesta";
+      } else {
+        label = "Propuesta";
+      }
+    }
+    // Step 4-5: 30% (nota y decisión de retiro)
+    else if (lastTask.step === 4 || lastTask.step === 5) {
+      label = "30%";
+    }
+    // Steps 6-8: Poster (subir poster, nota 100%, revisar nota)
+    else if (lastTask.step >= 6 && lastTask.step <= 8) {
+      label = "Poster";
+    }
+    // Step 9: ABET
+    else if (lastTask.step === 9) {
+      label = "ABET";
+    }
+    // Step 10+: Finalizado
+    else if (lastTask.step >= 10) {
+      label = "Finalizado";
+    }
+  // Fallback
+  else {
+    label = applicationStatus ?? "Postulado";
   }
 
   const index = processSteps.indexOf(label);
-  return { label, index };
+  return { label, index: index >= 0 ? index : 0 };
 }
 
 
 
   const infoSections = createStatusSections(statusInfo.statusInfo);
-  const processSteps = [
-    "Postulado",
-    "Pendiente",
-    "Aceptado",
-    "Inscrito",
-    "Propuesta",
-    "30%",
-    "Poster",
-    "Finalizado",
-  ];
   const stepMessages = createStepMessages();
 
   const generalInfoProps = {
@@ -104,7 +137,8 @@ function getCurrentStep(
   };
   const {label} = getCurrentStep(
     statusInfo.lastTask,                                
-    statusInfo.statusInfo // adapta esta línea a tu shape exacto
+    statusInfo.statusInfo,
+    statusInfo.applicationStatus
   );
 
   const statusTabProps = {
@@ -193,15 +227,18 @@ function createStatusSections(statusInfo: ProjectStatusInformation) {
  */
 function createStepMessages() {
   const messages = new Map<string, string>();
-  messages.set("Postulado", "Tu proyecto ha sido postulado y se encuentra en proceso de revisión.");
-  messages.set("Pendiente", "Tu proyecto está pendiente de revisión, por favor espera la respuesta.");
-  messages.set("Aceptado", "Tu proyecto ha sido aceptado.");
-  messages.set("Inscrito", "Tu inscripción ha sido completada.");
+  messages.set("Postulado", "Tu proyecto ha sido postulado y está esperando la aprobación del coordinador.");
+  messages.set("Aceptado", "El coordinador te aceptó. Falta que el profesor confirme para inscribirte oficialmente.");
+  messages.set("Inscrito", "El profesor te aceptó. Estás inscrito oficialmente y debes subir tu propuesta.");
   messages.set("Propuesta", "Tienes que realizar una propuesta y esta tiene que ser revisada y aprobada por el profesor.");
   messages.set("30%", "Tu proyecto ha sido revisado y se encuentra en la etapa de 30% y se te dira si se te recomienda retirar el proyecto.");
   messages.set(
     "Poster",
     "Debes preparar y subir el poster de tu proyecto para que el profesor lo revise y apruebe.",
+  );
+  messages.set(
+    "ABET",
+    "El profesor está completando el reporte ABET de tu proyecto. Puedes ver tu nota final.",
   );
   messages.set("Finalizado", "Tu proyecto ha sido finalizado. Felicitaciones por completar el proceso.");
   return messages;

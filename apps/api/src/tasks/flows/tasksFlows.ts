@@ -15,6 +15,12 @@ export const flows: Record<string, Step[]> = {
       description: 'Aprobar al estudiante',
     },
     {
+      type: TaskType.SEND_APPROVE,
+      assignee: 'professor',
+      title: 'Aceptar estudiante',
+      description: 'Profesor acepta al estudiante para su proyecto',
+    },
+    {
       type: TaskType.UPLOAD_FILE,
       assignee: 'student',
       title: 'Documento propuesta',
@@ -48,19 +54,19 @@ export const flows: Record<string, Step[]> = {
       type: TaskType.SEND_COMMENTS,
       assignee: 'professor',
       title: 'Nota 100%',
-      description: 'Enviar nota del 100%',
+      description: 'Enviar comentario y nota final del proyecto',
     },
     {
       type: TaskType.VIEW_COMMENTS,
       assignee: 'student',
       title: 'Revisar 100%',
-      description: 'Revisar la nota del 100%',
+      description: 'Revisar la nota final del proyecto',
     },
     {
       type: TaskType.ABET_TASK,
       assignee: 'professor',
-      title: 'Tarea ABET',
-      description: 'Completar la tarea ABET',
+      title: 'Subir reporte ABET',
+      description: 'Cargar el archivo del reporte ABET',
     },
   ],
 };

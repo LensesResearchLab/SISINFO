@@ -3,4 +3,5 @@ export enum ProjecStatusEnum {
   APPROVED = 'Aceptado',
   REJECTED = 'Rechazado',
   ENROLLED = 'Inscrito',
+  FINISHED = 'Finalizado',
 }

@@ -23,6 +23,10 @@ export class CreateTaskDto {
   approved?: boolean;
 
   @IsOptional()
+  @IsString()
+  grade?: string;
+
+  @IsOptional()
   documentId?: string;
 
   @IsOptional()
