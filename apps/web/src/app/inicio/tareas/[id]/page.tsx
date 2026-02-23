@@ -17,22 +17,24 @@ import { createTask, getTask } from "@/app/services/tasks.service"
 import { TaskType } from "../flows"
 import { cn } from "@/lib/utils"
 import type { Task } from "@/app/types/entities/task.type";
+import { toast } from "sonner"
 import SpinnerPage from "@/components/shared/spinner-page"
 import { YesNoRadioGroup } from "@/components/shared/yes-no-radio-group"
 import { flows } from "../flows"
 
-const taskSchema = z.object({
-  type: z.nativeEnum(TaskType),
-  step: z.number().int().optional(),
+const taskSchema = z
+  .object({
+    type: z.nativeEnum(TaskType),
+    step: z.number().int().optional(),
   document: z.instanceof(File).optional(),
-  comment: z.string().optional(),
-  isApproved: z.boolean().optional(),
-  suggestWithdraw: z.boolean().optional(),
-  grade: z.preprocess(
+    comment: z.string().optional(),
+    isApproved: z.boolean().optional(),
+    suggestWithdraw: z.boolean().optional(),
+    grade: z.preprocess(
     (v) => (v === "" || v === null || v === undefined ? undefined : Number(v)),
     z.number().min(0, "La nota debe estar entre 0 y 5").max(5, "La nota debe ser menor o igual 5").optional()
   ),
-}).superRefine((data, ctx) => {
+  }).superRefine((data, ctx) => {
   if (data.step === 7 && (data.grade === undefined || Number.isNaN(data.grade))) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -41,6 +43,31 @@ const taskSchema = z.object({
     });
   }
 });
+  .superRefine((val, ctx) => {
+    // If this step expects an ABET report, require an Excel file
+    if (val.type === TaskType.ABET_TASK) {
+      const file = val.document as File | undefined
+      if (!file) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "El archivo Excel es obligatorio para este tipo de tarea",
+          path: ["document"],
+        })
+        return
+      }
+
+      const name = (file.name || "").toLowerCase()
+      const allowed = [".xlsx", ".xls", ".xlsm"]
+      const ok = allowed.some((ext) => name.endsWith(ext))
+      if (!ok) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "El archivo debe ser un Excel (.xlsx, .xls, .xlsm)",
+          path: ["document"],
+        })
+      }
+    }
+  })
 
 export default function TaskForm() {
   const { id } = useParams()
@@ -141,8 +168,14 @@ useEffect(() => {
       approved: values.isApproved ?? false,
       grade: isFinalGradeStep && values.grade !== undefined ? String(values.grade) : undefined,
     }
-    await createTask(id as string, taskData, values.document)
-    router.push(`${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`)
+    try {
+      await createTask(id as string, taskData, values.document)
+      toast.success("Tarea enviada correctamente")
+      router.push(`${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`)
+    } catch (e: any) {
+      console.error("Error creando tarea:", e)
+      toast.error(e?.message ?? "Error al enviar la tarea")
+    }
   }
 
   if (loading) return <SpinnerPage />
@@ -255,21 +288,28 @@ useEffect(() => {
                   <FormField
                     control={form.control}
                     name="document"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-primary font-semibold">
-                          Adjuntar archivo PDF
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            accept="application/pdf"
-                            onChange={(e) => field.onChange(e.target.files?.[0])}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const isAbet = task.type === TaskType.ABET_TASK
+                      return (
+                        <FormItem>
+                          <FormLabel className="text-primary font-semibold">
+                            {isAbet ? "Adjuntar archivo Excel" : "Adjuntar archivo PDF"}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="file"
+                              accept={
+                                isAbet
+                                  ? ".xlsx,.xls,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                                  : "application/pdf"
+                              }
+                              onChange={(e) => field.onChange(e.target.files?.[0])}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )
+                    }}
                   />
                 )}
 

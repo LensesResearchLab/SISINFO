@@ -36,23 +36,49 @@ const buttonVariants = cva(
 )
 
 function Button({
+  children,
   className,
   variant,
   size,
   asChild = false,
+  loading = false,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
+    loading?: boolean
   }) {
   const Comp = asChild ? Slot : "button"
+
+  // Prevent forwarding the `loading` boolean to a DOM element (React warns)
+  const slotProps = props as SlotProps
+
+  // If loading, ensure button is disabled and mark busy for accessibility
+  if (loading) {
+    ;(slotProps as any).disabled = true
+    ;(slotProps as any)["aria-busy"] = true
+  }
 
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
-      {...(props as SlotProps)}
-    />
+      {...slotProps}
+    >
+      {loading ? (
+        <svg
+          className="animate-spin mr-2 h-4 w-4"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        </svg>
+      ) : null}
+      {children}
+    </Comp>
   )
 }
 

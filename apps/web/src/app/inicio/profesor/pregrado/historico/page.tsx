@@ -287,33 +287,34 @@ export default function ProfessorUndergraduateProjectsHistoryPage() {
         </Card>
       </div>
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">
-            Filtrar por período académico
-          </p>
-          <Select
-            value={selectedPeriod}
-            onValueChange={setSelectedPeriod}
-            disabled={!periodOptions.length}
-          >
-            <SelectTrigger className="w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_PERIODS_OPTION}>Todos los períodos</SelectItem>
-              {periodOptions.map((period) => (
-                <SelectItem key={period} value={period}>
-                  {formatPeriodLabel(period)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      {/* Period filter moved into DataTable toolbar */}
 
       <div className="bg-card rounded-xl border shadow-sm p-4">
-        <DataTable columns={columns} data={filteredProjects} />
+        <DataTable
+          columns={columns}
+          data={filteredProjects}
+          toolbar={
+            <div className="flex items-center gap-3">
+              <Select
+                value={selectedPeriod}
+                onValueChange={setSelectedPeriod}
+                disabled={!periodOptions.length}
+              >
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ALL_PERIODS_OPTION}>Todos los períodos</SelectItem>
+                  {periodOptions.map((period) => (
+                    <SelectItem key={period} value={period}>
+                      {formatPeriodLabel(period)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          }
+        />
       </div>
     </section>
   );

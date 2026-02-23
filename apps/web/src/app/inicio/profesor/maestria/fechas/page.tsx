@@ -1,4 +1,4 @@
-import ThesisDates from "@/app/inicio/pregrado/tesis/fechas/page";
+import ThesisDates from "@/app/inicio/posgrado/tesis/fechas/page";
 
 /**
  * @module ThesisDatesProfessor

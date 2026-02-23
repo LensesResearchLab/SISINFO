@@ -31,7 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ArrowUpDown, ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
@@ -39,6 +39,7 @@ interface DataTableProps<TData, TValue> {
   readonly data: TData[];
   readonly enableRowSelection?: boolean;
   readonly onSelectedRowsChange?: (rows: TData[]) => void;
+  readonly toolbar?: ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -46,6 +47,7 @@ export function DataTable<TData, TValue>({
   data,
   enableRowSelection = false,
   onSelectedRowsChange,
+  toolbar,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -84,13 +86,17 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Input
-          placeholder="Buscar..."
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          className="mr-4 w-full"
-        />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="flex items-center gap-4 flex-1 min-w-0">
+          {toolbar ? <div className="shrink-0">{toolbar}</div> : null}
+
+          <Input
+            placeholder="Buscar..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="w-full"
+          />
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
