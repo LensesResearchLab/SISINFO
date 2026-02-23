@@ -77,12 +77,18 @@ const baseColumns: ColumnDef<Task>[] = [
 function ActionsCell({ row }: { readonly row: { original: Task } }) {
   const router = useRouter();
   const task = row.original;
+
+  const studentName = task?.projectActualTask?.student?.user?.name ?? "";
+  const studentCode = task?.projectActualTask?.student?.code ?? "";
+
   return (
     <Button
       variant="ghost"
       size="icon"
       onClick={() =>
-        router.push(`${ROUTES.HOME}/${ROUTES.TASK_LIST}/${task.id}`)
+        router.push(`${ROUTES.HOME}/${ROUTES.TASK_LIST}/${task.id}`+
+            `?studentName=${encodeURIComponent(studentName)}` +
+            `&studentCode=${encodeURIComponent(studentCode)}`)
       }
     >
       <MoreHorizontal className="h-4 w-4" />

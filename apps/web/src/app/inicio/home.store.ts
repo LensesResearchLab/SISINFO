@@ -1,3 +1,4 @@
+// home.store.ts
 import { create } from "zustand";
 import { Task } from "../types/entities/task.type";
 
@@ -7,6 +8,7 @@ interface HomeState {
 
   setRoles: (roles: string[]) => void;
   setTasks: (tasks: Task[]) => void;
+  clearTasks: () => void; 
 }
 
 export const useHomeStore = create<HomeState>((set) => ({
@@ -15,4 +17,5 @@ export const useHomeStore = create<HomeState>((set) => ({
 
   setRoles: (roles: string[]) => set({ roles }),
   setTasks: (tasks: Task[]) => set({ tasks }),
+  clearTasks: () => set({ tasks: [] }),
 }));

@@ -24,6 +24,7 @@ export default function ProjectDetail({
   const [selectedApplicantIds, setSelectedApplicantIds] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newStatus, setNewStatus] = useState<string | null>(null);
+  const [confirmMessage, setConfirmMessage] = useState("");
 
   const { data, isFetching, error } = useQuery<Application[]>({
     queryKey: ["students-applications-project", id],
@@ -34,6 +35,20 @@ export default function ProjectDetail({
   });
 
   const handleOpenModal = (ids: string[], status: string) => {
+    if (status === "Rechazado")
+      setConfirmMessage(`¿Estás seguro de rechazar ${ids.length} estudiantes?`);
+    else if (status === "Inscrito")
+      setConfirmMessage(`¿Estás seguro de aceptar ${ids.length} estudiantes?`);
+    setSelectedApplicantIds(ids);
+    setNewStatus(status);
+    setIsModalOpen(true);
+
+  };
+  const handleOpenModalOne = (ids: string[], status: string, studentName: string) => {
+    if (status === "Inscrito")
+      setConfirmMessage(`¿Estás seguro de aceptar al estudiante ${studentName}?`);
+    else if (status === "Rechazado")
+      setConfirmMessage(`¿Estás seguro de rechazar al estudiante ${studentName}?`);
     setSelectedApplicantIds(ids);
     setNewStatus(status);
     setIsModalOpen(true);
@@ -117,13 +132,13 @@ const approvedColumns: ColumnDef<Application>[] = [
       <div className="flex gap-2">
         <Button
           variant="outline"
-          onClick={() => handleOpenModal([row.original.id], "Inscrito")}
+          onClick={() => handleOpenModalOne([row.original.id], "Inscrito", row.original.student.user.name)}
         >
           Aceptar
         </Button>
         <Button
           variant="destructive"
-          onClick={() => handleOpenModal([row.original.id], "Rechazado")}
+          onClick={() => handleOpenModalOne([row.original.id], "Rechazado", row.original.student.user.name)}
         >
           Rechazar
         </Button>
@@ -173,7 +188,7 @@ const approvedColumns: ColumnDef<Application>[] = [
       <ConfirmationModal
         dialogText={{
           title: "Confirmar Acción",
-          description: "¿Estás seguro de que quieres proceder?",
+          description: confirmMessage,
           buttonText: "Aceptar",
           successTitle: "Acción exitosa",
           successText: "Los cambios fueron realizados correctamente.",
