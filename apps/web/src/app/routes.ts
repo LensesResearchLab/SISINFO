@@ -76,6 +76,7 @@ export const ROUTES: Record<string, string> = {
   ADMINISTRATOR_USERS: "/administrador/usuario",
   ADMINISTRATOR_COURSE_LEADERS: "/administrador/lider",
   ADMINISTRATOR_UPLOAD_TEACHERS: "/administrador/cargar_profesores",
+  ADMINISTRATOR_PERIODS: "/administrador/periodos",
   /*  General  */
 
   TASK_LIST: "/tareas",

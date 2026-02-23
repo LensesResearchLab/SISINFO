@@ -38,12 +38,46 @@ export default function UploadProfessors() {
 
 
   const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = "/plantillap.xlsm";
-    link.download = "plantilla.xlsm";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Generate an XLSX file dynamically with current professors from the DB.
+    // Fallback to the static template if generation fails.
+    (async () => {
+      try {
+        const list = await getProfessors();
+
+        // Build rows: header + data rows
+        const rows: Array<Array<string>> = [];
+        rows.push(["Nombre", "Correo"]);
+
+        (list ?? []).forEach((prof) => {
+          const name = prof?.user?.name ?? "";
+          const email = prof?.user?.email ?? "";
+          rows.push([name, email]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Profesores");
+
+        const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        const blob = new Blob([wbout], { type: "application/octet-stream" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "plantilla_profesores.xlsx";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        // Fallback to existing static file if anything goes wrong
+        const link = document.createElement("a");
+        link.href = "/plantillap.xlsm";
+        link.download = "plantilla.xlsm";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    })();
   };
 
   const handleUploadXlsm = async (file: File) => {

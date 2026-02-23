@@ -69,9 +69,6 @@ import { ImportantSectionsModule } from './important-sections/important-sections
       autoLoadEntities: true,
       synchronize: true,
       dropSchema: false,
-      ssl: {
-        rejectUnauthorized: false,
-      }
     },
     ),
     AdministratorsModule,

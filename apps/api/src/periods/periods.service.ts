@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   PreconditionFailedException,
+  ConflictException,
 } from '@nestjs/common';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
@@ -20,8 +21,8 @@ export class PeriodsService {
       where: { period: createPeriodDto.period, year: createPeriodDto.year },
     });
     if (existingPeriod) {
-      throw new Error(
-        `Period ${createPeriodDto.period} for year ${createPeriodDto.year} already exists`,
+      throw new ConflictException(
+        `El periodo ${createPeriodDto.period} para el año ${createPeriodDto.year} ya existe`,
       );
     }
     const period = this.periodRepository.create(createPeriodDto);

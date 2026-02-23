@@ -167,6 +167,12 @@ export const administratorData = [
           "Aquí puedes cargar y consultar los profesores.",
         url: ROUTES.ADMINISTRATOR_UPLOAD_TEACHERS,
       },
+      {
+        Icon: Calendar,
+        title: "Administrar períodos",
+        description: "Agregar y administrar periodos académicos.",
+        url: ROUTES.ADMINISTRATOR_PERIODS,
+      },
     ],
   },
 ];
