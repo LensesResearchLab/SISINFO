@@ -10,34 +10,27 @@ import {
 } from "@/components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import {
-  undergraduateData,
-  professorData,
-  coordinatorData,
-  supportData,
-} from "@/components/links-per-group";
 
-const EXCLUDED_ROUTES = undergraduateData
-  .map((item) => item.url)
-  .concat(professorData.map((item) => item.url))
-  .concat(coordinatorData.map((item) => item.url))
-  .concat(supportData.map((item) => item.url))
-  .concat([
-    "inicio",
-    "tesis",
-    "publicar-consultar",
-    "asistencia",
-    "estudiante",
-    "profesor",
-    "coordinador",
-    "maestria",
-    "posgrado",
-    "administrador",
-    "aplicantes",
-    "manejar",
-    "programas",
-    "asistencias"
-  ]);
+const EXCLUDED_SEGMENTS = new Set([
+ 
+  "inicio",
+
+  "estudiante",
+  "profesor",
+  "coordinador",
+  "administrador",
+
+  "pregrado",
+  "posgrado",
+  "postgrado",        
+  "asistencia",
+  "administracion",   
+  "administración",   
+  "soporte",
+  "alertas",
+  "configuracion",
+  "programa",
+]);
 
 function getBreadcrumbText(pathname: string) {
   const segments = pathname.split("/").filter(Boolean);
@@ -45,11 +38,13 @@ function getBreadcrumbText(pathname: string) {
     const path: string = `/${segments.slice(0, index + 1).join("/")}`;
     const name: string = segment.replace(/_/g, " ");
     const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
-    return { path, capitalizedName };
+    return { path, capitalizedName, originalSegment: segment };
   });
+  
+
   return breadcrumbs.filter(
     (breadcrumb) =>
-      !EXCLUDED_ROUTES.includes(breadcrumb.capitalizedName.toLowerCase())
+      !EXCLUDED_SEGMENTS.has(breadcrumb.originalSegment.toLowerCase())
   );
 }
 

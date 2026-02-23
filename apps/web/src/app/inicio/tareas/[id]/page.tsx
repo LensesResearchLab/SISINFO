@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -16,26 +16,40 @@ import { ROUTES } from "@/app/routes"
 import { createTask, getTask } from "@/app/services/tasks.service"
 import { TaskType } from "../flows"
 import { cn } from "@/lib/utils"
-import { CreateTask } from "@/app/types/entities/task.type"
+import type { Task } from "@/app/types/entities/task.type";
 import SpinnerPage from "@/components/shared/spinner-page"
 import { YesNoRadioGroup } from "@/components/shared/yes-no-radio-group"
+import { flows } from "../flows"
 
 const taskSchema = z.object({
   type: z.nativeEnum(TaskType),
+  step: z.number().int().optional(),
   document: z.instanceof(File).optional(),
   comment: z.string().optional(),
   isApproved: z.boolean().optional(),
   suggestWithdraw: z.boolean().optional(),
-  grade: z.string().optional(),
-})
+  grade: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? undefined : Number(v)),
+    z.number().min(0, "La nota debe estar entre 0 y 5").max(5, "La nota debe ser menor o igual 5").optional()
+  ),
+}).superRefine((data, ctx) => {
+  if (data.step === 7 && (data.grade === undefined || Number.isNaN(data.grade))) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "La nota final es obligatoria",
+      path: ["grade"],
+    });
+  }
+});
 
 export default function TaskForm() {
   const { id } = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams();
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [task, setTask] = useState<CreateTask  | null>(null)
+  const [task, setTask] = useState<Task  | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [pdfLoading, setPdfLoading] = useState(false)
 
@@ -43,11 +57,12 @@ export default function TaskForm() {
     resolver: zodResolver(taskSchema),
     defaultValues: {
       type: TaskType.UPLOAD_FILE,
+      step: undefined,
       document: undefined,
       comment: "",
       suggestWithdraw: false,
       isApproved: false,
-      grade: "",
+      grade: undefined,
     },
   })
 
@@ -61,6 +76,8 @@ export default function TaskForm() {
       if (cancelled) return;
 
       setTask(response);
+      const stepIndex = typeof response.step === "string" ? Number(response.step) : response.step;
+      form.setValue("step", stepIndex);
       form.setValue("type", response.type);
       form.setValue("isApproved", Boolean(response.approved));
 
@@ -100,10 +117,12 @@ useEffect(() => {
     const isFinalGradeStep = currentStep === 7;
 
     // Validar nota obligatoria en step 7 (Nota 100%)
-    if (isFinalGradeStep && !values.grade?.trim()) {
+    console.log("SUBMIT step:", currentStep, "grade:", values.grade);
+    if (isFinalGradeStep && values.grade === undefined) {
       form.setError("grade", { message: "La nota final es obligatoria" });
       return;
     }
+
 
     const suggestText = `Se sugiere retirar la materia al estudiante: ${
     values.suggestWithdraw ? "Sí" : "No"
@@ -120,7 +139,7 @@ useEffect(() => {
       date: new Date(),
       comment: finalComment,
       approved: values.isApproved ?? false,
-      grade: isFinalGradeStep ? values.grade : undefined,
+      grade: isFinalGradeStep && values.grade !== undefined ? String(values.grade) : undefined,
     }
     await createTask(id as string, taskData, values.document)
     router.push(`${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`)
@@ -128,6 +147,47 @@ useEffect(() => {
 
   if (loading) return <SpinnerPage />
   if (!task) return <div className="text-center py-10 text-red-500">Tarea no encontrada</div>
+
+  const studentNameFromUrl = searchParams.get("studentName");
+  const studentCodeFromUrl = searchParams.get("studentCode");
+
+  const flowKey = "proyectoPregrado"; // Para tener los titulos especificos de cada tarea 
+  const stepIndex =
+    typeof task?.step === "string" ? Number(task.step) : task?.step;
+
+  const currentStep = 
+    stepIndex !== undefined ? flows[flowKey][stepIndex] : undefined;
+
+  const baseTitle = (() => {
+    if (task.step === 5) return "Retirará la materia";
+    else if (currentStep) return currentStep.title;
+    return "Aprobar esta tarea";
+  })();
+
+  const taskTitle = `¿${baseTitle}?`; // Asi queda con los signos de interrogacion
+
+  const studentName =
+    task?.projectActualTask?.student?.user?.name ?? studentNameFromUrl;
+
+  const studentCode =
+    task?.projectActualTask?.student?.code ?? studentCodeFromUrl;
+
+
+  const isAcceptStudentTask =
+    task.type === TaskType.SEND_APPROVE &&
+    (Boolean(task?.projectActualTask?.student) || Boolean(studentNameFromUrl));
+
+     
+  const isApproved = form.watch("isApproved");
+  const approvalAction = isApproved ? "aprobar" : "rechazar";
+
+  const confirmationDescription = isAcceptStudentTask
+      ? `¿Estás seguro de ${approvalAction} al estudiante ${studentName ?? "este estudiante"}${
+          studentCode ? ` (${studentCode})` : ""
+        }?`
+      : "¿Estás seguro de completar esta tarea?";
+
+
 
   const isViewOnly = task.type === TaskType.VIEW_COMMENTS
   const hasDocument = Boolean(task.document)
@@ -263,12 +323,19 @@ useEffect(() => {
                           </FormLabel>
                           <FormControl>
                             <Input
-                              {...field}
+                              name={field.name}
+                              ref={field.ref}
+                              onBlur={field.onBlur}
                               type="number"
                               min="0"
-                              max="100"
+                              max="5"
                               step="0.1"
-                              placeholder="Ingrese la nota (0-100)"
+                              placeholder="Ingrese la nota (0-5)"
+                              value={field.value ?? ""}
+                              onChange={(e) => {
+                                const raw = e.target.value;
+                                field.onChange(raw === "" ? undefined : Number(raw));
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
@@ -292,7 +359,7 @@ useEffect(() => {
                       render={({ field }) => (
                         <FormItem className="space-y-3 text-center">
                           <FormLabel className="font-semibold text-base">
-                            ¿Aprobar esta tarea?
+                            {taskTitle}
                           </FormLabel>
                           <FormControl>
                             <YesNoRadioGroup
@@ -313,7 +380,7 @@ useEffect(() => {
                   <Button
                     type="button"
                     onClick={async () => {
-                      const isValid = await form.trigger()
+                      const isValid = await form.trigger(undefined, { shouldFocus: true })
                       if (isValid) setIsModalOpen(true)
                     }}
                     className="bg-core text-white hover:bg-core-dark w-full"
@@ -325,7 +392,7 @@ useEffect(() => {
                 <ConfirmationModal
                   dialogText={{
                     title: "Confirmar acción",
-                    description: "¿Estás seguro de completar esta tarea?",
+                    description: confirmationDescription,
                     buttonText: "Confirmar",
                     successTitle: "Tarea completada",
                     successText: "La tarea se completó correctamente",
