@@ -22,19 +22,19 @@ import SpinnerPage from "@/components/shared/spinner-page"
 import { YesNoRadioGroup } from "@/components/shared/yes-no-radio-group"
 import { flows } from "../flows"
 
-const taskSchema = z
-  .object({
-    type: z.nativeEnum(TaskType),
-    step: z.number().int().optional(),
+const taskSchema = z.object({
+  type: z.nativeEnum(TaskType),
+  step: z.number().int().optional(),
   document: z.instanceof(File).optional(),
-    comment: z.string().optional(),
-    isApproved: z.boolean().optional(),
-    suggestWithdraw: z.boolean().optional(),
-    grade: z.preprocess(
+  comment: z.string().optional(),
+  isApproved: z.boolean().optional(),
+  suggestWithdraw: z.boolean().optional(),
+  grade: z.preprocess(
     (v) => (v === "" || v === null || v === undefined ? undefined : Number(v)),
     z.number().min(0, "La nota debe estar entre 0 y 5").max(5, "La nota debe ser menor o igual 5").optional()
   ),
-  }).superRefine((data, ctx) => {
+}).superRefine((data, ctx) => {
+  // Validación nota obligatoria en step 7
   if (data.step === 7 && (data.grade === undefined || Number.isNaN(data.grade))) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -42,32 +42,29 @@ const taskSchema = z
       path: ["grade"],
     });
   }
-});
-  .superRefine((val, ctx) => {
-    // If this step expects an ABET report, require an Excel file
-    if (val.type === TaskType.ABET_TASK) {
-      const file = val.document as File | undefined
-      if (!file) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "El archivo Excel es obligatorio para este tipo de tarea",
-          path: ["document"],
-        })
-        return
-      }
 
-      const name = (file.name || "").toLowerCase()
-      const allowed = [".xlsx", ".xls", ".xlsm"]
-      const ok = allowed.some((ext) => name.endsWith(ext))
-      if (!ok) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "El archivo debe ser un Excel (.xlsx, .xls, .xlsm)",
-          path: ["document"],
-        })
-      }
+  // Validación archivo Excel obligatorio para ABET
+  if (data.type === TaskType.ABET_TASK) {
+    const file = data.document as File | undefined;
+    if (!file) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "El archivo Excel es obligatorio para este tipo de tarea",
+        path: ["document"],
+      });
+      return;
     }
-  })
+    const name = (file.name || "").toLowerCase();
+    const allowed = [".xlsx", ".xls", ".xlsm"];
+    if (!allowed.some((ext) => name.endsWith(ext))) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "El archivo debe ser un Excel (.xlsx, .xls, .xlsm)",
+        path: ["document"],
+      });
+    }
+  }
+});
 
 export default function TaskForm() {
   const { id } = useParams()
@@ -172,9 +169,10 @@ useEffect(() => {
       await createTask(id as string, taskData, values.document)
       toast.success("Tarea enviada correctamente")
       router.push(`${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`)
-    } catch (e: any) {
+    } catch (e) {
+      const error = e as Error
+      toast.error(error?.message ?? "Error al enviar la tarea")
       console.error("Error creando tarea:", e)
-      toast.error(e?.message ?? "Error al enviar la tarea")
     }
   }
 
