@@ -1,3 +1,5 @@
+"use client";
+
 import { findByAcademicProcessAndPeriod } from "@/app/services/dates.service";
 import { ImportantDate } from "@/app/types/entities/Important-date";
 import SpinnerPage from "@/components/shared/spinner-page";
@@ -5,6 +7,7 @@ import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { TermCard } from "@/components/shared/period-card";
 
 
 /**
@@ -23,13 +26,15 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
  * @returns {JSX.Element} A container with multiple date tables grouped by category
  */
 export default function ImportantDates({name, academicProcess} : {readonly name: string, readonly academicProcess: string}) {
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
+
   const {
     data: sections,
     isFetching,
     error,
   } = useQuery({
-    queryKey: ["student-dates", academicProcess],
-    queryFn: () => findByAcademicProcessAndPeriod(academicProcess),
+    queryKey: ["student-dates", academicProcess, selectedPeriod],
+    queryFn: () => findByAcademicProcessAndPeriod(academicProcess, selectedPeriod),
   });
 
   if (isFetching) return <SpinnerPage />;
@@ -37,7 +42,12 @@ export default function ImportantDates({name, academicProcess} : {readonly name:
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
       <div className="w-full bg-card shadow-lg rounded-xl p-5 h-full space-y-4">
-        <h1 className="text-xl font-semibold text-core">Fechas de {name}</h1>
+        <div className="flex items-start justify-between">
+          <h1 className="text-xl font-semibold text-core">Fechas de {name}</h1>
+          <div className="ml-4">
+            <TermCard compact selectedPeriod={selectedPeriod} handlePeriodChange={(period:string) => setSelectedPeriod(period)} footer="" />
+          </div>
+        </div>
         {
           !sections.length && <p className="text-foreground">No se han definido fechas para el periodo actual</p>
         }
