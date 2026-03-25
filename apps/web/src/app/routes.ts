@@ -33,6 +33,7 @@ export const ROUTES: Record<string, string> = {
   POSTGRADUATE_THESIS_LIST: "/posgrado/tesis/lista",
   POSTGRADUATE_THESIS_STATUS: "/posgrado/tesis/estado",
   POSTGRADUATE_THESIS_DATES: "/posgrado/tesis/fechas",
+  POSTGRADUATE_ENROLL_PLAN: "/posgrado/tesis/inscribir-plan",
 
   /*  Professor  */
   APPLICANTS: "aplicantes",

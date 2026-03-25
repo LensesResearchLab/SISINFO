@@ -101,6 +101,12 @@ export const graduateData = [
         description: "Aquí puedes ver los detalles de tu inscripción a tesis.",
         url: ROUTES.POSTGRADUATE_THESIS_STATUS,
       },
+        {
+          Icon: FileBarChart,
+          title: "Inscribir plan de estudios",
+          description: "Registra y envía tu plan de estudios para la tesis.",
+          url: ROUTES.POSTGRADUATE_ENROLL_PLAN,
+        },
       {
         Icon: Calendar,
         title: "Consultar fechas",
