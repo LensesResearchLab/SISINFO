@@ -21,7 +21,7 @@ export default function EnrollPlanPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const emptyCourses = Array.from({ length: 7 }).map(() => ({ courseId: "", semester: "" }));
+  const emptyCourses = Array.from({ length: 7 }).map(() => ({ courseId: "", semester: "", seen: false }));
 
   const [form, setForm] = useState({
     profileId: "",
@@ -30,7 +30,8 @@ export default function EnrollPlanPage() {
     semesterStart1: "",
     semesterStart2: "",
     courses: emptyCourses,
-    otherCourse: { courseId: "", semester: "" },
+    otherCourse: { courseId: "", semester: "", seen: false },
+    otherCourse2: { courseId: "", semester: "", seen: false },
     comments: "",
   });
 
@@ -78,8 +79,30 @@ export default function EnrollPlanPage() {
     });
   }
 
+  function handleCourseToggle(index: number, checked: boolean) {
+    setForm((f) => {
+      const next = { ...f } as any;
+      const arr = Array.isArray(next.courses) ? [...next.courses] : [];
+      arr[index] = { ...arr[index], seen: checked };
+      next.courses = arr;
+      return next;
+    });
+  }
+
   function handleOtherCourseChange(field: "courseId" | "semester", value: string) {
     setForm((f) => ({ ...f, otherCourse: { ...f.otherCourse, [field]: value } }));
+  }
+
+  function handleOtherCourseToggle(checked: boolean) {
+    setForm((f) => ({ ...f, otherCourse: { ...f.otherCourse, seen: checked } }));
+  }
+
+  function handleOtherCourse2Change(field: "courseId" | "semester", value: string) {
+    setForm((f) => ({ ...f, otherCourse2: { ...f.otherCourse2, [field]: value } }));
+  }
+
+  function handleOtherCourse2Toggle(checked: boolean) {
+    setForm((f) => ({ ...f, otherCourse2: { ...f.otherCourse2, seen: checked } }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -105,9 +128,10 @@ export default function EnrollPlanPage() {
         semesterStart2: form.semesterStart2 || null,
         comments: form.comments || null,
         courses: Array.isArray(form.courses)
-          ? form.courses.filter((c: any) => c.courseId).map((c: any) => ({ courseId: c.courseId, semester: c.semester }))
+          ? form.courses.filter((c: any) => c.courseId).map((c: any) => ({ courseId: c.courseId, semester: c.semester, seen: !!c.seen }))
           : [],
-        otherCourse: form.otherCourse?.courseId ? { courseId: form.otherCourse.courseId, semester: form.otherCourse.semester } : null,
+        otherCourse: form.otherCourse?.courseId ? { courseId: form.otherCourse.courseId, semester: form.otherCourse.semester, seen: !!form.otherCourse.seen } : null,
+        otherCourse2: form.otherCourse2?.courseId ? { courseId: form.otherCourse2.courseId, semester: form.otherCourse2.semester, seen: !!form.otherCourse2.seen } : null,
       };
 
       const res = await fetch(`${base}/${API_ROUTES.THESIS_APPLICATIONS}`, {
@@ -122,12 +146,21 @@ export default function EnrollPlanPage() {
       }
 
       setSuccess("Solicitud enviada correctamente. El coordinador la recibirá para evaluación.");
-      setForm({ profileId: "", coordinatorId: "", advisorId: "", semesterStart1: "", semesterStart2: "", courses: emptyCourses, otherCourse: { courseId: "", semester: "" }, comments: "" });
+      setForm({ profileId: "", coordinatorId: "", advisorId: "", semesterStart1: "", semesterStart2: "", courses: emptyCourses, otherCourse: { courseId: "", semester: "", seen: false }, otherCourse2: { courseId: "", semester: "", seen: false }, comments: "" });
     } catch (err: any) {
       setError(err?.message || "Error al enviar la solicitud");
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function isMinValid() {
+    if (!form.profileId) return false;
+    if (!form.advisorId) return false;
+    if (!form.semesterStart1) return false;
+    const hasCourse = Array.isArray(form.courses) && form.courses.some((c: any) => c.courseId);
+    if (!hasCourse && !form.otherCourse?.courseId && !form.otherCourse2?.courseId) return false;
+    return true;
   }
 
   return (
@@ -145,8 +178,10 @@ export default function EnrollPlanPage() {
               {error && <div className="text-sm text-red-600">{error}</div>}
               {success && <div className="text-sm text-green-600">{success}</div>}
 
+              <h3 className="text-lg font-semibold text-core-highlight mt-0">Diligenciar plan de estudios</h3>
+
               <div>
-                <label className="block text-sm font-medium">Perfil</label>
+                <label className="block text-sm font-medium">Perfil <span className="text-red-600">*</span></label>
                 <select name="profileId" value={form.profileId} onChange={handleChange} className="mt-1 block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                   <option value="">Selecciona un perfil</option>
                   {profiles.map((p) => (
@@ -157,19 +192,18 @@ export default function EnrollPlanPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium">Asesor de tesis</label>
+                <label className="block text-sm font-medium">Asesor de tesis <span className="text-red-600">*</span></label>
                 <select name="advisorId" value={form.advisorId} onChange={handleChange} className="mt-1 block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                   <option value="">Selecciona un asesor</option>
                   {professors.map((prof) => (
                     <option key={prof.id} value={String(prof.id)}>{prof.user?.name}</option>
                   ))}
                 </select>
-                <p className="text-xs text-muted-foreground mt-1">El asesor es informativo; la decisión la toma el coordinador del perfil.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium">Semestre inicio - Tesis 1</label>
+                  <label className="block text-sm font-medium">Semestre inicio - Tesis 1 <span className="text-red-600">*</span></label>
                   <select name="semesterStart1" value={form.semesterStart1} onChange={handleChange} className="mt-1 block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                     <option value="">Selecciona semestre</option>
                     {periods.length > 0 ? periods.map((p) => <option key={String(p.id)} value={`${p.year}-${p.semester}`}>{`${p.year}-${p.semester}`}</option>) : ["2026-1","2026-2","2027-1"].map((s) => <option key={s} value={s}>{s}</option>)}
@@ -185,51 +219,83 @@ export default function EnrollPlanPage() {
               </div>
 
               <div className="pt-4">
-                <h3 className="text-lg font-semibold">Cursos del plan de estudios (hasta 7)</h3>
+                <h3 className="text-lg font-semibold text-core-highlight">Cursos del plan de estudios (hasta 7)</h3>
                 <p className="text-xs text-muted-foreground mb-2">Selecciona el curso y el semestre en que lo cursaste</p>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {form.courses.map((c: any, idx: number) => (
-                    <div key={idx} className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
-                      <div className="md:col-span-2">
-                        <select value={c.courseId} onChange={(e) => handleCourseChange(idx, "courseId", e.target.value)} className="block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                    <div key={idx} className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <select value={c.courseId} onChange={(e) => handleCourseChange(idx, "courseId", e.target.value)} className="w-full rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                           <option value="">Selecciona curso (opcional)</option>
                           {coursesList.length > 0 ? coursesList.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
                         </select>
                       </div>
-                      <div>
-                        <select value={c.semester} onChange={(e) => handleCourseChange(idx, "semester", e.target.value)} className="block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                      <div className="flex items-center gap-3">
+                        <select value={c.semester} onChange={(e) => handleCourseChange(idx, "semester", e.target.value)} className="w-36 rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                           <option value="">Semestre</option>
                           {(periods.length > 0 ? periods.map((p) => `${p.year}-${p.semester}`) : ["2026-1","2026-2","2027-1"]).map((s) => (
                             <option key={s} value={s}>{s}</option>
                           ))}
                         </select>
+                        <label className="inline-flex items-center gap-2 text-sm">
+                          <input type="checkbox" checked={!!c.seen} onChange={(e) => handleCourseToggle(idx, e.target.checked)} className="h-4 w-4" />
+                          <span className="text-sm">Visto</span>
+                        </label>
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="mt-4">
-                  <h4 className="text-md font-medium">Otro curso (si aplica)</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center mt-2">
-                    <div className="md:col-span-2">
-                      <select value={form.otherCourse.courseId} onChange={(e) => handleOtherCourseChange("courseId", e.target.value)} className="block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                        <option value="">Selecciona curso (otro)</option>
-                        {coursesList.length > 0 ? coursesList.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
-                      </select>
+                  <h4 className="text-md font-medium text-core-highlight">Otros cursos</h4>
+                  <div className="space-y-2 mt-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <select value={form.otherCourse.courseId} onChange={(e) => handleOtherCourseChange("courseId", e.target.value)} className="w-full rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                          <option value="">Selecciona curso (otro)</option>
+                          {coursesList.length > 0 ? coursesList.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
+                        </select>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <select value={form.otherCourse.semester} onChange={(e) => handleOtherCourseChange("semester", e.target.value)} className="w-36 rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                          <option value="">Semestre</option>
+                          {(periods.length > 0 ? periods.map((p) => `${p.year}-${p.semester}`) : ["2026-1","2026-2","2027-1"]).map((s) => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                        <label className="inline-flex items-center gap-2 text-sm">
+                          <input type="checkbox" checked={!!form.otherCourse.seen} onChange={(e) => handleOtherCourseToggle(e.target.checked)} className="h-4 w-4" />
+                          <span className="text-sm">Visto</span>
+                        </label>
+                      </div>
                     </div>
-                    <div>
-                      <select value={form.otherCourse.semester} onChange={(e) => handleOtherCourseChange("semester", e.target.value)} className="block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                        <option value="">Semestre</option>
-                        {(periods.length > 0 ? periods.map((p) => `${p.year}-${p.semester}`) : ["2026-1","2026-2","2027-1"]).map((s) => <option key={s} value={s}>{s}</option>)}
-                      </select>
+
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <select value={form.otherCourse2.courseId} onChange={(e) => handleOtherCourse2Change("courseId", e.target.value)} className="w-full rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                          <option value="">Selecciona curso (otro 2)</option>
+                          {coursesList.length > 0 ? coursesList.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
+                        </select>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <select value={form.otherCourse2.semester} onChange={(e) => handleOtherCourse2Change("semester", e.target.value)} className="w-36 rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                          <option value="">Semestre</option>
+                          {(periods.length > 0 ? periods.map((p) => `${p.year}-${p.semester}`) : ["2026-1","2026-2","2027-1"]).map((s) => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                        <label className="inline-flex items-center gap-2 text-sm">
+                          <input type="checkbox" checked={!!form.otherCourse2.seen} onChange={(e) => handleOtherCourse2Toggle(e.target.checked)} className="h-4 w-4" />
+                          <span className="text-sm">Visto</span>
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <button type="submit" disabled={submitting} className="px-4 py-2 bg-core text-white rounded">{submitting ? "Enviando..." : "Enviar solicitud"}</button>
-                <button type="button" onClick={() => setForm({ profileId: "", coordinatorId: "", advisorId: "", semesterStart1: "", semesterStart2: "", courses: emptyCourses, otherCourse: { courseId: "", semester: "" }, comments: "" })} className="px-4 py-2 border rounded">Limpiar</button>
+                
+                <button type="submit" disabled={!isMinValid() || submitting} className={`px-4 py-2 text-white rounded ${!isMinValid() || submitting ? 'bg-gray-300 cursor-not-allowed' : 'bg-core'}`}>
+                  {submitting ? "Enviando..." : "Enviar solicitud"}
+                </button>
+                <button type="button" onClick={() => setForm({ profileId: "", coordinatorId: "", advisorId: "", semesterStart1: "", semesterStart2: "", courses: emptyCourses, otherCourse: { courseId: "", semester: "", seen: false }, otherCourse2: { courseId: "", semester: "", seen: false }, comments: "" })} className="px-4 py-2 border rounded">Limpiar</button>
               </div>
             </form>
           )}
