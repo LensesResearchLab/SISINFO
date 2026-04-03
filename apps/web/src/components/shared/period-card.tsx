@@ -22,7 +22,7 @@ export function TermCard({handlePeriodChange, footer, selectedPeriod: parentSele
         }
       })
       .catch((error) => console.error("Error fetching periods:", error));
-  }, [handlePeriodChange]);
+  }, []);
 
   // Keep internal selectedPeriod synced when parent prop changes
   useEffect(() => {

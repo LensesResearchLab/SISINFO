@@ -14,7 +14,9 @@ import * as XLSX from "xlsx";
 
 export default function UploadBillboard() {
   const [coursesData, setCoursesData] = useState<Course[]>([]);
-  const [loadError, setLoadError] = useState(false);
+  const [uploadError, setUploadError] = useState(false);     
+  const [billboardError, setBillboardError] = useState(false); 
+  const [hasSearched, setHasSearched] = useState(false);
 
   const dialogText = {
     title: "Publicar cartelera",
@@ -43,18 +45,19 @@ export default function UploadBillboard() {
     const worksheet = workbook.Sheets[sheetName];
 
     if (!worksheet) {
-      setLoadError(true);
+      setUploadError(true);
     }
   };
   const handlePeriodChange = (value: string) => {
+    setHasSearched(true);
     getBillboard(value)
       .then((data) => {
         setCoursesData(data.courses);
-        setLoadError(false);
+        setBillboardError(false);
       })
       .catch(() => {
         setCoursesData([]);
-        setLoadError(true);
+        setBillboardError(true);
       });
   };
 
@@ -72,11 +75,11 @@ export default function UploadBillboard() {
         dialogText={dialogText}
         typeUpload="billboard"
       >
-        <UploadedBillboard classesData={coursesData} loadError={loadError} />
+        <UploadedBillboard classesData={coursesData} loadError={billboardError} hasSearched={hasSearched}/>
         
       </UploadFilePage >
         
-      <AlertDialogError open={loadError} onOpenChange={setLoadError} />
+      <AlertDialogError open={uploadError} onOpenChange={setUploadError} />
     </>
   );
 }
@@ -116,10 +119,13 @@ const columns: ColumnDef<CourseShow>[] = [
 function UploadedBillboard({
   classesData,
   loadError,
+  hasSearched 
 }: {
   readonly classesData: Course[];
   readonly loadError: boolean;
+  readonly hasSearched: boolean;
 }) {
+  if (!hasSearched) return null;
   if (loadError) return <BillboardNotFound />;
   return (
     <div className="min-h-full min-w-full">

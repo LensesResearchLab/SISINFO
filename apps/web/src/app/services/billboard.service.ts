@@ -16,7 +16,8 @@ export async function getBillboard(periodId: string) {
     throw new Error("Failed to get billboard.");
   }
   
-  return response.json();
+  const text = await response.text();
+  return text ? JSON.parse(text) : { courses: [] };
 }
 
 export async function getBillboardWithUploadedProgram(periodId: string) {

@@ -12,6 +12,7 @@ import { SectionsService } from '../sections/sections.service';
 import { ProfessorsService } from '../professors/professors.service';
 import { Professor } from '../professors/entities/professor.entity';
 import { Period } from '../periods/entities/period.entity';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class BillboardsService {
@@ -234,7 +235,7 @@ export class BillboardsService {
       year,
     );
     if (!periodBillboard) {
-      throw new Error('Period not found');
+      throw new NotFoundException('Period not found');
     }
     const billboard = await this.billboardRepository.findOne({
       where: { period: periodBillboard },
