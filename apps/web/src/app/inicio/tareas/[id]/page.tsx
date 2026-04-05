@@ -212,11 +212,19 @@ useEffect(() => {
   const isApproved = form.watch("isApproved");
   const approvalAction = isApproved ? "aprobar" : "rechazar";
 
-  const confirmationDescription = isAcceptStudentTask
-      ? `¿Estás seguro de ${approvalAction} al estudiante ${studentName ?? "este estudiante"}${
-          studentCode ? ` (${studentCode})` : ""
-        }?`
-      : "¿Estás seguro de completar esta tarea?";
+  const isWithdrawStep = task.step === 5;
+const confirmationDescription = (() => {
+  if (isWithdrawStep) {
+    const withdrawAction = isApproved ? "SI va a" : "NO va a";
+    return `¿Estás seguro? Usted está confirmando que ${withdrawAction} retirar la materia.`;
+  }
+  if (isAcceptStudentTask) {
+    return `¿Estás seguro de ${approvalAction} al estudiante ${studentName ?? "este estudiante"}${
+      studentCode ? ` (${studentCode})` : ""
+    }?`;
+  }
+  return "¿Estás seguro de completar esta tarea?";
+})();
 
 
 
