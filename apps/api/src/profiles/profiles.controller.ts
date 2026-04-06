@@ -2,7 +2,7 @@ import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 
-@Controller('profiles')
+@Controller('subareas')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
 

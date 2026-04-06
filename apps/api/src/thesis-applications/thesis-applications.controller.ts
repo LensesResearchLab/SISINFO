@@ -50,6 +50,11 @@ export class ThesisApplicationsController {
     return this.thesisApplicationsService.findOne(req.user.id);
   }
 
+  @Get('student/:id')
+  findByStudentId(@Param('id') id: string) {
+    return this.thesisApplicationsService.findOne(id);
+  }
+
   @Get('/applicants/:thesisId')
   findAllApplicantsByThesisId(@Param('thesisId') thesisId: string) {
     return this.thesisApplicationsService.findAllApplicantsByThesisId(thesisId);

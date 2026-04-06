@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ConfirmationModal } from "@/components/shared/confirmation-modal"
-import { ROUTES } from "@/app/routes"
+import { ROUTES, API_ROUTES } from "@/app/routes"
 import { createTask, getTask } from "@/app/services/tasks.service"
 import { TaskType } from "../flows"
 import { cn } from "@/lib/utils"
@@ -166,7 +166,34 @@ useEffect(() => {
       grade: isFinalGradeStep && values.grade !== undefined ? String(values.grade) : undefined,
     }
     try {
-      await createTask(id as string, taskData, values.document)
+      // If this task is attached to a ProjectApplication flow, use existing endpoint
+      if (task?.projectActualTask) {
+        await createTask(id as string, taskData, values.document)
+      } else {
+        // Standalone task (e.g., subarea inscription): update task directly
+        const patchRes = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.TASKS}/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ approved: taskData.approved, comment: taskData.comment, grade: taskData.grade })
+        });
+        if (!patchRes.ok) throw new Error('Error actualizando la tarea');
+
+        // If this was an approval/rejection task, map to thesis application status
+        if (task?.type === TaskType.SEND_APPROVE && task?.student?.id) {
+          // Find the student's thesis application
+          const appRes = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/student/${task.student.id}`);
+          if (appRes.ok) {
+            const application = await appRes.json();
+            const status = taskData.approved ? 'APPROVED' : 'REJECTED';
+            await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/${application.id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status })
+            });
+          }
+        }
+      }
+
       toast.success("Tarea enviada correctamente")
       router.push(`${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`)
     } catch (e) {

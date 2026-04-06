@@ -28,6 +28,11 @@ export class TasksController {
     return this.tasks.findOne(id);
   }
 
+  @Get()
+  findAll() {
+    return this.tasks.findAll();
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateTaskDto) {
     return this.tasks.update(id, dto);

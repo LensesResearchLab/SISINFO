@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Profile } from './entities/profile.entity';
@@ -16,6 +16,16 @@ export class ProfilesService {
 
   async create(createProfileDto: CreateProfileDto) {
     const { name, coordinatorId } = createProfileDto;
+
+    // Check duplicate name (case-insensitive)
+    const existing = await this.profileRepository
+      .createQueryBuilder('profile')
+      .where('LOWER(profile.name) = LOWER(:name)', { name })
+      .getOne();
+    if (existing) {
+      throw new ConflictException('Ya existe una subárea con ese nombre');
+    }
+
     const profile = this.profileRepository.create({ name });
     if (coordinatorId) {
       const coordinator = await this.professorRepository.findOneBy({ id: coordinatorId });

@@ -14,6 +14,7 @@ type Professor = { id: number | string; user: { name: string; email?: string } }
 export default function EnrollPlanPage() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [professors, setProfessors] = useState<Professor[]>([]);
+  const [professorTheses, setProfessorTheses] = useState<Array<{ id: string; title: string }>>([]);
   const [coursesList, setCoursesList] = useState<Array<{ id: number | string; name: string }>>([]);
   const [periods, setPeriods] = useState<Array<{ id: number | string; year?: number; semester?: number }>>([]);
   const [loading, setLoading] = useState(true);
@@ -65,6 +66,26 @@ export default function EnrollPlanPage() {
     if (p && p.coordinator) setForm((f) => ({ ...f, coordinatorId: String(p.coordinator!.id) }));
   }, [form.profileId, profiles]);
 
+  // load theses for selected advisor
+  useEffect(() => {
+    const aid = form.advisorId;
+    if (!aid) return setProfessorTheses([]);
+    (async () => {
+      try {
+        const base = API_ROUTES.BASE;
+        const res = await fetch(`${base}/theses/professor/${aid}`);
+        const data = await res.json();
+        // map to simple id/title
+        const list = Array.isArray(data)
+          ? data.map((t: any) => ({ id: String(t.id), title: t.title ?? t.name ?? `Tema ${t.id}` }))
+          : [];
+        setProfessorTheses(list);
+      } catch (e) {
+        setProfessorTheses([]);
+      }
+    })();
+  }, [form.advisorId]);
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
@@ -113,6 +134,7 @@ export default function EnrollPlanPage() {
 
     if (!form.profileId) return setError("Selecciona una subárea de investigación.");
     if (!form.advisorId) return setError("Selecciona un asesor de tesis.");
+    if (professorTheses.length > 0 && !form.topic) return setError("Selecciona un tema de tesis del asesor.");
     if (!form.semesterStart1) return setError("Ingresa semestre de inicio (Tesis 1).");
 
     const hasCourse = Array.isArray(form.courses) && form.courses.some((c: any) => c.courseId);
@@ -124,7 +146,7 @@ export default function EnrollPlanPage() {
       const payload = {
         profileId: form.profileId,
         coordinatorId: form.coordinatorId || null,
-        topic: form.topic || null,
+        thesisId: professorTheses.length > 0 ? form.topic : null,
         advisorId: form.advisorId,
         semesterStart1: form.semesterStart1,
         semesterStart2: form.semesterStart2 || null,
@@ -159,6 +181,7 @@ export default function EnrollPlanPage() {
   function isMinValid() {
     if (!form.profileId) return false;
     if (!form.advisorId) return false;
+    if (professorTheses.length > 0 && !form.topic) return false;
     if (!form.semesterStart1) return false;
     const hasCourse = Array.isArray(form.courses) && form.courses.some((c: any) => c.courseId);
     if (!hasCourse && !form.otherCourse?.courseId && !form.otherCourse2?.courseId) return false;
@@ -205,7 +228,19 @@ export default function EnrollPlanPage() {
 
               <div>
                 <label className="block text-sm font-medium">Tema del proyecto</label>
-                <input name="topic" value={form.topic} onChange={handleChange} placeholder="Describe brevemente el tema" className="mt-1 block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm" />
+                {professorTheses.length > 0 ? (
+                  <select name="topic" value={form.topic} onChange={handleChange} className="mt-1 block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                    <option value="">Selecciona un tema publicado por el asesor</option>
+                    {professorTheses.map((t) => (
+                      <option key={t.id} value={t.id}>{t.title}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <>
+                    <input name="topic" value={form.topic} onChange={handleChange} placeholder="Describe brevemente el tema" className="mt-1 block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm" />
+                    <p className="text-xs text-muted-foreground mt-1">El asesor no tiene temas publicados — puedes ingresar el tema manualmente.</p>
+                  </>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

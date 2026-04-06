@@ -9,6 +9,9 @@ import { User } from '../users/entities/user.entity';
 import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 import { ThesisStatusEnum } from './enums/thesis_status.enum';
 import { PeriodsService } from '../periods/periods.service';
+import { TasksService } from '../tasks/tasks.service';
+import { TaskType } from '../tasks/enums/taskType';
+import { ProfilesService } from '../profiles/profiles.service';
 
 @Injectable()
 export class ThesisApplicationsService {
@@ -20,6 +23,8 @@ export class ThesisApplicationsService {
     @InjectRepository(Thesis)
     private readonly thesisRepository: Repository<Thesis>,
     private readonly periodsService: PeriodsService,
+    private readonly tasksService: TasksService,
+    private readonly profilesService: ProfilesService,
   ) {}
 
   async create(
@@ -60,6 +65,26 @@ export class ThesisApplicationsService {
       await this.thesisApplicationRepository.save(thesisApplication);
     student.thesisApplication = savedApplication;
     await this.studentRepository.save(student);
+
+    // Create a task for the coordinator/director of the subarea (if exists)
+    try {
+      const subareaName = thesis.investigationSubarea || '';
+      const profiles = await this.profilesService.findAll();
+      const match = profiles.find(
+        (p) => p.name?.toLowerCase?.() === subareaName.toLowerCase(),
+      );
+      if (match && match.coordinator && match.coordinator.id) {
+        await this.tasksService.create(TaskType.SEND_APPROVE, {
+          flow: 'inscripcionSubarea',
+          step: 0,
+          comment: '',
+          coordinatorId: match.coordinator.id,
+          studentId: student.id,
+        });
+      }
+    } catch (e) {
+      console.error('Error creando tarea de subarea:', e);
+    }
 
     return savedApplication;
   }

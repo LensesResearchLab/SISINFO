@@ -33,30 +33,24 @@ export class TasksService {
     let student: Student | null;
     let professor: Professor | null;
     let coordinator: Coordinator | null;
-    const total =
-      Number(!!overrides?.studentId) +
-      Number(!!overrides?.professorId) +
-      Number(!!overrides?.coordinatorId);
-
-    if (total !== 1) {
-      throw new BadRequestException(
-        'Debes especificar exactamente uno: studentId, professorId o coordinatorId',
-      );
-    }
 
     const dto = this.factory.create({ type, ...overrides });
     const entity = this.repo.create(dto);
+    // Allow assigning multiple relations (student, professor, coordinator)
+    // so a task can be addressed to a coordinator while keeping student info.
     if (overrides?.studentId) {
       student = await this.studentsService.findOne(overrides.studentId);
       if (student) {
         entity.student = student;
       }
-    } else if (overrides?.professorId) {
+    }
+    if (overrides?.professorId) {
       professor = await this.professorService.findOne(overrides?.professorId);
       if (professor) {
         entity.professor = professor;
       }
-    } else if (overrides?.coordinatorId) {
+    }
+    if (overrides?.coordinatorId) {
       coordinator = await this.coordinatorService.findOne(
         overrides?.coordinatorId,
       );
@@ -95,7 +89,13 @@ export class TasksService {
 
   async findAll(): Promise<Task[]> {
     return await this.repo.find({
-      relations: ['coordinator', 'projectActualTask', 'projectPreviousTasks'],
+      relations: [
+        'coordinator',
+        'student',
+        'professor',
+        'projectActualTask',
+        'projectPreviousTasks',
+      ],
     });
   }
 }

@@ -8,7 +8,7 @@ export function StudentTabList() {
       <TabsTrigger
         value="profile"
       >
-        Perfil
+        Subárea de investigación
       </TabsTrigger>
       <TabsTrigger
         value="detail"

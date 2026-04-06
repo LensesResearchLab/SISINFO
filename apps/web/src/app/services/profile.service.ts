@@ -1,7 +1,7 @@
 import { API_ROUTES } from "../routes";
 
 export async function createProfile(body: { name: string; coordinatorId?: string | number }) {
-  const url = `${API_ROUTES.BASE}/profiles`;
+  const url = `${API_ROUTES.BASE}/subareas`;
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

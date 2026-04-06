@@ -54,7 +54,6 @@ export default function ThesisInscription({
     queryFn: () => getPostgraduateThesisById(id),
   });
 
-  const isApplying = useThesisInscriptionStore((state) => state.isApplying);
 
   useEffect(() => {
     reset();
@@ -64,8 +63,7 @@ export default function ThesisInscription({
   if (error || !thesis) return <ThesisNotFound />;
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
-      {!isApplying && <ThesisDetails thesis={thesis} />}
-      {isApplying && <ThesisApplying thesis={thesis} />}
+      <ThesisDetails thesis={thesis} />
     </div>
   );
 }
@@ -87,17 +85,9 @@ export default function ThesisInscription({
  * @returns {JSX.Element} Card with formatted thesis information
  */
 function ThesisDetails({ thesis }: { readonly thesis: Thesis }) {
-  const setIsApplying = useThesisInscriptionStore(
-    (state) => state.setIsApplying
-  );
   return (
     <ThesisDetailCard thesis={thesis}>
-      <Button
-        className="w-40 mx-auto block"
-        onClick={() => setIsApplying(true)}
-      >
-        Aplicar
-      </Button>
+      {/* Applying from thesis detail is disabled. Use 'Solicitud de inscripción a subárea de investigación' instead. */}
     </ThesisDetailCard>
   );
 }

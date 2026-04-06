@@ -44,7 +44,8 @@ const thesisSchema = z.object({
   students: z.number().min(1, "Debe haber al menos 1 estudiante"),
   category: z.string(),
   tags: z.array(z.string()).min(1, "Debe agregar al menos un tag"),
-  lastPeriod: z.string()
+  startPeriod: z.string(),
+  subareaId: z.string().optional()
 })
 
 export default function ThesisForm() {
@@ -57,18 +58,32 @@ export default function ThesisForm() {
       students: 3,
       category: "",
       tags: [],
-      lastPeriod: "202510",
+      startPeriod: "202510",
+      subareaId: "",
     },
   })
 
   const {
     data: periods,
-    isFetching,
-    error,
+    isFetching: periodsIsFetching,
+    error: periodsError,
   } = useQuery({
     queryKey: ["periods"],
     queryFn: async () => getPeriods()
   });
+
+  const {
+    data: subareas,
+    isFetching: subareasIsFetching,
+    error: subareasError,
+  } = useQuery({
+    queryKey: ["subareas"],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subareas`)
+      if (!res.ok) throw new Error('Error fetching subareas')
+      return res.json()
+    }
+  })
 
 
 
@@ -93,7 +108,15 @@ export default function ThesisForm() {
         description: values.description,
         maxStudents: values.students,
         category: values.category,
-        investigationSubarea: values.tags.join(", "),
+        investigationSubarea: (() => {
+          try {
+            const found = (subareas ?? []).find((s: any) => String(s.id) === String(values.subareaId))
+            if (found) return found.name
+          } catch (e) {
+            // noop
+          }
+          return values.tags.join(", ")
+        })(),
         isEnded: false
       };
 
@@ -101,7 +124,7 @@ export default function ThesisForm() {
       await postNewThesis(
         user.id,
         thesisData,
-        values.lastPeriod.replace("-", "")
+        values.startPeriod.replace("-", "")
       );
 
     } catch (error) {
@@ -110,8 +133,8 @@ export default function ThesisForm() {
   }
 
   const [isModalOpen, setIsModalOpen] = useState(false)
-  if (isFetching) return <SpinnerPage />
-  if (error) return <ErrorPage />
+  if (periodsIsFetching || subareasIsFetching) return <SpinnerPage />
+  if (periodsError || subareasError) return <ErrorPage />
 
   return (
     <div className="min-h-full mx-auto p-4 container max-w-3xl">
@@ -212,6 +235,30 @@ export default function ThesisForm() {
                 )}
               />
 
+              {/* Subarea Field */}
+              <FormField
+                control={form.control}
+                name="subareaId"
+                render={({ field }) => (
+                  <FormItem className='text-primary'>
+                    <FormLabel className="font-semibold">Subárea de investigación</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
+                          <SelectValue placeholder="Selecciona una subárea (opcional)" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        { (subareas ?? []).map((s: any) => (
+                          <SelectItem value={String(s.id)} key={s.id} className="hover:bg-core-soft">{s.name}</SelectItem>
+                        )) }
+                      </SelectContent>
+                    </Select>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+
               {/* Tags Field */}
               <div className="md:col-span-2">
                 <FormField
@@ -266,17 +313,16 @@ export default function ThesisForm() {
                 />
               </div>
 
-              {/* Last Period Field */}
               <FormField
                 control={form.control}
-                name="lastPeriod"
+                name="startPeriod"
                 render={({ field }) => (
                   <FormItem className='text-primary'>
-                    <FormLabel className="font-semibold">Último Periodo</FormLabel>
+                    <FormLabel className="font-semibold">Periodo de inicio</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
-                          <SelectValue placeholder="Selecciona un periodo" />
+                          <SelectValue placeholder="Selecciona un periodo de inicio" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

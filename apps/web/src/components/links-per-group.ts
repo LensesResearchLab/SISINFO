@@ -103,8 +103,8 @@ export const graduateData = [
       },
         {
           Icon: FileBarChart,
-          title: "Inscribir plan de estudios",
-          description: "Registra y envía tu plan de estudios para la tesis.",
+          title: "Solicitud de inscripción a subárea de investigación",
+          description: "Envía una solicitud de inscripción a la subárea de investigación para tu tesis.",
           url: ROUTES.POSTGRADUATE_ENROLL_PLAN,
         },
       {
@@ -181,8 +181,8 @@ export const administratorData = [
       },
       {
         Icon: FileCog,
-        title: "Administrar perfiles",
-        description: "Agregar y asignar profesor encargado a un perfil.",
+        title: "Administrar subáreas de investigación",
+        description: "Agregar y asignar profesor encargado a una subárea de investigación.",
         url: ROUTES.ADMINISTRATOR_PROFILES,
       },
     ],
