@@ -337,7 +337,7 @@ export default function EnrollPlanPage() {
                 <button type="submit" disabled={!isMinValid() || submitting} className={`px-4 py-2 text-white rounded ${!isMinValid() || submitting ? 'bg-gray-300 cursor-not-allowed' : 'bg-core'}`}>
                   {submitting ? "Enviando..." : "Enviar solicitud"}
                 </button>
-                <button type="button" onClick={() => setForm({ profileId: "", coordinatorId: "", advisorId: "", semesterStart1: "", semesterStart2: "", courses: emptyCourses, otherCourse: { courseId: "", semester: "", seen: false }, otherCourse2: { courseId: "", semester: "", seen: false }, comments: "" })} className="px-4 py-2 border rounded">Limpiar</button>
+                <button type="button" onClick={() => setForm({ profileId: "", coordinatorId: "", advisorId: "",topic: "", semesterStart1: "", semesterStart2: "", courses: emptyCourses, otherCourse: { courseId: "", semester: "", seen: false }, otherCourse2: { courseId: "", semester: "", seen: false }, comments: "" })} className="px-4 py-2 border rounded">Limpiar</button>
               </div>
             </form>
           )}
