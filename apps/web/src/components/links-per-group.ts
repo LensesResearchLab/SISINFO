@@ -179,6 +179,12 @@ export const administratorData = [
         description: "Agregar y administrar periodos académicos.",
         url: ROUTES.ADMINISTRATOR_PERIODS,
       },
+      {
+        Icon: FileCog,
+        title: "Administrar perfiles",
+        description: "Agregar y asignar profesor encargado a un perfil.",
+        url: ROUTES.ADMINISTRATOR_PROFILES,
+      },
     ],
   },
 ];

@@ -10,6 +10,7 @@ import { CoursesModule } from './courses/courses.module';
 import { GraduatedAssistancesModule } from './graduated-assistances/graduated-assistances.module';
 import { PeriodsModule } from './periods/periods.module';
 import { ProfessorsModule } from './professors/professors.module';
+import { ProfilesModule } from './profiles/profiles.module';
 import { ProjectsModule } from './projects/projects.module';
 import { RequirementsModule } from './requirements/requirements.module';
 import { SectionsModule } from './sections/sections.module';
@@ -44,6 +45,7 @@ import { ImportantSectionsModule } from './important-sections/important-sections
     IncidencesModule,
     PeriodsModule,
     ProfessorsModule,
+    ProfilesModule,
     ProjectsModule,
     ProjectApplicationsModule,
     RequirementsModule,
