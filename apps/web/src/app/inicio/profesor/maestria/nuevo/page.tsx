@@ -15,12 +15,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { X } from "lucide-react"
 import { ConfirmationModal } from '@/components/shared/confirmation-modal';
 import { ROUTES } from '@/app/routes'
-import { useState } from 'react'
-import { useAuth } from '@/hooks/use-auth'
+  
 import { postNewThesis } from '@/app/services/thesis.service'
 import { getPeriods } from '@/app/services/period.service'
 import SpinnerPage from '@/components/shared/spinner-page'
@@ -43,11 +40,9 @@ const thesisSchema = z.object({
   description: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
   students: z.number().min(1, "Debe haber al menos 1 estudiante"),
   category: z.string(),
-  tags: z.array(z.string()).min(1, "Debe agregar al menos un tag"),
   startPeriod: z.string(),
   subareaId: z.string().optional()
 })
-
 export default function ThesisForm() {
   const { user } = useAuth();
   const form = useForm<z.infer<typeof thesisSchema>>({
@@ -57,11 +52,10 @@ export default function ThesisForm() {
       description: "",
       students: 3,
       category: "",
-      tags: [],
       startPeriod: "202510",
       subareaId: "",
     },
-  })
+  });
 
   const {
     data: periods,
@@ -86,7 +80,6 @@ export default function ThesisForm() {
   })
 
 
-
   const dialogText = {
     title: "Publicar Proyecto",
     description: "¿Estás seguro de que deseas publicar este proyecto?",
@@ -109,13 +102,8 @@ export default function ThesisForm() {
         maxStudents: values.students,
         category: values.category,
         investigationSubarea: (() => {
-          try {
-            const found = (subareas ?? []).find((s: any) => String(s.id) === String(values.subareaId))
-            if (found) return found.name
-          } catch (e) {
-            // noop
-          }
-          return values.tags.join(", ")
+          const found = (subareas ?? []).find((s: any) => String(s.id) === String(values.subareaId))
+          return found ? found.name : ""
         })(),
         isEnded: false
       };
@@ -236,107 +224,59 @@ export default function ThesisForm() {
               />
 
               {/* Subarea Field */}
-              <FormField
-                control={form.control}
-                name="subareaId"
-                render={({ field }) => (
-                  <FormItem className='text-primary'>
-                    <FormLabel className="font-semibold">Subárea de investigación</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
-                          <SelectValue placeholder="Selecciona una subárea (opcional)" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        { (subareas ?? []).map((s: any) => (
-                          <SelectItem value={String(s.id)} key={s.id} className="hover:bg-core-soft">{s.name}</SelectItem>
-                        )) }
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="text-red-500" />
-                  </FormItem>
-                )}
-              />
-
-              {/* Tags Field */}
               <div className="md:col-span-2">
                 <FormField
                   control={form.control}
-                  name="tags"
+                  name="subareaId"
                   render={({ field }) => (
                     <FormItem className='text-primary'>
-                      <FormLabel className="font-semibold">Etiquetas</FormLabel>
-                      <FormControl>
-                        <div className="space-y-2">
-                          <Select
-                            value=""
-                            onValueChange={(value) => {
-                              if (value && !field.value.includes(value)) {
-                                field.onChange([...field.value, value])
-                              }
-                            }}
-                          >
-                            <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
-                              <SelectValue placeholder="Agregar etiqueta..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Inteligencia artificial">Inteligencia artificial</SelectItem>
-                              <SelectItem value="Bases de datos">Bases de datos</SelectItem>
-                              <SelectItem value="Desarrollo web">Desarrollo web</SelectItem>
-                              <SelectItem value="Ciberseguridad">Ciberseguridad</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {field.value.map((tag) => (
-                              <Badge
-                                key={tag}
-                                variant="secondary"
-                                className="bg-core-soft text-core hover:text-white hover:bg-core px-3 py-1 rounded-full transition-colors"
-                              >
-                                {tag}
-                                <button
-                                  type="button"
-                                  onClick={() => field.onChange(field.value.filter(t => t !== tag))}
-                                  className="ml-1 hover:text-core-highlight"
-                                >
-                                  <X size={14} className="inline-block" />
-                                </button>
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      </FormControl>
+                      <FormLabel className="font-semibold">Subárea de investigación</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
+                            <SelectValue placeholder="Selecciona una subárea (opcional)" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          { (subareas ?? []).map((s: any) => (
+                            <SelectItem value={String(s.id)} key={s.id} className="hover:bg-core-soft">{s.name}</SelectItem>
+                          )) }
+                        </SelectContent>
+                      </Select>
                       <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="startPeriod"
-                render={({ field }) => (
-                  <FormItem className='text-primary'>
-                    <FormLabel className="font-semibold">Periodo de inicio</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
-                          <SelectValue placeholder="Selecciona un periodo de inicio" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {
-                          (periods ?? []).map(
-                            (period: string) => <SelectItem value={period} key={period}>{period}</SelectItem>
-                          )
-                        }
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="text-red-500" />
-                  </FormItem>
-                )}
-              />
+              {/* Tags field removed */}
+
+              <div className="md:col-span-2">
+                <FormField
+                  control={form.control}
+                  name="startPeriod"
+                  render={({ field }) => (
+                    <FormItem className='text-primary'>
+                      <FormLabel className="font-semibold">Periodo de inicio</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
+                            <SelectValue placeholder="Selecciona un periodo de inicio" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {
+                            (periods ?? []).map(
+                              (period: string) => <SelectItem value={period} key={period}>{period}</SelectItem>
+                            )
+                          }
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-500" />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <div className="flex justify-center mt-5">

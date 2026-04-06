@@ -34,12 +34,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ConfirmationModal } from '@/components/shared/confirmation-modal';
 import { ROUTES } from '@/app/routes'
 import { useState } from 'react'
+import { getPeriods } from '@/app/services/period.service'
+import { useQuery } from '@tanstack/react-query'
 import { CategoryTag } from '@/components/shared/category-tag'
 import { CreateProject } from '@/app/types/entities/project.type'
 import { createUndergraduateProject } from '@/app/services/professor.service'
 import SpinnerPage from '@/components/shared/spinner-page'
-import { getPeriods } from '@/app/services/period.service'
-import { useQuery } from '@tanstack/react-query'
 import ErrorPage from '@/components/shared/error-page'
 
 
@@ -48,7 +48,7 @@ const thesisSchema = z.object({
   description: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
   students: z.number().min(1, "Debe haber al menos 1 estudiante"),
   category: z.string(),
-  tags: z.array(z.string()).min(1, "Debe agregar al menos un tag"),
+  subareaId: z.string().optional(),
   lastPeriod: z.string()
 })
 
@@ -60,7 +60,7 @@ export default function ThesisForm() {
       description: "",
       students: 3,
       category: "",
-      tags: [],
+      subareaId: "",
       lastPeriod: "202510",
     },
   })
@@ -76,12 +76,13 @@ export default function ThesisForm() {
   }
 
   async function onSubmit(values: z.infer<typeof thesisSchema>) {
+    const found = (subareas ?? []).find((s: any) => String(s.id) === String(values.subareaId))
     const bodyProject: CreateProject = {
       title: values.title,
       description: values.description,
       maxStudents: values.students,
       category: values.category,
-      areasOfInterest: values.tags,
+      areasOfInterest: found ? [found.name] : [],
       period: values.lastPeriod
     };
     createUndergraduateProject(bodyProject);
@@ -94,6 +95,19 @@ export default function ThesisForm() {
     queryKey: ["periods"],
     queryFn: async () => getPeriods()
   });
+
+  const {
+    data: subareas,
+    isFetching: subareasIsFetching,
+    error: subareasError,
+  } = useQuery({
+    queryKey: ["subareas"],
+    queryFn: async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/subareas`)
+      if (!res.ok) throw new Error('Error fetching subareas')
+      return res.json()
+    }
+  })
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   if (isFetching) return <SpinnerPage />
@@ -198,47 +212,26 @@ export default function ThesisForm() {
                 )}
               />
 
-              {/* Tags Field */}
               <div className="md:col-span-2">
+                {/* Subarea Field */}
                 <FormField
                   control={form.control}
-                  name="tags"
+                  name="subareaId"
                   render={({ field }) => (
                     <FormItem className='text-primary'>
-                      <FormLabel className="font-semibold">Etiquetas</FormLabel>
-                      <FormControl>
-                        <div className="space-y-2">
-                          <Select
-                            value=""
-                            onValueChange={(value) => {
-                              if (value && !field.value.includes(value)) {
-                                field.onChange([...field.value, value])
-                              }
-                            }}
-                          >
-                            <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
-                              <SelectValue placeholder="Agregar etiqueta..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Inteligencia artificial">Inteligencia artificial</SelectItem>
-                              <SelectItem value="Bases de datos">Bases de datos</SelectItem>
-                              <SelectItem value="Desarrollo web">Desarrollo web</SelectItem>
-                              <SelectItem value="Ciberseguridad">Ciberseguridad</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {field.value.map((tag) => (
-                              <CategoryTag
-                                key={tag}
-                                tag={tag}
-                                onClic={() => {
-                                  field.onChange(field.value.filter((t) => t !== tag))
-                                }}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      </FormControl>
+                      <FormLabel className="font-semibold">Subárea de investigación</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
+                            <SelectValue placeholder="Selecciona una subárea" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          { (subareas ?? []).map((s: any) => (
+                            <SelectItem value={String(s.id)} key={s.id} className="hover:bg-core-soft">{s.name}</SelectItem>
+                          )) }
+                        </SelectContent>
+                      </Select>
                       <FormMessage className="text-red-500" />
                     </FormItem>
                   )}
@@ -246,30 +239,32 @@ export default function ThesisForm() {
               </div>
 
               {/* Last Period Field */}
-              <FormField
-                control={form.control}
-                name="lastPeriod"
-                render={({ field }) => (
-                  <FormItem className='text-primary'>
-                    <FormLabel className="font-semibold">Último Periodo</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
-                          <SelectValue placeholder="Selecciona un periodo" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {
-                          (periods ?? []).map(
-                            (period: string) => <SelectItem value={period} key={period}>{period}</SelectItem>
-                          )
-                        }
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="text-red-500" />
-                  </FormItem>
-                )}
-              />
+              <div className="md:col-span-2">
+                <FormField
+                  control={form.control}
+                  name="lastPeriod"
+                  render={({ field }) => (
+                    <FormItem className='text-primary'>
+                      <FormLabel className="font-semibold">Último Periodo</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="focus:ring-2 focus:ring-core border-gray-300 rounded-lg">
+                            <SelectValue placeholder="Selecciona un periodo" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {
+                            (periods ?? []).map(
+                              (period: string) => <SelectItem value={period} key={period}>{period}</SelectItem>
+                            )
+                          }
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-500" />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <div className="flex justify-center mt-5">
