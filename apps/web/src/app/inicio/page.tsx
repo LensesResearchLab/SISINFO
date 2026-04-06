@@ -67,24 +67,30 @@ export default function Home() {
   const setTasks = useHomeStore((state) => state.setTasks);
   const [loading, setLoading] = useState(true);
   const fetchedRef = useRef(false);
-  useEffect(() => {
-    if (!fetchedRef.current) {
-      fetchUserRoles(setRoles, setLoading, fetchedRef);
-      getUserInfo().then((data) => {
-        const userId = data.user.id;
+useEffect(() => {
+  if (!fetchedRef.current) {
+    fetchUserRoles(setRoles, setLoading, fetchedRef);
+    getUserInfo().then((data) => {
+      const userId = data.user.id;
+      const userRoles = data.user.roles;
 
-        Promise.all([
-          getPendingTasksForStudent(userId),
-          getPendingTasksForProfessor(userId),
-          getPendingTasksForCoordinator()
-        ]).then(([studentTasks, professorTasks, coordinatorTasks]) => {
-          const allTasks = [...studentTasks, ...professorTasks, ...coordinatorTasks];
-          const parsedTasks = mapTasksToTaskTable(allTasks);
-          setTasks(parsedTasks);
-        });
+      const taskPromises = [
+        getPendingTasksForStudent(userId),
+        getPendingTasksForProfessor(userId),
+      ];
+
+      if (userRoles.includes("coordinador")) {
+        taskPromises.push(getPendingTasksForCoordinator());
+      }
+
+      Promise.all(taskPromises).then((results) => {
+        const allTasks = results.flat();
+        const parsedTasks = mapTasksToTaskTable(allTasks);
+        setTasks(parsedTasks);
       });
-    }
-  }, [setRoles, setTasks]);
+    });
+  }
+}, [setRoles, setTasks]);
 
   if (loading) return <SpinnerPage />;
   if (roles.length === 0) return null;

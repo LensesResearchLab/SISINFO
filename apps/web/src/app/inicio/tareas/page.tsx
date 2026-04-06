@@ -108,28 +108,26 @@ export default function Tasks() {
 
   const [loading, setLoading] = useState(tasks.length === 0);
 
-  // Only fetch tasks if they’re not already in the store.
-  useEffect(() => {
-    if (tasks.length > 0) return; // already present
+    useEffect(() => {
+    if (tasks.length > 0) return; // No hace fetch si ya estan cargadas las tareas
 
     (async () => {
       try {
-        const {
-          user: { id: userId },
-        } = await getUserInfo();
+        const data = await getUserInfo();
+        const userId = data.user.id;
+        const userRoles = data.user.roles;
 
-        const [studentTasks, professorTasks, coordinatorTasks] =
-          await Promise.all([
-            getPendingTasksForStudent(userId),
-            getPendingTasksForProfessor(userId),
-            getPendingTasksForCoordinator(),
-          ]);
-
-        const allTasks = [
-          ...studentTasks,
-          ...professorTasks,
-          ...coordinatorTasks,
+        const taskPromises = [
+          getPendingTasksForStudent(userId),
+          getPendingTasksForProfessor(userId),
         ];
+
+        if (userRoles.includes("coordinador")) {
+          taskPromises.push(getPendingTasksForCoordinator());
+        }
+
+        const results = await Promise.all(taskPromises);
+        const allTasks = results.flat();
 
         const parsedTasks = allTasks.map((task: Task) => {
           const stepNumber =
