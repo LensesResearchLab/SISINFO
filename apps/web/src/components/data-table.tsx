@@ -31,7 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import React, { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ArrowUpDown, ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
@@ -88,7 +88,7 @@ export function DataTable<TData, TValue>({
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div className="flex items-center gap-4 flex-1 min-w-0">
-          {toolbar ? <div className="shrink-0">{toolbar}</div> : null}
+          {toolbar ? <div className="shrink-0">{toolbar as React.ReactNode}</div> : null}
 
           <Input
             placeholder="Buscar..."
