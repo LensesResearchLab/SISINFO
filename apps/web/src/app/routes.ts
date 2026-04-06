@@ -77,6 +77,7 @@ export const ROUTES: Record<string, string> = {
   ADMINISTRATOR_USERS: "/administrador/usuario",
   ADMINISTRATOR_COURSE_LEADERS: "/administrador/lider",
   ADMINISTRATOR_UPLOAD_TEACHERS: "/administrador/cargar_profesores",
+  ADMINISTRATOR_PROFILES: "/administrador/perfiles",
   ADMINISTRATOR_PERIODS: "/administrador/periodos",
   /*  General  */
 
@@ -84,7 +85,7 @@ export const ROUTES: Record<string, string> = {
 };
 export const API_ROUTES: Record<string, string> = {
   
-  BASE: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api",
+  BASE: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api",
   PERIODS: "periods",
   ASSISTANCE_APPLICATIONS: "assistance-applications",
   COURSES: "courses",
