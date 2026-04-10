@@ -174,12 +174,17 @@ export default function ProfessorCourseProgramsPage() {
               id={inputId}
               onChange={(e) => onFileSelected(course.id, e.target.files)}
             />
-            <Button asChild variant="default" size="sm" disabled={uploadingFor === course.id}>
-              <label htmlFor={inputId} className="cursor-pointer inline-flex items-center gap-2">
+              <Button
+                type="button"
+                variant="default"
+                size="sm"
+                disabled={uploadingFor === course.id}
+                onClick={() => document.getElementById(inputId)?.click()}
+                className="gap-2"
+              >
                 <UploadIcon className="w-4 h-4" />
                 {uploadingFor === course.id ? "Subiendo…" : course.program ? "Reemplazar PDF" : "Subir PDF"}
-              </label>
-            </Button>
+              </Button>
           </div>
         );
       },

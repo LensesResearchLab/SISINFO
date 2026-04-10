@@ -16,14 +16,14 @@ export class BillboardsController {
     return this.billboardsService.findAll();
   }
 
-  @Get(':period')
-  findOne(@Param('period') period: string) {
-    return this.billboardsService.findOne(period);
-  }
-
   @Get('/coursesProgram/:period')
   findOneCoursesWithProgram(@Param('period') period: string) {
     return this.billboardsService.findOneWithCoursesProgram(period);
+  }
+
+  @Get(':period')
+  findOne(@Param('period') period: string) {
+    return this.billboardsService.findOne(period);
   }
 
   @Delete(':id')
