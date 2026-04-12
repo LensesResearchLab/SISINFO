@@ -1,23 +1,16 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { API_ROUTES } from "@/app/routes";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-type Profile = {
-  id: number | string;
-  name: string;
-  coordinator?: { id: number | string; user?: { name?: string; email?: string } };
-};
+export default function EnrollSubareaPage() {
+  const [loading, setLoading] = useState(false);
+  const [profiles, setProfiles] = useState<any[]>([]);
+  const [professors, setProfessors] = useState<any[]>([]);
+  const [coursesList, setCoursesList] = useState<any[]>([]);
+  const [periods, setPeriods] = useState<any[]>([]);
+  const [professorTheses, setProfessorTheses] = useState<any[]>([]);
 
-type Professor = { id: number | string; user: { name: string; email?: string } };
-
-export default function EnrollPlanPage() {
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [professors, setProfessors] = useState<Professor[]>([]);
-  const [professorTheses, setProfessorTheses] = useState<Array<{ id: string; title: string }>>([]);
-  const [coursesList, setCoursesList] = useState<Array<{ id: number | string; name: string }>>([]);
-  const [periods, setPeriods] = useState<Array<{ id: number | string; year?: number; semester?: number }>>([]);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -61,30 +54,69 @@ export default function EnrollPlanPage() {
     loadAll();
   }, []);
 
+  // Derived deduplicated courses list (by name, case-insensitive) for selects only.
+  // We do NOT mutate the original `coursesList` because it may be needed elsewhere
+  // with period-specific entries. This derived list is only for display in selects.
+  const dedupedCourses = useMemo(() => {
+    const map = new Map<string, { id: number | string; name: string }>();
+    for (const c of coursesList || []) {
+      const name = (c?.name ?? "").toString().trim();
+      if (!name) continue;
+      const key = name.toLowerCase();
+      if (!map.has(key)) map.set(key, { id: c.id, name });
+    }
+    return Array.from(map.values());
+  }, [coursesList]);
+
   useEffect(() => {
     const p = profiles.find((x) => String(x.id) === String(form.profileId));
     if (p && p.coordinator) setForm((f) => ({ ...f, coordinatorId: String(p.coordinator!.id) }));
   }, [form.profileId, profiles]);
 
-  // load theses for selected advisor
+  // load theses for selected advisor and selected subarea
   useEffect(() => {
     const aid = form.advisorId;
-    if (!aid) return setProfessorTheses([]);
+    const pid = form.profileId;
+    if (!aid || !pid) return setProfessorTheses([]);
+    const profile = profiles.find((x) => String(x.id) === String(pid));
+    const profileName = profile?.name?.toString().trim() ?? "";
     (async () => {
       try {
         const base = API_ROUTES.BASE;
         const res = await fetch(`${base}/theses/professor/${aid}`);
         const data = await res.json();
-        // map to simple id/title
-        const list = Array.isArray(data)
-          ? data.map((t: any) => ({ id: String(t.id), title: t.title ?? t.name ?? `Tema ${t.id}` }))
+        // filter theses by investigationSubarea matching selected profile name (case-insensitive)
+        const filtered = Array.isArray(data)
+          ? data.filter((t: any) => {
+              const sub = (t?.investigationSubarea ?? t?.areasOfInterest ?? "").toString().trim();
+              return profileName && sub && sub.toLowerCase() === profileName.toLowerCase();
+            })
           : [];
+        const list = filtered.map((t: any) => ({ id: String(t.id), title: t.title ?? t.name ?? `Tema ${t.id}` }));
         setProfessorTheses(list);
       } catch (e) {
         setProfessorTheses([]);
       }
     })();
-  }, [form.advisorId]);
+  }, [form.advisorId, form.profileId, profiles]);
+
+  // Manage topic clearing behavior:
+  // - If advisor or profile not selected -> clear topic.
+  // - If there ARE published theses for the advisor+subarea -> clear topic
+  //   to force selection from the list.
+  // - If there are NO published theses -> allow manual typing (do not clear).
+  useEffect(() => {
+    if (!form.advisorId || !form.profileId) {
+      setForm((f) => ({ ...f, topic: "" }));
+      return;
+    }
+
+    if (Array.isArray(professorTheses) && professorTheses.length > 0) {
+      // Force clearing so the student must pick a published topic
+      setForm((f) => ({ ...f, topic: "" }));
+    }
+    // When there are no theses, do nothing: keep any manual input the student types
+  }, [form.advisorId, form.profileId, professorTheses]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -228,18 +260,20 @@ export default function EnrollPlanPage() {
 
               <div>
                 <label className="block text-sm font-medium">Tema del proyecto</label>
-                {professorTheses.length > 0 ? (
-                  <select name="topic" value={form.topic} onChange={handleChange} className="mt-1 block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
-                    <option value="">Selecciona un tema publicado por el asesor</option>
-                    {professorTheses.map((t) => (
-                      <option key={t.id} value={t.id}>{t.title}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <>
-                    <input name="topic" value={form.topic} onChange={handleChange} placeholder="Describe brevemente el tema" className="mt-1 block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm" />
-                    <p className="text-xs text-muted-foreground mt-1">El asesor no tiene temas publicados — puedes ingresar el tema manualmente.</p>
-                  </>
+                <select
+                  name="topic"
+                  value={form.topic}
+                  onChange={handleChange}
+                  disabled={professorTheses.length === 0}
+                  className="mt-1 block w-full rounded-md border border-input bg-card px-3 py-2 h-9 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                >
+                  <option value="">{professorTheses.length === 0 ? "No hay temas publicados" : "Selecciona un tema publicado por el asesor"}</option>
+                  {professorTheses.map((t) => (
+                    <option key={t.id} value={t.id}>{t.title}</option>
+                  ))}
+                </select>
+                {professorTheses.length === 0 && (
+                  <p className="text-xs text-muted-foreground mt-1">El asesor no tiene temas publicados para esta subárea.</p>
                 )}
               </div>
 
@@ -269,7 +303,7 @@ export default function EnrollPlanPage() {
                       <div className="flex-1">
                         <select value={c.courseId} onChange={(e) => handleCourseChange(idx, "courseId", e.target.value)} className="w-full rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                           <option value="">Selecciona curso (opcional)</option>
-                          {coursesList.length > 0 ? coursesList.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
+                          {dedupedCourses.length > 0 ? dedupedCourses.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
                         </select>
                       </div>
                       <div className="flex items-center gap-3">
@@ -295,7 +329,7 @@ export default function EnrollPlanPage() {
                       <div className="flex-1">
                         <select value={form.otherCourse.courseId} onChange={(e) => handleOtherCourseChange("courseId", e.target.value)} className="w-full rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                           <option value="">Selecciona curso (otro)</option>
-                          {coursesList.length > 0 ? coursesList.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
+                          {dedupedCourses.length > 0 ? dedupedCourses.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
                         </select>
                       </div>
                       <div className="flex items-center gap-3">
@@ -314,7 +348,7 @@ export default function EnrollPlanPage() {
                       <div className="flex-1">
                         <select value={form.otherCourse2.courseId} onChange={(e) => handleOtherCourse2Change("courseId", e.target.value)} className="w-full rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                           <option value="">Selecciona curso (otro 2)</option>
-                          {coursesList.length > 0 ? coursesList.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
+                          {dedupedCourses.length > 0 ? dedupedCourses.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
                         </select>
                       </div>
                       <div className="flex items-center gap-3">
