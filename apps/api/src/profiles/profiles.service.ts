@@ -47,4 +47,19 @@ export class ProfilesService {
     if (!profile) throw new NotFoundException(`Profile with id ${id} not found`);
     return profile;
   }
+
+  async update(id: string, updateProfileDto: { coordinatorId?: string }) {
+    const profile = await this.profileRepository.findOne({ where: { id }, relations: ['coordinator'] });
+    if (!profile) throw new NotFoundException(`Profile with id ${id} not found`);
+
+    const { coordinatorId } = updateProfileDto;
+    if (coordinatorId !== undefined) {
+      const coordinator = await this.professorRepository.findOneBy({ id: coordinatorId });
+      if (!coordinator) throw new NotFoundException(`Coordinator with id ${coordinatorId} not found`);
+      profile.coordinator = coordinator;
+    }
+
+    await this.profileRepository.save(profile);
+    return profile;
+  }
 }
