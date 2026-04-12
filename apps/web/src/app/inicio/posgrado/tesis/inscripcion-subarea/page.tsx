@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { API_ROUTES } from "@/app/routes";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
@@ -60,6 +60,20 @@ export default function EnrollPlanPage() {
     }
     loadAll();
   }, []);
+
+  // Derived deduplicated courses list (by name, case-insensitive) for selects only.
+  // We do NOT mutate the original `coursesList` because it may be needed elsewhere
+  // with period-specific entries. This derived list is only for display in selects.
+  const dedupedCourses = useMemo(() => {
+    const map = new Map<string, { id: number | string; name: string }>();
+    for (const c of coursesList || []) {
+      const name = (c?.name ?? "").toString().trim();
+      if (!name) continue;
+      const key = name.toLowerCase();
+      if (!map.has(key)) map.set(key, { id: c.id, name });
+    }
+    return Array.from(map.values());
+  }, [coursesList]);
 
   useEffect(() => {
     const p = profiles.find((x) => String(x.id) === String(form.profileId));
@@ -269,7 +283,7 @@ export default function EnrollPlanPage() {
                       <div className="flex-1">
                         <select value={c.courseId} onChange={(e) => handleCourseChange(idx, "courseId", e.target.value)} className="w-full rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                           <option value="">Selecciona curso (opcional)</option>
-                          {coursesList.length > 0 ? coursesList.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
+                          {dedupedCourses.length > 0 ? dedupedCourses.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
                         </select>
                       </div>
                       <div className="flex items-center gap-3">
@@ -295,7 +309,7 @@ export default function EnrollPlanPage() {
                       <div className="flex-1">
                         <select value={form.otherCourse.courseId} onChange={(e) => handleOtherCourseChange("courseId", e.target.value)} className="w-full rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                           <option value="">Selecciona curso (otro)</option>
-                          {coursesList.length > 0 ? coursesList.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
+                          {dedupedCourses.length > 0 ? dedupedCourses.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
                         </select>
                       </div>
                       <div className="flex items-center gap-3">
@@ -314,7 +328,7 @@ export default function EnrollPlanPage() {
                       <div className="flex-1">
                         <select value={form.otherCourse2.courseId} onChange={(e) => handleOtherCourse2Change("courseId", e.target.value)} className="w-full rounded-md border border-input bg-card px-2 py-1 h-8 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
                           <option value="">Selecciona curso (otro 2)</option>
-                          {coursesList.length > 0 ? coursesList.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
+                          {dedupedCourses.length > 0 ? dedupedCourses.map((cc) => <option key={String(cc.id)} value={String(cc.id)}>{cc.name}</option>) : <option value="">No hay cursos cargados</option>}
                         </select>
                       </div>
                       <div className="flex items-center gap-3">
