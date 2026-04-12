@@ -65,7 +65,7 @@ export async function getPendingTasksForProfessor(id: string) {
 
 export async function getPendingTasksForCoordinator() {
   // Also include standalone tasks created via /tasks (e.g., subarea inscriptions)
-  const url = `${API_ROUTES.BASE}/tasks`;
+  const url = `${API_URL}/coordinator/tasks`;
   
   const response = await fetch(url, {
     method: 'GET',
