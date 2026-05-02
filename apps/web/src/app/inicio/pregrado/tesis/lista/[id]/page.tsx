@@ -11,14 +11,6 @@ import { Mail, FileText } from "lucide-react";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import SpinnerPage from "@/components/shared/spinner-page";
 import { ProjectDetailCard, ProjectNotFound } from "@/components/shared/project-detail-card";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
 
 import { ROUTES } from "@/app/routes";
 import { getUndergraduateProjectById, createProjectApplication } from "@/app/services/project.service";
@@ -92,40 +84,15 @@ function ProjectApplying({ project }: { readonly project: Project }) {
 
   // local
   const [isConfirmed, setIsConfirmed] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [openError, setOpenError] = useState(false);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    setErrorMsg(null);
-    try {
-      const projectApplication: CreateProjectApplication = {
-        motivation,
-        wasContacted: contacted,
-        projectId: project.id,
-      };
-      await createProjectApplication(projectApplication);
-    } catch (err: unknown) {
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "response" in err &&
-        typeof (err).response === "object" &&
-        (err).response !== null &&
-        "status" in (err).response
-      ) {
-        const status = (err as { response: { status: number } }).response.status;
-        if (status === 409) {
-          setErrorMsg("Error al enviar la aplicación: ya hay una aplicación activa.");
-        } else {
-          setErrorMsg("Ocurrió un error inesperado. Intenta nuevamente.");
-        }
-      } else {
-        setErrorMsg("Ocurrió un error inesperado. Intenta nuevamente.");
-      }
-
-      setOpenError(true);
-    }
+    const projectApplication: CreateProjectApplication = {
+      motivation,
+      wasContacted: contacted,
+      projectId: project.id,
+    };
+    await createProjectApplication(projectApplication);
   };
 
   const modalProps = {
@@ -135,6 +102,8 @@ function ProjectApplying({ project }: { readonly project: Project }) {
     successTitle: "¡Aplicación enviada!",
     successText: "Tu aplicación ha sido enviada con éxito",
     url: `${ROUTES.HOME}/${ROUTES.UNDERGRADUATE_THESIS_STATUS}`,
+    errorTitle: "No se pudo enviar la aplicación",
+    errorText: "Ya tienes una aplicación activa en este periodo. No puedes aplicar a otro proyecto.",
   };
 
   return (
@@ -175,18 +144,6 @@ function ProjectApplying({ project }: { readonly project: Project }) {
         </form>
       </CardContent>
 
-      {/* Dialogo de error */}
-      {errorMsg && (
-        <AlertDialog open={openError} onOpenChange={setOpenError}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>¡Ups!</AlertDialogTitle>
-              <AlertDialogDescription>{errorMsg}</AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogAction>Cerrar</AlertDialogAction>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
     </Card>
   );
 }

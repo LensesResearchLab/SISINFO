@@ -28,6 +28,8 @@ export interface DialogTextProps {
   successText: string;
   url?: string;
   isError?: boolean;
+  errorTitle?: string;
+  errorText?: string;
 }
 
 /**
@@ -48,25 +50,31 @@ export function ConfirmationModal({
   setIsOpen,
 }: {
   readonly dialogText: DialogTextProps;
-  readonly onConfirm: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  readonly onConfirm: (e: React.MouseEvent<HTMLButtonElement>) => Promise<void> | void;
   readonly open: boolean;
   readonly setIsOpen: (open: boolean) => void;
 }) {
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [hasError, setHasError] = useState(false);
   if (isConfirmed) {
     return (
       <ResultModal
-        successTitle={dialogText.successTitle}
-        successText={dialogText.successText}
-        url={dialogText.url}
-        setIsConfirmed={setIsConfirmed}
-        isError={dialogText.isError}
+        successTitle={hasError ? (dialogText.errorTitle ?? "Error") : dialogText.successTitle}
+        successText={hasError ? (dialogText.errorText ?? "Ocurrió un error inesperado. Intenta nuevamente.") : dialogText.successText}
+        url={hasError ? undefined : dialogText.url}
+        setIsConfirmed={(v) => { setIsConfirmed(v); setHasError(false); }}
+        isError={hasError || dialogText.isError}
       />
     );
   }
-  const handleConfirm = (e: React.MouseEvent<HTMLButtonElement>) => {
-    onConfirm(e);
-    setIsConfirmed(true);
+  const handleConfirm = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    try {
+      await onConfirm(e);
+      setIsConfirmed(true);
+    } catch {
+      setHasError(true);
+      setIsConfirmed(true);
+    }
   };
 
   return (

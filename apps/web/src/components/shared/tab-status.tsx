@@ -121,6 +121,20 @@ import { Check } from "lucide-react";
  * @returns {JSX.Element} A card showing progress steps and status message
  */
 export function TabStatusCard({ status }: { readonly status: StatusProps }) {
+  if (status.currentStatus === "Rechazado") {
+    return (
+      <Card className="border-none">
+        <CardContent className="p-0">
+          <div className="space-y-8 p-3">
+            <h2 className="text-2xl font-medium text-core text-center">{status.title}</h2>
+            <p className="text-center text-red-500 font-medium">
+              Tu postulación fue rechazada. Puedes volver a postularte a otro proyecto.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
   let found = false
   const stepsStatus = status.steps.map((step) => {
     if (step === status.currentStatus) {
@@ -128,6 +142,7 @@ export function TabStatusCard({ status }: { readonly status: StatusProps }) {
       return { name: step, completed: false, current: true }
     }
     return { name: step, completed: !found, current: false }
+    
   })
   return (
     <Card className="border-none ">

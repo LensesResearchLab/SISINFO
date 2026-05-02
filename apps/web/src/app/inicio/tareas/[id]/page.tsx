@@ -16,6 +16,7 @@ import { ROUTES, API_ROUTES } from "@/app/routes"
 import { createTask, getTask } from "@/app/services/tasks.service"
 import { TaskType } from "../flows"
 import { cn } from "@/lib/utils"
+import { UploadCloud } from "lucide-react"
 import type { Task } from "@/app/types/entities/task.type";
 import { toast } from "sonner"
 import SpinnerPage from "@/components/shared/spinner-page"
@@ -329,15 +330,40 @@ const confirmationDescription = (() => {
                             {isAbet ? "Adjuntar archivo Excel" : "Adjuntar archivo PDF"}
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="file"
-                              accept={
-                                isAbet
-                                  ? ".xlsx,.xls,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
-                                  : "application/pdf"
-                              }
-                              onChange={(e) => field.onChange(e.target.files?.[0])}
-                            />
+                            <label
+                              className={cn(
+                                "flex flex-col items-center justify-center w-full",
+                                "rounded-lg border-2 border-dashed border-primary/40 bg-primary/5",
+                                "cursor-pointer py-8 px-4 gap-3",
+                                "hover:border-primary/70 hover:bg-primary/10 transition-colors"
+                              )}
+                            >
+                              <UploadCloud className="h-10 w-10 text-primary/60" />
+                              {field.value ? (
+                                <span className="text-sm font-medium text-primary">
+                                  {(field.value as File).name}
+                                </span>
+                              ) : (
+                                <>
+                                  <span className="text-sm font-semibold text-primary">
+                                    Haz clic para seleccionar un archivo
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {isAbet ? "Excel (.xlsx, .xls, .xlsm)" : "PDF"}
+                                  </span>
+                                </>
+                              )}
+                              <input
+                                type="file"
+                                className="hidden"
+                                accept={
+                                  isAbet
+                                    ? ".xlsx,.xls,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                                    : "application/pdf"
+                                }
+                                onChange={(e) => field.onChange(e.target.files?.[0])}
+                              />
+                            </label>
                           </FormControl>
                           <FormMessage />
                         </FormItem>

@@ -62,6 +62,10 @@ function getCurrentStep(
   statusInfo: ProjectStatusInformation,
   applicationStatus?: string
 ) {
+
+  if (applicationStatus === "Rechazado") {
+    return { label: "Rechazado", index: -1 };
+  }
   // Si el proyecto está finalizado (sin tareas pendientes), mostrar "Finalizado"
   if (!lastTask && applicationStatus === "Finalizado") {
     return { label: "Finalizado", index: processSteps.indexOf("Finalizado") };
@@ -241,5 +245,6 @@ function createStepMessages() {
     "El profesor está completando el reporte ABET de tu proyecto. Puedes ver tu nota final.",
   );
   messages.set("Finalizado", "Tu proyecto ha sido finalizado. Felicitaciones por completar el proceso.");
+  messages.set("Rechazado", "Tu postulación fue rechazada. Puedes volver a postularte a otro proyecto.");
   return messages;
 }

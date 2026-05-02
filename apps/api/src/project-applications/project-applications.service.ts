@@ -443,6 +443,16 @@ export class ProjectApplicationsService {
       if (!projectApplication.previousTasks) {
         projectApplication.previousTasks = [];
       }
+      if (
+        taskDto.type === TaskType.SEND_APPROVE &&
+        taskDto.approved === false
+      ) {
+        projectApplication.status = ProjecStatusEnum.REJECTED;
+        projectApplication.actualTask = null as any;
+        return manager
+          .getRepository(ProjectApplication)
+          .save(projectApplication);
+      }
       projectApplication.previousTasks.push(actualTask);
 
       if (
