@@ -44,6 +44,15 @@ const taskSchema = z.object({
     });
   }
 
+  // Validación archivo PDF obligatorio para UPLOAD_FILE
+  if (data.type === TaskType.UPLOAD_FILE && !data.document) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Debes seleccionar un archivo PDF antes de continuar",
+      path: ["document"],
+    });
+  }
+
   // Validación archivo Excel obligatorio para ABET
   if (data.type === TaskType.ABET_TASK) {
     const file = data.document as File | undefined;
