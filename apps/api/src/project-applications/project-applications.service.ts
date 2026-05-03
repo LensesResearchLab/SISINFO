@@ -445,7 +445,8 @@ export class ProjectApplicationsService {
       }
       if (
         taskDto.type === TaskType.SEND_APPROVE &&
-        taskDto.approved === false
+        taskDto.approved === false &&
+        actualIndex !== 5  // el paso 5 (retiro) 
       ) {
         projectApplication.status = ProjecStatusEnum.REJECTED;
         projectApplication.actualTask = null as any;
@@ -454,6 +455,17 @@ export class ProjectApplicationsService {
           .save(projectApplication);
       }
       projectApplication.previousTasks.push(actualTask);
+
+      // Caso: paso 5 = decisión de retiro
+      if (actualIndex === 5 && taskDto.type === TaskType.SEND_APPROVE) {
+        if (taskDto.approved === true) {
+          // Estudiante SÍ se retira → cerrar el flujo
+          projectApplication.status = ProjecStatusEnum.WITHDRAWN;
+          projectApplication.actualTask = null as any;
+          return manager.getRepository(ProjectApplication).save(projectApplication);
+        }
+        // Si approved === false (NO se retira), no retornar, caer al flujo normal para crear el paso 6
+      }
 
       if (
         actualIndex === 0 &&

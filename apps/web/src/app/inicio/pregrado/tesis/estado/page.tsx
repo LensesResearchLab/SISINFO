@@ -66,6 +66,9 @@ function getCurrentStep(
   if (applicationStatus === "Rechazado") {
     return { label: "Rechazado", index: -1 };
   }
+  if (applicationStatus === "Retirado") {
+    return { label: "Retirado", index: -1 };
+  }
   // Si el proyecto está finalizado (sin tareas pendientes), mostrar "Finalizado"
   if (!lastTask && applicationStatus === "Finalizado") {
     return { label: "Finalizado", index: processSteps.indexOf("Finalizado") };
@@ -246,5 +249,6 @@ function createStepMessages() {
   );
   messages.set("Finalizado", "Tu proyecto ha sido finalizado. Felicitaciones por completar el proceso.");
   messages.set("Rechazado", "Tu postulación fue rechazada. Puedes volver a postularte a otro proyecto.");
+  messages.set("Retirado", "Has retirado la materia. Tu proyecto de grado ha sido cerrado.");
   return messages;
 }

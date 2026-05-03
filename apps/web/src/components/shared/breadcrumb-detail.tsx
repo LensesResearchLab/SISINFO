@@ -9,7 +9,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
 
 const EXCLUDED_SEGMENTS = new Set([
  
@@ -65,7 +64,7 @@ export default function BreadCrumbDetail() {
               {index === breadcrumbs.length - 1 ? (
                 <BreadcrumbPage>{breadcrumb.capitalizedName}</BreadcrumbPage>
               ) : (
-                <Link href={breadcrumb.path}>{breadcrumb.capitalizedName}</Link>
+                <span>{breadcrumb.capitalizedName}</span>
               )}
             </BreadcrumbItem>
           </React.Fragment>
