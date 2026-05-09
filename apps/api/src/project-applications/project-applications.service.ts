@@ -196,6 +196,9 @@ export class ProjectApplicationsService {
         period: true,
         actualTask: true,
       },
+      order: {
+        id: 'DESC', // Ensure the most recent application is returned when multiple records exist
+      },
     });
 
     if (!application) {
