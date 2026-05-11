@@ -79,8 +79,8 @@ export default function TeachingAssistantList() {
       const lastSemester = semesters[semesters.length - 1];
       console.log("Seleccionando automáticamente el semestre:", lastSemester);
       setSearchTerm(lastSemester);
-    } 
-  }, [semesters, searchTerm, setSearchTerm]);
+    }
+  }, [semesters, setSearchTerm]);
 
   const { data: sectionsList, isFetching: isFetchingTeachingAssistants } = useQuery({
     queryKey: ["teaching-assistants-professor", searchTerm],

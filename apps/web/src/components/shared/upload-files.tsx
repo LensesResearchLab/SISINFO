@@ -62,113 +62,139 @@ export default function UploadFiles({
   return name.trim().replace(/\s+/g, " ");
  }
 
-  const onConfirmUpload = () => {
-    if (!file) return setIsModalOpen(false);
+  const onConfirmUpload = async () => {
+    if (!file) {
+      setIsModalOpen(false);
+      return;
+    }
 
     const extension = file.name.split(".").pop()?.toLowerCase();
 
     if (extension === "csv") {
-      Papa.parse<CsvRow>(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          const filteredData = results.data.filter((row) =>
-            isNonNull(row)
-          );
-          handleUploadCsv(filteredData);
-          setIsModalOpen(false);
-        },
-        error: (error) => {
-          console.error("Error al parsear el CSV:", error);
-          setIsModalOpen(false);
-        },
-      });
-    } else if (extension === "xlsx" || extension === "xlsm") {
-      file.arrayBuffer().then((data) => {
-        try {
-          const workbook = XLSX.read(data, { type: "array" });
-          const sheet = workbook.Sheets["plantillaSisinfo"];
-          if (!sheet) throw new Error("No se encontró la hoja 'plantillaSisinfo'");
+      // Wrap Papa.parse in a Promise so we can await it
+      try {
+        const parsed = await new Promise<CsvRow[]>((resolve, reject) => {
+          Papa.parse<CsvRow>(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: (results) => resolve(results.data.filter(isNonNull)),
+            error: (err) => reject(err),
+          });
+        });
+        await handleUploadCsv(parsed);
+      } catch (err) {
+        setError(true);
+        setErrorMessage(toErrorMessage(err));
+      } finally {
+        setIsModalOpen(false);
+      }
+      return;
+    }
 
-          const jsonData = XLSX.utils.sheet_to_json<Record<string, string | number | boolean | null>>(sheet);
-          handleUploadCsv(jsonData);
-          if (typeUpload === "billboard") {
-            const billboardData = jsonData.map((row, idx) => {
-                const obj = {
-                  NRC: String(row["NRC"] ?? ""),
-                  code: String(row["code"] ?? ""),
-                  name: String(row["name"] ?? ""),
-                  departament: String(row["departament"] ?? ""),
-                  credits:
-                    typeof row["credits"] === "number"
-                      ? row["credits"]
-                      : Number(row["credits"] ?? 0),
-                  section: String(row["section"] ?? ""),
-                  period: String(row["period"] ?? ""),
-                  professors: formatProfessors(row["professors"]),
-                  publicated: formatPublicated(row["publicated"]),
-                };
+    if (extension === "xlsx" || extension === "xlsm") {
+      let data: ArrayBuffer;
+      try {
+        data = await file.arrayBuffer();
+      } catch (err) {
+        setError(true);
+        setErrorMessage(
+          "No se pudo leer el archivo seleccionado. Vuelve a seleccionar el archivo e inténtalo de nuevo."
+        );
+        setIsModalOpen(false);
+        return;
+      }
 
-                // check if any field is invalid
-                const emptyFields = Object.entries(obj)
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                  .filter(([_, v]) => v === "" || v === null || v === undefined || (typeof v === "number" && isNaN(v)))
-                  .map(([k]) => k);
-                
-                if (emptyFields.length > 0) {
-                  throw new Error(
-                    `Fila ${idx + 1} tiene estos campos vacios: ${emptyFields.join(", ")}`
-                  );
-                }
+      try {
+        const workbook = XLSX.read(data, { type: "array" });
+        const preferredSheetNames = typeUpload === "monitores"
+          ? ["plantillaMonitores", "plantillaSisinfo"]
+          : ["plantillaSisinfo"];
 
-                return obj;
-              });
+        let sheet: XLSX.Sheet | undefined;
+        for (const name of preferredSheetNames) {
+          if (workbook.Sheets[name]) {
+            sheet = workbook.Sheets[name];
+            break;
+          }
+        }
 
-          console.log(billboardData)
+        if (!sheet && workbook.SheetNames.length > 0) {
+          sheet = workbook.Sheets[workbook.SheetNames[0]];
+        }
+
+        if (!sheet) throw new Error(`No se encontró una hoja válida en el libro. Buscadas: ${preferredSheetNames.join(", ")}`);
+
+        const jsonData = XLSX.utils.sheet_to_json<Record<string, string | number | boolean | null>>(sheet as XLSX.Sheet);
+
+        // Normalize keys (trim + uppercase) and sanitize cell values
+        const normalized = (jsonData as Record<string, any>[])
+          .map((row) => {
+            const out: Record<string, any> = {};
+            for (const k of Object.keys(row)) {
+              const key = k.toString().trim().toUpperCase();
+              // reuse sanitizeCell from utils for trimming/empty -> null
+              // inline simple sanitize to avoid circular imports at runtime
+              const raw = row[k];
+              let value: any = null;
+              if (raw === undefined || raw === null) value = null;
+              else if (typeof raw === 'string') {
+                const t = raw.trim();
+                value = t === '' ? null : t;
+              } else value = raw;
+              out[key] = value;
+            }
+            return out as Record<string, string | number | boolean | null>;
+          })
+          .filter(isNonNull);
+
+        await handleUploadCsv(normalized);
+
+        if (typeUpload === "billboard") {
+          const billboardData = jsonData.map((row, idx) => {
+            const obj = {
+              NRC: String(row["NRC"] ?? ""),
+              code: String(row["code"] ?? ""),
+              name: String(row["name"] ?? ""),
+              departament: String(row["departament"] ?? ""),
+              credits: typeof row["credits"] === "number" ? row["credits"] : Number(row["credits"] ?? 0),
+              section: String(row["section"] ?? ""),
+              period: String(row["period"] ?? ""),
+              professors: formatProfessors(row["professors"]),
+              publicated: formatPublicated(row["publicated"]),
+            };
+
+            const emptyFields = Object.entries(obj).filter(([_, v]) => v === "" || v === null || v === undefined || (typeof v === "number" && isNaN(v))).map(([k]) => k);
+            if (emptyFields.length > 0) {
+              throw new Error(`Fila ${idx + 1} tiene estos campos vacios: ${emptyFields.join(", ")}`);
+            }
+            return obj;
+          });
+
           createBillboard(billboardData);
           setLoadSucess(prev => ({ ...prev, sucess: true }));
-          }
-        else if (typeUpload === "professors") {
-          const professorsData = jsonData.map((row) => (
-            {
-              user: {
-                name: normalizeName(String(row["Personal"] ?? "")),
-                email: String(row["Correo"] ?? "").toLowerCase().trim(),
-                password : String(row["Correo"])
-              }
-            }
-          ));
+        } else if (typeUpload === "professors") {
+          const professorsData = jsonData.map((row) => ({
+            user: {
+              name: normalizeName(String(row["Personal"] ?? "")),
+              email: String(row["Correo"] ?? "").toLowerCase().trim(),
+              password: String(row["Correo"] ?? ""),
+            },
+          }));
           uploadProfessors(professorsData);
-          setLoadSucess(prev => ({ ...prev, sucess: true }))
-        }
-        else if (typeUpload === "monitores") {
-          const cleanedRows = jsonData
-  .map((r) => sanitizeRow(r))
-  // elimina filas completamente vacías (todas las columnas null)
-  .filter((r) => Object.values(r).some((v) => v !== null));
-
-          const teachingAssistantsData = cleanedRows.map((row) => (
-            {
-              studentName: String(row["NOMBRE"] ?? ""),
-              studentCode: String(row["CODIGO"] ?? ""),
-              courseCode: String(row["MATERIA"] ?? ""),
-              sectionNumber: Number(row["SECCION"] ?? 0),
-            }
-          ));
-          uploadTeachingAssistantsFile(teachingAssistantsData, selectedPeriod);
           setLoadSucess(prev => ({ ...prev, sucess: true }));
-        }}
-         catch (error) {
-          setError(true)
-          setErrorMessage(toErrorMessage(error)); 
-        } finally {
-          setIsModalOpen(false);
         }
-      });
-    } else {
-      console.error("Tipo de archivo no soportado");
-      setIsModalOpen(false);
+      } catch (error) {
+        setError(true);
+        setErrorMessage(toErrorMessage(error));
+      } finally {
+        setIsModalOpen(false);
+      }
+
+      return;
     }
+
+    console.error("Tipo de archivo no soportado");
+    setIsModalOpen(false);
   };
 
 

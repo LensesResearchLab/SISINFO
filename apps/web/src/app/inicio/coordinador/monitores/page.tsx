@@ -8,6 +8,7 @@ import {
   getTeachingAssistants,
   uploadTeachingAssistantsFile,
 } from '@/app/services/teaching-assistantship.service';
+import { getBillboardWithUploadedProgram } from '@/app/services/billboard.service';
 import { TeachingAssistantship } from '@/app/types/entities/teachingAssistantship.type';
 import { DataTable } from '@/components/data-table';
 import {
@@ -50,11 +51,10 @@ export default function UploadTeachingAssistants() {
    *
    * @param {CreateTeachingAssistance[]} data - List of teaching assistants to upload
    */
-  const handleUploadCsv = (data: CreateTeachingAssistance[]) => {
-    uploadTeachingAssistantsFile(data, selectedPeriod);
-    getTeachingAssistants(selectedPeriod).then((data) => {
-      setTeachingAssistantships(data);
-    });
+  const uploadAndRefresh = async (data: CreateTeachingAssistance[]) => {
+    await uploadTeachingAssistantsFile(data, selectedPeriod);
+    const refreshed = await getTeachingAssistants(selectedPeriod);
+    setTeachingAssistantships(refreshed);
   };
 
   /**
@@ -83,9 +83,53 @@ export default function UploadTeachingAssistants() {
       title="Cargar monitores"
       handlePeriodChange={handlePeriodChange}
       handleDownload={handleDownload}
-      handleUploadCsv={(data) => {
-        const teachingAssistantsData = mapCswRowTwoCreateTeachingAssistance(data as unknown as CsvTASRow[]);
-        handleUploadCsv(teachingAssistantsData);
+      handleUploadCsv={async (data) => {
+        const rawRows = data as unknown as CsvTASRow[];
+
+        // Fetch program courses for the selected period to map names -> codes
+        let program: any = { courses: [] };
+        try {
+          program = await getBillboardWithUploadedProgram(selectedPeriod);
+        } catch (e) {
+          // If we can't fetch program, proceed but warn — backend will validate
+          console.warn('No se pudo obtener el programa del periodo para mapeo automático', e);
+        }
+
+        const courses: any[] = program?.courses ?? [];
+        const codeSet = new Set(courses.map((c) => (c.code || c.id || '').toString().toUpperCase()));
+        const nameMap = new Map<string, string>();
+        courses.forEach((c) => {
+          const name = (c.name || c.title || c.class || '').toString().trim().toUpperCase();
+          if (name) nameMap.set(name, (c.code || c.id).toString());
+        });
+
+        const normalized = rawRows.map((r) => {
+          const materiaRaw = (r['MATERIA'] || '').toString().trim();
+          const seccionRaw = r['SECCION'];
+          let courseCode = materiaRaw;
+
+          // If materia doesn't look like a code, try to map by name
+          const materiaUpper = materiaRaw.toUpperCase();
+          if (!codeSet.has(materiaUpper)) {
+            const mapped = nameMap.get(materiaUpper);
+            if (mapped) courseCode = mapped;
+          }
+
+          return {
+            studentCode: r['CODIGO'],
+            studentName: r['NOMBRE'],
+            courseCode: courseCode,
+            sectionNumber: Number(seccionRaw),
+          } as CreateTeachingAssistance;
+        });
+
+        // Pre-validate: check that mapped course codes exist and sections are plausible
+        const missing = normalized.find((row) => !row.courseCode || Number.isNaN(row.sectionNumber));
+        if (missing) {
+          throw new Error(`Fila inválida en plantilla: materia='${(missing as any).courseCode}', sección='${(missing as any).sectionNumber}'`);
+        }
+
+        await uploadAndRefresh(normalized);
       }}
       dialogText={dialogText}
       typeUpload='monitores'
