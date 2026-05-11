@@ -150,7 +150,13 @@ export default function UploadFiles({
         await handleUploadCsv(normalized);
 
         if (typeUpload === "billboard") {
-          const billboardData = jsonData.map((row, idx) => {
+          const billboardData = jsonData
+            .filter(row =>
+              ["NRC", "code", "name", "departament", "section", "period", "professors"].some(
+                k => row[k] !== undefined && row[k] !== null && String(row[k]).trim() !== ""
+              )
+            )
+            .map((row, idx) => {
             const obj = {
               NRC: String(row["NRC"] ?? ""),
               code: String(row["code"] ?? ""),

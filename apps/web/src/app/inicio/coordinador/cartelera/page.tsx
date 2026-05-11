@@ -37,17 +37,42 @@ export default function UploadBillboard() {
     document.body.removeChild(link);
   };
 
-  const handleUploadXlsm = async (file: File) => {
-    const data = await file.arrayBuffer();
-    const workbook = XLSX.read(data, { type: "array" });
+const handleUploadXlsm = async (file: File) => {
+  const data = await file.arrayBuffer();
+  const workbook = XLSX.read(data, { type: "array" });
 
-    const sheetName = "plantillaSisinfo";
-    const worksheet = workbook.Sheets[sheetName];
+  const sheetName = "plantillaSisinfo";
+  const worksheet = workbook.Sheets[sheetName];
 
-    if (!worksheet) {
-      setUploadError(true);
-    }
-  };
+  if (!worksheet) {
+    setUploadError(true);
+    return;
+  }
+
+  const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+  const seen = new Set<number>();
+  const courses: Course[] = [];
+
+  for (const row of rows) {
+    const nrc = Number(row["NRC"]);
+    if (!nrc || isNaN(nrc) || seen.has(nrc)) continue;
+    seen.add(nrc);
+
+    courses.push({
+      nrc,
+      code: String(row["code"] ?? ""),
+      name: String(row["name"] ?? ""),
+      departament: String(row["departament"] ?? ""),
+      credits: Number(row["credits"] ?? 0),
+      section: String(row["section"] ?? ""),
+      period: String(row["period"] ?? ""),
+      professors: String(row["professors"] ?? ""),
+    } as unknown as Course);
+  }
+
+  setCoursesData(courses);
+};
   const handlePeriodChange = (value: string) => {
     setHasSearched(true);
     getBillboard(value)
