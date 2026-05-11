@@ -72,7 +72,7 @@ export default function UploadTeachingAssistants() {
   const handleDownload = () => {
     const link = document.createElement("a");
     link.href = "/monitores.xlsx";
-    link.download = "plantilla.xlsx";
+    link.download = "plantillaMonitoress.xlsx";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
