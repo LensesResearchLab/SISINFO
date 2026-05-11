@@ -290,6 +290,23 @@ const confirmationDescription = (() => {
         <div className={cn("space-y-6", hasDocument ? "md:w-2/5" : "w-full")}>
           {isViewOnly ? (
             <>
+              {task.projectActualTask && (
+                <>
+                  <h2 className="text-lg font-semibold text-center text-primary">Solicitud del estudiante</h2>
+                  <div className="bg-muted rounded-md p-3 border border-gray-200 text-sm text-gray-700">
+                    {task.projectActualTask.motivation && (
+                      <div className="mb-2">
+                        <strong>Comentarios del estudiante:</strong>
+                        <div className="whitespace-pre-line mt-1">{task.projectActualTask.motivation}</div>
+                      </div>
+                    )}
+                    <div>
+                      <strong>Contactó al profesor:</strong>
+                      <span className="ml-2">{task.projectActualTask.wasContacted ? 'Sí' : 'No'}</span>
+                    </div>
+                  </div>
+                </>
+              )}
               {task.comment && (
                 <>
                   <h2 className="text-lg font-semibold text-center text-primary">
@@ -456,11 +473,25 @@ const confirmationDescription = (() => {
 
                 {task.type === TaskType.SEND_APPROVE && (
                   <>
-                    {task.comment && (
-                      <div className="bg-muted rounded-md p-3 border border-gray-200 text-sm text-gray-700 whitespace-pre-line">
-                        {task.comment}
-                      </div>
-                    )}
+                        {task.projectActualTask && (
+                          <div className="bg-muted rounded-md p-3 border border-gray-200 text-sm text-gray-700 mb-3">
+                            {task.projectActualTask.motivation && (
+                              <div className="mb-2">
+                                <strong>Comentarios del estudiante:</strong>
+                                <div className="whitespace-pre-line mt-1">{task.projectActualTask.motivation}</div>
+                              </div>
+                            )}
+                            <div>
+                              <strong>Contactó al profesor:</strong>
+                              <span className="ml-2">{task.projectActualTask.wasContacted ? 'Sí' : 'No'}</span>
+                            </div>
+                          </div>
+                        )}
+                        {task.comment && (
+                          <div className="bg-muted rounded-md p-3 border border-gray-200 text-sm text-gray-700 whitespace-pre-line">
+                            {task.comment}
+                          </div>
+                        )}
                     <FormField
                       control={form.control}
                       name="isApproved"

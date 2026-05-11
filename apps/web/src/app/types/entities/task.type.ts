@@ -4,9 +4,10 @@ import { Coordinator } from "./coordinator.type";
 import { Professor } from "./professor.type";
 import { Student } from "./student.type";
 import { Document } from './document.type'
+import { ProjectApplication } from './project-application.type'
 
 export interface Task {
-  projectActualTask: Task;
+  projectActualTask?: ProjectApplication | null;
   id: string;
   type: TaskType;
   status: string;
