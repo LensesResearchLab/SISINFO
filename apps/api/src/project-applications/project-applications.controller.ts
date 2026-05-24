@@ -20,6 +20,8 @@ import { UpdateProjectApplicationDto } from './dto/update-project-application.dt
 import { CreateTaskDto } from '../tasks/dto/create-task.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { plainToInstance } from 'class-transformer';
 import { TaskType } from '../tasks/enums/taskType';
 
@@ -117,6 +119,8 @@ export class ProjectApplicationsController {
     return this.projectApplicationsService.findTasksByStudent(id);
   }
   @Get('coordinator/tasks')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador')
   findByTasksCoordinatorId() {
     return this.projectApplicationsService.findTasksByCoordinator();
   }

@@ -79,7 +79,7 @@ useEffect(() => {
         getPendingTasksForProfessor(userId),
       ];
 
-      if (userRoles.includes("coordinador")) {
+      if (userRoles.includes("coordinador") && !userRoles.includes("administrador")) {
         taskPromises.push(getPendingTasksForCoordinator());
       }
 
