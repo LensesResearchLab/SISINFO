@@ -195,6 +195,7 @@ export class ProjectApplicationsService {
         project: { professor: { user: true } },
         period: true,
         actualTask: true,
+        previousTasks: true,
       },
       order: {
         id: 'DESC', // Ensure the most recent application is returned when multiple records exist
@@ -379,10 +380,7 @@ export class ProjectApplicationsService {
 
       const actualTask = projectApplication.actualTask;
       const previousTasks = projectApplication.previousTasks;
-      let actualIndex = 0;
-      if (previousTasks) {
-        actualIndex = previousTasks.length;
-      }
+      const actualIndex = actualTask.step ?? 0;
 
       const steps = flows[actualTask.flow];
       const nextStep = steps[actualIndex + 1];
@@ -471,18 +469,12 @@ export class ProjectApplicationsService {
           .getRepository(ProjectApplication)
           .save(projectApplication);
       }
+      if (taskDto.type === TaskType.SEND_APPROVE) {
+        actualTask.approved = taskDto.approved ?? false;
+        await manager.getRepository(Task).save(actualTask);
+      }
       projectApplication.previousTasks.push(actualTask);
 
-      // Caso: paso 5 = decisión de retiro
-      if (actualIndex === 5 && taskDto.type === TaskType.SEND_APPROVE) {
-        if (taskDto.approved === true) {
-          // Estudiante SÍ se retira → cerrar el flujo
-          projectApplication.status = ProjecStatusEnum.WITHDRAWN;
-          projectApplication.actualTask = null as any;
-          return manager.getRepository(ProjectApplication).save(projectApplication);
-        }
-        // Si approved === false (NO se retira), no retornar, caer al flujo normal para crear el paso 6
-      }
 
       if (
         actualIndex === 0 &&

@@ -50,6 +50,9 @@ export default function ProjectStatus() {
         statusInfo: await ProjectApplicationToProjectStatusInformation(thesisStatus),
         lastTask: thesisStatus.actualTask,
         applicationStatus: thesisStatus.status,
+        withdrawalIndicated: thesisStatus.previousTasks?.some(
+          (t: { step: number; approved: boolean }) => t.step === 5 && t.approved === true
+        ) ?? false,
       };
     },
   });
@@ -148,13 +151,17 @@ function getCurrentStep(
     statusInfo.applicationStatus
   );
 
+  const baseMessage = stepMessages.get(label) ?? "";
+  const statusMessage = statusInfo.withdrawalIndicated
+    ? "Indicaste que ibas a retirar la materia. Lo puedes hacer en banner."
+    : baseMessage;
+
   const statusTabProps = {
     currentStatus: label,
-    statusMessage: stepMessages.get(label) ?? "",
+    statusMessage,
     steps: processSteps,
     title: "Estado de inscripción del proyecto de grado",
   };
-  
 
   return <TabStatus general={generalInfoProps} status={statusTabProps} />;
 }
