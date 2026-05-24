@@ -205,11 +205,11 @@ useEffect(() => {
       }
 
       toast.success("Tarea enviada correctamente")
-      router.push(`${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`)
     } catch (e) {
       const error = e as Error
-      toast.error(error?.message ?? "Error al enviar la tarea")
       console.error("Error creando tarea:", e)
+      toast.error(error?.message ?? "Error al enviar la tarea")
+      throw error
     }
   }
 
@@ -536,6 +536,8 @@ const confirmationDescription = (() => {
                     successTitle: "Tarea completada",
                     successText: "La tarea se completó correctamente",
                     url: `${ROUTES.HOME}/${ROUTES.PROJECT_LIST}`,
+                    errorTitle: "Error al completar la tarea",
+                    errorText: "Ocurrió un error al procesar la tarea. Por favor intenta nuevamente.",
                   }}
                   onConfirm={form.handleSubmit(onSubmit)}
                   open={isModalOpen}

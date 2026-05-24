@@ -62,7 +62,7 @@ export function ConfirmationModal({
         successTitle={hasError ? (dialogText.errorTitle ?? "Error") : dialogText.successTitle}
         successText={hasError ? (dialogText.errorText ?? "Ocurrió un error inesperado. Intenta nuevamente.") : dialogText.successText}
         url={hasError ? undefined : dialogText.url}
-        setIsConfirmed={(v) => { setIsConfirmed(v); setHasError(false); }}
+        setIsConfirmed={(v) => { setIsConfirmed(v); setHasError(false); if (!v) setIsOpen(false); }}
         isError={hasError || dialogText.isError}
       />
     );
