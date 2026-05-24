@@ -449,8 +449,22 @@ export class ProjectApplicationsService {
       if (
         taskDto.type === TaskType.SEND_APPROVE &&
         taskDto.approved === false &&
-        actualIndex !== 5  // el paso 5 (retiro) 
+        actualIndex !== 5  // el paso 5 (retiro)
       ) {
+        const previousFlowStep = steps[actualIndex - 1];
+        if (previousFlowStep?.type === TaskType.UPLOAD_FILE) {
+          projectApplication.previousTasks.push(actualTask); // Si se rechazo el documento, el estudiante puede volver a subir
+          const reuploadTask = await this.tasksService.create(previousFlowStep.type, {
+            step: actualIndex - 1,
+            comment: '',
+            flow: actualTask.flow,
+            projectApplicationId: projectApplication.id,
+            studentId: projectApplication.student.id,
+          });
+          projectApplication.actualTask = reuploadTask;
+          return manager.getRepository(ProjectApplication).save(projectApplication);
+        }
+
         projectApplication.status = ProjecStatusEnum.REJECTED;
         projectApplication.actualTask = null as any;
         return manager
