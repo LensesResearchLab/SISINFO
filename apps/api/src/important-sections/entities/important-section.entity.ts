@@ -9,6 +9,9 @@ export class ImportantSection extends Base {
   @Column()
   name: string;
 
+  @Column({ type: 'int', default: 0 })
+  position: number;
+
   @Column({
     type: 'enum',
     enum: AcademicProcess,

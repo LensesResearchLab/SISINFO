@@ -119,13 +119,16 @@ export class PeriodsService {
     };
 
     for (const academicProcess of academicProcesses) {
+      let positionCounter = 1;
       for (const [sectionName, dates] of Object.entries(sectionsDatesMap)) {
         const section = this.importantSectionRepository.create({
           name: sectionName,
           academicProcess: academicProcess as any,
           period: period,
+          position: positionCounter,
         } as Partial<ImportantSection>);
         const savedSection = await this.importantSectionRepository.save(section);
+        positionCounter += 1;
 
         for (const d of dates) {
           const year = period.year + (d.yearOffset || 0);

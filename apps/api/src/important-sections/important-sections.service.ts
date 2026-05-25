@@ -44,7 +44,7 @@ export class ImportantSectionsService {
         },
       },
       relations: ['importantDates'],
-      order: { name: 'ASC' },
+      order: { position: 'ASC', name: 'ASC' },
     });
   }
 
