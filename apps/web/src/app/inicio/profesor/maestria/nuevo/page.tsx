@@ -294,7 +294,7 @@ export default function ThesisForm() {
               >
                 Publicar Proyecto
               </Button>
-              <ConfirmationModal dialogText={dialogText} onConfirm={form.handleSubmit(onSubmit)} open={isModalOpen} setIsOpen={setIsModalOpen} />
+              <ConfirmationModal dialogText={dialogText} onConfirm={async () => { await form.handleSubmit(onSubmit)(); }} open={isModalOpen} setIsOpen={setIsModalOpen} />
             </div>
           </form>
         </Form>

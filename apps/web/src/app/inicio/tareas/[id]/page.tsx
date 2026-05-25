@@ -539,7 +539,7 @@ const confirmationDescription = (() => {
                     errorTitle: "Error al completar la tarea",
                     errorText: "Ocurrió un error al procesar la tarea. Por favor intenta nuevamente.",
                   }}
-                  onConfirm={form.handleSubmit(onSubmit)}
+                  onConfirm={async () => { await form.handleSubmit(onSubmit)(); }}
                   open={isModalOpen}
                   setIsOpen={setIsModalOpen}
                 />
