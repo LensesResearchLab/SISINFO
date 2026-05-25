@@ -6,10 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { PeriodsService } from './periods.service';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('periods')
 export class PeriodsController {
@@ -18,6 +22,16 @@ export class PeriodsController {
   @Post()
   create(@Body() createPeriodDto: CreatePeriodDto) {
     return this.periodsService.create(createPeriodDto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'admin')
+  @Post('generate-template')
+  async generateTemplate(@Body() body: { periodStr: string; force?: boolean }) {
+    return await this.periodsService.generateTemplateByPeriodStr(
+      body.periodStr,
+      body.force ?? false,
+    );
   }
 
   @Get()

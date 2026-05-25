@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 import { ImportantDate } from "@/app/types/entities/Important-date"
 import { EditDateDialog } from "../edit-date-dialog"
+import { useAuth } from "@/hooks/use-auth"
 import { useMemo, useState } from "react"
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
 
@@ -18,7 +19,8 @@ interface DateTableProps {
   onUpdateDate: (dateId: string, data: {importantSectionId: string; name: string; date: string;  }) => Promise<void>
 }
 
-export function DateTable({sectionId,title, dates, onUpdateDate }: DateTableProps) {
+export function DateTable({sectionId,title, dates, onUpdateDate }: Readonly<DateTableProps>) {
+  const { user } = useAuth()
   const [sortConfig, setSortConfig] = useState<{
     key: "name" | "date" | null;
     direction: "asc" | "desc";
@@ -114,7 +116,9 @@ export function DateTable({sectionId,title, dates, onUpdateDate }: DateTableProp
                   <TableCell className="font-medium">{date.name}</TableCell>
                   <TableCell>{format(new Date(date.date + "T00:00:00"), "PPP", { locale: es })}</TableCell>
                   <TableCell>
-                    <EditDateDialog date={date} onSave={(data) => onUpdateDate(date.id, { ...data, importantSectionId: sectionId })} />
+                    {user?.roles?.includes('coordinador') ? (
+                      <EditDateDialog date={date} onSave={(data) => onUpdateDate(date.id, { ...data, importantSectionId: sectionId })} />
+                    ) : null}
                   </TableCell>
                 </TableRow>
               ))

@@ -32,7 +32,8 @@ export async function updateImportantDate(dateId: string, updateData:updateImpor
     headers: {
       'Content-Type': 'application/json',
     },
-    body:JSON.stringify(updateData)
+    body:JSON.stringify(updateData),
+    credentials: 'include',
   })
   if (!response.ok) {
     throw new Error("Failed to fetch dates.");
