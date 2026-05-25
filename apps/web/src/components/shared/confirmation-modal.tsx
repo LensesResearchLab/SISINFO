@@ -56,13 +56,14 @@ export function ConfirmationModal({
 }) {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   if (isConfirmed) {
     return (
       <ResultModal
         successTitle={hasError ? (dialogText.errorTitle ?? "Error") : dialogText.successTitle}
-        successText={hasError ? (dialogText.errorText ?? "Ocurrió un error inesperado. Intenta nuevamente.") : dialogText.successText}
+        successText={hasError ? (errorMessage ?? dialogText.errorText ?? "Ocurrió un error inesperado. Intenta nuevamente.") : dialogText.successText}
         url={hasError ? undefined : dialogText.url}
-        setIsConfirmed={(v) => { setIsConfirmed(v); setHasError(false); if (!v) setIsOpen(false); }}
+        setIsConfirmed={(v) => { setIsConfirmed(v); setHasError(false); setErrorMessage(undefined); if (!v) setIsOpen(false); }}
         isError={hasError || dialogText.isError}
       />
     );
@@ -71,8 +72,9 @@ export function ConfirmationModal({
     try {
       await onConfirm(e);
       setIsConfirmed(true);
-    } catch {
+    } catch (err: any) {
       setHasError(true);
+      setErrorMessage(err?.message ?? undefined);
       setIsConfirmed(true);
     }
   };

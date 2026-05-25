@@ -55,7 +55,15 @@ export async function createProjectApplication(
     credentials: 'include',
   });
   if (!response.ok) {
-    throw new Error("Failed to create project application.");
+    // Try to read server error message
+    let serverError: any = null;
+    try {
+      serverError = await response.json();
+    } catch (_) {
+      // ignore
+    }
+    const message = serverError?.message || serverError?.error || 'Failed to create project application.';
+    throw new Error(message);
   }
   return await response.json();
 }
