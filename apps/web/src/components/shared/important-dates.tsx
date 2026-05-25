@@ -53,7 +53,7 @@ export default function ImportantDates({name, academicProcess} : {readonly name:
         }
         {sections.length > 0 && sections.map((section) => (
           <DateTable
-            key={section.name}
+            key={section.id}
             title={section.name}
             dates={section.importantDates}
           />
@@ -169,7 +169,7 @@ function DateTable({
         </TableHeader>
         <TableBody>
           {sortedDates.map((date) => (
-            <TableRow key={date.name}>
+            <TableRow key={date.id}>
               <TableCell className="text-primary">{date.name}</TableCell>
               <TableCell className="text-primary">{date.date}</TableCell>
             </TableRow>
