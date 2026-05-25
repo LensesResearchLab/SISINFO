@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -179,13 +179,20 @@ export class ProjectsService {
     });
     if (!project) return;
 
-    if (
-      !project.students.some(
-        (existingStudent) => existingStudent.id === student.id,
-      )
-    ) {
-      project.students.push(student);
+    // Convert maxStudents to number (TypeORM may return numeric as string)
+    const max = Number(project.maxStudents ?? 0);
+    const current = project.students?.length ?? 0;
+
+    // If student already enrolled, nothing to do
+    if (project.students.some((existingStudent) => existingStudent.id === student.id)) {
+      return project;
     }
+
+    if (max > 0 && current >= max) {
+      throw new ConflictException('El proyecto ya alcanzó la cantidad máxima de estudiantes aceptados');
+    }
+
+    project.students.push(student);
     return await this.projectRepository.save(project);
   }
 
