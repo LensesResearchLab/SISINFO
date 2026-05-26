@@ -35,6 +35,7 @@ import { sampleRequirements } from './sample-data/requirements.sample';
 import { sampleTags } from './sample-data/tags.sample';
 import { sampleAreasOfInterest } from './sample-data/areas-of-interest.sample';
 import { ProjectApplication } from '../project-applications/entities/project-application.entity';
+import { Period } from '../periods/entities/period.entity';
 import { ProjectApplicationsService } from '../project-applications/project-applications.service';
 import { ThesisApplicationsService } from '../thesis-applications/thesis-applications.service';
 import { AssistanceApplicationsService } from '../assistance-applications/assistance-applications.service';
@@ -194,10 +195,16 @@ export class SeedService {
     const periods: CreatePeriodDto[] = samplePeriods;
     const insertPromises: Promise<CreatePeriodDto | null>[] = [];
     for (const period of periods) {
-      const existingPeriod = await this.periodsService.findOneByPeriodAndYear(
-        period.period,
-        period.year,
-      );
+      let existingPeriod: Period | null = null;
+      try {
+        existingPeriod = await this.periodsService.findOneByPeriodAndYear(
+          period.period,
+          period.year,
+        );
+      } catch (err) {
+        // findOneByPeriodAndYear throws when not found; in seed we treat that as 'not existing'
+        existingPeriod = null;
+      }
       if (!existingPeriod) {
         insertPromises.push(this.periodsService.create(period));
       }
@@ -599,13 +606,14 @@ export class SeedService {
     const insertPromises: Promise<ImportantSection>[] = [];
     const importantSections: CreateImportantSectionDto[] = Array.from({
       length: 10,
-    }).map(() => ({
-      name: faker.lorem.sentence(),
-      academicProcess: AcademicProcess.UNDERGRADUATE_PROJECT,
-      periodStr:
-        periods[Math.floor(Math.random() * periods.length)].year +
-        periods[Math.floor(Math.random() * periods.length)].period,
-    }));
+    }).map(() => {
+      const p = periods[Math.floor(Math.random() * periods.length)];
+      return {
+        name: faker.lorem.sentence(),
+        academicProcess: AcademicProcess.UNDERGRADUATE_PROJECT,
+        periodStr: `${p.year}${p.period}`,
+      };
+    });
 
     importantSections.forEach((importantSection) => {
       insertPromises.push(

@@ -51,6 +51,24 @@ const baseColumns: ColumnDef<Task>[] = [
     },
   },
   {
+    id: "projectInfo",
+    header: "Proyecto / Periodo",
+    cell: ({ row }) => {
+      const task = row.original;
+      const pa = task?.projectActualTask;
+      const project = pa?.project;
+      const periodObj = pa?.period ?? project?.period;
+      if (!project) return "—";
+      const periodStr = periodObj ? `${periodObj.year}-${periodObj.period}` : "Sin periodo";
+      return (
+        <div>
+          <div className="font-semibold">{project.title ?? "Sin título"}</div>
+          <div className="text-xs text-muted-foreground">{periodStr}</div>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "userInfo",
     header: "Usuario",
     cell: ({ row }) => {
@@ -80,15 +98,22 @@ function ActionsCell({ row }: { readonly row: { original: Task } }) {
 
   const studentName = task?.projectActualTask?.student?.user?.name ?? "";
   const studentCode = task?.projectActualTask?.student?.code ?? "";
+  const projectTitle = task?.projectActualTask?.project?.title ?? "";
+  const periodObj = task?.projectActualTask?.period ?? task?.projectActualTask?.project?.period;
+  const periodStr = periodObj ? `${periodObj.year}-${periodObj.period}` : "";
 
   return (
     <Button
       variant="ghost"
       size="icon"
       onClick={() =>
-        router.push(`${ROUTES.HOME}/${ROUTES.TASK_LIST}/${task.id}`+
+        router.push(
+          `${ROUTES.HOME}/${ROUTES.TASK_LIST}/${task.id}` +
             `?studentName=${encodeURIComponent(studentName)}` +
-            `&studentCode=${encodeURIComponent(studentCode)}`)
+            `&studentCode=${encodeURIComponent(studentCode)}` +
+            `&projectTitle=${encodeURIComponent(projectTitle)}` +
+            `&period=${encodeURIComponent(periodStr)}`,
+        )
       }
     >
       <MoreHorizontal className="h-4 w-4" />
@@ -117,9 +142,19 @@ export default function Tasks() {
         const userId = data.user.id;
         const userRoles = data.user.roles;
 
+        // Use safe fetch wrappers so a failing endpoint doesn't break the whole page
+        const safe = async (fn: Promise<any>) => {
+          try {
+            return await fn;
+          } catch (err) {
+            console.error('Error fetching tasks:', err);
+            return [];
+          }
+        };
+
         const taskPromises = [
-          getPendingTasksForStudent(userId),
-          getPendingTasksForProfessor(userId),
+          safe(getPendingTasksForStudent(userId)),
+          safe(getPendingTasksForProfessor(userId)),
         ];
 
         if (userRoles.includes("coordinador") && !userRoles.includes("administrador")) {
@@ -138,7 +173,12 @@ export default function Tasks() {
             step: stepNumber,
             title: stepInfo?.title ?? "Sin título",
             description: stepInfo?.description ?? "Sin descripción",
-            date: task.date ? new Date(task.date) : new Date(),
+            // Prefer the project application created date if available, else task date
+            date: (task.projectActualTask && (task.projectActualTask as any).createdAt)
+              ? new Date((task.projectActualTask as any).createdAt)
+              : task.date
+              ? new Date(task.date)
+              : new Date(),
           } as Task;
         });
 
@@ -207,7 +247,35 @@ function TasksTable({ role }: TasksTableProps) {
       enableHiding: false,
     };
 
-    return [selectColumn, ...baseColumns];
+    // Ensure the project column is inserted after the date column
+    const projectColumn: ColumnDef<Task> = {
+      id: "projectInfo",
+      header: "Proyecto / Periodo",
+      cell: ({ row }) => {
+        const task = row.original;
+        const pa = task?.projectActualTask;
+        const project = pa?.project;
+        const periodObj = pa?.period ?? project?.period;
+        if (!project) return "—";
+        const periodStr = periodObj ? `${periodObj.year}-${periodObj.period}` : "Sin periodo";
+        return (
+          <div>
+            <div className="font-semibold">{project.title ?? "Sin título"}</div>
+            <div className="text-xs text-muted-foreground">{periodStr}</div>
+          </div>
+        );
+      },
+    };
+
+    // baseColumns: [title, description, date, projectInfo?, userInfo, actions]
+    const hasProjectColumn = baseColumns.some((c) => (c as any).id === "projectInfo" || (c as any).header === "Proyecto / Periodo" || (c as any).accessorKey === "projectInfo");
+
+    if (hasProjectColumn) {
+      return [selectColumn, ...baseColumns];
+    }
+
+    // Insert project column after the date column
+    return [selectColumn, baseColumns[0], baseColumns[1], baseColumns[2], projectColumn, baseColumns[3], baseColumns[4]];
   }, []);
 
   /**

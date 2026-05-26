@@ -84,22 +84,32 @@ export class ProjectApplicationsService {
           }
         }
 
-        const task = await this.tasksService.create(TaskType.SEND_APPROVE, {
-          flow: 'proyectoPregrado',
-          step: 0,
-          comment: '',
-          coordinatorId: coordinator.id,
-        });
-
+        // Create the project application first within the transaction so the
+        // resulting entity can be reliably linked to the initial task.
         const projectApplication = manager.create(ProjectApplication, {
           ...createProjectApplicationDto,
           project,
           student,
           period,
-          actualTask: task,
         });
 
-        return await manager.save(projectApplication);
+        const savedApp = await manager.save(projectApplication);
+
+        // Create the initial task using the transaction manager so the
+        // bidirectional OneToOne relation (actual_task_id on ProjectApplication)
+        // is persisted correctly in the same transaction.
+        const initialTask = manager.create(Task, {
+          type: TaskType.SEND_APPROVE,
+          flow: 'proyectoPregrado',
+          step: 0,
+          comment: '',
+          coordinator: { id: coordinator.id } as any,
+        });
+
+        const savedTask = await manager.save(initialTask);
+
+        savedApp.actualTask = savedTask;
+        return await manager.save(savedApp);
       },
     );
 
@@ -221,6 +231,10 @@ export class ProjectApplicationsService {
       },
       relations: [
         'actualTask',
+        'student',
+        'student.user',
+        'project',
+        'period',
         'actualTask.student',
         'actualTask.professor',
         'actualTask.coordinator',
@@ -230,7 +244,31 @@ export class ProjectApplicationsService {
     });
 
     const mainTasks = apps
-      .map((a) => a.actualTask)
+      .map((a) => {
+        const t = a.actualTask;
+        if (t)
+          (t as any).projectActualTask = {
+            id: a.id,
+            project: a.project
+              ? { id: a.project.id, title: a.project.title }
+              : null,
+            student: a.student
+              ? {
+                  id: a.student.id,
+                  user: {
+                    id: a.student.user?.id ?? null,
+                    name: a.student.user?.name ?? null,
+                    email: a.student.user?.email ?? null,
+                  },
+                  code: a.student.code ?? null,
+                }
+              : null,
+            period: a.period
+              ? { id: a.period.id, year: a.period.year, period: a.period.period }
+              : null,
+          }; // attach minimal snapshot to avoid circular refs
+        return t;
+      })
       .filter((t): t is Task => t !== null && t.student?.id === studentId);
 
     // Buscar tareas VIEW_COMMENTS pendientes para el estudiante (step 8 opcional)
@@ -276,6 +314,10 @@ export class ProjectApplicationsService {
       },
       relations: [
         'actualTask',
+        'student',
+        'student.user',
+        'project',
+        'period',
         'actualTask.student',
         'actualTask.professor',
         'actualTask.coordinator',
@@ -285,7 +327,29 @@ export class ProjectApplicationsService {
     });
 
     const tasks = apps
-      .map((a) => a.actualTask)
+      .map((a) => {
+        const t = a.actualTask;
+        if (t)
+          (t as any).projectActualTask = {
+            id: a.id,
+            project: a.project ? { id: a.project.id, title: a.project.title } : null,
+            student: a.student
+              ? {
+                  id: a.student.id,
+                  user: {
+                    id: a.student.user?.id ?? null,
+                    name: a.student.user?.name ?? null,
+                    email: a.student.user?.email ?? null,
+                  },
+                  code: a.student.code ?? null,
+                }
+              : null,
+            period: a.period
+              ? { id: a.period.id, year: a.period.year, period: a.period.period }
+              : null,
+          };
+        return t;
+      })
       .filter((t): t is Task => t !== null && t.professor?.id === profId);
 
     return tasks;
@@ -297,6 +361,9 @@ export class ProjectApplicationsService {
     const apps = await this.projectApplicationRepository.find({
       relations: [
         'actualTask',
+        'student',
+        'project',
+        'period',
         'actualTask.student',
         'actualTask.professor',
         'actualTask.coordinator',
@@ -307,7 +374,27 @@ export class ProjectApplicationsService {
 
     for (const app of apps) {
       if (app.actualTask?.coordinator?.id) {
-        taskList.push(app.actualTask);
+        const t = app.actualTask;
+        if (t)
+          (t as any).projectActualTask = {
+            id: app.id,
+            project: app.project ? { id: app.project.id, title: app.project.title } : null,
+            student: app.student
+              ? {
+                  id: app.student.id,
+                  user: {
+                    id: app.student.user?.id ?? null,
+                    name: app.student.user?.name ?? null,
+                    email: app.student.user?.email ?? null,
+                  },
+                  code: app.student.code ?? null,
+                }
+              : null,
+            period: app.period
+              ? { id: app.period.id, year: app.period.year, period: app.period.period }
+              : null,
+          };
+        taskList.push(t);
       }
     }
     return taskList;

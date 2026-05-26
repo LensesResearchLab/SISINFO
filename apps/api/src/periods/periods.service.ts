@@ -3,6 +3,7 @@ import {
   Injectable,
   PreconditionFailedException,
   ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
@@ -167,7 +168,7 @@ export class PeriodsService {
   async findCurrentPeriod(): Promise<Period> {
     const periods = await this.periodRepository.find();
     if (periods.length === 0) {
-      throw new Error('No periods found');
+      throw new NotFoundException('No periods found');
     }
 
     const currentPeriod = periods.reduce((prev, current) => {

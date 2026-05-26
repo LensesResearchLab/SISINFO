@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ProjectApplication } from '../project-applications/entities/project-application.entity';
 import { Task } from './entities/task.entity';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskFactory } from './factory/tasks.factory';
@@ -22,6 +23,8 @@ export class TasksService {
   constructor(
     @InjectRepository(Task)
     private readonly repo: Repository<Task>,
+    @InjectRepository(ProjectApplication)
+    private readonly projectApplicationRepo: Repository<ProjectApplication>,
     private readonly documentService: DocumentsService,
     private readonly factory: TaskFactory,
     private readonly studentsService: StudentsService,
@@ -66,6 +69,19 @@ export class TasksService {
         entity.document = document;
       }
     }
+    // If a project application id was provided, link this task to it so
+    // the frontend can read project/period information from task.projectActualTask
+    if ((overrides as any)?.projectApplicationId) {
+      const paId = (overrides as any).projectApplicationId as string;
+      const pa = await this.projectApplicationRepo.findOne({
+        where: { id: paId },
+        relations: ['project', 'period', 'student'],
+      });
+      if (pa) {
+        // associate from the Task side
+        (entity as any).projectActualTask = pa;
+      }
+    }
     return await this.repo.save(entity);
   }
 
@@ -75,8 +91,12 @@ export class TasksService {
       relations: [
         'projectPreviousTasks',
         'projectActualTask',
+        'projectActualTask.project',
+        'projectActualTask.period',
+        'projectActualTask.student',
         'student',
         'professor',
+        'coordinator',
       ],
     });
     if (!task) throw new NotFoundException(`Task ${id} not found`);
@@ -94,6 +114,9 @@ export class TasksService {
         'student',
         'professor',
         'projectActualTask',
+        'projectActualTask.project',
+        'projectActualTask.period',
+        'projectActualTask.student',
         'projectPreviousTasks',
       ],
     });

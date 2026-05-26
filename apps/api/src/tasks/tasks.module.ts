@@ -3,6 +3,7 @@ import { TasksService } from './tasks.service';
 import { TasksController } from './tasks.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
+import { ProjectApplication } from '../project-applications/entities/project-application.entity';
 import { TaskFactory } from './factory/tasks.factory';
 import { ProfessorsModule } from '../professors/professors.module';
 import { StudentsModule } from '../students/students.module';
@@ -13,7 +14,7 @@ import { CoordinatorsModule } from '../coordinators/coordinators.module';
   controllers: [TasksController],
   providers: [TasksService, TaskFactory],
   imports: [
-    TypeOrmModule.forFeature([Task]),
+    TypeOrmModule.forFeature([Task, ProjectApplication]),
     ProfessorsModule,
     StudentsModule,
     DocumentsModule,
