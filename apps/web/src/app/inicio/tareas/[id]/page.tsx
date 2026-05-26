@@ -293,6 +293,12 @@ useEffect(() => {
         )}
 
         <div className={cn("space-y-6", hasDocument ? "md:w-2/5" : "w-full")}>
+          {task.date && (
+            <div className="bg-yellow-50 rounded-md p-3 border border-yellow-200 text-sm text-yellow-900">
+              <strong>Fecha límite:</strong>
+              <span className="ml-2">{new Date(typeof task.date === 'object' ? (task.date as any).date : task.date).toLocaleDateString()}</span>
+            </div>
+          )}
           {isViewOnly ? (
             <>
               {task.projectActualTask && (

@@ -19,7 +19,7 @@ export class Task extends Base {
   @Column({ nullable: true })
   step: number;
 
-  @Column()
+  @Column({ default: false })
   approved: boolean;
 
   @Column({ nullable: true })

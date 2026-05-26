@@ -173,12 +173,14 @@ export default function Tasks() {
             step: stepNumber,
             title: stepInfo?.title ?? "Sin título",
             description: stepInfo?.description ?? "Sin descripción",
-            // Prefer the project application created date if available, else task date
-            date: (task.projectActualTask && (task.projectActualTask as any).createdAt)
-              ? new Date((task.projectActualTask as any).createdAt)
-              : task.date
-              ? new Date(task.date)
-              : new Date(),
+            // Prefer the task's important date (task.date) if present, otherwise fallback to
+            // the project application created date, then to now.
+            date: ((): Date => {
+              const dateSource = task.date && typeof task.date === 'object' ? (task.date as any).date : task.date;
+              if (dateSource) return new Date(dateSource);
+              if (task.projectActualTask && (task.projectActualTask as any).createdAt) return new Date((task.projectActualTask as any).createdAt);
+              return new Date();
+            })(),
           } as Task;
         });
 

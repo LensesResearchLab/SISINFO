@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ImportantDate } from '../important-dates/entities/important-date.entity';
 import { ProjectApplication } from '../project-applications/entities/project-application.entity';
 import { Task } from './entities/task.entity';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -25,6 +26,8 @@ export class TasksService {
     private readonly repo: Repository<Task>,
     @InjectRepository(ProjectApplication)
     private readonly projectApplicationRepo: Repository<ProjectApplication>,
+    @InjectRepository(ImportantDate)
+    private readonly importantDateRepo: Repository<ImportantDate>,
     private readonly documentService: DocumentsService,
     private readonly factory: TaskFactory,
     private readonly studentsService: StudentsService,
@@ -80,8 +83,33 @@ export class TasksService {
       if (pa) {
         // associate from the Task side
         (entity as any).projectActualTask = pa;
+        // If this is the student upload task (step 2) attach the corresponding important date
+        try {
+          const isUploadFile = (entity.type === TaskType.UPLOAD_FILE || type === TaskType.UPLOAD_FILE) && (entity.step === 2 || (overrides as any).step === 2);
+          if (isUploadFile && pa.period?.id) {
+              console.log('TasksService: attaching important date for period id', pa.period.id);
+            const important = await this.importantDateRepo.findOne({
+              where: {
+                name: 'Último día para que el estudiante envie la propuesta',
+                importantSection: { period: { id: pa.period.id } },
+              },
+              relations: ['importantSection'],
+            });
+              console.log('TasksService: important date lookup result', important ? important.id : null);
+            if (important) {
+              entity.date = important as any;
+            }
+          }
+        } catch (err) {
+          // non-fatal: if we cannot find/attach the date, continue without it
+          console.error('Error attaching important date to task:', err);
+        }
       }
     }
+    // Ensure `flow` is not null to satisfy DB NOT NULL constraint.
+    // Prefer explicit override, otherwise default to 'proyectoPregrado'.
+    (entity as any).flow = (entity as any).flow ?? (overrides as any)?.flow ?? 'proyectoPregrado';
+
     return await this.repo.save(entity);
   }
 
@@ -97,6 +125,8 @@ export class TasksService {
         'student',
         'professor',
         'coordinator',
+        'date',
+        'date.importantSection',
       ],
     });
     if (!task) throw new NotFoundException(`Task ${id} not found`);
@@ -118,6 +148,8 @@ export class TasksService {
         'projectActualTask.period',
         'projectActualTask.student',
         'projectPreviousTasks',
+        'date',
+        'date.importantSection',
       ],
     });
   }

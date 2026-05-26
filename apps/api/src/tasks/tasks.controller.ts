@@ -23,6 +23,28 @@ export class TasksController {
     });
   }
 
+  // DEBUG: create a task with overrides to test projectApplication linking
+  @Post('debug-create')
+  async debugCreate(
+    @Body()
+    body: {
+      type: TaskType;
+      projectApplicationId?: string;
+      studentId?: string;
+      professorId?: string;
+      step?: number;
+      flow?: string;
+    },
+  ) {
+    return this.tasks.create(body.type, {
+      projectApplicationId: body.projectApplicationId as any,
+      studentId: body.studentId as any,
+      professorId: body.professorId as any,
+      step: body.step as any,
+      flow: body.flow as any,
+    } as any);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tasks.findOne(id);
