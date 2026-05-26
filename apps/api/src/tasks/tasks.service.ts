@@ -85,17 +85,25 @@ export class TasksService {
         (entity as any).projectActualTask = pa;
         // If this is the student upload task (step 2) attach the corresponding important date
         try {
-          const isUploadFile = (entity.type === TaskType.UPLOAD_FILE || type === TaskType.UPLOAD_FILE) && (entity.step === 2 || (overrides as any).step === 2);
+          const stepFromOverrides = (overrides as any)?.step;
+          const entityStep = (entity as any).step ?? stepFromOverrides;
+          const stepNumber = typeof entityStep === 'number' ? entityStep : Number(entityStep);
+
+          const isUploadFile = (entity.type === TaskType.UPLOAD_FILE || type === TaskType.UPLOAD_FILE) && (stepNumber === 2 || stepNumber === 6);
           if (isUploadFile && pa.period?.id) {
-              console.log('TasksService: attaching important date for period id', pa.period.id);
+            // choose ImportantDate name based on the upload step
+            const name = stepNumber === 2
+              ? 'Último día para que el estudiante envie la propuesta'
+              : 'Último día para que el estudiante entregue el póster';
+            console.log('TasksService: attaching important date for period id', pa.period.id, 'and name', name);
             const important = await this.importantDateRepo.findOne({
               where: {
-                name: 'Último día para que el estudiante envie la propuesta',
+                name,
                 importantSection: { period: { id: pa.period.id } },
               },
               relations: ['importantSection'],
             });
-              console.log('TasksService: important date lookup result', important ? important.id : null);
+            console.log('TasksService: important date lookup result', important ? important.id : null);
             if (important) {
               entity.date = important as any;
             }
