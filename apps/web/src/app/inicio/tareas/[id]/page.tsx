@@ -241,27 +241,32 @@ useEffect(() => {
     task?.projectActualTask?.student?.code ?? studentCodeFromUrl;
 
 
+  const isDocumentApprovalStep = task.type === TaskType.SEND_APPROVE && task.step === 3;
+
   const isAcceptStudentTask =
     task.type === TaskType.SEND_APPROVE &&
+    !isDocumentApprovalStep &&
     (Boolean(task?.projectActualTask?.student) || Boolean(studentNameFromUrl));
 
-     
   const isApproved = form.watch("isApproved");
   const approvalAction = isApproved ? "aprobar" : "rechazar";
 
   const isWithdrawStep = task.step === 5;
-const confirmationDescription = (() => {
-  if (isWithdrawStep) {
-    const withdrawAction = isApproved ? "SI va a" : "NO va a";
-    return `¿Estás seguro? Usted está confirmando que ${withdrawAction} retirar la materia.`;
-  }
-  if (isAcceptStudentTask) {
-    return `¿Estás seguro de ${approvalAction} al estudiante ${studentName ?? "este estudiante"}${
-      studentCode ? ` (${studentCode})` : ""
-    }?`;
-  }
-  return "¿Estás seguro de completar esta tarea?";
-})();
+  const confirmationDescription = (() => {
+    if (isWithdrawStep) {
+      const withdrawAction = isApproved ? "SI va a" : "NO va a";
+      return `¿Estás seguro? Usted está confirmando que ${withdrawAction} retirar la materia.`;
+    }
+    if (isDocumentApprovalStep) {
+      return `¿Estás seguro de ${approvalAction} el documento de propuesta${studentName ? ` del estudiante ${studentName}` : ""}?`;
+    }
+    if (isAcceptStudentTask) {
+      return `¿Estás seguro de ${approvalAction} al estudiante ${studentName ?? "este estudiante"}${
+        studentCode ? ` (${studentCode})` : ""
+      }?`;
+    }
+    return "¿Estás seguro de completar esta tarea?";
+  })();
 
 
 
