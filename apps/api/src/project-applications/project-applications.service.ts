@@ -14,6 +14,8 @@ import { TaskType } from '../tasks/enums/taskType';
 import { TasksService } from '../tasks/tasks.service';
 import { flows } from '../tasks/flows/tasksFlows';
 import { Repository, DataSource, Not } from 'typeorm';
+import { ImportantDate } from '../important-dates/entities/important-date.entity';
+import { AcademicProcess } from '../important-sections/enum/academic-process.enum';
 import { ProjecStatusEnum } from './enums/project_status.enum';
 import { PeriodsService } from '../periods/periods.service';
 import { Task } from '../tasks/entities/task.entity';
@@ -32,6 +34,8 @@ export class ProjectApplicationsService {
     private readonly dataSource: DataSource,
     private readonly periodsService: PeriodsService,
     private readonly coordinatorService: CoordinatorsService,
+    @InjectRepository(ImportantDate)
+    private readonly importantDateRepository: Repository<ImportantDate>,
     @InjectRepository(ProjectApplication)
     private readonly projectApplicationRepository: Repository<ProjectApplication>,
   ) {}
@@ -44,11 +48,13 @@ export class ProjectApplicationsService {
     const coordinators = await this.coordinatorService.findAll();
     const result = await this.projectApplicationRepository.manager.transaction(
       async (manager) => {
-        const [student, project, period] = await Promise.all([
+        const [student, project] = await Promise.all([
           this.studentsService.findOne(studentId),
           this.projectsService.findOne(projectId),
-          this.periodsService.findCurrentPeriod(),
         ]);
+
+        // Use the project's period when validating application deadlines
+        const period = project?.period ?? (await this.periodsService.findCurrentPeriod());
         if (!student) {
           throw new NotFoundException(
             `Estudiante con documento ${studentId} no encontrado`,
@@ -73,7 +79,37 @@ export class ProjectApplicationsService {
           );
         }
         if (!period) {
-          throw new NotFoundException(`Periodo actual no encontrado`);
+          throw new NotFoundException(`Periodo del proyecto no encontrado`);
+        }
+
+        // Validate important date: Último día inscribir proyecto
+        try {
+          const lastInscription = await this.importantDateRepository.findOne({
+            where: {
+              name: 'Último día inscribir proyecto',
+              importantSection: {
+                period: { id: period.id },
+                academicProcess: AcademicProcess.UNDERGRADUATE_PROJECT,
+              },
+            },
+            relations: ['importantSection'],
+          });
+
+          if (lastInscription) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const deadline = new Date(lastInscription.date);
+            deadline.setHours(23, 59, 59, 999);
+            if (today > deadline) {
+              throw new BadRequestException(
+                'No es posible aplicar: la fecha límite para inscribir proyectos en este periodo ya pasó',
+              );
+            }
+          }
+        } catch (err) {
+          // If an unexpected error occurs while checking dates, rethrow
+          if (err instanceof BadRequestException) throw err;
+          console.error('Error validating inscription date', err);
         }
 
         let coordinator;
