@@ -135,6 +135,36 @@ export default function AdminProfilesPage() {
           </Button>
         </div>
       </div>
+      {/* Existing subareas table */}
+      <div className="mt-6 bg-card rounded-lg p-6">
+        <h2 className="text-lg font-semibold mb-4">Subáreas existentes</h2>
+        {subareas.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No hay subáreas registradas.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto border-collapse">
+              <thead>
+                <tr className="text-left">
+                  <th className="py-2 px-3">Subárea</th>
+                  <th className="py-2 px-3">Profesor asignado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subareas.map((s: any) => {
+                  const coordinatorId = s.coordinatorId ?? s.coordinator?.id ?? s.coordinatorId;
+                  const prof = professors.find((p) => String(p.id) === String(coordinatorId));
+                  return (
+                    <tr key={s.id} className="border-t">
+                      <td className="py-2 px-3">{s.name}</td>
+                      <td className="py-2 px-3">{prof ? prof.user?.name : (s.coordinator?.name ?? "-")}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
