@@ -176,8 +176,21 @@ export default function UploadFiles({
             return obj;
           });
 
-          createBillboard(billboardData);
-          setLoadSucess(prev => ({ ...prev, sucess: true }));
+          const billboardResult = await createBillboard(billboardData);
+          const missing: { name: string; sectionNRC: string; courseName: string }[] =
+            billboardResult?.missingProfessors ?? [];
+
+          if (missing.length > 0) {
+            const list = missing
+              .map((m) => `• ${m.name} (NRC ${m.sectionNRC} — ${m.courseName})`)
+              .join('\n');
+            setLoadSucess({
+              sucess: true,
+              message: `La cartelera se subió correctamente, pero los siguientes profesores no fueron encontrados y no se asignaron:\n\n${list}`,
+            });
+          } else {
+            setLoadSucess(prev => ({ ...prev, sucess: true }));
+          }
         } else if (typeUpload === "professors") {
           // Use normalized rows (keys are trimmed and uppercased) to support different header names
           const normalizedRows = normalized as Record<string, any>[];

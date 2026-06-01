@@ -112,12 +112,15 @@ export class BillboardsService {
     return existingCourse;
   }
 
-  async getProfessors(section: CreateSectionDto) {
+  async getProfessors(
+    section: CreateSectionDto,
+  ): Promise<[Professor[], Professor[], string[]]> {
     const normalizeName = (name: string) =>
       name.toLowerCase().trim().replace(/\s+/g, ' ');
     const professorsArr = section.professors.split('|');
     const supportProfessors: Professor[] = [];
     const foundProfessors: Professor[] = [];
+    const missingNames: string[] = [];
 
     await Promise.all(
       professorsArr.map(async (prof) => {
@@ -143,22 +146,19 @@ export class BillboardsService {
               supportProfessors.push(searchProfessor);
             }
           }
+        } else if (cleanedName.trim() !== '') {
+          missingNames.push(cleanedName);
         }
       }),
     );
-    return [supportProfessors, foundProfessors];
+    return [supportProfessors, foundProfessors, missingNames];
   }
 
   async mergeCourses(billboardExisting: Billboard, billboard: Billboard) {
-    const combinedCourses = [
-      ...billboardExisting.courses,
-      ...billboard.courses,
-    ];
-    const uniqueCoursesMap = new Map(
-      combinedCourses.map((course) => [course.code, course]),
-    );
-    billboardExisting.courses = Array.from(uniqueCoursesMap.values());
+    const existingCodes = new Set(billboardExisting.courses.map((c) => c.code));
+    const newCourses = billboard.courses.filter((c) => !existingCodes.has(c.code));
 
+    billboardExisting.courses = [...billboardExisting.courses, ...newCourses];
     billboardExisting.period = billboard.period;
     billboardExisting.publicated = true;
     await this.billboardRepository.save(billboardExisting);
@@ -166,14 +166,30 @@ export class BillboardsService {
   }
 
   async getBillboardFromSectionsDto(sectionsDto: CreateSectionDto[]) {
+    const seenNRCs = new Set<string>();
+    const uniqueSectionsDto = sectionsDto.filter((s) => {
+      if (seenNRCs.has(s.NRC)) return false;
+      seenNRCs.add(s.NRC);
+      return true;
+    });
+
     const billboard: Billboard = new Billboard();
     const billboardCoursesMap = new Map<string, Course>();
+    const allMissingProfessors: { name: string; sectionNRC: string; courseName: string }[] = [];
 
-    for (const section of sectionsDto) {
+    for (const section of uniqueSectionsDto) {
       const foundPeriod = await this.getOrCreatePeriodBySectionDto(section);
       if (section.professors != null && section.professors !== '') {
-        const [supportProfessors, foundProfessors] =
+        const [supportProfessors, foundProfessors, missingNames] =
           await this.getProfessors(section);
+
+        for (const name of missingNames) {
+          allMissingProfessors.push({
+            name,
+            sectionNRC: section.NRC,
+            courseName: section.name,
+          });
+        }
 
         const sectionToUse = await this.getOrCreateSectionBySectionDto(
           section,
@@ -193,24 +209,27 @@ export class BillboardsService {
     }
 
     const periodForBillboard = await this.getOrCreatePeriodBySectionDto(
-      sectionsDto[0],
+      uniqueSectionsDto[0],
     );
 
     billboard.publicated = true;
     billboard.period = periodForBillboard;
     billboard.courses = Array.from(billboardCoursesMap.values());
-    return billboard;
+    return { billboard, missingProfessors: allMissingProfessors };
   }
 
   async create(sectionsDto: CreateSectionDto[]) {
-    const billboard = await this.getBillboardFromSectionsDto(sectionsDto);
+    const { billboard, missingProfessors } =
+      await this.getBillboardFromSectionsDto(sectionsDto);
     const existingBillboard = await this.findOne(
       billboard.period.year + billboard.period.period,
     );
     if (existingBillboard) {
-      return await this.mergeCourses(existingBillboard, billboard);
+      const saved = await this.mergeCourses(existingBillboard, billboard);
+      return { ...saved, missingProfessors };
     }
-    return await this.billboardRepository.save(billboard);
+    const saved = await this.billboardRepository.save(billboard);
+    return { ...saved, missingProfessors };
   }
 
   async findAll() {
