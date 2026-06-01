@@ -179,14 +179,25 @@ export default function UploadFiles({
           createBillboard(billboardData);
           setLoadSucess(prev => ({ ...prev, sucess: true }));
         } else if (typeUpload === "professors") {
-          const professorsData = jsonData.map((row) => ({
-            user: {
-              name: normalizeName(String(row["Personal"] ?? "")),
-              email: String(row["Correo"] ?? "").toLowerCase().trim(),
-              password: String(row["Correo"] ?? ""),
-            },
-          }));
-          uploadProfessors(professorsData);
+          // Use normalized rows (keys are trimmed and uppercased) to support different header names
+          const normalizedRows = normalized as Record<string, any>[];
+          const professorsData = normalizedRows.map((row) => {
+            const name = String(row["NOMBRE"] ?? row["PERSONAL"] ?? row["NAME"] ?? "");
+            const email = String(row["CORREO"] ?? row["EMAIL"] ?? row["E-MAIL"] ?? "").toLowerCase().trim();
+            return {
+              user: {
+                name: normalizeName(name),
+                email: email,
+                password: email || "",
+              },
+            };
+          }).filter(r => (r.user.email && r.user.email !== ""));
+
+          if (professorsData.length === 0) {
+            throw new Error("No se encontraron filas válidas de profesores en la plantilla. Asegúrate de que las columnas se llamen 'Nombre' y 'Correo'.");
+          }
+
+          await uploadProfessors(professorsData);
           setLoadSucess(prev => ({ ...prev, sucess: true }));
         }
       } catch (error) {
