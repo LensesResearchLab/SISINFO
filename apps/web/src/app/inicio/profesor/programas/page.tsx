@@ -27,7 +27,12 @@ export default function ProfessorCourseProgramsPage() {
   const { user, isLoading: authLoading } = useAuth();
   const qc = useQueryClient();
 
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>(() => {
+    try {
+      if (typeof window !== "undefined") return localStorage.getItem("current_period") ?? "";
+    } catch (e) {}
+    return "";
+  });
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
   const [viewOpen, setViewOpen] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -45,8 +50,10 @@ export default function ProfessorCourseProgramsPage() {
   // Seleccionar automáticamente el último período disponible (el más reciente)
   useEffect(() => {
     if (periods && periods.length > 0 && !selectedPeriod) {
+      const stored = typeof window !== "undefined" ? localStorage.getItem("current_period") : null;
       const lastPeriod = periods[periods.length - 1];
-      setSelectedPeriod(lastPeriod);
+      if (stored && periods.includes(stored)) setSelectedPeriod(stored);
+      else setSelectedPeriod(lastPeriod);
     }
   }, [periods, selectedPeriod]);
 

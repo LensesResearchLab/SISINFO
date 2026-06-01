@@ -89,7 +89,9 @@ export default function ProfessorUndergraduateProjectsHistoryPage() {
     }
 
     if (!hasInitialisedPeriod.current) {
-      setSelectedPeriod(periodOptions[0]);
+      const stored = typeof window !== "undefined" ? localStorage.getItem("current_period") : null;
+      if (stored && periodOptions.includes(stored)) setSelectedPeriod(stored);
+      else setSelectedPeriod(periodOptions[0]);
       hasInitialisedPeriod.current = true;
       return;
     }

@@ -94,7 +94,9 @@ export function AssistanceList({
   useEffect(() => {
     if (semesters && semesters.length > 0 && !selectedSemester) {
       const lastSemester = semesters[semesters.length - 1];
-      setSelectedSemester(lastSemester);
+      const stored = typeof window !== "undefined" ? localStorage.getItem("current_period") : null;
+      if (stored && semesters.includes(stored)) setSelectedSemester(stored);
+      else setSelectedSemester(lastSemester);
     }
   }, [semesters, selectedSemester]);
 

@@ -5,7 +5,8 @@ export function mapPeriodsToStringList(periods: Period[]): string[] {
 }
 
 export function mapPeriodToString(period: Period): string {
-  return `${period.year}${period.period}`;
+  const periodValue = `${period.period}`.padStart(2, "0");
+  return `${period.year}${periodValue}`;
 }
 
 export function mapStringtoPeriod(date: string): Period {

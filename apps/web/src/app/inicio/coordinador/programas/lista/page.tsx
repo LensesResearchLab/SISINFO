@@ -47,8 +47,10 @@ export default function ProgramsList() {
       
       // Seleccionar automáticamente el último período disponible (el más reciente)
       if (mappedPeriods.length > 0 && !period) {
+        const stored = typeof window !== "undefined" ? localStorage.getItem("current_period") : null;
         const lastPeriod = mappedPeriods[mappedPeriods.length - 1];
-        setPeriod(lastPeriod);
+        if (stored && mappedPeriods.includes(stored)) setPeriod(stored);
+        else setPeriod(lastPeriod);
       }
     }
   }, [fetchedPeriods, period, setPeriod])

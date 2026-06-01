@@ -194,8 +194,13 @@ export default function CourseReportTable({
         const periodsData = await getPeriods();
         setPeriods(periodsData);
         if (periodsData && periodsData.length > 0) {
+          const stored = typeof window !== "undefined" ? localStorage.getItem("current_period") : null;
           const lastPeriod = periodsData[periodsData.length - 1];
-          setSelectedPeriod(lastPeriod);
+          if (stored && periodsData.includes(stored)) {
+            setSelectedPeriod(stored);
+          } else {
+            setSelectedPeriod(lastPeriod);
+          }
         }
       } catch (error) {
         console.error("Error fetching periods:", error);

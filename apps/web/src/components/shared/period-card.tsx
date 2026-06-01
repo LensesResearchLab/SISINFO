@@ -14,10 +14,16 @@ export function TermCard({handlePeriodChange, footer, selectedPeriod: parentSele
         // Seleccionar automáticamente el último período disponible (el más reciente)
         if (data && data.length > 0) {
           const lastPeriod = data[data.length - 1];
-          // If parent already provided a selected period, prefer it; otherwise use lastPeriod
+          // If parent already provided a selected period, prefer it; otherwise use stored current period or lastPeriod
           if (!parentSelectedPeriod) {
-            setSelectedPeriod(lastPeriod);
-            handlePeriodChange(lastPeriod);
+            const stored = typeof window !== "undefined" ? localStorage.getItem("current_period") : null;
+            if (stored && data.includes(stored)) {
+              setSelectedPeriod(stored);
+              handlePeriodChange(stored);
+            } else {
+              setSelectedPeriod(lastPeriod);
+              handlePeriodChange(lastPeriod);
+            }
           }
         }
       })

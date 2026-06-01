@@ -30,7 +30,12 @@ export default function UndergraduateProjectsReport() {
   const [data, setData] = useState<ProjectReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [periods, setPeriods] = useState<string[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>(() => {
+    try {
+      if (typeof window !== "undefined") return localStorage.getItem("current_period") ?? "";
+    } catch (e) {}
+    return "";
+  });
 
   // Fetch available periods on mount
   useEffect(() => {
@@ -38,10 +43,12 @@ export default function UndergraduateProjectsReport() {
       try {
         const periodsData = await getPeriods();
         setPeriods(periodsData);
-        // Select the most recent period by default
+        // Select the most recent period by default, preferring stored current_period
         if (periodsData && periodsData.length > 0) {
+          const stored = typeof window !== "undefined" ? localStorage.getItem("current_period") : null;
           const lastPeriod = periodsData[periodsData.length - 1];
-          setSelectedPeriod(lastPeriod);
+          if (stored && periodsData.includes(stored)) setSelectedPeriod(stored);
+          else setSelectedPeriod(lastPeriod);
         }
       } catch (error) {
         console.error("Error fetching periods:", error);

@@ -26,7 +26,12 @@ import { TermCard } from "@/components/shared/period-card";
  * @returns {JSX.Element} A container with multiple date tables grouped by category
  */
 export default function ImportantDates({name, academicProcess} : {readonly name: string, readonly academicProcess: string}) {
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>(() => {
+    try {
+      if (typeof window !== "undefined") return localStorage.getItem("current_period") ?? "";
+    } catch (e) {}
+    return "";
+  });
 
   const {
     data: sections,

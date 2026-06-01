@@ -69,7 +69,9 @@ export default function ThesisList() {
   useEffect(() => {
     if (semesters && semesters.length > 0 && !searchTerm) {
       const lastSemester = semesters[semesters.length - 1];
-      setSearchTerm(lastSemester);
+      const stored = typeof window !== "undefined" ? localStorage.getItem("current_period") : null;
+      if (stored && semesters.includes(stored)) setSearchTerm(stored);
+      else setSearchTerm(lastSemester);
     }
   }, [semesters, searchTerm, setSearchTerm]);
 

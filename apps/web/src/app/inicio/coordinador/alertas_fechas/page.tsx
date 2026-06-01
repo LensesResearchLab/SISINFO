@@ -5,7 +5,12 @@ import { useCallback, useState } from "react";
 
 
 export default function Alertas(){
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>(() => {
+    try {
+      if (typeof window !== "undefined") return localStorage.getItem("current_period") ?? "";
+    } catch (e) {}
+    return "";
+  });
 
   const onPeriodChange = useCallback((v: string) => {
     setSelectedPeriod(v);
