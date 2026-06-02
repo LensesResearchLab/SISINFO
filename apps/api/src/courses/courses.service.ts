@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { Course } from './entities/course.entity';
 import { Section } from '../sections/entities/section.entity';
 import { Period } from '../periods/entities/period.entity';
@@ -25,10 +25,11 @@ export class CoursesService {
     private readonly documentsService: DocumentsService,
   ) {}
 
-  async create(createCourseDto: CreateCourseDto, section: Section) {
-    const course = this.courseRepository.create(createCourseDto);
+  async create(createCourseDto: CreateCourseDto, section: Section, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(Course) : this.courseRepository;
+    const course = repo.create(createCourseDto);
     course.sections = [section];
-    await this.courseRepository.save(course);
+    await repo.save(course);
     return course;
   }
 
@@ -54,6 +55,7 @@ export class CoursesService {
   async findByCodeAndPeriod(
     code: string,
     period: Period,
+    manager?: EntityManager,
   ): Promise<Course | null> {
     let searchPeriod: Period = period;
     if (period.period === '11' || period.period === '12') {
@@ -66,8 +68,10 @@ export class CoursesService {
       }
       searchPeriod = foundPeriod;
     }
-    return await this.courseRepository
-      .createQueryBuilder('course')
+    const qb = manager
+      ? manager.createQueryBuilder(Course, 'course')
+      : this.courseRepository.createQueryBuilder('course');
+    return await qb
       .leftJoinAndSelect('course.sections', 'section')
       .leftJoin('section.period', 'period')
       .where('course.code = :code', { code })
@@ -163,13 +167,14 @@ export class CoursesService {
     return this.courseRepository.save(course);
   }
 
-  updateSections(section: Section, course: Course) {
+  updateSections(section: Section, course: Course, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(Course) : this.courseRepository;
     if (course.sections != undefined) {
       course.sections.push(section);
     } else {
       course.sections = [section];
     }
-    return this.courseRepository.save(course);
+    return repo.save(course);
   }
 
   remove(id: number) {

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
-import { IsNull, Repository } from 'typeorm';
+import { EntityManager, IsNull, Repository } from 'typeorm';
 import { Section } from './entities/section.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Professor } from '../professors/entities/professor.entity';
@@ -22,15 +22,17 @@ export class SectionsService {
     supportProfessors: Professor[],
     professors: Professor[],
     period: Period,
+    manager?: EntityManager,
   ) {
-    const section = this.sectionRepository.create();
+    const repo = manager ? manager.getRepository(Section) : this.sectionRepository;
+    const section = repo.create();
     section.NRC = createSectionDto.NRC;
     section.period = period;
     section.section = createSectionDto.section;
     section.supportProfessors = supportProfessors;
     section.professors = professors;
 
-    await this.sectionRepository.save(section);
+    await repo.save(section);
 
     return section;
   }
@@ -197,8 +199,9 @@ export class SectionsService {
     return `This action updates a #${id} section`;
   }
 
-  async findByNRCAndPeriod(NRC: string, period: Period) {
-    return await this.sectionRepository.findOne({
+  async findByNRCAndPeriod(NRC: string, period: Period, manager?: EntityManager) {
+    const repo = manager ? manager.getRepository(Section) : this.sectionRepository;
+    return await repo.findOne({
       where: { NRC, period },
       relations: ['professors', 'supportProfessors'],
     });
@@ -208,7 +211,9 @@ export class SectionsService {
     section: Section,
     professors: Professor[],
     supportProfessors: Professor[],
+    manager?: EntityManager,
   ) {
+    const repo = manager ? manager.getRepository(Section) : this.sectionRepository;
     if (section.supportProfessors != null) {
       section.supportProfessors =
         section.supportProfessors.concat(supportProfessors);
@@ -220,7 +225,7 @@ export class SectionsService {
     } else {
       section.professors = professors;
     }
-    const sectionUpdated = await this.sectionRepository.save(section);
+    const sectionUpdated = await repo.save(section);
     return sectionUpdated;
   }
 
