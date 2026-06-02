@@ -80,9 +80,19 @@ export class CoursesService {
   }
 
   async findAllWithMainProfessor() {
-    return this.courseRepository.find({
+    const courses = await this.courseRepository.find({
       relations: ['mainProfessor'],
     });
+
+    const byCode = new Map<string, Course>();
+    for (const course of courses) {
+      const existing = byCode.get(course.code);
+      if (!existing || (!existing.mainProfessor && course.mainProfessor)) {
+        byCode.set(course.code, course);
+      }
+    }
+
+    return Array.from(byCode.values());
   }
 
   async findProfessorsForCourseInCurrentPeriod(courseId: string) {
@@ -128,8 +138,14 @@ export class CoursesService {
       throw new Error('Professor not found');
     }
 
-    course.mainProfessor = professor;
-    return await this.courseRepository.save(course);
+    await this.courseRepository
+      .createQueryBuilder()
+      .update(Course)
+      .set({ mainProfessor: professor })
+      .where('code = :code', { code: course.code })
+      .execute();
+
+    return { ...course, mainProfessor: professor };
   }
 
   async updateProgram(id: string, program: Document) {
