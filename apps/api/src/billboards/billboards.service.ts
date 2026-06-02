@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Billboard } from './entities/billboard.entity';
-import { Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { CreateCourseDto } from '../courses/dto/create-course.dto';
 import { Course } from '../courses/entities/course.entity';
 import { CreateSectionDto } from '../sections/dto/create-section.dto';
@@ -24,6 +24,7 @@ export class BillboardsService {
     private readonly courseService: CoursesService,
     private readonly sectionService: SectionsService,
     private readonly professorService: ProfessorsService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async getOrCreatePeriodBySectionDto(sectionDto: CreateSectionDto) {
@@ -52,10 +53,12 @@ export class BillboardsService {
     period: Period,
     foundProfessors: Professor[],
     supportProfessors: Professor[],
+    manager: EntityManager,
   ) {
     const existingSection = await this.sectionService.findByNRCAndPeriod(
       sectionDto.NRC,
       period,
+      manager,
     );
 
     let sectionToUse: Section;
@@ -64,6 +67,7 @@ export class BillboardsService {
         existingSection,
         foundProfessors,
         supportProfessors,
+        manager,
       );
     } else {
       const newSectionDto = new CreateSectionDto();
@@ -77,6 +81,7 @@ export class BillboardsService {
         supportProfessors,
         foundProfessors,
         period,
+        manager,
       );
     }
     return sectionToUse;
@@ -86,10 +91,12 @@ export class BillboardsService {
     sectionDto: CreateSectionDto,
     period: Period,
     sectionToUse: Section,
+    manager: EntityManager,
   ) {
     let existingCourse = await this.courseService.findByCodeAndPeriod(
       sectionDto.code,
       period,
+      manager,
     );
     if (existingCourse) {
       const sectionAlreadyIncluded = existingCourse.sections?.some(
@@ -99,6 +106,7 @@ export class BillboardsService {
         existingCourse = await this.courseService.updateSections(
           sectionToUse,
           existingCourse,
+          manager,
         );
       }
     } else {
@@ -107,71 +115,74 @@ export class BillboardsService {
       courseDto.credits = +sectionDto.credits;
       courseDto.departament = sectionDto.departament;
       courseDto.name = sectionDto.name;
-      existingCourse = await this.courseService.create(courseDto, sectionToUse);
+      existingCourse = await this.courseService.create(courseDto, sectionToUse, manager);
     }
     return existingCourse;
   }
 
   async getProfessors(
     section: CreateSectionDto,
+    allProfessors: Professor[],
   ): Promise<[Professor[], Professor[], string[]]> {
     const normalizeName = (name: string) =>
-      name.toLowerCase().trim().replace(/\s+/g, ' ');
+      name
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, ' ');
+
+    const professorsByNormalizedName = new Map(
+      allProfessors.map((p) => [normalizeName(p.user.name), p]),
+    );
+
     const professorsArr = section.professors.split('|');
     const supportProfessors: Professor[] = [];
     const foundProfessors: Professor[] = [];
     const missingNames: string[] = [];
 
-    await Promise.all(
-      professorsArr.map(async (prof) => {
-        const cleanedName = cleanName(prof);
-        const searchProfessor = await this.professorService.findByName(
-          normalizeName(cleanedName),
-        );
-        if (searchProfessor) {
-          if (/\(01\)/.test(prof)) {
-            if (
-              !foundProfessors.find(
-                (p) => p.user.id === searchProfessor.user.id,
-              )
-            ) {
-              foundProfessors.push(searchProfessor);
-            }
-          } else if (/\(02\)/.test(prof)) {
-            if (
-              !supportProfessors.find(
-                (p) => p.user.id === searchProfessor.user.id,
-              )
-            ) {
-              supportProfessors.push(searchProfessor);
-            }
+    for (const prof of professorsArr) {
+      const cleanedName = cleanName(prof);
+      const searchProfessor = professorsByNormalizedName.get(normalizeName(cleanedName));
+
+      if (searchProfessor) {
+        if (/\(01\)/.test(prof)) {
+          if (!foundProfessors.find((p) => p.user.id === searchProfessor.user.id)) {
+            foundProfessors.push(searchProfessor);
           }
-        } else if (cleanedName.trim() !== '') {
-          missingNames.push(cleanedName);
+        } else if (/\(02\)/.test(prof)) {
+          if (!supportProfessors.find((p) => p.user.id === searchProfessor.user.id)) {
+            supportProfessors.push(searchProfessor);
+          }
         }
-      }),
-    );
+      } else if (cleanedName.trim() !== '') {
+        missingNames.push(cleanedName);
+      }
+    }
+
     return [supportProfessors, foundProfessors, missingNames];
   }
 
-  async mergeCourses(billboardExisting: Billboard, billboard: Billboard) {
+  async mergeCourses(billboardExisting: Billboard, billboard: Billboard, manager: EntityManager) {
     const existingCodes = new Set(billboardExisting.courses.map((c) => c.code));
     const newCourses = billboard.courses.filter((c) => !existingCodes.has(c.code));
 
     billboardExisting.courses = [...billboardExisting.courses, ...newCourses];
     billboardExisting.period = billboard.period;
     billboardExisting.publicated = true;
-    await this.billboardRepository.save(billboardExisting);
+    await manager.getRepository(Billboard).save(billboardExisting);
     return billboardExisting;
   }
 
-  async getBillboardFromSectionsDto(sectionsDto: CreateSectionDto[]) {
+  async getBillboardFromSectionsDto(sectionsDto: CreateSectionDto[], manager: EntityManager) {
     const seenNRCs = new Set<string>();
     const uniqueSectionsDto = sectionsDto.filter((s) => {
       if (seenNRCs.has(s.NRC)) return false;
       seenNRCs.add(s.NRC);
       return true;
     });
+
+    const allProfessors = await this.professorService.findAllWithUsers();
 
     const billboard: Billboard = new Billboard();
     const billboardCoursesMap = new Map<string, Course>();
@@ -181,7 +192,7 @@ export class BillboardsService {
       const foundPeriod = await this.getOrCreatePeriodBySectionDto(section);
       if (section.professors != null && section.professors !== '') {
         const [supportProfessors, foundProfessors, missingNames] =
-          await this.getProfessors(section);
+          await this.getProfessors(section, allProfessors);
 
         for (const name of missingNames) {
           allMissingProfessors.push({
@@ -196,12 +207,14 @@ export class BillboardsService {
           foundPeriod,
           foundProfessors,
           supportProfessors,
+          manager,
         );
 
         const existingCourse = await this.getOrCreateCourseBySectionDto(
           section,
           foundPeriod,
           sectionToUse,
+          manager,
         );
 
         billboardCoursesMap.set(existingCourse.code, existingCourse);
@@ -219,17 +232,19 @@ export class BillboardsService {
   }
 
   async create(sectionsDto: CreateSectionDto[]) {
-    const { billboard, missingProfessors } =
-      await this.getBillboardFromSectionsDto(sectionsDto);
-    const existingBillboard = await this.findOne(
-      billboard.period.year + billboard.period.period,
-    );
-    if (existingBillboard) {
-      const saved = await this.mergeCourses(existingBillboard, billboard);
+    return await this.dataSource.transaction(async (manager) => {
+      const { billboard, missingProfessors } =
+        await this.getBillboardFromSectionsDto(sectionsDto, manager);
+      const existingBillboard = await this.findOne(
+        billboard.period.year + billboard.period.period,
+      );
+      if (existingBillboard) {
+        const saved = await this.mergeCourses(existingBillboard, billboard, manager);
+        return { ...saved, missingProfessors };
+      }
+      const saved = await manager.getRepository(Billboard).save(billboard);
       return { ...saved, missingProfessors };
-    }
-    const saved = await this.billboardRepository.save(billboard);
-    return { ...saved, missingProfessors };
+    });
   }
 
   async findAll() {

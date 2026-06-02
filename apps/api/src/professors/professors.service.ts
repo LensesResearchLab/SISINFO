@@ -77,6 +77,12 @@ export class ProfessorsService implements RoleService {
     return qb.getOne();
   }
 
+  findAllWithUsers(): Promise<Professor[]> {
+    return this.professorRepository.find({
+      relations: ['user'],
+    });
+  }
+
   async update(id: string, updateProfessorDto: UpdateProfessorDto) {
     const professor = await this.professorRepository.findOneBy({
       id,
