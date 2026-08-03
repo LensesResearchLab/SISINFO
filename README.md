@@ -161,7 +161,9 @@ Para un entorno de producción se requiere una base de datos real provisionada (
 ```bash
 npm run prod
 ```
+## Para despliegue en las VMs con el dominio
 
----
+Ver la [guía de despliegue](docs/deployment.md) para instrucciones de acceso, configuración y gestión de los entornos de producción y QA.
+
 
 Este proyecto fue desarrollado por estudiantes de pregrado del programa de Ingeniería de Sistemas y Computación de la Universidad de Los Andes como parte de su proyecto de grado, con la asesoría de Camilo Escobar-Velásquez, Ph.D.
