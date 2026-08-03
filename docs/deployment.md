@@ -125,7 +125,5 @@ Hacer rebuild después de este cambio, y **volver a dejarlo con el dominio** des
 Para que pm2 levante los procesos automáticamente si la VM se reinicia:
 
 ```bash
-pm2 startup
-# Ejecutar el comando que pm2 indique
 pm2 save
 ```
