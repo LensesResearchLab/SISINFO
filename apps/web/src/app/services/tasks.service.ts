@@ -47,3 +47,19 @@ export async function getTask(id:string) {
     return response.json(); 
 }
 
+export async function getPendingStandaloneTasksForProfessor(id: string) {
+  const response = await fetch(
+    API_ROUTES.BASE + "/" + API_ROUTES.TASKS + "/professor/" + id,
+  );
+  if (!response.ok) throw new Error("Error buscando tareas del profesor.");
+  return response.json();
+}
+
+export async function getPendingStandaloneTasksForStudent(id: string) {
+  const response = await fetch(
+    API_ROUTES.BASE + "/" + API_ROUTES.TASKS + "/student/" + id,
+  );
+  if (!response.ok) throw new Error("Error buscando tareas del estudiante.");
+  return response.json();
+}
+

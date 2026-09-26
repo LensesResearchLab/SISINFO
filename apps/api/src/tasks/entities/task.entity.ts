@@ -7,6 +7,7 @@ import { ProjectApplication } from '../../project-applications/entities/project-
 import { Student } from '../../students/entities/student.entity';
 import { Professor } from '../../professors/entities/professor.entity';
 import { Coordinator } from '../../coordinators/entities/coordinator.entity';
+import { ThesisApplication } from '../../thesis-applications/entities/thesis-application.entity';
 
 @Entity('tasks')
 export class Task extends Base {
@@ -53,4 +54,7 @@ export class Task extends Base {
 
   @OneToOne(() => ProjectApplication, (p) => p.actualTask)
   projectActualTask: ProjectApplication;
+
+  @ManyToOne(() => ThesisApplication, { nullable: true })
+  thesisApplication?: ThesisApplication;
 }

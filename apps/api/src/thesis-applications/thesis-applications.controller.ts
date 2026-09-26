@@ -34,6 +34,15 @@ export class ThesisApplicationsController {
     );
   }
 
+  @Post('master-stage')
+  @UseGuards(JwtAuthGuard)
+  createMasterStage(
+    @Req() req: Request & { user: { id: string } },
+    @Body() dto: CreateThesisApplicationDto,
+  ) {
+    return this.thesisApplicationsService.createMasterStage(dto, req.user.id);
+  }
+
   @Get()
   findAll() {
     return this.thesisApplicationsService.findAll();

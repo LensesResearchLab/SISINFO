@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateThesisApplicationDto } from './dto/create-thesis-application.dto';
 import { ThesisApplication } from './entities/thesis-application.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +12,7 @@ import { PeriodsService } from '../periods/periods.service';
 import { TasksService } from '../tasks/tasks.service';
 import { TaskType } from '../tasks/enums/taskType';
 import { ProfilesService } from '../profiles/profiles.service';
+import { Professor } from '../professors/entities/professor.entity';
 
 @Injectable()
 export class ThesisApplicationsService {
@@ -25,13 +26,21 @@ export class ThesisApplicationsService {
     private readonly periodsService: PeriodsService,
     private readonly tasksService: TasksService,
     private readonly profilesService: ProfilesService,
+    @InjectRepository(Professor)
+    private readonly professorRepository: Repository<Professor>,
   ) {}
 
   async create(
     createThesisApplicationDto: CreateThesisApplicationDto,
     studentId: string,
   ): Promise<ThesisApplication> {
-    const { thesisId, ...rest } = createThesisApplicationDto;
+    const {
+      thesisId,
+      profileId,
+      advisorId,
+      coordinatorId: _coordinatorId,
+      ...rest
+    } = createThesisApplicationDto;
 
     const student = await this.studentRepository.findOne({
       where: { id: studentId },
@@ -43,12 +52,32 @@ export class ThesisApplicationsService {
       );
     }
 
-    const thesis = await this.thesisRepository.findOne({
-      where: { id: thesisId },
-    });
+    if (profileId && !advisorId) {
+      throw new ConflictException('La solicitud debe tener un asesor de tesis.');
+    }
 
-    if (!thesis) {
-      throw new NotFoundException(`Thesis with ID ${thesisId} not found`);
+    const existingApplication = await this.thesisApplicationRepository.findOne({
+      where: { student: { id: studentId } },
+    });
+    if (existingApplication) {
+      throw new ConflictException('El estudiante ya tiene una solicitud de tesis activa.');
+    }
+
+    const thesis = thesisId
+      ? await this.thesisRepository.findOne({ where: { id: thesisId } })
+      : null;
+    if (thesisId && !thesis) {
+      throw new NotFoundException('Thesis with ID ' + thesisId + ' not found');
+    }
+
+    const profile = profileId
+      ? await this.profilesService.findOne(profileId)
+      : null;
+    const advisor = advisorId
+      ? await this.professorRepository.findOne({ where: { id: advisorId } })
+      : null;
+    if (advisorId && !advisor) {
+      throw new NotFoundException('Advisor with ID ' + advisorId + ' not found');
     }
 
     /* Add application date */
@@ -57,7 +86,9 @@ export class ThesisApplicationsService {
     const thesisApplication = this.thesisApplicationRepository.create({
       ...rest,
       student,
-      thesis,
+      thesis: thesis ?? undefined,
+      profile: profile ?? undefined,
+      advisor: advisor ?? undefined,
       applicationDate,
     });
 
@@ -66,27 +97,77 @@ export class ThesisApplicationsService {
     student.thesisApplication = savedApplication;
     await this.studentRepository.save(student);
 
-    // Create a task for the coordinator/director of the subarea (if exists)
-    try {
-      const subareaName = thesis.investigationSubarea || '';
-      const profiles = await this.profilesService.findAll();
-      const match = profiles.find(
-        (p) => p.name?.toLowerCase?.() === subareaName.toLowerCase(),
-      );
-      if (match && match.coordinator && match.coordinator.id) {
+    if (profile) {
+      savedApplication.status = ThesisStatusEnum.SUBAREA_PENDING_ADVISOR;
+      await this.thesisApplicationRepository.save(savedApplication);
+
+      if (advisor) {
         await this.tasksService.create(TaskType.SEND_APPROVE, {
           flow: 'inscripcionSubarea',
           step: 0,
           comment: '',
-          coordinatorId: match.coordinator.id,
+          professorId: advisor.id,
           studentId: student.id,
+          thesisApplicationId: savedApplication.id,
+        });
+      } else if (profile.coordinator?.id) {
+        await this.tasksService.create(TaskType.SEND_APPROVE, {
+          flow: 'inscripcionSubarea',
+          step: 1,
+          comment: '',
+          professorId: profile.coordinator.id,
+          studentId: student.id,
+          thesisApplicationId: savedApplication.id,
         });
       }
-    } catch (e) {
-      console.error('Error creando tarea de subarea:', e);
     }
 
     return savedApplication;
+  }
+
+  async createMasterStage(
+    dto: CreateThesisApplicationDto,
+    studentId: string,
+  ): Promise<ThesisApplication> {
+    const stage = dto.currentStage;
+    if (stage !== 'tesis1' && stage !== 'tesis2') {
+      throw new ConflictException('La etapa de maestría no es válida.');
+    }
+
+    const application = await this.thesisApplicationRepository.findOne({
+      where: { student: { id: studentId } },
+      relations: ['student', 'profile', 'advisor'],
+    });
+    if (!application) {
+      throw new ConflictException('Primero debe aprobarse la inscripción a la subárea.');
+    }
+    if (stage === 'tesis1' && application.status !== ThesisStatusEnum.SUBAREA_APPROVED) {
+      throw new ConflictException('La inscripción a la subárea aún no está aprobada.');
+    }
+    if (stage === 'tesis2' && application.status !== ThesisStatusEnum.THESIS1_APPROVED) {
+      throw new ConflictException('Tesis 1 aún no está aprobada.');
+    }
+    if (!dto.stageTitle || !dto.stageDescription) {
+      throw new ConflictException('El título y la descripción son obligatorios.');
+    }
+
+    application.currentStage = stage;
+    application.stageTitle = dto.stageTitle;
+    application.stageDescription = dto.stageDescription;
+    application.status = stage === 'tesis1'
+      ? ThesisStatusEnum.THESIS1_PENDING_ADVISOR
+      : ThesisStatusEnum.THESIS2_PENDING_ADVISOR;
+    const saved = await this.thesisApplicationRepository.save(application);
+
+    await this.tasksService.create(TaskType.SEND_APPROVE, {
+      flow: stage,
+      step: 0,
+      comment: '',
+      professorId: application.advisor?.id,
+      studentId,
+      thesisApplicationId: saved.id,
+    });
+    return saved;
   }
 
   findAll() {
@@ -108,6 +189,14 @@ export class ThesisApplicationsService {
             user: true,
           },
           tags: true,
+        },
+        profile: {
+          coordinator: {
+            user: true,
+          },
+        },
+        advisor: {
+          user: true,
         },
       },
     });

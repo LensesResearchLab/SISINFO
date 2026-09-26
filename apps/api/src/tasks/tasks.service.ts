@@ -18,6 +18,8 @@ import { Professor } from '../professors/entities/professor.entity';
 import { DocumentsService } from '../documents/documents.service';
 import { Coordinator } from '../coordinators/entities/coordinator.entity';
 import { CoordinatorsService } from '../coordinators/coordinators.service';
+import { ThesisApplication } from '../thesis-applications/entities/thesis-application.entity';
+import { ThesisStatusEnum } from '../thesis-applications/enums/thesis_status.enum';
 
 @Injectable()
 export class TasksService {
@@ -33,6 +35,8 @@ export class TasksService {
     private readonly studentsService: StudentsService,
     private readonly professorService: ProfessorsService,
     private readonly coordinatorService: CoordinatorsService,
+    @InjectRepository(ThesisApplication)
+    private readonly thesisApplicationRepository: Repository<ThesisApplication>,
   ) {}
 
   async create(type: TaskType, overrides?: UpdateTaskDto): Promise<Task> {
@@ -71,6 +75,12 @@ export class TasksService {
       if (document) {
         entity.document = document;
       }
+    }
+    if ((overrides as any)?.thesisApplicationId) {
+      const application = await this.thesisApplicationRepository.findOne({
+        where: { id: (overrides as any).thesisApplicationId },
+      });
+      if (application) entity.thesisApplication = application;
     }
     // If a project application id was provided, link this task to it so
     // the frontend can read project/period information from task.projectActualTask
@@ -135,14 +145,118 @@ export class TasksService {
         'coordinator',
         'date',
         'date.importantSection',
+        'thesisApplication',
+        'thesisApplication.student',
+        'thesisApplication.student.user',
+        'thesisApplication.profile',
+        'thesisApplication.profile.coordinator',
+        'thesisApplication.advisor',
+        'thesisApplication.advisor.user',
       ],
     });
     if (!task) throw new NotFoundException(`Task ${id} not found`);
     return task;
   }
   async update(id: string, dto: UpdateTaskDto): Promise<Task> {
+    const task = await this.findOne(id);
     await this.repo.update(id, dto);
+
+    if (
+      ['inscripcionSubarea', 'tesis1', 'tesis2'].includes(task.flow ?? '') &&
+      task.thesisApplication &&
+      dto.approved !== undefined &&
+      !task.approved
+    ) {
+      const application = task.thesisApplication;
+
+      if (!dto.approved) {
+        application.status = ThesisStatusEnum.REJECTED;
+      } else if (task.flow === 'inscripcionSubarea' && task.step === 0) {
+        application.status = ThesisStatusEnum.SUBAREA_PENDING_COORDINATOR;
+        if (application.profile?.coordinator?.id) {
+          await this.create(TaskType.SEND_APPROVE, {
+            flow: 'inscripcionSubarea',
+            step: 1,
+            comment: '',
+            professorId: application.profile.coordinator.id,
+            studentId: application.student.id,
+            thesisApplicationId: application.id,
+          });
+        }
+      } else if (task.flow === 'inscripcionSubarea') {
+        application.status = ThesisStatusEnum.SUBAREA_APPROVED;
+      } else if (task.step === 0) {
+        application.status = task.flow === 'tesis1'
+          ? ThesisStatusEnum.THESIS1_PENDING_COORDINATOR
+          : ThesisStatusEnum.THESIS2_PENDING_COORDINATOR;
+        if (application.profile?.coordinator?.id) {
+          await this.create(TaskType.SEND_APPROVE, {
+            flow: task.flow,
+            step: 1,
+            comment: '',
+            professorId: application.profile.coordinator.id,
+            studentId: application.student.id,
+            thesisApplicationId: application.id,
+          });
+        }
+      } else {
+        application.status = task.flow === 'tesis1'
+          ? ThesisStatusEnum.THESIS1_APPROVED
+          : ThesisStatusEnum.THESIS2_APPROVED;
+      }
+
+      await this.thesisApplicationRepository.save(application);
+    }
+
     return this.findOne(id);
+  }
+
+  async findPendingByProfessor(professorId: string): Promise<Task[]> {
+    // Recover coordinator tasks created before the coordinator relation was loaded.
+    const pendingApplications = await this.thesisApplicationRepository.find({
+      where: { status: ThesisStatusEnum.SUBAREA_PENDING_COORDINATOR },
+      relations: ['student', 'profile', 'profile.coordinator', 'advisor'],
+    });
+    for (const application of pendingApplications) {
+      if (application.profile?.coordinator?.id !== professorId) continue;
+      const existing = await this.repo.findOne({
+        where: {
+          thesisApplication: { id: application.id },
+          flow: 'inscripcionSubarea',
+          step: 1,
+          approved: false,
+        },
+      });
+      if (!existing) {
+        await this.create(TaskType.SEND_APPROVE, {
+          flow: 'inscripcionSubarea',
+          step: 1,
+          comment: '',
+          professorId,
+          studentId: application.student.id,
+          thesisApplicationId: application.id,
+        });
+      }
+    }
+    return this.repo.find({
+      where: { professor: { id: professorId }, approved: false },
+      relations: [
+        'student',
+        'student.user',
+        'professor',
+        'thesisApplication',
+        'thesisApplication.profile',
+        'thesisApplication.profile.coordinator',
+        'thesisApplication.advisor',
+      ],
+    });
+  }
+
+  async findPendingByStudent(studentId: string): Promise<Task[]> {
+    return this.repo.find({
+      where: { student: { id: studentId }, approved: false },
+      relations: ['student', 'student.user', 'thesisApplication'],
+    });
   }
 
   async findAll(): Promise<Task[]> {
@@ -158,6 +272,12 @@ export class TasksService {
         'projectPreviousTasks',
         'date',
         'date.importantSection',
+        'thesisApplication',
+        'thesisApplication.student',
+        'thesisApplication.student.user',
+        'thesisApplication.profile',
+        'thesisApplication.advisor',
+        'thesisApplication.advisor.user',
       ],
     });
   }

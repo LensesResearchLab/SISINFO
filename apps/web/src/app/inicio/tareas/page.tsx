@@ -20,6 +20,7 @@ import {
 } from "@/app/services/project-application.service";
 import { getUserInfo } from "@/app/auth/auth-service";
 import { createTask } from "@/app/services/tasks.service";
+import { getPendingStandaloneTasksForProfessor, getPendingStandaloneTasksForStudent } from "@/app/services/tasks.service";
 import { Task } from "@/app/types/entities/task.type";
 import { TaskType, flows } from "./flows";
 import SpinnerPage from "@/components/shared/spinner-page";
@@ -154,7 +155,9 @@ export default function Tasks() {
 
         const taskPromises = [
           safe(getPendingTasksForStudent(userId)),
+          safe(getPendingStandaloneTasksForStudent(userId)),
           safe(getPendingTasksForProfessor(userId)),
+          safe(getPendingStandaloneTasksForProfessor(userId)),
         ];
 
         if (userRoles.includes("coordinador") && !userRoles.includes("administrador")) {
@@ -167,7 +170,7 @@ export default function Tasks() {
         const parsedTasks = allTasks.map((task: Task) => {
           const stepNumber =
             typeof task.step === "number" ? task.step : Number(task.step);
-          const stepInfo = flows.proyectoPregrado[stepNumber];
+          const stepInfo = ((task.flow ? flows[task.flow] : undefined) ?? flows.proyectoPregrado)[stepNumber];
           return {
             ...task,
             step: stepNumber,

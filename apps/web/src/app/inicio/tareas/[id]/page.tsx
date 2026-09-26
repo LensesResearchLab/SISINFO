@@ -189,7 +189,7 @@ useEffect(() => {
         if (!patchRes.ok) throw new Error('Error actualizando la tarea');
 
         // If this was an approval/rejection task, map to thesis application status
-        if (task?.type === TaskType.SEND_APPROVE && task?.student?.id) {
+        if (task?.type === TaskType.SEND_APPROVE && task?.student?.id && task?.flow !== "inscripcionSubarea") {
           // Find the student's thesis application
           const appRes = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS_APPLICATIONS}/student/${task.student.id}`);
           if (appRes.ok) {
@@ -219,7 +219,7 @@ useEffect(() => {
   const studentNameFromUrl = searchParams.get("studentName");
   const studentCodeFromUrl = searchParams.get("studentCode");
 
-  const flowKey = "proyectoPregrado"; // Para tener los titulos especificos de cada tarea 
+  const flowKey = task?.flow && flows[task.flow] ? task.flow : "proyectoPregrado";
   const stepIndex =
     typeof task?.step === "string" ? Number(task.step) : task?.step;
 

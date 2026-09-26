@@ -15,6 +15,7 @@ export interface Task {
   step: number;
   title: string;
   description: string;
+  flow?: string;
   comment: string;
   approved: boolean;
   student:Student;

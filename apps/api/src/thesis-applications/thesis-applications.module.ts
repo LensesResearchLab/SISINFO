@@ -9,6 +9,7 @@ import { StudentsModule } from '../students/students.module';
 import { PeriodsModule } from '../periods/periods.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { ProfilesModule } from '../profiles/profiles.module';
+import { Professor } from '../professors/entities/professor.entity';
 
 @Module({
   controllers: [ThesisApplicationsController],
@@ -20,7 +21,7 @@ import { ProfilesModule } from '../profiles/profiles.module';
     PeriodsModule,
     TasksModule,
     ProfilesModule,
-    TypeOrmModule.forFeature([ThesisApplication]),
+    TypeOrmModule.forFeature([ThesisApplication, Professor]),
   ],
   exports: [TypeOrmModule, ThesisApplicationsService],
 })

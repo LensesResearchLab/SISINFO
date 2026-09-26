@@ -10,12 +10,13 @@ import { ProfessorsModule } from '../professors/professors.module';
 import { StudentsModule } from '../students/students.module';
 import { DocumentsModule } from '../documents/documents.module';
 import { CoordinatorsModule } from '../coordinators/coordinators.module';
+import { ThesisApplication } from '../thesis-applications/entities/thesis-application.entity';
 
 @Module({
   controllers: [TasksController],
   providers: [TasksService, TaskFactory],
   imports: [
-    TypeOrmModule.forFeature([Task, ProjectApplication, ImportantDate]),
+    TypeOrmModule.forFeature([Task, ProjectApplication, ImportantDate, ThesisApplication]),
     ProfessorsModule,
     StudentsModule,
     DocumentsModule,

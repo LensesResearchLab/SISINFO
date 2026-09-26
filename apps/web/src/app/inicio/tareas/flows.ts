@@ -12,6 +12,28 @@ export interface Step {
   description: string;
 }
 export const flows: Record<string, Step[]> = {
+  tesis1: [
+    { type: TaskType.SEND_APPROVE, assignee: 'professor', title: 'Aprobar Tesis 1', description: 'Revisar la propuesta de Tesis 1' },
+    { type: TaskType.SEND_APPROVE, assignee: 'professor', title: 'Aprobar Tesis 1', description: 'Revisar la propuesta como coordinador' },
+  ],
+  tesis2: [
+    { type: TaskType.SEND_APPROVE, assignee: 'professor', title: 'Aprobar Tesis 2', description: 'Revisar la solicitud de Tesis 2' },
+    { type: TaskType.SEND_APPROVE, assignee: 'professor', title: 'Aprobar Tesis 2', description: 'Revisar la solicitud como coordinador' },
+  ],
+  inscripcionSubarea: [
+    {
+      type: TaskType.SEND_APPROVE,
+      assignee: 'professor',
+      title: 'Aprobar inscripción a subárea',
+      description: 'Revisar y aprobar la solicitud del estudiante',
+    },
+    {
+      type: TaskType.SEND_APPROVE,
+      assignee: 'professor',
+      title: 'Aprobar inscripción a subárea',
+      description: 'Revisar y aprobar la solicitud como coordinador de subárea',
+    },
+  ],
   proyectoPregrado: [
     {
       type: TaskType.SEND_APPROVE,

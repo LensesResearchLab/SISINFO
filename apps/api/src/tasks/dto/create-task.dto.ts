@@ -44,4 +44,8 @@ export class CreateTaskDto {
 
   @IsOptional()
   coordinatorId?: string;
+
+  @IsOptional()
+  @IsString()
+  thesisApplicationId?: string;
 }

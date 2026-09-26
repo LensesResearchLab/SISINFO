@@ -45,6 +45,16 @@ export class TasksController {
     } as any);
   }
 
+  @Get('professor/:id')
+  findPendingByProfessor(@Param('id') id: string) {
+    return this.tasks.findPendingByProfessor(id);
+  }
+
+  @Get('student/:id')
+  findPendingByStudent(@Param('id') id: string) {
+    return this.tasks.findPendingByStudent(id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tasks.findOne(id);

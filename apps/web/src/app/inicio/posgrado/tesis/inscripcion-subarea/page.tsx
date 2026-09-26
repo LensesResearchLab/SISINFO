@@ -3,6 +3,21 @@ import React, { useEffect, useState, useMemo } from "react";
 import { API_ROUTES } from "@/app/routes";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
+// Datos temporales para poder probar el flujo mientras se completa la carga real del catálogo.
+const LOCAL_SUBAREAS = [
+  {
+    id: "aa15ceef-0b37-4d7b-821d-a1ee6306a0d1",
+    name: "Inteligencia Artificial (Prueba Local)",
+    coordinator: { id: "b3cb0b7a-15f8-4aca-9c89-3067a2dfb60c" },
+  },
+];
+
+const LOCAL_COURSES = [
+  { id: "local-curso-1", name: "Seminario de Investigación" },
+  { id: "local-curso-2", name: "Metodología de la Investigación" },
+  { id: "local-curso-3", name: "Curso Electivo de Maestría" },
+];
+
 export default function EnrollSubareaPage() {
   const [loading, setLoading] = useState(false);
   const [profiles, setProfiles] = useState<any[]>([]);
@@ -41,9 +56,9 @@ export default function EnrollSubareaPage() {
           fetch(`${base}/${API_ROUTES.COURSES}`).then((r) => r.json()),
           fetch(`${base}/${API_ROUTES.PERIODS}`).then((r) => r.json()),
         ]);
-        setProfiles(Array.isArray(pfRes) ? pfRes : []);
+        setProfiles(Array.isArray(pfRes) && pfRes.length > 0 ? pfRes : LOCAL_SUBAREAS);
         setProfessors(Array.isArray(prRes) ? prRes : []);
-        setCoursesList(Array.isArray(coursesRes) ? coursesRes : []);
+        setCoursesList(Array.isArray(coursesRes) && coursesRes.length > 0 ? coursesRes : LOCAL_COURSES);
         setPeriods(Array.isArray(periodsRes) ? periodsRes : []);
       } catch (err) {
         setError("No se pudieron cargar datos del servidor.");
@@ -170,7 +185,7 @@ export default function EnrollSubareaPage() {
     if (!form.semesterStart1) return setError("Ingresa semestre de inicio (Tesis 1).");
 
     const hasCourse = Array.isArray(form.courses) && form.courses.some((c: any) => c.courseId);
-    if (!hasCourse && !form.otherCourse?.courseId) return setError("Selecciona al menos un curso o agrega uno en 'Otros'.");
+    if (!hasCourse && !form.otherCourse?.courseId && !form.otherCourse2?.courseId) return setError("Selecciona al menos un curso o agrega uno en 'Otros'.");
 
     setSubmitting(true);
     try {
@@ -178,7 +193,7 @@ export default function EnrollSubareaPage() {
       const payload = {
         profileId: form.profileId,
         coordinatorId: form.coordinatorId || null,
-        thesisId: professorTheses.length > 0 ? form.topic : null,
+        thesisId: professorTheses.length > 0 ? form.topic : undefined,
         advisorId: form.advisorId,
         semesterStart1: form.semesterStart1,
         semesterStart2: form.semesterStart2 || null,
@@ -190,11 +205,12 @@ export default function EnrollSubareaPage() {
         otherCourse2: form.otherCourse2?.courseId ? { courseId: form.otherCourse2.courseId, semester: form.otherCourse2.semester, seen: !!form.otherCourse2.seen } : null,
       };
 
-      const res = await fetch(`${base}/${API_ROUTES.THESIS_APPLICATIONS}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch("/api/thesis-applications", {
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+        credentials: "include",
+       body: JSON.stringify(payload),
+     });
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
