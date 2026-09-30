@@ -93,6 +93,15 @@ function LogInForm() {
             {error}
           </div>
         )}
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full h-12 text-lg"
+          onClick={() => { window.location.href = "/auth/microsoft/start"; }}
+        >
+          Iniciar sesión con Uniandes
+        </Button>
+        <div className="text-center text-sm text-muted-foreground">o usa el acceso local de pruebas</div>
         <div className="space-y-4">
           <Label htmlFor="email" className="text-lg">
             Correo uniandes

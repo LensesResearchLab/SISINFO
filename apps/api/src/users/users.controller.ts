@@ -66,6 +66,16 @@ export class UsersController {
     }
   }
 
+  @Post('login/microsoft')
+  async loginMicrosoft(@Body() loginDto: { email: string; name?: string; internalSecret?: string }) {
+    if (!process.env.SSO_INTERNAL_SECRET || loginDto.internalSecret !== process.env.SSO_INTERNAL_SECRET) {
+      throw new UnauthorizedException('Solicitud SSO no autorizada');
+    }
+    const user = await this.usersService.findOrCreateMicrosoftUser(loginDto.email, loginDto.name ?? loginDto.email);
+    const payload = { id: user.id, name: user.name, email: user.email, roles: user.roles };
+    return { ...payload, access_token: this.jwtService.sign(payload) };
+  }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('coordinador', 'admin')
   @Get()

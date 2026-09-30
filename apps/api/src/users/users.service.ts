@@ -6,11 +6,14 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { RoleSimpleFactory } from './helpers/RoleSimpleFactory';
 import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
+import { randomUUID } from 'crypto';
+import { Student } from '../students/entities/student.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Student) private readonly studentRepository: Repository<Student>,
     private readonly roleSimpleFactory: RoleSimpleFactory,
   ) {}
 
@@ -60,6 +63,42 @@ export class UsersService {
     if (!user) return null;
     const roles: string[] = this.getUserRoles(user);
     return { ...user, roles };
+  }
+
+  async findOrCreateMicrosoftUser(email: string, name: string) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const existing = await this.findByEmail(normalizedEmail);
+    if (existing) {
+      if (!existing.student) {
+        const student = this.studentRepository.create({
+          id: existing.id,
+          user: existing as User,
+          isActive: true,
+          isUndergraduate: false,
+          code: `MS${existing.id.replace(/-/g, '').slice(0, 7)}`,
+        });
+        await this.studentRepository.save(student);
+        return { ...existing, student, roles: ['estudiante_maestria'] };
+      }
+      return existing;
+    }
+
+    const user = this.userRepository.create({
+      name: name?.trim() || normalizedEmail,
+      email: normalizedEmail,
+      // Microsoft is the identity provider; this value is never used for SSO.
+      password: randomUUID(),
+    });
+    await this.userRepository.save(user);
+    const student = this.studentRepository.create({
+      id: user.id,
+      user,
+      isActive: true,
+      isUndergraduate: false,
+      code: `MS${user.id.replace(/-/g, '').slice(0, 7)}`,
+    });
+    await this.studentRepository.save(student);
+    return { ...user, student, roles: ['estudiante_maestria'] };
   }
 
   getUserRoles(user: User) {
