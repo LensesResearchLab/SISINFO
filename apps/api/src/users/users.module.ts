@@ -10,12 +10,14 @@ import { CoordinatorsModule } from '../coordinators/coordinators.module';
 import { AdministratorsModule } from '../administrators/administrators.module';
 import { AuthModule } from '../auth/auth.module';
 import { Student } from '../students/entities/student.entity';
+import { Professor } from '../professors/entities/professor.entity';
+import { Coordinator } from '../coordinators/entities/coordinator.entity';
 
 @Module({
   controllers: [UsersController],
   providers: [UsersService, RoleSimpleFactory],
   imports: [
-    TypeOrmModule.forFeature([User, Student]),
+    TypeOrmModule.forFeature([User, Student, Professor, Coordinator]),
     StudentsModule,
     ProfessorsModule,
     CoordinatorsModule,

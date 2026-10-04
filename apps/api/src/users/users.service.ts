@@ -8,12 +8,47 @@ import { RoleSimpleFactory } from './helpers/RoleSimpleFactory';
 import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 import { randomUUID } from 'crypto';
 import { Student } from '../students/entities/student.entity';
+import { Professor } from '../professors/entities/professor.entity';
+import { Coordinator } from '../coordinators/entities/coordinator.entity';
+
+const MICROSOFT_PROFESSORS: Record<string, string> = {
+  'a-herrer@uniandes.edu.co': 'Andrea Herrera Suescún',
+  'ca.escobar2434@uniandes.edu.co': 'Camilo Andrés Escobar Velasquez',
+  'calozanog@uniandes.edu.co': 'Carlos Andrés Lozano Garzón',
+  'da.gonzalez14@uniandes.edu.co': 'Daniel González',
+  'dcorreal@uniandes.edu.co': 'Darío Ernesto Correal Torres',
+  'ee.rosales24@uniandes.edu.co': 'Eduardo Rosales Rosero',
+  'ja.duitama@uniandes.edu.co': 'Jorge Alexander Duitama Castellanos',
+  'jp.reyes39@uniandes.edu.co': 'Juan Pablo Reyes',
+  'kj.garces971@uniandes.edu.co': 'Kelly Johany Garcés Pernet',
+  'marc-her@uniandes.edu.co': 'Marcela Hernández Hoyos',
+  'mavillam@uniandes.edu.co': 'María del Pilar Villamil Giraldo',
+  'm.linaresv@uniandes.edu.co': 'Mario Linares Vásquez',
+  'mar-san1@uniandes.edu.co': 'Mario Eduardo Sánchez Puccini',
+  'fde@uniandes.edu.co': 'Mario Fernando De la Rosa Rosero',
+  'n.cardozo@uniandes.edu.co': 'Nicolás Cardozo Álvarez',
+  'o-gonza1@uniandes.edu.co': 'Óscar Fernando González Rojas',
+  'pfiguero@uniandes.edu.co': 'Pablo Alejandro Figueroa Forero',
+  'rcasalla@uniandes.edu.co': 'Rubby Casallas Gutiérrez',
+  'r.manrique@uniandes.edu.co': 'Ruben Manrique',
+  'sarueda@uniandes.edu.co': 'Sandra Julieta Rueda Rodríguez',
+  've.gauthier@uniandes.edu.co': 'Valérie Elisabeth Gauthier Umaña',
+  'ydonoso@uniandes.edu.co': 'Yezid Enrique Donoso Meisel',
+};
+
+const MICROSOFT_COORDINATORS: Record<string, string> = {
+  'jujimene@uniandes.edu.co': 'Juan Diego Jiménez',
+  'pregisis@uniandes.edu.co': 'Juan Pablo Fernández',
+  'magisist@uniandes.edu.co': 'Natalia Franco Tamara',
+};
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Student) private readonly studentRepository: Repository<Student>,
+    @InjectRepository(Professor) private readonly professorRepository: Repository<Professor>,
+    @InjectRepository(Coordinator) private readonly coordinatorRepository: Repository<Coordinator>,
     private readonly roleSimpleFactory: RoleSimpleFactory,
   ) {}
 
@@ -67,8 +102,20 @@ export class UsersService {
 
   async findOrCreateMicrosoftUser(email: string, name: string) {
     const normalizedEmail = email.trim().toLowerCase();
+    const professorName = MICROSOFT_PROFESSORS[normalizedEmail];
+    const coordinatorName = MICROSOFT_COORDINATORS[normalizedEmail];
     const existing = await this.findByEmail(normalizedEmail);
     if (existing) {
+      if (coordinatorName && !existing.coordinator) {
+        const coordinator = this.coordinatorRepository.create({ id: existing.id, user: existing, isActive: true });
+        await this.coordinatorRepository.save(coordinator);
+        return { ...existing, coordinator, roles: [...(existing.roles ?? []), 'coordinador'] };
+      }
+      if (professorName && !existing.professor) {
+        const professor = this.professorRepository.create({ id: existing.id, user: existing, isActive: true });
+        await this.professorRepository.save(professor);
+        return { ...existing, professor, roles: [...(existing.roles ?? []), 'profesor'] };
+      }
       if (!existing.student) {
         const student = this.studentRepository.create({
           id: existing.id,
@@ -90,6 +137,16 @@ export class UsersService {
       password: randomUUID(),
     });
     await this.userRepository.save(user);
+    if (coordinatorName) {
+      const coordinator = this.coordinatorRepository.create({ id: user.id, user, isActive: true });
+      await this.coordinatorRepository.save(coordinator);
+      return { ...user, coordinator, roles: ['coordinador'] };
+    }
+    if (professorName) {
+      const professor = this.professorRepository.create({ id: user.id, user, isActive: true });
+      await this.professorRepository.save(professor);
+      return { ...user, professor, roles: ['profesor'] };
+    }
     const student = this.studentRepository.create({
       id: user.id,
       user,
