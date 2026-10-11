@@ -31,6 +31,7 @@ export default function ProgramsList() {
   const [periods, setPeriods] = useState<string[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [loadError, setLoadError] = useState(false)
+  const [program, setProgram] = useState("")
 
   // Fetch list of periods using React Query
   const { data: fetchedPeriods } = useQuery({
@@ -88,25 +89,41 @@ export default function ProgramsList() {
           <CardTitle className="text-center text-core">Listado de Programas</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-            <div className="w-full sm:w-72">
-              <select
-                id="period-select"
-                value={period ?? ""}
-                onChange={(e) => setPeriod(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-core"
-              >
-                <option value="" disabled>Seleccione un periodo</option>
-                {periods.map((p) => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
           <DataTable
             columns={getProgramColumns(handleDetail)}
-            data={courses}
+            data={program ? courses.filter((course) => {
+              const value = typeof course.program === "string" ? course.program : (course.program as any)?.name
+              return value?.toString().toUpperCase().includes(program)
+            }) : courses}
+            toolbar={
+              <div className="flex items-center gap-2">
+                <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+                  Periodo
+                  <select
+                    id="period-select"
+                    value={period ?? ""}
+                    onChange={(e) => setPeriod(e.target.value)}
+                    className="h-9 w-28 rounded-md border border-gray-300 px-2 text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-core"
+                  >
+                    <option value="" disabled>Seleccione</option>
+                    {periods.map((p) => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </label>
+                <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
+                  Programa
+                  <select
+                    value={program}
+                    onChange={(e) => setProgram(e.target.value)}
+                    className="h-9 w-28 rounded-md border border-gray-300 px-2 text-sm font-normal text-foreground focus:outline-none focus:ring-2 focus:ring-core"
+                  >
+                    <option value="">Todos</option>
+                    <option value="ISIS">ISIS</option>
+                    <option value="MINE">MINE</option>
+                    <option value="MESI">MESI</option>
+                  </select>
+                </label>
+              </div>
+            }
           />
         </CardContent>
       </Card>

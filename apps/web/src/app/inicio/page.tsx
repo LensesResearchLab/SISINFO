@@ -93,7 +93,7 @@ useEffect(() => {
 }, [setRoles, setTasks]);
 
   if (loading) return <SpinnerPage />;
-  if (roles.length === 0) return null;
+  if (roles.length === 0) return <NoRoleNotice />;
   if (roles.length === 1) return roleMap.get(roles[0]);
 
   return (
@@ -116,5 +116,18 @@ function RoleInformation() {
         </TabsContent>
       ))}
     </>
+  );
+}
+
+function NoRoleNotice() {
+  return (
+    <div className="min-h-full flex items-center justify-center p-6">
+      <div className="max-w-xl rounded-xl bg-card p-8 text-center shadow-lg">
+        <h1 className="text-2xl font-bold text-core">Cuenta sin rol asignado</h1>
+        <p className="mt-3 text-muted-foreground">
+          Tu cuenta institucional inició sesión correctamente, pero todavía no tiene un rol asignado en SISINFO. Contacta al administrador para solicitar acceso.
+        </p>
+      </div>
+    </div>
   );
 }

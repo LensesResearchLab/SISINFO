@@ -12,12 +12,13 @@ import { AuthModule } from '../auth/auth.module';
 import { Student } from '../students/entities/student.entity';
 import { Professor } from '../professors/entities/professor.entity';
 import { Coordinator } from '../coordinators/entities/coordinator.entity';
+import { Administrator } from '../administrators/entities/administrator.entity';
 
 @Module({
   controllers: [UsersController],
   providers: [UsersService, RoleSimpleFactory],
   imports: [
-    TypeOrmModule.forFeature([User, Student, Professor, Coordinator]),
+    TypeOrmModule.forFeature([User, Student, Professor, Coordinator, Administrator]),
     StudentsModule,
     ProfessorsModule,
     CoordinatorsModule,

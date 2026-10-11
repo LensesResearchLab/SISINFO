@@ -73,6 +73,7 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    autoResetPageIndex: false,
   });
   const selectedData = useMemo(() => {
     return table.getSelectedRowModel()?.rows?.map((row) => row.original);
@@ -86,7 +87,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
         <div className="flex items-center gap-4 flex-1 min-w-0">
           {toolbar ? <div className="shrink-0">{toolbar as React.ReactNode}</div> : null}
 

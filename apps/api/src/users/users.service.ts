@@ -10,6 +10,7 @@ import { randomUUID } from 'crypto';
 import { Student } from '../students/entities/student.entity';
 import { Professor } from '../professors/entities/professor.entity';
 import { Coordinator } from '../coordinators/entities/coordinator.entity';
+import { Administrator } from '../administrators/entities/administrator.entity';
 
 const MICROSOFT_PROFESSORS: Record<string, string> = {
   'a-herrer@uniandes.edu.co': 'Andrea Herrera Suescún',
@@ -49,6 +50,7 @@ export class UsersService {
     @InjectRepository(Student) private readonly studentRepository: Repository<Student>,
     @InjectRepository(Professor) private readonly professorRepository: Repository<Professor>,
     @InjectRepository(Coordinator) private readonly coordinatorRepository: Repository<Coordinator>,
+    @InjectRepository(Administrator) private readonly administratorRepository: Repository<Administrator>,
     private readonly roleSimpleFactory: RoleSimpleFactory,
   ) {}
 
@@ -65,6 +67,7 @@ export class UsersService {
   }
 
   async findAllWithRoles() {
+    await this.ensureConfiguredMicrosoftRoles();
     const users = await this.userRepository.find({
       relations: ['coordinator', 'professor', 'administrator'],
     });
@@ -106,28 +109,21 @@ export class UsersService {
     const coordinatorName = MICROSOFT_COORDINATORS[normalizedEmail];
     const existing = await this.findByEmail(normalizedEmail);
     if (existing) {
-      if (coordinatorName && !existing.coordinator) {
-        const coordinator = this.coordinatorRepository.create({ id: existing.id, user: existing, isActive: true });
+      if (coordinatorName) {
+        const coordinator = existing.coordinator ?? this.coordinatorRepository.create({ id: existing.id, user: existing, isActive: true });
         await this.coordinatorRepository.save(coordinator);
-        return { ...existing, coordinator, roles: [...(existing.roles ?? []), 'coordinador'] };
+        const administrator = existing.administrator ?? this.administratorRepository.create({ id: existing.id, user: existing, isActive: true });
+        await this.administratorRepository.save(administrator);
+        return { ...existing, coordinator, administrator, roles: ['coordinador', 'administrador'] };
       }
       if (professorName && !existing.professor) {
         const professor = this.professorRepository.create({ id: existing.id, user: existing, isActive: true });
         await this.professorRepository.save(professor);
-        return { ...existing, professor, roles: [...(existing.roles ?? []), 'profesor'] };
+        return { ...existing, professor, roles: ['profesor'] };
       }
-      if (!existing.student) {
-        const student = this.studentRepository.create({
-          id: existing.id,
-          user: existing as User,
-          isActive: true,
-          isUndergraduate: false,
-          code: `MS${existing.id.replace(/-/g, '').slice(0, 7)}`,
-        });
-        await this.studentRepository.save(student);
-        return { ...existing, student, roles: ['estudiante_maestria'] };
-      }
-      return existing;
+      // Microsoft users that are not in the institutional role allowlist do not
+      // inherit old/default SISINFO roles from previous provisioning attempts.
+      return { ...existing, roles: [] };
     }
 
     const user = this.userRepository.create({
@@ -140,22 +136,26 @@ export class UsersService {
     if (coordinatorName) {
       const coordinator = this.coordinatorRepository.create({ id: user.id, user, isActive: true });
       await this.coordinatorRepository.save(coordinator);
-      return { ...user, coordinator, roles: ['coordinador'] };
+      const administrator = this.administratorRepository.create({ id: user.id, user, isActive: true });
+      await this.administratorRepository.save(administrator);
+      return { ...user, coordinator, administrator, roles: ['coordinador', 'administrador'] };
     }
     if (professorName) {
       const professor = this.professorRepository.create({ id: user.id, user, isActive: true });
       await this.professorRepository.save(professor);
       return { ...user, professor, roles: ['profesor'] };
     }
-    const student = this.studentRepository.create({
-      id: user.id,
-      user,
-      isActive: true,
-      isUndergraduate: false,
-      code: `MS${user.id.replace(/-/g, '').slice(0, 7)}`,
-    });
-    await this.studentRepository.save(student);
-    return { ...user, student, roles: ['estudiante_maestria'] };
+    return { ...user, roles: [] };
+  }
+
+  async ensureConfiguredMicrosoftRoles() {
+    const accounts = [
+      ...Object.entries(MICROSOFT_PROFESSORS),
+      ...Object.entries(MICROSOFT_COORDINATORS),
+    ];
+    for (const [email, name] of accounts) {
+      await this.findOrCreateMicrosoftUser(email, name);
+    }
   }
 
   getUserRoles(user: User) {
@@ -163,11 +163,10 @@ export class UsersService {
     if (user.administrator?.isActive) roles.push('administrador');
     if (user.coordinator?.isActive) roles.push('coordinador');
     if (user.professor?.isActive) roles.push('profesor');
+    // Staff roles are mutually exclusive from the student navigation.
+    if (roles.length > 0) return roles;
     if (user.student?.isActive) {
-      if (user.administrator?.isActive) {
-        roles.push('estudiante');
-        roles.push('estudiante_maestria');
-      } else if (user.student.isUndergraduate) {
+      if (user.student.isUndergraduate) {
         roles.push('estudiante');
       } else {
         roles.push('estudiante_maestria');
