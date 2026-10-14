@@ -89,6 +89,12 @@ export class UsersController {
     return this.usersService.findAllWithRoles();
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('students/list')
+  findAllStudents() {
+    return this.usersService.findAllStudents();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
@@ -98,10 +104,20 @@ export class UsersController {
   async assignRole(@Body() assignRoleDto: AssignRoleDto) {
     const { userId, roleType, roleInfo } = assignRoleDto;
     const user = await this.usersService.findOne(userId);
-    const result = await this.usersService.assignRole(user, roleType, roleInfo);
+    const effectiveRoleInfo = roleInfo ?? (roleType === 'estudiante' ? {
+      id: user.id, isActive: true, isUndergraduate: true, code: '000000000',
+    } : roleType === 'estudiante_maestria' ? {
+      id: user.id, isActive: true, isUndergraduate: false, code: '000000000',
+    } : { id: user.id, isActive: true });
+    const result = await this.usersService.assignRole(user, roleType === 'estudiante_maestria' ? 'estudiante' : roleType, effectiveRoleInfo);
     return {
       message: 'Rol asignado correctamente',
       result,
     };
+  }
+
+  @Post('students/import')
+  importStudents(@Body() body: { students: Array<{ code: string; name: string; email: string; program?: string }> }) {
+    return this.usersService.importStudents(body.students ?? []);
   }
 }

@@ -43,6 +43,14 @@ const MICROSOFT_COORDINATORS: Record<string, string> = {
   'magisist@uniandes.edu.co': 'Natalia Franco Tamara',
 };
 
+const MICROSOFT_ADMINISTRATORS: Record<string, string> = {
+  'jj.hurtadoc1@uniandes.edu.co': 'Juan José Hurtado',
+};
+
+const DEFAULT_STUDENTS = [
+  { code: '202222259', name: 'Juan Manuel Gordillo Sastoque', email: 'j.gordillos@uniandes.edu.co', program: 'pregrado' },
+];
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -68,6 +76,7 @@ export class UsersService {
 
   async findAllWithRoles() {
     await this.ensureConfiguredMicrosoftRoles();
+    await this.importStudents(DEFAULT_STUDENTS);
     const users = await this.userRepository.find({
       relations: ['coordinator', 'professor', 'administrator'],
     });
@@ -103,12 +112,24 @@ export class UsersService {
     return { ...user, roles };
   }
 
+  async findAllStudents() {
+    const students = await this.studentRepository.find({ relations: ['user'] });
+    return students.map((student) => ({ id: student.id, code: student.code, name: student.user?.name ?? '', email: student.user?.email ?? '', role: student.isUndergraduate ? 'estudiante' : 'estudiante_maestria', isActive: student.isActive }));
+  }
+
   async findOrCreateMicrosoftUser(email: string, name: string) {
     const normalizedEmail = email.trim().toLowerCase();
     const professorName = MICROSOFT_PROFESSORS[normalizedEmail];
     const coordinatorName = MICROSOFT_COORDINATORS[normalizedEmail];
+    const administratorName = MICROSOFT_ADMINISTRATORS[normalizedEmail];
     const existing = await this.findByEmail(normalizedEmail);
     if (existing) {
+      if (administratorName) {
+        const administrator = existing.administrator ?? this.administratorRepository.create({ id: existing.id, user: existing, isActive: true });
+        administrator.isActive = true;
+        await this.administratorRepository.save(administrator);
+        return { ...existing, administrator, roles: ['administrador'] };
+      }
       if (coordinatorName) {
         const coordinator = existing.coordinator ?? this.coordinatorRepository.create({ id: existing.id, user: existing, isActive: true });
         await this.coordinatorRepository.save(coordinator);
@@ -123,7 +144,7 @@ export class UsersService {
       }
       // Microsoft users that are not in the institutional role allowlist do not
       // inherit old/default SISINFO roles from previous provisioning attempts.
-      return { ...existing, roles: [] };
+      return { ...existing, roles: this.getUserRoles(existing) };
     }
 
     const user = this.userRepository.create({
@@ -133,6 +154,11 @@ export class UsersService {
       password: randomUUID(),
     });
     await this.userRepository.save(user);
+    if (administratorName) {
+      const administrator = this.administratorRepository.create({ id: user.id, user, isActive: true });
+      await this.administratorRepository.save(administrator);
+      return { ...user, administrator, roles: ['administrador'] };
+    }
     if (coordinatorName) {
       const coordinator = this.coordinatorRepository.create({ id: user.id, user, isActive: true });
       await this.coordinatorRepository.save(coordinator);
@@ -152,10 +178,31 @@ export class UsersService {
     const accounts = [
       ...Object.entries(MICROSOFT_PROFESSORS),
       ...Object.entries(MICROSOFT_COORDINATORS),
+      ...Object.entries(MICROSOFT_ADMINISTRATORS),
     ];
     for (const [email, name] of accounts) {
       await this.findOrCreateMicrosoftUser(email, name);
     }
+  }
+
+  async importStudents(rows: Array<{ code: string; name: string; email: string; program?: string }>) {
+    const imported: Array<{ email: string; code: string; name: string; program: string }> = [];
+    for (const row of rows) {
+      const email = row.email.trim().toLowerCase();
+      let user = await this.userRepository.findOne({ where: { email }, relations: ['student'] });
+      if (!user) {
+        user = this.userRepository.create({ name: row.name.trim(), email, password: randomUUID() });
+        await this.userRepository.save(user);
+      }
+      let student = await this.studentRepository.findOne({ where: { id: user.id } });
+      if (!student) student = this.studentRepository.create({ id: user.id, user });
+      student.isActive = true;
+      student.code = row.code.trim();
+      student.isUndergraduate = row.program?.toLowerCase().includes('pregrado') ?? false;
+      await this.studentRepository.save(student);
+      imported.push({ email, code: student.code, name: user.name, program: student.isUndergraduate ? 'pregrado' : 'maestria' });
+    }
+    return imported;
   }
 
   getUserRoles(user: User) {

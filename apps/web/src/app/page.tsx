@@ -1,3 +1,5 @@
+"use client"
+import React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -6,6 +8,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FileText, Calendar, User, GraduationCap } from "lucide-react"
 import Footer from "@/components/shared/footer"
 import CoreFeatures from "@/components/shared/core-features"
+
+function handleLoginClick(event: React.MouseEvent<HTMLAnchorElement>) {
+  if (!window.location.hostname.startsWith("qa-")) {
+    event.preventDefault()
+    window.location.href = "/auth/microsoft/start"
+  }
+}
 
 export default function LandingPage() {
   return (
@@ -36,6 +45,7 @@ function HeroSection(){
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
               <Link
                 href="/auth"
+                onClick={handleLoginClick}
                 className="inline-flex h-10 items-center justify-center rounded-md bg-white px-8 text-sm font-medium text-core shadow transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
               >
                 Iniciar Sesión
@@ -247,7 +257,7 @@ function AccessSection(){
           <CoreFeatures/>
           <div className="pt-4">
             <Button className="bg-core hover:bg-core-highlight px-8 py-6 text-base">
-              <Link href="/auth">
+              <Link href="/auth" onClick={handleLoginClick}>
                 Iniciar sesión
               </Link>
             </Button>
@@ -276,6 +286,7 @@ function Header(){
         </span>
         <Link
           href="/auth"
+          onClick={handleLoginClick}
           className="inline-flex h-12  items-center justify-center rounded-md bg-core px-5 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-core-highlight focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
         >
           Iniciar Sesión

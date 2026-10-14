@@ -86,14 +86,44 @@ export async function GET() {
       roles: string[];
     };
 
-    /* Return user information */
+    // Refresh the roles from the API on every session check. This makes an
+    // administrator role change effective without requiring a second login.
+    let currentUser = {
+      id: decoded.id,
+      name: decoded.name,
+      email: decoded.email,
+      roles: decoded.roles,
+    };
+    try {
+      const apiResponse = await fetch(`${API_ROUTES.BASE}/users/${decoded.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+      });
+      if (apiResponse.ok) {
+        const apiUser = await apiResponse.json();
+        currentUser = {
+          id: apiUser.id,
+          name: apiUser.name,
+          email: apiUser.email,
+          roles: apiUser.roles ?? [],
+        };
+        const refreshedToken = jwt.sign(currentUser, secretKey, { expiresIn: "8h" });
+        (await cookies()).set({
+          name: "auth-token",
+          value: refreshedToken,
+          httpOnly: true,
+          path: "/",
+          maxAge: 60 * 60 * 8,
+          sameSite: "lax",
+          secure: false,
+        });
+      }
+    } catch (refreshError) {
+      console.error("Error refreshing user roles:", refreshError);
+    }
+
     return NextResponse.json({
-      user: {
-        id: decoded.id,
-        name: decoded.name,
-        email: decoded.email,
-        roles: decoded.roles,
-      },
+      user: currentUser,
     });
   } catch (error) {
     console.error("Error getting user info:", error);

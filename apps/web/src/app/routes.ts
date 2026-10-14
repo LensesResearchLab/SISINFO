@@ -80,6 +80,7 @@ export const ROUTES: Record<string, string> = {
   ADMINISTRATOR_COURSE_LEADERS: "/administrador/lider",
   ADMINISTRATOR_UPLOAD_TEACHERS: "/administrador/cargar_profesores",
   ADMINISTRATOR_PROFILES: "/administrador/perfiles",
+  ADMINISTRATOR_STUDENTS: "/administrador/estudiantes",
   ADMINISTRATOR_PERIODS: "/administrador/periodos",
   /*  General  */
 

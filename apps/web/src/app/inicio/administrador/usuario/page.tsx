@@ -24,6 +24,8 @@ const roleColorMap: Record<string, string> = {
   administrador: "bg-blue-100 text-blue-800 border border-blue-800 dark:bg-blue-900 dark:text-blue-100 dark:border-blue-300",
   profesor: "bg-red-100 text-red-800 border border-red-800 dark:bg-red-900 dark:text-red-100 dark:border-red-300",
   coordinador: "bg-yellow-100 text-yellow-800 border border-yellow-800 dark:bg-yellow-900 dark:text-yellow-100 dark:border-yellow-300",
+  estudiante: "bg-green-100 text-green-800 border border-green-800",
+  estudiante_maestria: "bg-purple-100 text-purple-800 border border-purple-800",
 };
 
 const formatRole = (role: string) =>

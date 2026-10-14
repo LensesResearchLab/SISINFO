@@ -142,7 +142,7 @@ export const graduateData = [
 
 export const administratorData = [
   {
-    title: "Administracion",
+    title: "Usuarios y roles",
     url: "administracion",
     icon: ScrollText,
     items: [
@@ -184,6 +184,19 @@ export const administratorData = [
         title: "Administrar subáreas de investigación",
         description: "Agregar y asignar profesor encargado a una subárea de investigación.",
         url: ROUTES.ADMINISTRATOR_PROFILES,
+      },
+    ],
+  },
+  {
+    title: "Asuntos academicos",
+    url: "academicos",
+    icon: School,
+    items: [
+      {
+        Icon: GraduationCap,
+        title: "Administrar estudiantes",
+        description: "Crear estudiantes, cargar información y asignar su nivel académico.",
+        url: ROUTES.ADMINISTRATOR_STUDENTS,
       },
     ],
   },

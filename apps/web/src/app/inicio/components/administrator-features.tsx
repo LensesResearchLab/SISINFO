@@ -25,28 +25,32 @@ export default function AdministratorFeatures({
   readonly children?: React.ReactNode;
 }) {
   // List of administrator feature titles to be displayed
-  const administratorFeatures = [
-    "Administracion",
+  const allFeatures = administratorData.flatMap((section) => section.items);
+  const administratorSections = [
+    { title: "Usuarios y roles", items: allFeatures.filter((item) => ["Consultar usuarios y roles", "Administrar estudiantes"].includes(item.title)) },
+    { title: "Configuración académica", items: allFeatures.filter((item) => item.title.includes("Asignar profesores") || item.title.includes("per") || item.title.includes("sub")) },
+    { title: "Carga de información", items: allFeatures.filter((item) => item.title.trim().startsWith("Cargar profesores")) },
+    { title: "Problemas e incidencias", items: allFeatures.filter((item) => item.title === "Ver incidencias") },
   ];
 
   // Map to associate feature titles with their respective InformationSection props
   const informationPerFeature = new Map<string, InformationSectionProps>();
-  administratorData.forEach((feature) => {
-    informationPerFeature.set(feature.title, {
-      title: feature.title,
-      features: feature.items,
+  administratorSections.forEach((section) => {
+    informationPerFeature.set(section.title, {
+      title: section.title,
+      features: section.items,
     });
   });
 
   return (
     <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
       {/* Render each information section based on administrator features */}
-      {administratorFeatures.map((feature) => {
-        const information = informationPerFeature.get(feature);
+      {administratorSections.map((section) => {
+        const information = informationPerFeature.get(section.title);
         if (!information) return null;
         return (
           <InformationSection
-            key={feature}
+            key={section.title}
             title={information.title}
             features={information.features}
             background="bg-core-highlight"

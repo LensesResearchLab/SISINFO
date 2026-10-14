@@ -42,6 +42,15 @@ interface DataTableProps<TData, TValue> {
   readonly toolbar?: ReactNode;
 }
 
+function globalSearch<TData>(row: { getAllCells: () => Array<{ getValue: () => unknown }> }, _columnId: string, filterValue: string) {
+  const search = String(filterValue ?? "").toLocaleLowerCase().trim();
+  if (!search) return true;
+  return row.getAllCells().some((cell) => {
+    const value = cell.getValue();
+    return String(Array.isArray(value) ? value.join(" ") : value ?? "").toLocaleLowerCase().includes(search);
+  });
+}
+
 export function DataTable<TData, TValue>({
   columns,
   data,
@@ -68,13 +77,15 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnVisibilityChange: setColumnVisibility,
-    globalFilterFn: "includesString",
+    globalFilterFn: globalSearch,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     autoResetPageIndex: false,
   });
+
+  useEffect(() => { table.setPageIndex(0); }, [globalFilter, table]);
   const selectedData = useMemo(() => {
     return table.getSelectedRowModel()?.rows?.map((row) => row.original);
   }, [table]);

@@ -44,7 +44,7 @@ export function NavUser({
     try {
       const result = await logoutUser();
       if (result.success) {
-        router.push("/auth");
+        router.push("/");
       } else {
         console.error("Logout failed:", result.message);
       }
@@ -101,7 +101,7 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="text-white" />
-              <Link href="/auth">Cerrar sesión</Link>
+              <Link href="/">Cerrar sesión</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
