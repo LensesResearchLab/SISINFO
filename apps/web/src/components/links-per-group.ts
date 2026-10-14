@@ -200,6 +200,28 @@ export const administratorData = [
       },
     ],
   },
+  {
+    title: "Configuración académica",
+    url: "configuracion-academica",
+    icon: Calendar,
+    items: [
+      { Icon: Calendar, title: "Asignar profesores líderes", description: "Administrar profesores líderes por materia.", url: ROUTES.ADMINISTRATOR_COURSE_LEADERS },
+      { Icon: Calendar, title: "Administrar períodos", description: "Agregar y administrar periodos académicos.", url: ROUTES.ADMINISTRATOR_PERIODS },
+      { Icon: FileCog, title: "Administrar subáreas de investigación", description: "Administrar subáreas de investigación.", url: ROUTES.ADMINISTRATOR_PROFILES },
+    ],
+  },
+  {
+    title: "Carga de información",
+    url: "carga-informacion",
+    icon: FileText,
+    items: [{ Icon: Calendar, title: "Cargar profesores", description: "Aquí puedes cargar y consultar los profesores.", url: ROUTES.ADMINISTRATOR_UPLOAD_TEACHERS }],
+  },
+  {
+    title: "Problemas e incidencias",
+    url: "problemas-incidencias",
+    icon: AlertTriangle,
+    items: [{ Icon: FileText, title: "Ver incidencias", description: "Aquí puedes ver las incidencias reportadas por los usuarios.", url: ROUTES.ADMINISTRATOR_INCIDENCES }],
+  },
 ];
 
 export const professorData = [

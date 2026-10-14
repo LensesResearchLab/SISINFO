@@ -53,7 +53,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [setRoles]);
 
   const roleNavMainMap = new Map([
-    ["administrador", administratorData],
+    ["administrador", administratorData.map((section, index) => index === 0
+      ? { ...section, items: section.items.filter((item) => item.title === "Consultar usuarios y roles") }
+      : section)],
     ["coordinador", coordinatorData],
     ["profesor", professorData],
     ["estudiante", undergraduateData],

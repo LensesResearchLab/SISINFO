@@ -25,7 +25,7 @@ export default function AdministratorFeatures({
   readonly children?: React.ReactNode;
 }) {
   // List of administrator feature titles to be displayed
-  const allFeatures = administratorData.flatMap((section) => section.items);
+  const allFeatures = Array.from(new Map(administratorData.flatMap((section) => section.items).map((item) => [item.url, item])).values());
   const administratorSections = [
     { title: "Usuarios y roles", items: allFeatures.filter((item) => ["Consultar usuarios y roles", "Administrar estudiantes"].includes(item.title)) },
     { title: "Configuración académica", items: allFeatures.filter((item) => item.title.includes("Asignar profesores") || item.title.includes("per") || item.title.includes("sub")) },
