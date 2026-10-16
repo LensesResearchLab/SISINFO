@@ -7,7 +7,7 @@ import { getPeriodsWMap } from "@/app/services/period.service";
 import { mapPeriodToString } from "@/app/mappers/period.mapper";
 import { useAuth } from "@/hooks/use-auth";
 import { Course as BillboardCourse } from "@/app/types/entities/billboard.type";
-import { uploadCourseProgram } from "@/app/services/courses.service";
+import { uploadCourseProgram, uploadCourseProgramsZip } from "@/app/services/courses.service";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
@@ -34,6 +34,7 @@ export default function ProfessorCourseProgramsPage() {
     return "";
   });
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
+  const [uploadingZip, setUploadingZip] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -104,6 +105,27 @@ export default function ProfessorCourseProgramsPage() {
       toast.error(e?.message ?? "Error al subir el programa");
     } finally {
       setUploadingFor(null);
+    }
+  };
+
+  const onZipSelected = async (fileList: FileList | null) => {
+    if (!fileList?.length) return;
+    const file = fileList[0];
+    if (!file.name.toLowerCase().endsWith(".zip")) {
+      toast.error("Solo se permiten archivos ZIP");
+      return;
+    }
+    try {
+      setUploadingZip(true);
+      const result = await uploadCourseProgramsZip(file);
+      await qc.invalidateQueries({ queryKey: ["billboard", selectedPeriod] });
+      const uploaded = result.uploaded?.length ?? 0;
+      const rejected = result.rejected?.length ?? 0;
+      toast.success(`ZIP procesado: ${uploaded} programa(s) cargado(s)${rejected ? ` y ${rejected} rechazado(s)` : ""}`);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Error al cargar el ZIP");
+    } finally {
+      setUploadingZip(false);
     }
   };
 
@@ -235,6 +257,19 @@ export default function ProfessorCourseProgramsPage() {
               <option key={p} value={p}>{p}</option>
             ))}
           </select>
+        </div>
+        <div className="mt-4 flex items-center gap-3">
+          <input
+            id="programs-zip"
+            type="file"
+            accept=".zip,application/zip"
+            className="hidden"
+            onChange={(e) => onZipSelected(e.target.files)}
+          />
+          <Button type="button" disabled={uploadingZip} onClick={() => document.getElementById("programs-zip")?.click()}>
+            {uploadingZip ? "Cargando ZIP..." : "Subir programas en ZIP"}
+          </Button>
+          <span className="text-xs text-muted-foreground">Ejemplo: ISIS-4000-programa.pdf</span>
         </div>
       </div>
 

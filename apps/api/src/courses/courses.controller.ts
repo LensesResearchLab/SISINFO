@@ -63,6 +63,18 @@ export class CourseController {
     return this.coursesService.uploadProgram(id, file);
   }
 
+  @Post('programs/zip')
+  @UseGuards(JwtAuthGuard)
+  @Roles('professor')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadProgramsZip(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: Request & { user: { id: string } },
+  ) {
+    if (!file) throw new ForbiddenException('Debes seleccionar un archivo ZIP');
+    return this.coursesService.uploadProgramsZip(req.user.id, file);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
     return this.coursesService.update(id, updateCourseDto);

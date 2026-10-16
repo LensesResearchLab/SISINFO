@@ -79,4 +79,12 @@ export async function uploadCourseProgram(courseId: string, file: File) {
   }
   return response.json();
 }
-  
+
+export async function uploadCourseProgramsZip(file: File) {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.COURSES}/programs/zip`;
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await fetch(url, { method: 'POST', body: formData, credentials: 'include' });
+  if (!response.ok) throw new Error(await response.text() || 'Error al cargar el ZIP');
+  return response.json();
+}

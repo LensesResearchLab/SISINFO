@@ -13,6 +13,10 @@ import { Professor } from '../professors/entities/professor.entity';
 import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 import { DocumentsService } from '../documents/documents.service';
 
+// yauzl ya está disponible en el árbol de dependencias del proyecto y permite
+// leer el ZIP directamente desde memoria, sin escribir archivos temporales.
+const yauzl = require('yauzl');
+
 @Injectable()
 export class CoursesService {
   constructor(
@@ -234,6 +238,65 @@ export class CoursesService {
 
     course.program = savedDocument;
     return this.courseRepository.save(course);
+  }
+
+  async uploadProgramsZip(userId: string, file: Express.Multer.File) {
+    if (!file.originalname.toLowerCase().endsWith('.zip')) {
+      throw new Error('El archivo debe tener formato ZIP');
+    }
+
+    const courses = await this.courseRepository.find();
+    const result = { uploaded: [] as string[], rejected: [] as string[], ignored: [] as string[] };
+    const entries = await new Promise<any[]>((resolve, reject) => {
+      yauzl.fromBuffer(file.buffer, { lazyEntries: true }, (error: Error, zipfile: any) => {
+        if (error) return reject(new Error('No se pudo leer el archivo ZIP'));
+        const files: any[] = [];
+        zipfile.readEntry();
+        zipfile.on('entry', (entry: any) => {
+          if (/\/\.DS_Store$|(^|\/)__MACOSX\//.test(entry.fileName) || /\/$/.test(entry.fileName)) {
+            zipfile.readEntry();
+            return;
+          }
+          zipfile.openReadStream(entry, (streamError: Error, stream: any) => {
+            if (streamError) return reject(streamError);
+            const chunks: Buffer[] = [];
+            stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+            stream.on('end', () => {
+              files.push({ name: entry.fileName, buffer: Buffer.concat(chunks) });
+              zipfile.readEntry();
+            });
+            stream.on('error', reject);
+          });
+        });
+        zipfile.on('end', () => resolve(files));
+        zipfile.on('error', reject);
+      });
+    });
+
+    for (const entry of entries) {
+      const fileName = entry.name.split('/').pop() ?? entry.name;
+      if (!fileName.toLowerCase().endsWith('.pdf')) {
+        result.ignored.push(fileName);
+        continue;
+      }
+      const normalizedName = fileName.toLowerCase();
+      const course = courses
+        .filter((item) => normalizedName.startsWith(`${item.code.toLowerCase()}-`))
+        .sort((a, b) => b.code.length - a.code.length)[0];
+      if (!course) {
+        result.rejected.push(`${fileName}: código no encontrado`);
+        continue;
+      }
+      if (!(await this.isUserLeaderOfCourse(userId, course.id))) {
+        result.rejected.push(`${fileName}: no tienes permiso para este curso`);
+        continue;
+      }
+      const document = await this.documentsService.create({ name: fileName, file: entry.buffer });
+      course.program = document;
+      await this.courseRepository.save(course);
+      result.uploaded.push(course.code);
+    }
+    return result;
   }
 
   updateSections(section: Section, course: Course, manager?: EntityManager) {
