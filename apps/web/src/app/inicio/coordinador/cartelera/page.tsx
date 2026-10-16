@@ -30,8 +30,8 @@ export default function UploadBillboard() {
 
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = "/plantilla.xlsm";
-    link.download = "plantilla.xlsm";
+    link.href = "/plantilla.xlsx";
+    link.download = "plantilla.xlsx";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -92,10 +92,20 @@ const handleUploadXlsm = async (file: File) => {
         title="Cargar cartelera"
         handlePeriodChange={handlePeriodChange}
         handleDownload={handleDownload}
-        handleUploadCsv={(file) => {
-          if (file instanceof File) {
-            handleUploadXlsm(file);
-          }
+        handleUploadCsv={(rows) => {
+          const courses = rows.map((row) => ({
+            nrc: Number(row["NRC"] ?? 0),
+            code: String(row["CODE"] ?? ""),
+            name: String(row["NAME"] ?? ""),
+            departament: String(row["DEPARTAMENT"] ?? ""),
+            credits: Number(row["CREDITS"] ?? 0),
+            section: String(row["SECTION"] ?? ""),
+            period: String(row["PERIOD"] ?? ""),
+            professors: [],
+            sections: [],
+          } as unknown as Course));
+          setCoursesData(courses);
+          setHasSearched(true);
         }}
         dialogText={dialogText}
         typeUpload="billboard"

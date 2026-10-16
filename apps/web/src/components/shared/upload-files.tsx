@@ -106,7 +106,9 @@ export default function UploadFiles({
 
       try {
         const workbook = XLSX.read(data, { type: "array" });
-        const preferredSheetNames = typeUpload === "monitores"
+        const preferredSheetNames = typeUpload === "billboard"
+          ? ["Export", "plantillaSisinfo", "plantillaGeneral"]
+          : typeUpload === "monitores"
           ? ["plantillaMonitores", "plantillaSisinfo"]
           : ["plantillaSisinfo"];
 
@@ -124,7 +126,18 @@ export default function UploadFiles({
 
         if (!sheet) throw new Error(`No se encontró una hoja válida en el libro. Buscadas: ${preferredSheetNames.join(", ")}`);
 
-        const jsonData = XLSX.utils.sheet_to_json<Record<string, string | number | boolean | null>>(sheet as XLSX.Sheet);
+        const jsonData = typeUpload === "billboard"
+          ? (() => {
+            const matrix = XLSX.utils.sheet_to_json<(string | number | boolean | null)[]>(sheet as XLSX.Sheet, { header: 1, defval: "" });
+            const headerIndex = matrix.findIndex((row) => row.some((value) => String(value ?? "").trim() !== ""));
+            const headers = (matrix[headerIndex] ?? []).map((value) => String(value ?? "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+            const indexOf = (...names: string[]) => headers.findIndex((header) => names.includes(header));
+            const indexes = { nrc: indexOf("nrc"), code: indexOf("code", "materia"), name: indexOf("name", "nombre largo curso"), departament: indexOf("departament", "departamento"), credits: indexOf("credits", "creditos"), section: indexOf("section", "secc"), period: indexOf("period", "periodo"), professors: indexOf("professors", "profesor(es)") };
+            return matrix.slice(headerIndex + 1).filter((row) => row.some((value) => value !== null && String(value).trim() !== "")).map((row) => ({
+              NRC: indexes.nrc >= 0 ? row[indexes.nrc] : "", code: indexes.code >= 0 ? row[indexes.code] : "", name: indexes.name >= 0 ? row[indexes.name] : "", departament: indexes.departament >= 0 ? row[indexes.departament] : "", credits: indexes.credits >= 0 ? row[indexes.credits] : 0, section: indexes.section >= 0 ? row[indexes.section] : "", period: indexes.period >= 0 ? row[indexes.period] : "", professors: indexes.professors >= 0 ? row[indexes.professors] : "",
+            }));
+          })()
+          : XLSX.utils.sheet_to_json<Record<string, string | number | boolean | null>>(sheet as XLSX.Sheet);
 
         // Normalize keys (trim + uppercase) and sanitize cell values
         const normalized = (jsonData as Record<string, any>[])
@@ -150,7 +163,7 @@ export default function UploadFiles({
         await handleUploadCsv(normalized);
 
         if (typeUpload === "billboard") {
-          const billboardData = jsonData
+          const billboardData = (jsonData as Record<string, any>[])
             .filter(row =>
               ["NRC", "code", "name", "departament", "section", "period", "professors"].some(
                 k => row[k] !== undefined && row[k] !== null && String(row[k]).trim() !== ""
@@ -162,14 +175,14 @@ export default function UploadFiles({
               code: String(row["code"] ?? ""),
               name: String(row["name"] ?? ""),
               departament: String(row["departament"] ?? ""),
-              credits: typeof row["credits"] === "number" ? row["credits"] : Number(row["credits"] ?? 0),
+              credits: typeof row["credits"] === "number" ? row["credits"] : Number(row["credits"] || 0),
               section: String(row["section"] ?? ""),
               period: String(row["period"] ?? ""),
               professors: formatProfessors(row["professors"]),
               publicated: formatPublicated(row["publicated"]),
             };
 
-            const emptyFields = Object.entries(obj).filter(([_, v]) => v === "" || v === null || v === undefined || (typeof v === "number" && isNaN(v))).map(([k]) => k);
+            const emptyFields = Object.entries(obj).filter(([k, v]) => k !== "credits" && (v === "" || v === null || v === undefined || (typeof v === "number" && isNaN(v)))).map(([k]) => k);
             if (emptyFields.length > 0) {
               throw new Error(`Fila ${idx + 1} tiene estos campos vacios: ${emptyFields.join(", ")}`);
             }
@@ -187,6 +200,10 @@ export default function UploadFiles({
             setLoadSucess({
               sucess: true,
               message: `La cartelera se subió correctamente, pero los siguientes profesores no fueron encontrados y no se asignaron:\n\n${list}`,
+            });
+            setLoadSucess({
+              sucess: true,
+              message: `La cartelera se subió correctamente. ${missing.length} profesores no pudieron asociarse porque no están registrados en SISINFO.`,
             });
           } else {
             setLoadSucess(prev => ({ ...prev, sucess: true }));

@@ -50,7 +50,8 @@ export async function createBillboard(coursesInformation: Billboard[]) {
 
 
   if (!response.ok) {
-    throw new Error("Failed to create billboard.");
+    const detail = await response.text();
+    throw new Error(detail || "Failed to create billboard.");
   }
 
   return response.json();

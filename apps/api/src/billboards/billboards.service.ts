@@ -34,10 +34,15 @@ export class BillboardsService {
     const rawPeriod = sectionDto.period.slice(4, 6);
     const periodStr = mapPeriod(rawPeriod);
 
-    let foundPeriod = await this.periodsService.findOneByPeriodAndYear(
-      periodStr,
-      year,
-    );
+    let foundPeriod: Period | null = null;
+    try {
+      foundPeriod = await this.periodsService.findOneByPeriodAndYear(
+        periodStr,
+        year,
+      );
+    } catch {
+      // The period may not exist yet in a new academic term. It is created below.
+    }
 
     foundPeriod ??= await this.periodsService.create({
       period: periodStr,
@@ -73,9 +78,6 @@ export class BillboardsService {
       const newSectionDto = new CreateSectionDto();
       newSectionDto.NRC = sectionDto.NRC;
       newSectionDto.section = sectionDto.section;
-      if (foundProfessors.length === 0 && supportProfessors.length === 0) {
-        throw new Error('No professors found for the section');
-      }
       sectionToUse = await this.sectionService.create(
         newSectionDto,
         supportProfessors,
