@@ -5,11 +5,27 @@ import { API_ROUTES } from "@/app/routes";
 export async function POST(request: NextRequest) {
   const token = (await cookies()).get("auth-token")?.value;
   if (!token) return NextResponse.json({ message: "No autenticado" }, { status: 401 });
-  const body = await request.json();
+
+  const contentType = request.headers.get("content-type") || "";
+  let body: any;
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  // Manejar si el body es un archivo (FormData/Multipart) o un JSON estándar
+  if (contentType.includes("multipart/form-data")) {
+    body = await request.formData();
+  } else {
+    headers["Content-Type"] = "application/json";
+    body = JSON.stringify(await request.json().catch(() => ({})));
+  }
+
   const response = await fetch(`${API_ROUTES.BASE}/users/students/import`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify(body),
+    headers,
+    body,
   });
-  return NextResponse.json(await response.json().catch(() => ({})), { status: response.status });
+
+  const data = await response.json().catch(() => ({}));
+  return NextResponse.json(data, { status: response.status });
 }

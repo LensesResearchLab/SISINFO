@@ -64,12 +64,27 @@ export default function ProfessorCourseProgramsPage() {
     enabled: Boolean(selectedPeriod),
   });
 
-  // Filter only courses where the logged professor is mainProfessor
+  // Un profesor solo puede ver cursos en los que está asignado. Para las
+  // maestrías, además, debe ser el líder del programa.
   const myLeaderCourses: BillboardCourse[] = useMemo(() => {
-    if (!billboard?.courses || !user) return [];
-    return billboard.courses.filter(
-      (c: BillboardCourse) => c.mainProfessor?.user?.id === user.id
-    );
+    const courses = billboard?.courses ?? [];
+    if (!user) return [];
+
+    return courses.filter((course: any) => {
+      const code = String(course.code ?? "").toUpperCase().replace(/\s/g, "");
+      const isMisis = code.startsWith("ISIS-4") || code.startsWith("ISIS4");
+      const isOtherMaster = !code.startsWith("ISIS");
+      const isAssigned = (course.professors ?? []).some((professor: any) =>
+        professor?.id === user.id
+        || professor?.user?.id === user.id
+        || professor?.email === user.email
+        || professor?.user?.email === user.email,
+      );
+      const isLeader = course.mainProfessor?.user?.id === user.id
+        || course.mainProfessor?.user?.email === user.email;
+
+      return isMisis || isOtherMaster ? isLeader : isAssigned;
+    });
   }, [billboard, user]);
 
   const onFileSelected = async (courseId: string, fileList: FileList | null) => {
@@ -203,7 +218,7 @@ export default function ProfessorCourseProgramsPage() {
       <div className="bg-card border-none rounded-xl p-5">
         <h2 className="text-xl font-bold text-core">Subir programas de curso</h2>
         <p className="text-sm text-muted-foreground">
-          Solo puedes subir el PDF del programa de los cursos en los que eres profesor líder.
+          Puedes subir el PDF de los cursos en los que estás asignado. En maestrías, debes ser el profesor líder del programa.
         </p>
 
         {/* Period selector */}
@@ -225,11 +240,11 @@ export default function ProfessorCourseProgramsPage() {
 
       {/* Courses table */}
       <div className="bg-card border-none rounded-xl p-5">
-        <h3 className="text-lg font-semibold mb-4 text-foreground">Tus cursos como líder</h3>
+        <h3 className="text-lg font-semibold mb-4 text-foreground">Cursos del periodo</h3>
         {authLoading || billboardLoading ? (
           <p className="text-sm text-muted-foreground">Cargando…</p>
         ) : selectedPeriod && myLeaderCourses.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No tienes cursos como líder en el periodo seleccionado.</p>
+          <p className="text-sm text-muted-foreground">No tienes cursos habilitados para cargar en el periodo seleccionado.</p>
         ) : (
           <DataTable columns={columns} data={myLeaderCourses} />
         )}

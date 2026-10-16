@@ -98,13 +98,22 @@ export class CoursesService {
   async findProfessorsForCourseInCurrentPeriod(courseId: string) {
     const period = await this.periodsService.findCurrentPeriod();
 
-    const sections = await this.sectionRepository.find({
+    let sections = await this.sectionRepository.find({
       where: {
         course: { id: courseId },
         period: { id: period.id },
       },
       relations: ['professors'],
     });
+
+    // La asignación de líderes debe poder consultar profesores aunque el curso
+    // representativo del programa no pertenezca al periodo marcado como actual.
+    if (sections.length === 0) {
+      sections = await this.sectionRepository.find({
+        where: { course: { id: courseId } },
+        relations: ['professors'],
+      });
+    }
     const professorsMap = new Map<string, Professor>();
     for (const section of sections) {
       for (const professor of section.professors) {
@@ -138,11 +147,17 @@ export class CoursesService {
       throw new Error('Professor not found');
     }
 
+    const programKey = this.getProgramKey(course.code);
+    const patterns = programKey === 'ISIS-4'
+      ? ['ISIS-4%', 'ISIS4%']
+      : [`${programKey}%`];
+
     await this.courseRepository
       .createQueryBuilder()
       .update(Course)
       .set({ mainProfessor: professor })
-      .where('code = :code', { code: course.code })
+      .where(patterns.map((_, index) => `code LIKE :pattern${index}`).join(' OR '),
+        Object.fromEntries(patterns.map((pattern, index) => [`pattern${index}`, pattern])))
       .execute();
 
     return { ...course, mainProfessor: professor };
@@ -161,10 +176,48 @@ export class CoursesService {
   async isUserLeaderOfCourse(userId: string, courseId: string): Promise<boolean> {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
-      relations: ['mainProfessor', 'mainProfessor.user'],
     });
-    if (!course?.mainProfessor?.user?.id) return false;
-    return course.mainProfessor.user.id === userId;
+    if (!course) return false;
+
+    // En pregrado se permite cargar únicamente cursos en los que el profesor
+    // está asignado; no se habilita toda la cartelera para cualquier profesor.
+    if (this.isUndergraduateCode(course.code)) {
+      const assigned = await this.sectionRepository
+        .createQueryBuilder('section')
+        .innerJoin('section.professors', 'professor')
+        .innerJoin('professor.user', 'user')
+        .where('section.courseId = :courseId', { courseId })
+        .andWhere('user.id = :userId', { userId })
+        .getCount();
+      return assigned > 0;
+    }
+
+    const programKey = this.getProgramKey(course.code);
+    const patterns = programKey === 'ISIS-4'
+      ? ['ISIS-4%', 'ISIS4%']
+      : [`${programKey}%`];
+    const leaders = await this.courseRepository
+      .createQueryBuilder('course')
+      .leftJoin('course.mainProfessor', 'mainProfessor')
+      .leftJoin('mainProfessor.user', 'mainProfessorUser')
+      .select('mainProfessorUser.id', 'userId')
+      .where(patterns.map((_, index) => `course.code LIKE :pattern${index}`).join(' OR '),
+        Object.fromEntries(patterns.map((pattern, index) => [`pattern${index}`, pattern])))
+      .getRawMany<{ userId: string }>();
+
+    return leaders.some((leader) => leader.userId === userId);
+  }
+
+  private isUndergraduateCode(code: string) {
+    const normalized = code.toUpperCase().replace(/\s/g, '');
+    return normalized.startsWith('ISIS')
+      && !(normalized.startsWith('ISIS-4') || normalized.startsWith('ISIS4'));
+  }
+
+  private getProgramKey(code: string) {
+    const normalized = code.toUpperCase().trim();
+    if (normalized.startsWith('ISIS-4') || normalized.startsWith('ISIS4')) return 'ISIS-4';
+    return normalized.split('-')[0];
   }
 
   // Create a Document from uploaded file and attach it as program to the course

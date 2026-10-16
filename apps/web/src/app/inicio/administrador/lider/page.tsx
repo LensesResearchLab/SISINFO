@@ -15,10 +15,24 @@ import {
 import {
   assignProfessorAsCourseLeader,
   findAllWithMainProfessor,
-  findProfessorsForCourseInCurrentPeriod,
 } from "@/app/services/courses.service";
+import { getProfessors } from "@/app/services/professor.service";
 import { LeaderPerCourse } from "@/app/types/leader-per-course.type";
 import { User } from "@/app/types/entities/user.type";
+
+function getProgramKey(code: string) {
+  const normalized = code.toUpperCase().trim();
+  if (normalized.startsWith("ISIS-4") || normalized.startsWith("ISIS4")) return "MISIS";
+  return normalized.split("-")[0];
+}
+
+function isMasterProgram(code: string) {
+  const normalized = code.toUpperCase().replace(/\s/g, "");
+  // ISIS-1xxx, ISIS-2xxx e ISIS-3xxx son pregrado. ISIS-4xxx es MISIS.
+  if (normalized === "ISIS") return false;
+  if (normalized.startsWith("ISIS-4") || normalized.startsWith("ISIS4")) return true;
+  return !normalized.startsWith("ISIS");
+}
 
 const columns: ColumnDef<LeaderPerCourse>[] = [
   {
@@ -27,7 +41,7 @@ const columns: ColumnDef<LeaderPerCourse>[] = [
   },
   {
     accessorKey: "courseName",
-    header: "Nombre curso",
+    header: "Nombre del programa",
   },
   {
     accessorKey: "professorName",
@@ -58,9 +72,21 @@ export default function CourseList() {
     <div className="min-h-full mx-auto p-4 space-y-8 container">
       <div className="w-full bg-card text-foreground shadow-lg rounded-xl p-5 h-full space-y-4">
         <h2 className="text-xl font-bold text-core">
-          Profesores líderes por curso
+          Profesores líderes por programa de maestría
         </h2>
-        <DataTable columns={columns} data={data ?? []} />
+        <DataTable
+          columns={columns}
+          data={Array.from(
+            (data ?? [])
+              .filter((course) => isMasterProgram(course.code))
+              .reduce((groups, course) => {
+                const key = getProgramKey(course.code);
+                if (!groups.has(key)) groups.set(key, { ...course, code: key, courseName: `Programa ${key}` });
+                return groups;
+              }, new Map<string, LeaderPerCourse>())
+              .values()
+          )}
+        />
       </div>
     </div>
   );
@@ -102,13 +128,14 @@ function ProfessorListPopover({
   const [search, setSearch] = useState("");
 
   const { data } = useQuery({
-    queryKey: ["professors-by-course", courseId],
-    queryFn: () => findProfessorsForCourseInCurrentPeriod(courseId),
+    queryKey: ["all-professors"],
+    queryFn: getProfessors,
     enabled: open,
   });
 
-  const filtered = data?.filter((prof: User) =>
-    prof.name.toLowerCase().includes(search.toLowerCase())
+  const filtered = data?.map((professor: any) => professor.user ?? professor)
+    .filter((prof: User) =>
+      prof.name.toLowerCase().includes(search.toLowerCase())
   ) ?? [];
 
   const handleAssign = async (professor: User) => {

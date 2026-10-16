@@ -161,7 +161,7 @@ export const administratorData = [
       },
       {
         Icon: Calendar,
-        title: "Asignar profesores lideres",
+        title: "Asignar profesores líderes por maestría",
         description:
           "Aquí puedes asignar y consultar los profesores lideres de cada materia.",
         url: ROUTES.ADMINISTRATOR_COURSE_LEADERS,
@@ -205,7 +205,7 @@ export const administratorData = [
     url: "configuracion-academica",
     icon: Calendar,
     items: [
-      { Icon: Calendar, title: "Asignar profesores líderes", description: "Administrar profesores líderes por materia.", url: ROUTES.ADMINISTRATOR_COURSE_LEADERS },
+      { Icon: Calendar, title: "Asignar profesores líderes por maestría", description: "Administrar profesores líderes por programa de maestría.", url: ROUTES.ADMINISTRATOR_COURSE_LEADERS },
       { Icon: Calendar, title: "Administrar períodos", description: "Agregar y administrar periodos académicos.", url: ROUTES.ADMINISTRATOR_PERIODS },
       { Icon: FileCog, title: "Administrar subáreas de investigación", description: "Administrar subáreas de investigación.", url: ROUTES.ADMINISTRATOR_PROFILES },
     ],

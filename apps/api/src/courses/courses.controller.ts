@@ -37,7 +37,7 @@ export class CourseController {
     return this.coursesService.findOne(id);
   }
 
-  // Upload program PDF for a course by a professor who is the course leader
+  // Upload program PDF according to the program's upload permissions.
   @Post(':id/program')
   @UseGuards(JwtAuthGuard)
   @Roles('professor')
@@ -56,9 +56,10 @@ export class CourseController {
     file: Express.Multer.File,
     @Req() req: Request & { user: { id: string } },
   ) {
-    const isLeader = await this.coursesService.isUserLeaderOfCourse(req.user.id, id);
-    if (!isLeader) throw new ForbiddenException('No autorizado para subir el programa de este curso');
-
+    const canUpload = await this.coursesService.isUserLeaderOfCourse(req.user.id, id);
+    if (!canUpload) {
+      throw new ForbiddenException('Solo el profesor líder de la maestría puede subir este programa');
+    }
     return this.coursesService.uploadProgram(id, file);
   }
 
