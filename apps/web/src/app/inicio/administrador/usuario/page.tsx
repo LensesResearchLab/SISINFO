@@ -140,7 +140,7 @@ function RoleSelector({ user }: { readonly user: User }) {
 
     setLoading(true);
     try {
-      await assignRole({ userId: user.id, roleType: role });
+      await assignRole({ userId: user.id, roleType: role, roleInfo: { id: user.id, isActive: addingRole } });
       setRoles(newRoles);
       queryClient.setQueryData<User[]>(['users-roles'], (oldData) => {
         if (!oldData) return [];

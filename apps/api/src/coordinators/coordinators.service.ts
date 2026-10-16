@@ -64,7 +64,6 @@ export class CoordinatorsService implements RoleService {
         user,
       });
     } else {
-      coordinator.isActive = !coordinator.isActive;
       Object.assign(coordinator, roleInfo);
     }
 

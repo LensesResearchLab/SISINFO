@@ -60,7 +60,6 @@ export class AdministratorsService implements RoleService {
         user,
       });
     } else {
-      administrator.isActive = !administrator.isActive;
       Object.assign(administrator, roleInfo);
     }
 

@@ -96,7 +96,6 @@ export class StudentsService implements RoleService {
         user: user,
       });
     } else {
-      student.isActive = true;
       Object.assign(student, roleInfo);
     }
     await this.studentRepository.save(student);

@@ -121,12 +121,18 @@ function RoleInformation() {
 
 function NoRoleNotice() {
   return (
-    <div className="min-h-full flex items-center justify-center p-6">
-      <div className="max-w-xl rounded-xl bg-card p-8 text-center shadow-lg">
-        <h1 className="text-2xl font-bold text-core">Cuenta sin rol asignado</h1>
+    <div className="flex min-h-full w-full items-center justify-center p-6">
+      <div className="mx-auto w-full max-w-3xl rounded-xl bg-card p-10 text-center shadow-lg">
+        <h1 className="text-2xl font-bold text-core">¡Bienvenido a SISINFO!</h1>
         <p className="mt-3 text-muted-foreground">
           Tu cuenta institucional inició sesión correctamente, pero todavía no tiene un rol asignado en SISINFO. Contacta al administrador para solicitar acceso.
         </p>
+        <p className="mt-4 text-muted-foreground">
+          Mientras tanto, puedes consultar información sobre el Departamento de Ingeniería de Sistemas y Computación en el sitio oficial:
+        </p>
+        <a className="mt-3 inline-block font-semibold text-core underline underline-offset-4 hover:opacity-80" href="https://sistemas.uniandes.edu.co/" target="_blank" rel="noreferrer">
+          Visitar el sitio de Ingeniería de Sistemas
+        </a>
       </div>
     </div>
   );

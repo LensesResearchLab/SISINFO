@@ -126,7 +126,6 @@ export class ProfessorsService implements RoleService {
         user,
       });
     } else {
-      professor.isActive = !professor.isActive;
       Object.assign(professor, roleInfo);
     }
     await this.professorRepository.save(professor);

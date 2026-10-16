@@ -117,7 +117,7 @@ export class UsersController {
   }
 
   @Post('students/import')
-  importStudents(@Body() body: { students: Array<{ code: string; name: string; email: string; program?: string }> }) {
+  importStudents(@Body() body: { students: Array<{ code: string; name: string; email: string; program?: string; role?: string }> }) {
     return this.usersService.importStudents(body.students ?? []);
   }
 }

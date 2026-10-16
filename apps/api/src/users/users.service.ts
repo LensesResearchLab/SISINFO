@@ -185,7 +185,7 @@ export class UsersService {
     }
   }
 
-  async importStudents(rows: Array<{ code: string; name: string; email: string; program?: string }>) {
+  async importStudents(rows: Array<{ code: string; name: string; email: string; program?: string; role?: string }>) {
     const imported: Array<{ email: string; code: string; name: string; program: string }> = [];
     for (const row of rows) {
       const email = row.email.trim().toLowerCase();
@@ -198,7 +198,8 @@ export class UsersService {
       if (!student) student = this.studentRepository.create({ id: user.id, user });
       student.isActive = true;
       student.code = row.code.trim();
-      student.isUndergraduate = row.program?.toLowerCase().includes('pregrado') ?? false;
+      const academicRole = (row.role ?? row.program ?? '').trim().toLowerCase();
+      student.isUndergraduate = academicRole === 'estudiante' || academicRole.includes('pregrado');
       await this.studentRepository.save(student);
       imported.push({ email, code: student.code, name: user.name, program: student.isUndergraduate ? 'pregrado' : 'maestria' });
     }
