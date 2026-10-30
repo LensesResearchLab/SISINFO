@@ -542,7 +542,7 @@ export class SeedService {
     const adminRaw = {
       name: 'admin',
       email: 'admin@admin.com',
-      password: 'admin',
+      password: 'SisAdmin2026_20*',
     };
     const admin = await this.usersService.create(adminRaw);
     await this.usersService.assignRole<CreateStudentDto>(admin, 'estudiante', {

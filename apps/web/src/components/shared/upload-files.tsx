@@ -281,7 +281,7 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
   }
   message={loadSucess.message}
 />
-    <Card className="border-none">
+    <Card className="border-none h-full">
       <CardHeader>
         <CardTitle className="text-core">{title}</CardTitle>
         <CardDescription>Selecciona un archivo y haz click en subir</CardDescription>
@@ -294,10 +294,10 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               htmlFor="dropzone-file"
-              className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+              className="flex flex-col items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
             >
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <Upload className="w-10 h-10 text-gray-400" />
+                <Upload className="w-8 h-8 text-gray-400" />
                 <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                   <span className="font-semibold">Click para subir</span> o arrastra y suelta
                 </p>

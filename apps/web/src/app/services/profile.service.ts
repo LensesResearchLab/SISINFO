@@ -31,3 +31,12 @@ export async function updateProfile(id: string | number, body: { coordinatorId?:
   }
   return response.json();
 }
+
+export async function deleteProfile(id: string | number) {
+  const response = await fetch(`${API_ROUTES.BASE}/subareas/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("No fue posible eliminar la subárea.");
+  return response.json();
+}

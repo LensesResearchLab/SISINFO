@@ -62,4 +62,11 @@ export class ProfilesService {
     await this.profileRepository.save(profile);
     return profile;
   }
+
+  async remove(id: string) {
+    const profile = await this.profileRepository.findOne({ where: { id } });
+    if (!profile) throw new NotFoundException(`Profile with id ${id} not found`);
+    await this.profileRepository.remove(profile);
+    return { message: 'Subárea eliminada correctamente', id };
+  }
 }

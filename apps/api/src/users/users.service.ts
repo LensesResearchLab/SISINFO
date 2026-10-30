@@ -78,12 +78,10 @@ export class UsersService {
     await this.ensureConfiguredMicrosoftRoles();
     await this.importStudents(DEFAULT_STUDENTS);
     const users = await this.userRepository.find({
-      relations: ['coordinator', 'professor', 'administrator'],
+      relations: ['coordinator', 'professor', 'administrator', 'student'],
     });
 
-    const filteredUsers = users.filter(
-      (user) => user.coordinator || user.professor || user.administrator,
-    );
+    const filteredUsers = users.filter((user) => this.getUserRoles(user).length > 0);
 
     return filteredUsers.map((user) =>
       deletePasswordFromUser(user, this.getUserRoles(user)),
@@ -114,7 +112,34 @@ export class UsersService {
 
   async findAllStudents() {
     const students = await this.studentRepository.find({ relations: ['user'] });
-    return students.map((student) => ({ id: student.id, code: student.code, name: student.user?.name ?? '', email: student.user?.email ?? '', role: student.isUndergraduate ? 'estudiante' : 'estudiante_maestria', isActive: student.isActive }));
+    return students.filter((student) => student.isActive).map((student) => ({ id: student.id, code: student.code, name: student.user?.name ?? '', email: student.user?.email ?? '', role: student.isUndergraduate ? 'estudiante' : 'estudiante_maestria', isActive: student.isActive }));
+  }
+
+  async remove(id: string) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['student', 'professor', 'coordinator', 'administrator'],
+    });
+    if (!user) throw new NotFoundException(`User with id ${id} not found`);
+
+    await this.userRepository.manager.transaction(async (manager) => {
+      // Remove relationship rows and nullable references before deleting the
+      // role records. This keeps the operation valid in local, QA and PROD.
+      await manager.query('DELETE FROM section_professors WHERE "professorId" = $1 OR "sectionId" IN (SELECT id FROM section WHERE "courseId" IN (SELECT id FROM course WHERE "mainProfessorId" = $1))', [id]);
+      await manager.query('DELETE FROM section_support_professors WHERE "professorId" = $1', [id]);
+      await manager.query('DELETE FROM students_courses WHERE "studentId" = $1', [id]);
+      await manager.query('DELETE FROM other_students_courses WHERE "studentId" = $1', [id]);
+      await manager.query('UPDATE course SET "mainProfessorId" = NULL WHERE "mainProfessorId" = $1', [id]);
+      await manager.query('UPDATE profile SET "coordinatorId" = NULL WHERE "coordinatorId" = $1', [id]);
+      await manager.query('DELETE FROM incidence WHERE "userId" = $1', [id]);
+
+      await manager.delete(Student, id);
+      await manager.delete(Professor, id);
+      await manager.delete(Coordinator, id);
+      await manager.delete(Administrator, id);
+      await manager.delete(User, id);
+    });
+    return { message: 'Usuario eliminado correctamente', id };
   }
 
   async findOrCreateMicrosoftUser(email: string, name: string) {

@@ -70,3 +70,12 @@ export async function assignRole({
     throw error;
   }
 }
+
+export async function deleteUser(userId: string) {
+  const response = await fetch(`${API_ROUTES.BASE}/users/${encodeURIComponent(userId)}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("No fue posible eliminar el usuario.");
+  return response.json();
+}

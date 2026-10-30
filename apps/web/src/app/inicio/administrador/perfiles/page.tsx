@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { getProfessors } from "@/app/services/professor.service";
-import { createProfile, updateProfile } from "@/app/services/profile.service";
+import { createProfile, updateProfile, deleteProfile } from "@/app/services/profile.service";
 import { API_ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 
@@ -130,7 +130,23 @@ export default function AdminProfilesPage() {
           <Button onClick={() => { console.log('button-click assign'); handleAssign(); }} loading={loading}>
             Asignar profesor
           </Button>
-          <Button variant="outline" onClick={() => { setSelectedStaticSubarea(undefined); setSelectedProfessor(undefined); }}>
+          <Button variant="outline" onClick={async () => {
+            if (selectedStaticSubarea) {
+              const found = subareas.find((s) => String(s.name).toLowerCase() === selectedStaticSubarea.toLowerCase());
+              if (found) {
+                try {
+                  await deleteProfile(found.id);
+                  setSubareas((current) => current.filter((item) => item.id !== found.id));
+                  toast.success("Subárea eliminada correctamente.");
+                } catch (e: any) {
+                  toast.error(e?.message || "No fue posible eliminar la subárea.");
+                  return;
+                }
+              }
+            }
+            setSelectedStaticSubarea(undefined);
+            setSelectedProfessor(undefined);
+          }}>
             Limpiar
           </Button>
         </div>

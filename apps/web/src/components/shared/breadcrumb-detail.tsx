@@ -31,12 +31,18 @@ const EXCLUDED_SEGMENTS = new Set([
   "programa",
 ]);
 
+const LABELS: Record<string, string> = {
+  profesores: "Administrar profesores",
+  estudiantes: "Administrar estudiantes",
+  cargar_profesores: "Administrar profesores",
+};
+
 function getBreadcrumbText(pathname: string) {
   const segments = pathname.split("/").filter(Boolean);
   const breadcrumbs = segments.map((segment, index) => {
     const path: string = `/${segments.slice(0, index + 1).join("/")}`;
     const name: string = segment.replace(/_/g, " ");
-    const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+    const capitalizedName = LABELS[segment.toLowerCase()] ?? (name.charAt(0).toUpperCase() + name.slice(1));
     return { path, capitalizedName, originalSegment: segment };
   });
   
@@ -62,7 +68,7 @@ export default function BreadCrumbDetail() {
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
               {index === breadcrumbs.length - 1 ? (
-                <BreadcrumbPage>{breadcrumb.capitalizedName}</BreadcrumbPage>
+              <BreadcrumbPage>{breadcrumb.capitalizedName}</BreadcrumbPage>
               ) : (
                 <span>{breadcrumb.capitalizedName}</span>
               )}

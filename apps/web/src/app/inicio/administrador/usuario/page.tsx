@@ -72,11 +72,6 @@ const columns: ColumnDef<User>[] = [
       return formattedA.localeCompare(formattedB);
     },
   },
-  {
-    id: "actions",
-    header: "Acciones",
-    cell: ({ row }) => <RoleSelector user={row.original} />,
-  },
 ];
 
 export default function UserList() {

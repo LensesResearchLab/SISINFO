@@ -37,9 +37,16 @@ export function NavMain({
   readonly title: string
 }) {
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>{title}</SidebarGroupLabel>
-      <SidebarMenu>
+    <Collapsible defaultOpen={false} className="group/role-collapsible">
+      <SidebarGroup>
+        <CollapsibleTrigger asChild>
+          <SidebarGroupLabel className="cursor-pointer">
+            <span>{title}</span>
+            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/role-collapsible:rotate-90" />
+          </SidebarGroupLabel>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+        <SidebarMenu>
         {items.map((item) => (
           <Collapsible
             key={item.title}
@@ -71,7 +78,9 @@ export function NavMain({
             </SidebarMenuItem>
           </Collapsible>
         ))}
-      </SidebarMenu>
-    </SidebarGroup>
+        </SidebarMenu>
+        </CollapsibleContent>
+      </SidebarGroup>
+    </Collapsible>
   )
 }

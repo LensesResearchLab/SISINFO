@@ -23,7 +23,7 @@ export default function Layout({children}: {readonly children: React.ReactNode})
               <Separator orientation="vertical" className="mr-2 h-4" />
               <BreadCrumbDetail/>
             </div>
-            <div className="mr-4">
+            <div className="mr-4 flex items-center gap-3">
               <RingBell tasks={tasks.length} />
             </div>
           </header>

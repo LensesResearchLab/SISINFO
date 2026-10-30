@@ -34,20 +34,15 @@ export function UploadFilePage({
     const [error,setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("")
     return (
-      <div className="grid grid-rows-3 w-full h-full gap-4 p-4">
+      <div className="flex flex-col w-full gap-4 p-4">
         <AlertDialogError open={error} onOpenChange={setError} message={errorMessage}></AlertDialogError>
-         <div  className="grid grid-cols-2 row-span-1 gap-4 h-4">
-          {period &&<TermCard handlePeriodChange={handlePeriodChange} footer={""} />}
+        <div className={`grid grid-cols-1 ${period ? "lg:grid-cols-3" : "lg:grid-cols-2"} gap-4 items-stretch`}>
+          {period && <TermCard handlePeriodChange={handlePeriodChange} footer="" />}
           <TemplateCard handleDownload={handleDownload} title="Plantillas" description="Descargar plantilla" footer="" />
-        </div>
-  
-        <div className="row-span-3">
           <UploadFiles title={title} handleUploadCsv={handleUploadCsv} dialogText={dialogText} setError={setError} setErrorMessage={setErrorMessage} typeUpload={typeUpload} selectedPeriod={selectedPeriod} />
         </div>
-  
-        <div className="row-span-3">
-          {children}
-        </div>
+
+        {children && <div>{children}</div>}
       </div>
     )
   }

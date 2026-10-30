@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Delete,
   Body,
   Param,
   UnauthorizedException,
@@ -87,6 +88,13 @@ export class UsersController {
   @Get('roles')
   findAllWithRoles() {
     return this.usersService.findAllWithRoles();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'admin')
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

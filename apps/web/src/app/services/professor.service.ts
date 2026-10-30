@@ -65,6 +65,7 @@ export async function getProfessors(): Promise<Professor[]> {
     headers: {
       'Content-Type': 'application/json',
     },
+    cache: 'no-store',
     credentials: 'include',
   });
 

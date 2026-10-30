@@ -27,9 +27,8 @@ export default function AdministratorFeatures({
   // List of administrator feature titles to be displayed
   const allFeatures = Array.from(new Map(administratorData.flatMap((section) => section.items).map((item) => [item.url, item])).values());
   const administratorSections = [
-    { title: "Usuarios y roles", items: allFeatures.filter((item) => ["Consultar usuarios y roles", "Administrar estudiantes"].includes(item.title)) },
+    { title: "Usuarios y roles", items: allFeatures.filter((item) => ["Consultar usuarios y roles", "Administrar profesores", "Administrar estudiantes"].includes(item.title)) },
     { title: "Configuración académica", items: allFeatures.filter((item) => item.title.includes("Asignar profesores") || item.title.includes("per") || item.title.includes("sub")) },
-    { title: "Carga de información", items: allFeatures.filter((item) => item.title.trim().startsWith("Cargar profesores")) },
     { title: "Problemas e incidencias", items: allFeatures.filter((item) => item.title === "Ver incidencias") },
   ];
 

@@ -147,13 +147,6 @@ export const administratorData = [
     icon: ScrollText,
     items: [
       {
-        Icon: FileText,
-        title: "Ver incidencias",
-        description:
-          "Aquí puedes ver las incidencias reportadas por los usuarios.",
-        url: ROUTES.ADMINISTRATOR_INCIDENCES,
-      },
-      {
         Icon: PenSquare,
         title: "Consultar usuarios y roles",
         description: "Aquí puedes ver los usuarios y sus roles.",
@@ -161,37 +154,11 @@ export const administratorData = [
       },
       {
         Icon: Calendar,
-        title: "Asignar profesores líderes por maestría",
-        description:
-          "Aquí puedes asignar y consultar los profesores lideres de cada materia.",
-        url: ROUTES.ADMINISTRATOR_COURSE_LEADERS,
-      },
-      {
-        Icon: Calendar,
-        title: "Cargar profesores ",
+        title: "Administrar profesores",
         description:
           "Aquí puedes cargar y consultar los profesores.",
         url: ROUTES.ADMINISTRATOR_UPLOAD_TEACHERS,
       },
-      {
-        Icon: Calendar,
-        title: "Administrar períodos",
-        description: "Agregar y administrar periodos académicos.",
-        url: ROUTES.ADMINISTRATOR_PERIODS,
-      },
-      {
-        Icon: FileCog,
-        title: "Administrar subáreas de investigación",
-        description: "Agregar y asignar profesor encargado a una subárea de investigación.",
-        url: ROUTES.ADMINISTRATOR_PROFILES,
-      },
-    ],
-  },
-  {
-    title: "Asuntos academicos",
-    url: "academicos",
-    icon: School,
-    items: [
       {
         Icon: GraduationCap,
         title: "Administrar estudiantes",
@@ -209,12 +176,6 @@ export const administratorData = [
       { Icon: Calendar, title: "Administrar períodos", description: "Agregar y administrar periodos académicos.", url: ROUTES.ADMINISTRATOR_PERIODS },
       { Icon: FileCog, title: "Administrar subáreas de investigación", description: "Administrar subáreas de investigación.", url: ROUTES.ADMINISTRATOR_PROFILES },
     ],
-  },
-  {
-    title: "Carga de información",
-    url: "carga-informacion",
-    icon: FileText,
-    items: [{ Icon: Calendar, title: "Cargar profesores", description: "Aquí puedes cargar y consultar los profesores.", url: ROUTES.ADMINISTRATOR_UPLOAD_TEACHERS }],
   },
   {
     title: "Problemas e incidencias",
