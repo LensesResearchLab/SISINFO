@@ -40,7 +40,7 @@ export function NavMain({
     <Collapsible defaultOpen={false} className="group/role-collapsible">
       <SidebarGroup>
         <CollapsibleTrigger asChild>
-          <SidebarGroupLabel className="cursor-pointer">
+          <SidebarGroupLabel className="cursor-pointer text-sm font-semibold text-sidebar-foreground">
             <span>{title}</span>
             <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/role-collapsible:rotate-90" />
           </SidebarGroupLabel>

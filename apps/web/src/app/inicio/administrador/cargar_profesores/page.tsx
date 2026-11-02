@@ -22,7 +22,7 @@ export default function UploadProfessors() {
   const [loadError, setLoadError] = useState(false);
 
   const dialogText = {
-    title: "Administrar profesores",
+    title: "Cargar profesores",
     description: "¿Estás seguro de que deseas cargar estos profesores?",
     buttonText: "Cargar",
     successTitle: "Profesores Cargados",
@@ -117,7 +117,7 @@ export default function UploadProfessors() {
   return (
     <>
       <UploadFilePage
-        title="Administrar profesores"
+        title="Cargar profesores"
         period={false}
         handlePeriodChange={handlePeriodChange}
         handleDownload={handleDownload}
@@ -176,7 +176,7 @@ function UploadedProfessors({
     <div className="min-h-full min-w-full">
       <div className="bg-card rounded-lg shadow-lg p-6 space-y-6">
         <h2 className="text-2xl font-bold text-core text-center">
-          Administrar profesores
+          Cargar profesores
         </h2>
         <DataTable
           columns={getColumns(onDeleted)}

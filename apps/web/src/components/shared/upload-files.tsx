@@ -1,7 +1,7 @@
 "use client"
 
 import { Dispatch, SetStateAction, useState } from "react"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Upload } from "lucide-react"
 import Papa from "papaparse"
@@ -282,27 +282,21 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
   message={loadSucess.message}
 />
     <Card className="border-none h-full">
-      <CardHeader>
+      <CardHeader className="pb-3">
         <CardTitle className="text-core">{title}</CardTitle>
-        <CardDescription>Selecciona un archivo y haz click en subir</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0">
         <form onSubmit={handleSubmit} className="grid gap-4">
-          <div className="flex items-center justify-center w-full">
+          <div className="flex items-center justify-start w-full">
             <label
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               htmlFor="dropzone-file"
-              className="flex flex-col items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+              className="inline-flex h-9 w-64 max-w-64 min-w-0 items-center justify-center gap-2 rounded-md bg-core px-4 py-2 text-sm font-medium text-white shadow-xs transition-all cursor-pointer"
             >
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <Upload className="w-8 h-8 text-gray-400" />
-                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-semibold">Click para subir</span> o arrastra y suelta
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">XLSM, CSV</p>
-              </div>
+              <Upload className="size-4" />
+              <span>Seleccionar archivo</span>
               <input id="dropzone-file" type="file" className="hidden" accept=".csv, .xlsx, .xlsm" onChange={handleFileChange} />
             </label>
           </div>

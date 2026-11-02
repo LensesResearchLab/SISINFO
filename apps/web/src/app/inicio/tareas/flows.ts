@@ -12,6 +12,9 @@ export interface Step {
   description: string;
 }
 export const flows: Record<string, Step[]> = {
+  asignacionCurso: [
+    { type: TaskType.SEND_COMMENTS, assignee: 'professor', title: 'Materia asignada', description: 'Se te asignó una materia como profesor líder.' },
+  ],
   tesis1: [
     { type: TaskType.SEND_APPROVE, assignee: 'professor', title: 'Aprobar Tesis 1', description: 'Revisar la propuesta de Tesis 1' },
     { type: TaskType.SEND_APPROVE, assignee: 'professor', title: 'Aprobar Tesis 1', description: 'Revisar la propuesta como coordinador' },

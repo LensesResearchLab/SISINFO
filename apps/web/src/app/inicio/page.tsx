@@ -68,28 +68,25 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const fetchedRef = useRef(false);
 useEffect(() => {
-  if (!fetchedRef.current) {
-    fetchUserRoles(setRoles, setLoading, fetchedRef);
-    getUserInfo().then((data) => {
-      const userId = data.user.id;
-      const userRoles = data.user.roles;
-
+  if (fetchedRef.current) return;
+  fetchUserRoles(setRoles, setLoading, fetchedRef);
+  let interval: number | undefined;
+  getUserInfo().then((data) => {
+    const userId = data.user.id;
+    const userRoles = data.user.roles;
+    const loadTasks = async () => {
       const taskPromises = [
         getPendingTasksForStudent(userId),
         getPendingTasksForProfessor(userId),
       ];
-
-      if (userRoles.includes("coordinador") && !userRoles.includes("administrador")) {
-        taskPromises.push(getPendingTasksForCoordinator());
-      }
-
-      Promise.all(taskPromises).then((results) => {
-        const allTasks = results.flat();
-        const parsedTasks = mapTasksToTaskTable(allTasks);
-        setTasks(parsedTasks);
-      });
-    });
-  }
+      if (userRoles.includes("coordinador")) taskPromises.push(getPendingTasksForCoordinator());
+      const results = await Promise.all(taskPromises);
+      setTasks(mapTasksToTaskTable(results.flat()));
+    };
+    void loadTasks();
+    interval = window.setInterval(() => { void loadTasks(); }, 10000);
+  }).catch(() => undefined);
+  return () => { if (interval !== undefined) window.clearInterval(interval); };
 }, [setRoles, setTasks]);
 
   if (loading) return <SpinnerPage />;

@@ -59,17 +59,17 @@ interface TemplateCardProps {
 function TemplateCard({handleDownload, title, description, footer} : TemplateCardProps) {
   return (
     
-    <Card className="border-none">
-      <CardHeader>
+    <Card className="border-none h-full">
+      <CardHeader className="pb-3">
         <CardTitle className="text-core">{title}</CardTitle>
       </CardHeader>
-      <CardContent>
-        <Button onClick={handleDownload}>
+      <CardContent className="pt-0">
+        <Button className="w-64 max-w-64 min-w-0" onClick={handleDownload}>
           <Download />
           {description}
         </Button>
       </CardContent>
-      <CardFooter>{footer}</CardFooter>
+      {footer && <CardFooter className="pt-0">{footer}</CardFooter>}
     </Card>
   )
 }

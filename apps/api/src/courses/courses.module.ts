@@ -7,6 +7,7 @@ import { PeriodsModule } from '../periods/periods.module';
 import { ProfessorsModule } from '../professors/professors.module';
 import { Section } from '../sections/entities/section.entity';
 import { DocumentsModule } from '../documents/documents.module';
+import { TasksModule } from '../tasks/tasks.module';
 
 @Module({
   controllers: [CourseController],
@@ -16,6 +17,7 @@ import { DocumentsModule } from '../documents/documents.module';
     PeriodsModule,
     ProfessorsModule,
     DocumentsModule,
+    TasksModule,
   ],
   exports: [TypeOrmModule, CoursesService],
 })

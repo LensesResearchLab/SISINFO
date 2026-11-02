@@ -12,6 +12,8 @@ import { ProfessorsService } from '../professors/professors.service';
 import { Professor } from '../professors/entities/professor.entity';
 import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
 import { DocumentsService } from '../documents/documents.service';
+import { TasksService } from '../tasks/tasks.service';
+import { TaskType } from '../tasks/enums/taskType';
 
 // yauzl ya está disponible en el árbol de dependencias del proyecto y permite
 // leer el ZIP directamente desde memoria, sin escribir archivos temporales.
@@ -27,6 +29,7 @@ export class CoursesService {
     private readonly periodsService: PeriodsService,
     private readonly professorsService: ProfessorsService,
     private readonly documentsService: DocumentsService,
+    private readonly tasksService: TasksService,
   ) {}
 
   async create(createCourseDto: CreateCourseDto, section: Section, manager?: EntityManager) {
@@ -163,6 +166,13 @@ export class CoursesService {
       .where(patterns.map((_, index) => `code LIKE :pattern${index}`).join(' OR '),
         Object.fromEntries(patterns.map((pattern, index) => [`pattern${index}`, pattern])))
       .execute();
+
+    await this.tasksService.create(TaskType.SEND_COMMENTS, {
+      professorId,
+      flow: 'asignacionCurso',
+      step: 0,
+      comment: `Se te asignó como profesor líder de la materia ${course.code}.`,
+    } as any);
 
     return { ...course, mainProfessor: professor };
   }
