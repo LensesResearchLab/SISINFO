@@ -123,6 +123,42 @@ export class UsersService {
     if (!user) throw new NotFoundException(`User with id ${id} not found`);
 
     await this.userRepository.manager.transaction(async (manager) => {
+      // Break cyclic task/project_application references first. This is
+      // required because project_application.actual_task_id points to tasks,
+      // while tasks.projectApplicationId points back to project_application.
+      await manager.query(`
+        UPDATE project_application pa
+        SET actual_task_id = NULL
+        WHERE pa."studentId" = $1
+           OR pa.id IN (
+             SELECT t."projectApplicationId"
+             FROM tasks t
+             WHERE t."studentId" = $1 OR t."professorId" = $1
+           )
+      `, [id]);
+      await manager.query(`
+        DELETE FROM tasks
+        WHERE "projectApplicationId" IN (
+          SELECT id FROM project_application WHERE "studentId" = $1
+        )
+      `, [id]);
+      await manager.query(`
+        DELETE FROM tasks
+        WHERE "studentId" = $1 OR "professorId" = $1 OR "coordinatorId" = $1
+           OR id IN (
+             SELECT actual_task_id FROM project_application
+             WHERE "studentId" = $1 AND actual_task_id IS NOT NULL
+           )
+      `, [id]);
+      await manager.query(`DELETE FROM project_application WHERE "studentId" = $1`, [id]);
+      await manager.query(`
+        DELETE FROM tasks
+        WHERE "thesisApplicationId" IN (
+          SELECT id FROM thesis_application WHERE "studentId" = $1
+        )
+      `, [id]);
+      await manager.query(`DELETE FROM thesis_application WHERE "studentId" = $1`, [id]);
+
       // Remove relationship rows and nullable references before deleting the
       // role records. This keeps the operation valid in local, QA and PROD.
       await manager.query('DELETE FROM section_professors WHERE "professorId" = $1 OR "sectionId" IN (SELECT id FROM section WHERE "courseId" IN (SELECT id FROM course WHERE "mainProfessorId" = $1))', [id]);
@@ -132,6 +168,14 @@ export class UsersService {
       await manager.query('UPDATE course SET "mainProfessorId" = NULL WHERE "mainProfessorId" = $1', [id]);
       await manager.query('UPDATE profile SET "coordinatorId" = NULL WHERE "coordinatorId" = $1', [id]);
       await manager.query('DELETE FROM incidence WHERE "userId" = $1', [id]);
+      await manager.query('DELETE FROM assistance_application WHERE "studentId" = $1', [id]);
+      await manager.query('UPDATE thesis SET "studentThesis1Id" = NULL WHERE "studentThesis1Id" = $1', [id]);
+      await manager.query('UPDATE thesis SET "studentThesis2Id" = NULL WHERE "studentThesis2Id" = $1', [id]);
+      await manager.query('DELETE FROM graduated_assistance WHERE "assistantId" = $1 OR "professorId" = $1', [id]);
+      await manager.query('UPDATE student SET "projectId" = NULL WHERE "projectId" IN (SELECT id FROM project WHERE "professorId" = $1)', [id]);
+      await manager.query('DELETE FROM project_areas_of_interest WHERE "projectId" IN (SELECT id FROM project WHERE "professorId" = $1)', [id]);
+      await manager.query('DELETE FROM project WHERE "professorId" = $1', [id]);
+      await manager.query('UPDATE thesis SET "professorId" = NULL WHERE "professorId" = $1', [id]);
 
       await manager.delete(Student, id);
       await manager.delete(Professor, id);

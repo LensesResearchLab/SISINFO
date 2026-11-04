@@ -98,20 +98,8 @@ function PopoverPerCourse({ row }: { readonly row: Row<LeaderPerCourse> }) {
     <ProfessorListPopover
       courseId={row.original.courseId}
       onAssigned={(newProfessor) => {
-        queryClient.setQueryData<LeaderPerCourse[]>(
-          ["courses-leaders"],
-          (oldData) =>
-            oldData?.map((course) =>
-              course.courseId === row.original.courseId
-                ? {
-                  ...course,
-                  professorId: newProfessor.id,
-                  professorName: newProfessor.name,
-                  email: newProfessor.email,
-                }
-                : course
-            ) ?? []
-        );
+        queryClient.setQueryData<LeaderPerCourse[]>(["courses-leaders"], (oldData) => oldData ?? []);
+        void queryClient.refetchQueries({ queryKey: ["courses-leaders"], type: "active" });
       }}
     />
   )

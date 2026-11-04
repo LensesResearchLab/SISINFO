@@ -159,6 +159,12 @@ export class CoursesService {
       ? ['ISIS-4%', 'ISIS4%']
       : [`${programKey}%`];
 
+    const coursesInProgram = await this.courseRepository
+      .createQueryBuilder('course')
+      .where(patterns.map((_, index) => `course.code LIKE :pattern${index}`).join(' OR '),
+        Object.fromEntries(patterns.map((pattern, index) => [`pattern${index}`, pattern])))
+      .getMany();
+
     await this.courseRepository
       .createQueryBuilder()
       .update(Course)
@@ -167,11 +173,12 @@ export class CoursesService {
         Object.fromEntries(patterns.map((pattern, index) => [`pattern${index}`, pattern])))
       .execute();
 
+    course.code = coursesInProgram.map((assignedCourse) => assignedCourse.code).join(', ');
     await this.tasksService.create(TaskType.SEND_COMMENTS, {
       professorId,
       flow: 'asignacionCurso',
       step: 0,
-      comment: `Se te asignó como profesor líder de la materia ${course.code}.`,
+      comment: `Materia ${course.code} asignada. Se te designó como profesor líder.`,
     } as any);
 
     return { ...course, mainProfessor: professor };

@@ -9,10 +9,11 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
-import { MoreHorizontal } from "lucide-react";
+import { Check } from "lucide-react";
 
 import { useHomeStore } from "../home.store";
 import { ROUTES } from "@/app/routes";
+import { API_ROUTES } from "@/app/routes";
 import {
   getPendingTasksForStudent,
   getPendingTasksForProfessor,
@@ -23,6 +24,7 @@ import { createTask } from "@/app/services/tasks.service";
 import { getPendingStandaloneTasksForProfessor, getPendingStandaloneTasksForStudent } from "@/app/services/tasks.service";
 import { Task } from "@/app/types/entities/task.type";
 import { TaskType, flows } from "./flows";
+import { mapTasksToTaskTable } from "@/app/mappers/task.mapper";
 import SpinnerPage from "@/components/shared/spinner-page";
 import RoleTab from "@/components/shared/role-tab";
 import { TabsContent } from "@radix-ui/react-tabs";
@@ -40,7 +42,7 @@ const baseColumns: ColumnDef<Task>[] = [
     accessorKey: "description",
     header: "Descripción",
     cell: ({ row }) => (
-      <div className="line-clamp-2 max-w-[200px]">{row.getValue("description")}</div>
+      <div className="whitespace-normal max-w-[280px]">{row.getValue("description")}</div>
     ),
   },
   {
@@ -95,6 +97,7 @@ const baseColumns: ColumnDef<Task>[] = [
 
 function ActionsCell({ row }: { readonly row: { original: Task } }) {
   const router = useRouter();
+  const setTasks = useHomeStore((state) => state.setTasks);
   const task = row.original;
 
   const studentName = task?.projectActualTask?.student?.user?.name ?? "";
@@ -103,21 +106,34 @@ function ActionsCell({ row }: { readonly row: { original: Task } }) {
   const periodObj = task?.projectActualTask?.period ?? task?.projectActualTask?.project?.period;
   const periodStr = periodObj ? `${periodObj.year}-${periodObj.period}` : "";
 
+  const closeAssignment = async () => {
+    await fetch(`${API_ROUTES.BASE}/${API_ROUTES.TASKS}/${task.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ approved: true }),
+    });
+    setTasks(useHomeStore.getState().tasks.filter((item) => item.id !== task.id));
+  };
+
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() =>
+      onClick={() => {
+        if (task.flow === "asignacionCurso") {
+          if (window.confirm("¿Quieres marcar esta tarea como completada?")) void closeAssignment();
+          return;
+        }
         router.push(
           `${ROUTES.HOME}/${ROUTES.TASK_LIST}/${task.id}` +
             `?studentName=${encodeURIComponent(studentName)}` +
             `&studentCode=${encodeURIComponent(studentCode)}` +
             `&projectTitle=${encodeURIComponent(projectTitle)}` +
             `&period=${encodeURIComponent(periodStr)}`,
-        )
-      }
+        );
+      }}
     >
-      <MoreHorizontal className="h-4 w-4" />
+      <Check className="h-4 w-4" />
     </Button>
   );
 }
@@ -167,10 +183,11 @@ export default function Tasks() {
         const results = await Promise.all(taskPromises);
         const allTasks = results.flat();
 
-        const parsedTasks = allTasks.map((task: Task) => {
+        const parsedTasks = mapTasksToTaskTable(allTasks as Task[]).map((task: Task) => {
           const stepNumber =
             typeof task.step === "number" ? task.step : Number(task.step);
-          const stepInfo = ((task.flow ? flows[task.flow] : undefined) ?? flows.proyectoPregrado)[stepNumber];
+          // mapTasksToTaskTable already resolves flow-specific titles and descriptions.
+          const stepInfo = { title: task.title, description: task.description };
           return {
             ...task,
             step: stepNumber,
@@ -204,7 +221,7 @@ export default function Tasks() {
         {roles.length === 1 ? (
           <TasksTable role={roles[0]} />
         ) : (
-          <RoleTab>
+          <RoleTab showTaskCounts>
             {roles.map((role) => (
               <TabsContent key={role} value={role}>
                 <TasksTable role={role} />

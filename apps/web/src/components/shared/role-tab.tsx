@@ -9,8 +9,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
  * @param {Object} props - Component props
  * @returns {JSX.Element} A tabbed interface with role-specific content
  */
-export default function RoleTab({ children }: { readonly children: React.ReactNode }) {
+export default function RoleTab({ children, showTaskCounts = false }: { readonly children: React.ReactNode; readonly showTaskCounts?: boolean }) {
   const roles = useHomeStore((state) => state.roles);
+  const tasks = useHomeStore((state) => state.tasks);
   return (
     <Tabs defaultValue={roles[0]} className="w-full">
       <TabsList className="bg-core text-white mx-4 mt-4">
@@ -24,6 +25,10 @@ export default function RoleTab({ children }: { readonly children: React.ReactNo
               .split("_")
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
               .join(" ")}
+            {showTaskCounts && (() => {
+              const count = tasks.filter((task) => role === "profesor" ? Boolean(task.professor) : role === "coordinador" ? Boolean(task.coordinator) : role.startsWith("estudiante") ? Boolean(task.student) : false).length;
+              return count > 0 ? <span className="ml-2 rounded-full bg-red-500 px-2 py-0.5 text-xs text-white">{count}</span> : null;
+            })()}
           </TabsTrigger>
         ))}
       </TabsList>
