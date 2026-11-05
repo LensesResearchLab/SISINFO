@@ -82,7 +82,7 @@ export async function middleware(req: NextRequest) {
 
   /* If accessing protected route and session token is invalid redirect to login */
   if (isProtectedRoute && !session?.id) {
-    return NextResponse.redirect(new URL("/auth", req.nextUrl.origin));
+    return NextResponse.redirect(new URL("/", req.nextUrl.origin));
   }
 
   /* Check if the user can access the page based on his role */

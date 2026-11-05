@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Course } from "@/app/types/entities/billboard.type"
-import { Eye} from "lucide-react"
+import { Eye, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 /**
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
  * @param {Function} handleDetail - Callback triggered when the action button is clicked
  * @returns {ColumnDef<Course>[]} Array of column definitions
  */
-export const getProgramColumns = (handleDetail: (id: string) => void): ColumnDef<Course>[] => [
+export const getProgramColumns = (handleDetail: (id: string) => void, handleDownload: (course: Course) => void): ColumnDef<Course>[] => [
   {
     accessorKey: "name",
     header: "Clase",
@@ -48,14 +48,10 @@ export const getProgramColumns = (handleDetail: (id: string) => void): ColumnDef
     id: "actions",
     header: "Acciones",
     cell: ({ row }) => (
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => handleDetail(row.original.id)}
-      >
-        
-        <Eye></Eye>
-      </Button>
+      <div className="flex gap-1">
+        <Button variant="ghost" size="icon" title="Ver programa" onClick={() => handleDetail(row.original.id)}><Eye /></Button>
+        {row.original.program && <Button variant="ghost" size="icon" title="Descargar programa" onClick={() => handleDownload(row.original)}><Download /></Button>}
+      </div>
     ),
   },
 ]

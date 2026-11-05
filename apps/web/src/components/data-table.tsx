@@ -88,7 +88,7 @@ export function DataTable<TData, TValue>({
   useEffect(() => { table.setPageIndex(0); }, [globalFilter, table]);
   const selectedData = useMemo(() => {
     return table.getSelectedRowModel()?.rows?.map((row) => row.original);
-  }, [table]);
+  }, [table, rowSelection]);
 
   useEffect(() => {
     if (enableRowSelection && onSelectedRowsChange) {

@@ -304,14 +304,13 @@ function TasksTable({ role }: TasksTableProps) {
    * Approve all selected tasks in bulk, then refresh.
    */
   const handleBulkApprove = async () => {
+    if (!window.confirm(`¿Quieres marcar como completadas las ${selectedTasks.length} tareas seleccionadas?`)) return;
     for (const task of selectedTasks) {
-      await createTask(task.id, {
-        type: TaskType.SEND_APPROVE,
-        approved: true,
-        comment: "",
-        date: new Date(),
-        step: task.step,
-      });
+      if (task.projectActualTask) {
+        await createTask(task.id, { type: TaskType.SEND_APPROVE, approved: true, comment: "", date: new Date(), step: task.step });
+      } else {
+        await fetch(`${API_ROUTES.BASE}/${API_ROUTES.TASKS}/${task.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ approved: true }) });
+      }
     }
     window.location.reload();
   };
@@ -331,7 +330,7 @@ function TasksTable({ role }: TasksTableProps) {
       {selectedTasks.length > 0 && (
         <div className="flex justify-end">
           <Button onClick={handleBulkApprove}>
-            Aprobar {selectedTasks.length} tarea
+            Completar / aprobar {selectedTasks.length} tarea
             {selectedTasks.length > 1 ? "s" : ""}
           </Button>
         </div>

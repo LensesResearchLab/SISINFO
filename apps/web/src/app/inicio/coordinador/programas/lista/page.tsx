@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { useProgramsStore } from "./store"
 import { Course } from "@/app/types/entities/billboard.type"
 import { getBillboardWithUploadedProgram } from "@/app/services/billboard.service"
+import { getCourseWithDocument } from "@/app/services/billboard.service"
 import { getPeriodsWMap } from "@/app/services/period.service"
 import { mapPeriodToString } from "@/app/mappers/period.mapper"
 import { useRouter } from "next/navigation"
@@ -12,6 +13,32 @@ import { useQuery } from "@tanstack/react-query"
 import { AlertDialogError } from "@/components/shared/alert-dialog-error"
 import { DataTable } from "@/components/data-table"
 import { getProgramColumns } from "./ProgramColumns" // Import custom columns
+import { Button } from "@/components/ui/button"
+import { Download } from "lucide-react"
+import { ColumnDef } from "@tanstack/react-table"
+
+function downloadBlob(blob: Blob, name: string) {
+  const url = URL.createObjectURL(blob); const link = document.createElement("a");
+  link.href = url; link.download = name; link.click(); URL.revokeObjectURL(url);
+}
+
+function crc32(data: Uint8Array) {
+  let crc = 0xffffffff;
+  for (const byte of data) { crc ^= byte; for (let i = 0; i < 8; i++) crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0); }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+async function createZip(files: { name: string; data: Uint8Array }[]) {
+  const encoder = new TextEncoder(); const parts: Uint8Array[] = []; const central: Uint8Array[] = []; let offset = 0;
+  for (const file of files) {
+    const name = encoder.encode(file.name); const header = new ArrayBuffer(30 + name.length); const view = new DataView(header);
+    view.setUint32(0, 0x04034b50, true); view.setUint16(4, 20, true); view.setUint16(8, 0, true); view.setUint32(14, crc32(file.data), true); view.setUint32(18, file.data.length, true); view.setUint32(22, file.data.length, true); view.setUint16(26, name.length, true); new Uint8Array(header, 30).set(name);
+    const local = new Uint8Array(header); parts.push(local, file.data);
+    const entry = new ArrayBuffer(46 + name.length); const ev = new DataView(entry); ev.setUint32(0, 0x02014b50, true); ev.setUint16(4, 20, true); ev.setUint16(6, 20, true); ev.setUint32(16, crc32(file.data), true); ev.setUint32(20, file.data.length, true); ev.setUint32(24, file.data.length, true); ev.setUint16(28, name.length, true); ev.setUint32(42, offset, true); new Uint8Array(entry, 46).set(name); central.push(new Uint8Array(entry)); offset += local.length + file.data.length;
+  }
+  const centralSize = central.reduce((n, x) => n + x.length, 0); const end = new ArrayBuffer(22); const endView = new DataView(end); endView.setUint32(0, 0x06054b50, true); endView.setUint16(8, files.length, true); endView.setUint16(10, files.length, true); endView.setUint32(12, centralSize, true); endView.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, new Uint8Array(end)], { type: "application/zip" });
+}
 
 /**
  * ProgramsList Component
@@ -32,6 +59,19 @@ export default function ProgramsList() {
   const [courses, setCourses] = useState<Course[]>([])
   const [loadError, setLoadError] = useState(false)
   const [program, setProgram] = useState("")
+  const [selectedCourses, setSelectedCourses] = useState<Course[]>([])
+  const visibleCourses = useMemo(() => program ? courses.filter((course) => String(typeof course.program === "string" ? course.program : (course.program as any)?.name).toUpperCase().includes(program)) : courses, [courses, program])
+
+  const downloadProgram = async (course: Course) => {
+    const full = await getCourseWithDocument(course.id) as any;
+    const data = full?.program?.file?.data;
+    if (data) downloadBlob(new Blob([new Uint8Array(data)], { type: "application/pdf" }), `${course.code}.pdf`);
+  };
+  const downloadSelected = async () => {
+    const files = [];
+    for (const course of selectedCourses) { const full = await getCourseWithDocument(course.id) as any; const data = full?.program?.file?.data; if (data) files.push({ name: `${course.code}.pdf`, data: new Uint8Array(data) }); }
+    if (files.length) downloadBlob(await createZip(files), "listado de programas.zip");
+  };
 
   // Fetch list of periods using React Query
   const { data: fetchedPeriods } = useQuery({
@@ -90,11 +130,13 @@ export default function ProgramsList() {
         </CardHeader>
         <CardContent className="space-y-6">
           <DataTable
-            columns={getProgramColumns(handleDetail)}
-            data={program ? courses.filter((course) => {
-              const value = typeof course.program === "string" ? course.program : (course.program as any)?.name
-              return value?.toString().toUpperCase().includes(program)
-            }) : courses}
+            columns={[
+              { id: "select", header: ({ table }: any) => <input type="checkbox" checked={table.getIsAllPageRowsSelected()} onChange={table.getToggleAllPageRowsSelectedHandler()} />, cell: ({ row }: any) => <input type="checkbox" checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} />, enableSorting: false },
+              ...getProgramColumns(handleDetail, (course) => void downloadProgram(course)),
+            ] as ColumnDef<Course>[]}
+            data={visibleCourses}
+            enableRowSelection
+            onSelectedRowsChange={setSelectedCourses}
             toolbar={
               <div className="flex items-center gap-2">
                 <label className="flex flex-col gap-1 text-xs font-medium text-muted-foreground">
@@ -125,6 +167,11 @@ export default function ProgramsList() {
               </div>
             }
           />
+          {selectedCourses.length > 0 && (
+            <div className="flex justify-end">
+              <Button onClick={() => void downloadSelected()}><Download className="mr-2 h-4 w-4" />Descargar</Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 
