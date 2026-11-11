@@ -3,6 +3,7 @@ import { CoursesService } from './courses.service';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 
 @Controller('courses')
@@ -25,6 +26,8 @@ export class CourseController {
   }
 
   @Patch(':id/updateProfessor/:professorId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   updateMainProfessor(
     @Param('id') id: string,
     @Param('professorId') professorId: string,
@@ -39,7 +42,7 @@ export class CourseController {
 
   // Upload program PDF according to the program's upload permissions.
   @Post(':id/program')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('professor')
   @UseInterceptors(FileInterceptor('file'))
   async uploadProgram(
@@ -64,7 +67,7 @@ export class CourseController {
   }
 
   @Post('programs/zip')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('professor')
   @UseInterceptors(FileInterceptor('file'))
   async uploadProgramsZip(
@@ -76,12 +79,16 @@ export class CourseController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
     return this.coursesService.update(id, updateCourseDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   remove(@Param('id') id: string) {
-    return this.coursesService.remove(+id);
+    return this.coursesService.remove(id);
   }
 }

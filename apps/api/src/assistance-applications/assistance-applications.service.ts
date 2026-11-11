@@ -52,7 +52,14 @@ export class AssistanceApplicationsService {
   }
 
   findAll() {
-    return 'This action returns all assistanceApplications';
+    return this.assistanceApplicationRepository.find({
+      relations: {
+        graduatedAssistance: { professor: true, period: true },
+        student: { user: true },
+        document: true,
+      },
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async findAllByStudentDocument(studentId: string) {
@@ -135,7 +142,12 @@ export class AssistanceApplicationsService {
     return this.assistanceApplicationRepository.save(assistance);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} assistanceApplication`;
+  async remove(id: string) {
+    const application = await this.findOne(id);
+    if (application.document?.id) {
+      await this.documentsService.remove(application.document.id);
+    }
+    await this.assistanceApplicationRepository.remove(application);
+    return { id, deleted: true };
   }
 }

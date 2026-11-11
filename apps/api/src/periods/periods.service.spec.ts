@@ -3,6 +3,8 @@ import { PeriodsService } from './periods.service';
 import { Repository } from 'typeorm';
 import { Period } from './entities/period.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ImportantSection } from '../important-sections/entities/important-section.entity';
+import { ImportantDate } from '../important-dates/entities/important-date.entity';
 
 describe('PeriodsService', () => {
   let service: PeriodsService;
@@ -22,6 +24,8 @@ describe('PeriodsService', () => {
           provide: getRepositoryToken(Period),
           useValue: mockRepository,
         },
+        { provide: getRepositoryToken(ImportantSection), useValue: mockRepository },
+        { provide: getRepositoryToken(ImportantDate), useValue: mockRepository },
       ],
     }).compile();
 

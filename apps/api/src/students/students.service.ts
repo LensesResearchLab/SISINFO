@@ -79,8 +79,14 @@ export class StudentsService implements RoleService {
     return student;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} student`;
+  async remove(id: string) {
+    const student = await this.studentRepository.findOne({ where: { id } });
+    if (!student) return null;
+    await this.studentRepository.manager.query('DELETE FROM students_courses WHERE "studentId" = $1', [id]);
+    await this.studentRepository.manager.query('DELETE FROM other_students_courses WHERE "studentId" = $1', [id]);
+    await this.studentRepository.manager.query('UPDATE student SET "projectId" = NULL, "thesis1Id" = NULL, "thesis2Id" = NULL WHERE id = $1', [id]);
+    await this.studentRepository.remove(student);
+    return { id, deleted: true };
   }
 
   async addRole<CreateStudentDto>(

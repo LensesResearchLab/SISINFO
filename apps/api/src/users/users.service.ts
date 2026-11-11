@@ -44,7 +44,6 @@ const MICROSOFT_COORDINATORS: Record<string, string> = {
 };
 
 const MICROSOFT_ADMINISTRATORS: Record<string, string> = {
-  'jj.hurtadoc1@uniandes.edu.co': 'Juan José Hurtado',
 };
 
 const DEFAULT_STUDENTS = [
@@ -169,13 +168,18 @@ export class UsersService {
       await manager.query('UPDATE profile SET "coordinatorId" = NULL WHERE "coordinatorId" = $1', [id]);
       await manager.query('DELETE FROM incidence WHERE "userId" = $1', [id]);
       await manager.query('DELETE FROM assistance_application WHERE "studentId" = $1', [id]);
-      await manager.query('UPDATE thesis SET "studentThesis1Id" = NULL WHERE "studentThesis1Id" = $1', [id]);
-      await manager.query('UPDATE thesis SET "studentThesis2Id" = NULL WHERE "studentThesis2Id" = $1', [id]);
+      await manager.query('UPDATE student SET "thesis1Id" = NULL WHERE "thesis1Id" IS NOT NULL AND id = $1', [id]);
+      await manager.query('UPDATE student SET "thesis2Id" = NULL WHERE "thesis2Id" IS NOT NULL AND id = $1', [id]);
       await manager.query('DELETE FROM graduated_assistance WHERE "assistantId" = $1 OR "professorId" = $1', [id]);
       await manager.query('UPDATE student SET "projectId" = NULL WHERE "projectId" IN (SELECT id FROM project WHERE "professorId" = $1)', [id]);
+      await manager.query('UPDATE project_application SET actual_task_id = NULL WHERE "projectId" IN (SELECT id FROM project WHERE "professorId" = $1)', [id]);
+      await manager.query('DELETE FROM tasks WHERE "projectApplicationId" IN (SELECT id FROM project_application WHERE "projectId" IN (SELECT id FROM project WHERE "professorId" = $1))', [id]);
+      await manager.query('DELETE FROM project_application WHERE "projectId" IN (SELECT id FROM project WHERE "professorId" = $1)', [id]);
       await manager.query('DELETE FROM project_areas_of_interest WHERE "projectId" IN (SELECT id FROM project WHERE "professorId" = $1)', [id]);
       await manager.query('DELETE FROM project WHERE "professorId" = $1', [id]);
-      await manager.query('UPDATE thesis SET "professorId" = NULL WHERE "professorId" = $1', [id]);
+      await manager.query('UPDATE thesis_application SET "thesisId" = NULL WHERE "thesisId" IN (SELECT id FROM thesis WHERE "professorId" = $1)', [id]);
+      await manager.query('DELETE FROM thesis_tags WHERE "thesisId" IN (SELECT id FROM thesis WHERE "professorId" = $1)', [id]);
+      await manager.query('DELETE FROM thesis WHERE "professorId" = $1', [id]);
 
       await manager.delete(Student, id);
       await manager.delete(Professor, id);

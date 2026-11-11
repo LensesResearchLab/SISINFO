@@ -34,6 +34,7 @@ export async function getPendingTasksForStudent(id: string) {
   
   const response = await fetch(url, {
     method: 'GET',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json'
     }
@@ -51,6 +52,7 @@ export async function getPendingTasksForProfessor(id: string) {
   
   const response = await fetch(url, {
     method: 'GET',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json'
     }
@@ -69,6 +71,7 @@ export async function getPendingTasksForCoordinator() {
   
   const response = await fetch(url, {
     method: 'GET',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json'
     }

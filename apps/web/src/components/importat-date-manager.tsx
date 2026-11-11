@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SpinnerPage from "./shared/spinner-page"
 import { DateTable } from "./shared/date-table"
-import { findByAcademicProcessAndPeriod, updateImportantDate } from "@/app/services/dates.service"
+import { deleteImportantDate, findByAcademicProcessAndPeriod, updateImportantDate } from "@/app/services/dates.service"
 
 
 
@@ -29,7 +29,7 @@ export default function ImportantDatesManager({ selectedPeriod }: { selectedPeri
     error: posgradoError,
   } = useQuery({
     queryKey: ["student-dates", "POSGRADO", selectedPeriod],
-    queryFn: () => findByAcademicProcessAndPeriod("Tesis postgrado"),
+    queryFn: () => findByAcademicProcessAndPeriod("Tesis postgrado", selectedPeriod),
   })
 
   const updateMutation = useMutation({
@@ -52,6 +52,12 @@ export default function ImportantDatesManager({ selectedPeriod }: { selectedPeri
 
   const handleUpdateDate = async (dateId: string, data: { importantSectionId: string; name: string; date: string }) => {
     await updateMutation.mutateAsync({ dateId, data })
+  }
+
+  const handleDeleteDate = async (dateId: string) => {
+    if (!window.confirm("¿Confirmas eliminar esta fecha importante?")) return
+    await deleteImportantDate(dateId)
+    await queryClient.invalidateQueries({ queryKey: ["student-dates"] })
   }
 
   if (isFetchingPregrado || isFetchingPosgrado) {
@@ -95,6 +101,7 @@ export default function ImportantDatesManager({ selectedPeriod }: { selectedPeri
                   title={section.name}
                   dates={section.importantDates}
                   onUpdateDate={handleUpdateDate}
+                  onDeleteDate={handleDeleteDate}
                 />
               ))
             )}
@@ -111,6 +118,7 @@ export default function ImportantDatesManager({ selectedPeriod }: { selectedPeri
                   title={section.name}
                   dates={section.importantDates}
                   onUpdateDate={handleUpdateDate}
+                  onDeleteDate={handleDeleteDate}
                 />
               ))
             )}

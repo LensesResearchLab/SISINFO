@@ -20,6 +20,8 @@ export class ImportantDatesController {
   constructor(private readonly importantDatesService: ImportantDatesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   create(@Body() createImportantDateDto: CreateImportantDateDto) {
     return this.importantDatesService.create(createImportantDateDto);
   }
@@ -31,7 +33,7 @@ export class ImportantDatesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.importantDatesService.findOne(+id);
+    return this.importantDatesService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -45,7 +47,9 @@ export class ImportantDatesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   remove(@Param('id') id: string) {
-    return this.importantDatesService.remove(+id);
+    return this.importantDatesService.remove(id);
   }
 }

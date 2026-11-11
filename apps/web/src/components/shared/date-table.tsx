@@ -7,9 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 import { ImportantDate } from "@/app/types/entities/Important-date"
 import { EditDateDialog } from "../edit-date-dialog"
+import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/use-auth"
 import { useMemo, useState } from "react"
-import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
+import { ArrowDown, ArrowUp, ArrowUpDown, Trash2 } from "lucide-react"
 
 
 interface DateTableProps {
@@ -17,9 +18,10 @@ interface DateTableProps {
   sectionId: string
   dates: ImportantDate[]
   onUpdateDate: (dateId: string, data: {importantSectionId: string; name: string; date: string;  }) => Promise<void>
+  onDeleteDate: (dateId: string) => Promise<void>
 }
 
-export function DateTable({sectionId,title, dates, onUpdateDate }: Readonly<DateTableProps>) {
+export function DateTable({sectionId,title, dates, onUpdateDate, onDeleteDate }: Readonly<DateTableProps>) {
   const { user } = useAuth()
   const [sortConfig, setSortConfig] = useState<{
     key: "name" | "date" | null;
@@ -116,8 +118,13 @@ export function DateTable({sectionId,title, dates, onUpdateDate }: Readonly<Date
                   <TableCell className="font-medium">{date.name}</TableCell>
                   <TableCell>{format(new Date(date.date + "T00:00:00"), "PPP", { locale: es })}</TableCell>
                   <TableCell>
-                    {user?.roles?.includes('coordinador') ? (
-                      <EditDateDialog date={date} onSave={(data) => onUpdateDate(date.id, { ...data, importantSectionId: sectionId })} />
+                    {user?.roles?.some((role) => ['coordinador', 'administrador'].includes(role)) ? (
+                      <div className="flex items-center gap-1">
+                        <EditDateDialog date={date} onSave={(data) => onUpdateDate(date.id, { ...data, importantSectionId: sectionId })} />
+                        <Button variant="ghost" size="icon" onClick={() => void onDeleteDate(date.id)} aria-label="Eliminar fecha">
+                          <Trash2 className="size-4 text-destructive" />
+                        </Button>
+                      </div>
                     ) : null}
                   </TableCell>
                 </TableRow>

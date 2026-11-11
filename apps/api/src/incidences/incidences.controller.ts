@@ -11,6 +11,7 @@ import {
 import { IncidencesService } from './incidences.service';
 import { CreateIncidenceDto } from './dto/create-incidence.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 
 @Controller('incidences')
@@ -18,8 +19,8 @@ export class IncidencesController {
   constructor(private readonly incidencesService: IncidencesService) {}
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @Roles('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('administrador')
   close(@Param('id') id: string) {
     return this.incidencesService.close(id);
   }
@@ -36,7 +37,8 @@ export class IncidencesController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Roles('administrador')
   findAll() {
     return this.incidencesService.findAll();
   }

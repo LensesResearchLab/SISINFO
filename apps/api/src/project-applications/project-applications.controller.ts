@@ -13,6 +13,7 @@ import {
   Req,
   Query,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ProjectApplicationsService } from './project-applications.service';
 import { CreateProjectApplicationDto } from './dto/create-project-application.dto';
@@ -30,6 +31,7 @@ export class ProjectApplicationsController {
   ) {}
 
   @Post(':id/task')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   async complete(
     @Body() taskDto: any,
@@ -113,16 +115,22 @@ export class ProjectApplicationsController {
   }
 
   @Get('student/tasks/:id')
-  findByTasksStudentId(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  findByTasksStudentId(@Param('id') id: string, @Req() req: Request & { user: { id: string } }) {
+    if (id !== req.user.id) throw new ForbiddenException('No puedes consultar tareas de otro estudiante');
     return this.projectApplicationsService.findTasksByStudent(id);
   }
   @Get('coordinator/tasks')
-  findByTasksCoordinatorId() {
+  @UseGuards(JwtAuthGuard)
+  findByTasksCoordinatorId(@Req() req: Request & { user: { roles?: string[] } }) {
+    if (!req.user.roles?.some((role) => ['coordinador', 'administrador'].includes(role))) throw new ForbiddenException('No tienes permiso para consultar estas tareas');
     return this.projectApplicationsService.findTasksByCoordinator();
   }
 
   @Get('professor/tasks/:id')
-  findByTasksProfessorId(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  findByTasksProfessorId(@Param('id') id: string, @Req() req: Request & { user: { id: string } }) {
+    if (id !== req.user.id) throw new ForbiddenException('No puedes consultar tareas de otro profesor');
     return this.projectApplicationsService.findTasksByProfessor(id);
   }
 

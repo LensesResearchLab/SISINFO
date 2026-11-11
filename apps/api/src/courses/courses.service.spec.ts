@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { PeriodsService } from '../periods/periods.service';
 import { ProfessorsService } from '../professors/professors.service';
 import { Section } from '../sections/entities/section.entity';
+import { DocumentsService } from '../documents/documents.service';
+import { TasksService } from '../tasks/tasks.service';
 
 describe('CoursesService', () => {
   let coursesService: CoursesService;
@@ -60,6 +62,8 @@ describe('CoursesService', () => {
           provide: getRepositoryToken(Section),
           useValue: mockSectionRepository,
         },
+        { provide: DocumentsService, useValue: {} },
+        { provide: TasksService, useValue: {} },
       ],
     }).compile();
 

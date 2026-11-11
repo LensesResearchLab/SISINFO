@@ -5,6 +5,10 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Student } from '../students/entities/student.entity';
 import { Thesis } from '../theses/entities/thesis.entity';
+import { PeriodsService } from '../periods/periods.service';
+import { TasksService } from '../tasks/tasks.service';
+import { ProfilesService } from '../profiles/profiles.service';
+import { Professor } from '../professors/entities/professor.entity';
 
 describe('ThesisApplicationsService', () => {
   let thesisApplicationService: ThesisApplicationsService;
@@ -35,6 +39,10 @@ describe('ThesisApplicationsService', () => {
           provide: getRepositoryToken(Thesis),
           useValue: mockRepository,
         },
+        { provide: PeriodsService, useValue: {} },
+        { provide: TasksService, useValue: {} },
+        { provide: ProfilesService, useValue: {} },
+        { provide: getRepositoryToken(Professor), useValue: mockRepository },
       ],
     }).compile();
 

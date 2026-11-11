@@ -43,6 +43,7 @@ export class GraduatedAssistancesController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string,
     @Body() updateGraduatedAssistanceDto: UpdateGraduatedAssistanceDto,
@@ -54,6 +55,7 @@ export class GraduatedAssistancesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: string) {
     return this.graduatedAssistancesService.remove(id);
   }

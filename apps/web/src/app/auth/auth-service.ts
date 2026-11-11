@@ -17,6 +17,7 @@ export async function loginUser(email: string, password: string) {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
     const data = await response.json();
@@ -49,6 +50,7 @@ export async function getUserInfo() {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     const data = await response.json();
@@ -78,6 +80,7 @@ export async function logoutUser() {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
     const data = await response.json();
     if (!response.ok) {

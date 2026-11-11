@@ -173,7 +173,8 @@ export class CoursesService {
         Object.fromEntries(patterns.map((pattern, index) => [`pattern${index}`, pattern])))
       .execute();
 
-    course.code = coursesInProgram.map((assignedCourse) => assignedCourse.code).join(', ');
+    const assignedCourseCodes = coursesInProgram.map((assignedCourse) => assignedCourse.code);
+    course.code = assignedCourseCodes.join(', ');
     await this.tasksService.create(TaskType.SEND_COMMENTS, {
       professorId,
       flow: 'asignacionCurso',
@@ -326,7 +327,14 @@ export class CoursesService {
     return repo.save(course);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} course`;
+  async remove(id: string) {
+    const course = await this.courseRepository.findOne({ where: { id }, relations: ['sections', 'students', 'otherStudents'] });
+    if (!course) return null;
+    if (course.sections?.length) throw new Error('No se puede eliminar un curso que tiene secciones asociadas');
+    course.students = [];
+    course.otherStudents = [];
+    await this.courseRepository.save(course);
+    await this.courseRepository.remove(course);
+    return { id, deleted: true };
   }
 }

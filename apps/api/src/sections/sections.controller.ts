@@ -28,16 +28,16 @@ export class SectionController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.sectionsService.findOne(+id);
+    return this.sectionsService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSectionDto: UpdateSectionDto) {
-    return this.sectionsService.update(+id, updateSectionDto);
+    return this.sectionsService.update(id, updateSectionDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.sectionsService.remove(+id);
+    return this.sectionsService.remove(id);
   }
 }

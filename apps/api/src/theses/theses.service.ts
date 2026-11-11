@@ -119,4 +119,17 @@ export class ThesesService {
 
     return thesis;
   }
+
+  async remove(id: string, professorId: string) {
+    const thesis = await this.thesisRepository.findOne({ where: { id }, relations: ['professor'] });
+    if (!thesis) throw new NotFoundException(`Thesis with id ${id} not found`);
+    if (thesis.professor?.id !== professorId) throw new Error('Solo el profesor propietario puede eliminar este proyecto');
+    await this.thesisRepository.manager.transaction(async (manager) => {
+      await manager.query('DELETE FROM tasks WHERE "thesisApplicationId" IN (SELECT id FROM thesis_application WHERE "thesisId" = $1)', [id]);
+      await manager.query('DELETE FROM thesis_application WHERE "thesisId" = $1', [id]);
+      await manager.query('DELETE FROM thesis_tags WHERE "thesisId" = $1', [id]);
+      await manager.delete(Thesis, id);
+    });
+    return { id, message: 'Proyecto eliminado correctamente' };
+  }
 }

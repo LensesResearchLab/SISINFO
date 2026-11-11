@@ -6,6 +6,7 @@ import {
   MaxLength,
   Matches,
   IsInt,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateTeachingAssistanceDto {
@@ -39,5 +40,11 @@ export class CreateTeachingAssistanceDto {
   @IsInt({ message: 'sectionNumber debe ser un número entero' })
   @Min(1, { message: 'sectionNumber debe ser mayor que 0' })
   sectionNumber: number;
+
+  @IsOptional()
+  @IsInt({ message: 'contractNumber debe ser un nÃºmero entero' })
+  @Min(1, { message: 'contractNumber debe ser mayor que 0' })
+  contractNumber?: number;
+
   studentName: string | undefined;
 }

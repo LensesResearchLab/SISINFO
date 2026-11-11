@@ -1,8 +1,13 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards } from '@nestjs/common';
 import { BillboardsService } from './billboards.service';
 import { CreateSectionDto } from '../sections/dto/create-section.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('billboards')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('administrador', 'coordinador')
 export class BillboardsController {
   constructor(private readonly billboardsService: BillboardsService) {}
 

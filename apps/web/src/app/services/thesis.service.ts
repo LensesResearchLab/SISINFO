@@ -115,6 +115,12 @@ export async function getThesesByProfessor(userId: string): Promise<Thesis[]> {
   return await response.json();
 }
 
+export async function deleteProfessorThesis(id: string) {
+  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.THESIS}/${id}`, { method: "DELETE", credentials: "include" });
+  if (!response.ok) throw new Error("No fue posible eliminar el proyecto.");
+  return response.json();
+}
+
 export async function getApplicationsByThesisId(
   thesisId: string
 ): Promise<Thesis[]> {

@@ -46,8 +46,11 @@ export class CoordinatorsService implements RoleService {
     return coordinator;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} coordinator`;
+  async remove(id: string) {
+    const coordinator = await this.coordinatorRepository.findOne({ where: { id } });
+    if (!coordinator) return null;
+    await this.coordinatorRepository.remove(coordinator);
+    return { id, deleted: true };
   }
 
   async addRole<CreateCoordinatorDto>(

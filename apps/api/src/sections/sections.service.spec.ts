@@ -3,6 +3,7 @@ import { SectionsService } from './sections.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Section } from './entities/section.entity';
 import { Repository } from 'typeorm';
+import { PeriodsService } from '../periods/periods.service';
 
 describe('SectionService', () => {
   let service: SectionsService;
@@ -22,6 +23,7 @@ describe('SectionService', () => {
           provide: getRepositoryToken(Section),
           useValue: mockRepository,
         },
+        { provide: PeriodsService, useValue: {} },
       ],
     }).compile();
 

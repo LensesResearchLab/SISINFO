@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "plugins": [],
+    "incremental": false,
+    "declaration": false,
+    "sourceMap": false,
+    "noEmit": false
+  }
+}

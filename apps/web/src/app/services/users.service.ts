@@ -76,6 +76,10 @@ export async function deleteUser(userId: string) {
     method: "DELETE",
     credentials: "include",
   });
-  if (!response.ok) throw new Error("No fue posible eliminar el usuario.");
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const message = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
+    throw new Error(message || "No fue posible eliminar el usuario.");
+  }
   return response.json();
 }

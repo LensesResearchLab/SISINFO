@@ -222,11 +222,19 @@ export class ProjectApplicationsService {
   }
 
   findAll() {
-    return `This action returns all projectApplications`;
+    return this.projectApplicationRepository.find({
+      relations: ['student', 'student.user', 'project', 'project.professor', 'period', 'actualTask'],
+      order: { id: 'DESC' },
+    });
   }
 
-  findOne(id: string) {
-    return `This action returns a projectApplication with id ${id}`;
+  async findOne(id: string) {
+    const application = await this.projectApplicationRepository.findOne({
+      where: { id },
+      relations: ['student', 'project', 'project.professor', 'actualTask', 'period'],
+    });
+    if (!application) throw new NotFoundException('Project application not found');
+    return application;
   }
 
   async findByStudent(studentId: string): Promise<ProjectApplication> {

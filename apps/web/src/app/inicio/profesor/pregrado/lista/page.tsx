@@ -18,18 +18,20 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table";
 import SpinnerPage from "@/components/shared/spinner-page";
-import { getProjectsByProfessor } from "@/app/services/project.service";
+import { getProjectsByProfessor, deleteProfessorProject } from "@/app/services/project.service";
 import { useProfessorThesisListStore } from "./store";
 import { ColumnDef } from "@tanstack/react-table";
 import { ROUTES } from "@/app/routes";
 import { Project } from "@/app/types/entities/project.type";
-import { Eye } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function UndergraduateProjects() {
   const reset = useProfessorThesisListStore((state) => state.reset);
   const sortDirection = useProfessorThesisListStore((state) => state.sortDirection);
   const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   useEffect(() => reset, [reset]);
 
@@ -60,6 +62,11 @@ export default function UndergraduateProjects() {
       accessorKey: "title",
       header: "Tema del Proyecto",
       cell: ({ row }) => <span className="font-medium">{row.original.title}</span>,
+    },
+    {
+      id: "delete",
+      header: "Eliminar",
+      cell: ({ row }) => <Button variant="ghost" size="icon" title="Eliminar proyecto" onClick={async () => { if (!window.confirm("¿Eliminar este proyecto publicado?")) return; await deleteProfessorProject(row.original.id); await queryClient.invalidateQueries({ queryKey: ["projects-professor-list"] }); }}><Trash2 className="h-4 w-4 text-red-600" /></Button>,
     },
     {
       accessorKey: "description",

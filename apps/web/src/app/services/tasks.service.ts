@@ -35,6 +35,7 @@ export async function getTask(id:string) {
   const url = `${API_ROUTES.BASE}/${API_ROUTES.TASKS}/${id}`;
   const response = await fetch(url, {
       method: 'GET',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       }
@@ -50,6 +51,7 @@ export async function getTask(id:string) {
 export async function getPendingStandaloneTasksForProfessor(id: string) {
   const response = await fetch(
     API_ROUTES.BASE + "/" + API_ROUTES.TASKS + "/professor/" + id,
+    { credentials: "include" },
   );
   if (!response.ok) throw new Error("Error buscando tareas del profesor.");
   return response.json();
@@ -58,6 +60,7 @@ export async function getPendingStandaloneTasksForProfessor(id: string) {
 export async function getPendingStandaloneTasksForStudent(id: string) {
   const response = await fetch(
     API_ROUTES.BASE + "/" + API_ROUTES.TASKS + "/student/" + id,
+    { credentials: "include" },
   );
   if (!response.ok) throw new Error("Error buscando tareas del estudiante.");
   return response.json();

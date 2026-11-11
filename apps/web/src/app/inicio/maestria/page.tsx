@@ -8,6 +8,7 @@ import type { Course, Student } from "../../types/student-profile.type";
 import { getStudentbyId } from "@/app/services/master.service";
 import { ProfileTab } from "@/components/shared/profile-tab";
 import { StudentTabList } from "@/components/shared/student-tab-list";
+import { getUserInfo } from "@/app/auth/auth-service";
 
 /**
  * StudyPlanForm Component
@@ -28,18 +29,24 @@ export default function StudyPlanForm() {
   const [others, setOthers] = useState<Course[]>([]);
   const [student, setStudent] = useState<Student>();
 
-  const id = "Document 10"; // Hardcoded student ID (can be replaced by dynamic logic)
-
   /**
    * Fetch student profile information on mount
    */
   useEffect(() => {
-    getStudentbyId(id).then((data) => {
-      setStudent(data);
-      setCourses(data.courses);
-      setOthers(data.others);
-    });
-  }, [id]);
+    let cancelled = false;
+    void getUserInfo()
+      .then((data) => getStudentbyId(data.user.id))
+      .then((data) => {
+        if (cancelled) return;
+        setStudent(data);
+        setCourses(data.courses ?? []);
+        setOthers(data.others ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setStudent(undefined);
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   const [newCourse, setNewCourse] = useState({ name: "", period: "" });
   const [newOtherCourse, setNewOtherCourse] = useState({ name: "", period: "" });

@@ -8,7 +8,7 @@ import ErrorPage from "@/components/shared/error-page";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { User } from "@/app/types/entities/user.type";
-import { assignRole, findAllWithRoles } from "@/app/services/users.service";
+import { assignRole, deleteUser, findAllWithRoles } from "@/app/services/users.service";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -34,7 +34,8 @@ const formatRole = (role: string) =>
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-const columns: ColumnDef<User>[] = [
+function getColumns(onDeleted: (id: string) => void): ColumnDef<User>[] {
+  return [
   {
     accessorKey: "name",
     header: "Nombre",
@@ -72,9 +73,16 @@ const columns: ColumnDef<User>[] = [
       return formattedA.localeCompare(formattedB);
     },
   },
-];
+  {
+    id: "actions",
+    header: "Acciones",
+    cell: ({ row }) => <DeleteUserButton user={row.original} onDeleted={onDeleted} />,
+  },
+  ];
+}
 
 export default function UserList() {
+  const queryClient = useQueryClient();
   const setUserId = useRolesStore((state) => state.setUserId);
   const { data, isFetching, isError } = useQuery({
     queryKey: ['users-roles'],
@@ -97,10 +105,43 @@ export default function UserList() {
         <h2 className="text-xl font-bold text-core">
           Listado de usuarios
         </h2>
-        <DataTable columns={columns} data={data ?? []} />
+        <DataTable
+          columns={getColumns((id) => {
+            queryClient.setQueryData<User[]>(['users-roles'], (current) =>
+              (current ?? []).filter((item) => item.id !== id),
+            );
+          })}
+          data={data ?? []}
+        />
       </div>
     </div>
   );
+}
+
+function DeleteUserButton({ user, onDeleted }: { readonly user: User; readonly onDeleted: (id: string) => void }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleDelete = async () => {
+    const typed = window.prompt(`Para eliminar este usuario, escribe exactamente su correo:\n${user.email}`);
+    if (typed?.trim().toLowerCase() !== user.email.toLowerCase()) {
+      if (typed !== null) toast.error("El correo no coincide. No se eliminó el usuario.");
+      return;
+    }
+    if (!window.confirm("¿Confirmas la eliminación definitiva de este usuario y sus roles?")) return;
+
+    setLoading(true);
+    try {
+      await deleteUser(user.id);
+      toast.success("Usuario eliminado correctamente.");
+      onDeleted(user.id);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "No fue posible eliminar el usuario.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return <Button size="sm" variant="destructive" disabled={loading} onClick={() => void handleDelete()}>{loading ? "Eliminando..." : "Eliminar"}</Button>;
 }
 
 function RoleSelector({ user }: { readonly user: User }) {

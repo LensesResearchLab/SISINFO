@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -166,8 +166,11 @@ export class ProjectsService {
     return project;
   }
 
-  async update(id: string, updateProjectDto: UpdateProjectDto) {
+  async update(id: string, updateProjectDto: UpdateProjectDto, actorId?: string) {
     const project = await this.findOne(id);
+    if (actorId && project.professor?.id !== actorId) {
+      throw new ForbiddenException('Solo el profesor propietario puede editar este proyecto');
+    }
     Object.assign(project, updateProjectDto);
     return this.projectRepository.save(project);
   }
@@ -196,8 +199,16 @@ export class ProjectsService {
     return await this.projectRepository.save(project);
   }
 
-  async remove(id: string) {
+  async remove(id: string, professorId?: string) {
     const project = await this.findOne(id);
+    if (professorId && project.professor?.id !== professorId) {
+      throw new Error('Solo el profesor propietario puede eliminar este proyecto');
+    }
+    await this.projectRepository.manager.query('UPDATE student SET "projectId" = NULL WHERE "projectId" = $1', [id]);
+    await this.projectRepository.manager.query('UPDATE project_application SET actual_task_id = NULL WHERE "projectId" = $1', [id]);
+    await this.projectRepository.manager.query('DELETE FROM tasks WHERE "projectApplicationId" IN (SELECT id FROM project_application WHERE "projectId" = $1)', [id]);
+    await this.projectRepository.manager.query('DELETE FROM project_application WHERE "projectId" = $1', [id]);
+    await this.projectRepository.manager.query('DELETE FROM project_areas_of_interest WHERE "projectId" = $1', [id]);
     return this.projectRepository.remove(project);
   }
 }

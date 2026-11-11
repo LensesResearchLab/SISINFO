@@ -171,7 +171,10 @@ export class ThesisApplicationsService {
   }
 
   findAll() {
-    return `This action returns all thesisApplications`;
+    return this.thesisApplicationRepository.find({
+      relations: ['student', 'student.user', 'thesis', 'thesis.professor', 'advisor', 'advisor.user'],
+      order: { id: 'DESC' },
+    });
   }
 
   async findOne(studentId: string) {

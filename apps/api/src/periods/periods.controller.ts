@@ -20,12 +20,14 @@ export class PeriodsController {
   constructor(private readonly periodsService: PeriodsService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   create(@Body() createPeriodDto: CreatePeriodDto) {
     return this.periodsService.create(createPeriodDto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('coordinador', 'admin')
+  @Roles('coordinador', 'administrador')
   @Post('generate-template')
   async generateTemplate(@Body() body: { periodStr: string; force?: boolean }) {
     return await this.periodsService.generateTemplateByPeriodStr(
@@ -52,12 +54,16 @@ export class PeriodsController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   update(@Param('id') id: string, @Body() updatePeriodDto: UpdatePeriodDto) {
-    return this.periodsService.update(+id, updatePeriodDto);
+    return this.periodsService.update(id, updatePeriodDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   remove(@Param('id') id: string) {
-    return this.periodsService.remove(+id);
+    return this.periodsService.remove(id);
   }
 }

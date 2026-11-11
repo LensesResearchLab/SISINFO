@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BillboardsService } from './billboards.service';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Billboard } from './entities/billboard.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PeriodsService } from '../periods/periods.service';
@@ -67,6 +67,7 @@ describe('BillboardsService', () => {
           provide: getRepositoryToken(Billboard),
           useValue: mockRepository,
         },
+        { provide: DataSource, useValue: {} },
       ],
     }).compile();
 

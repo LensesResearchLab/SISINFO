@@ -10,6 +10,7 @@ import { TaskFactory } from '../tasks/factory/tasks.factory';
 import { TasksService } from '../tasks/tasks.service';
 import { DocumentsService } from '../documents/documents.service';
 import { CoordinatorsService } from '../coordinators/coordinators.service';
+import { ImportantDate } from '../important-dates/entities/important-date.entity';
 
 describe('ProjectApplicationsService', () => {
   let service: ProjectApplicationsService;
@@ -79,6 +80,7 @@ describe('ProjectApplicationsService', () => {
           provide: CoordinatorsService,
           useValue: coordinatorsServiceMock,
         },
+        { provide: getRepositoryToken(ImportantDate), useValue: repositoryMock },
       ],
     }).compile();
 

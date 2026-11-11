@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -157,8 +158,12 @@ export class TasksService {
     if (!task) throw new NotFoundException(`Task ${id} not found`);
     return task;
   }
-  async update(id: string, dto: UpdateTaskDto): Promise<Task> {
+  async update(id: string, dto: UpdateTaskDto, actorId?: string): Promise<Task> {
     const task = await this.findOne(id);
+    if (actorId) {
+      const ownsTask = task.student?.id === actorId || task.professor?.id === actorId || task.coordinator?.id === actorId;
+      if (!ownsTask) throw new ForbiddenException('No tienes permiso para modificar esta tarea');
+    }
     await this.repo.update(id, dto);
 
     if (

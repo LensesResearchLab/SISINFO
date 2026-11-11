@@ -163,15 +163,21 @@ export class TeachingAssistancesService {
     }));
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} teachingAssistance`;
+  findOne(id: string) {
+    return this.teachingAssistanceRepository.findOne({ where: { id }, relations: ['section', 'period', 'student'] });
   }
 
-  update(id: number, updateTeachingAssistanceDto: UpdateTeachingAssistanceDto) {
-    return `This action updates a #${id} teachingAssistance`;
+  async update(id: string, updateTeachingAssistanceDto: UpdateTeachingAssistanceDto) {
+    const assistance = await this.teachingAssistanceRepository.findOne({ where: { id } });
+    if (!assistance) return null;
+    Object.assign(assistance, updateTeachingAssistanceDto);
+    return this.teachingAssistanceRepository.save(assistance);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} teachingAssistance`;
+  async remove(id: string) {
+    const assistance = await this.teachingAssistanceRepository.findOne({ where: { id } });
+    if (!assistance) return null;
+    await this.teachingAssistanceRepository.remove(assistance);
+    return { id, deleted: true };
   }
 }

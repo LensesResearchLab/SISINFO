@@ -29,7 +29,7 @@ export class AreasOfInterestController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.areasOfInterestService.findOne(+id);
+    return this.areasOfInterestService.findOne(id);
   }
 
   @Patch(':id')
@@ -37,11 +37,11 @@ export class AreasOfInterestController {
     @Param('id') id: string,
     @Body() updateAreasOfInterestDto: UpdateAreasOfInterestDto,
   ) {
-    return this.areasOfInterestService.update(+id, updateAreasOfInterestDto);
+    return this.areasOfInterestService.update(id, updateAreasOfInterestDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.areasOfInterestService.remove(+id);
+    return this.areasOfInterestService.remove(id);
   }
 }

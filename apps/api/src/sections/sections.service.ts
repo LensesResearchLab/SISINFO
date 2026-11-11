@@ -62,8 +62,8 @@ export class SectionsService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} section`;
+  findOne(id: string) {
+    return this.sectionRepository.findOne({ where: { id }, relations: ['course', 'period', 'professors', 'supportProfessors'] });
   }
 
   async getReport(reportType: 'program' | 'partial' | 'final', periodStr?: string) {
@@ -195,8 +195,11 @@ export class SectionsService {
     });
   }
 
-  update(id: number, updateSectionDto: UpdateSectionDto) {
-    return `This action updates a #${id} section`;
+  async update(id: string, updateSectionDto: UpdateSectionDto) {
+    const section = await this.sectionRepository.findOne({ where: { id } });
+    if (!section) return null;
+    Object.assign(section, updateSectionDto);
+    return this.sectionRepository.save(section);
   }
 
   async findByNRCAndPeriod(NRC: string, period: Period, manager?: EntityManager) {
@@ -233,7 +236,13 @@ export class SectionsService {
     return this.sectionRepository.findOne({ where: { NRC } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} section`;
+  async remove(id: string) {
+    const section = await this.sectionRepository.findOne({ where: { id }, relations: ['professors', 'supportProfessors'] });
+    if (!section) return null;
+    section.professors = [];
+    section.supportProfessors = [];
+    await this.sectionRepository.save(section);
+    await this.sectionRepository.remove(section);
+    return { id, deleted: true };
   }
 }

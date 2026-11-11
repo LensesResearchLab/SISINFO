@@ -216,7 +216,7 @@ function DeleteProfessorButton({ professor, onDeleted }: { readonly professor: P
       await deleteUser(professor.id);
       toast.success("Usuario eliminado correctamente.");
       onDeleted(professor.id);
-    } catch { toast.error("No fue posible eliminar el usuario."); }
+    } catch (error) { toast.error(error instanceof Error ? error.message : "No fue posible eliminar el usuario."); }
   }
   return <Button size="sm" variant="destructive" onClick={() => void handleDelete()}>Eliminar</Button>;
 }

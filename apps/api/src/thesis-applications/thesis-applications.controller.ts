@@ -70,6 +70,7 @@ export class ThesisApplicationsController {
   }
 
   @Patch(':applicationId')
+  @UseGuards(JwtAuthGuard)
   async updateStatus(
     @Param('applicationId') applicationId: string,
     @Body('status') status: ThesisStatusEnum,

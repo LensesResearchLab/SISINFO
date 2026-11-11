@@ -40,6 +40,6 @@ export class CoordinatorsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.coordinatorsService.remove(+id);
+    return this.coordinatorsService.remove(id);
   }
 }

@@ -14,6 +14,7 @@ import { UpdateTeachingAssistanceDto } from './dto/update-teaching-assistance.dt
 import { CreateAllTeachingAssistantship } from './dto/create-all-teaching-assistantship.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('teaching-assistances')
 export class TeachingAssistancesController {
@@ -22,6 +23,8 @@ export class TeachingAssistancesController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   create(
     @Body() createAllTeachingAssistantship: CreateAllTeachingAssistantship,
   ) {
@@ -42,11 +45,11 @@ export class TeachingAssistancesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.teachingAssistancesService.findOne(+id);
+    return this.teachingAssistancesService.findOne(id);
   }
 
   @Patch(':id/grade')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('professor')
   updateGrade(
     @Param('id') id: string,
@@ -60,18 +63,22 @@ export class TeachingAssistancesController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   update(
     @Param('id') id: string,
     @Body() updateTeachingAssistanceDto: UpdateTeachingAssistanceDto,
   ) {
     return this.teachingAssistancesService.update(
-      +id,
+      id,
       updateTeachingAssistanceDto,
     );
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   remove(@Param('id') id: string) {
-    return this.teachingAssistancesService.remove(+id);
+    return this.teachingAssistancesService.remove(id);
   }
 }

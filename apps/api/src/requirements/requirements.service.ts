@@ -54,8 +54,12 @@ export class RequirementsService {
     return this.requirementRepository.save(req);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} requirement`;
+  async remove(id: string) {
+    const requirement = await this.requirementRepository.findOne({ where: { id } });
+    if (!requirement) return null;
+    await this.requirementRepository.manager.query('DELETE FROM graduated_assistance_requirements WHERE "requirementId" = $1', [id]);
+    await this.requirementRepository.remove(requirement);
+    return { id, deleted: true };
   }
 
   async linkRequirementToAssistance(

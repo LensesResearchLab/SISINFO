@@ -18,18 +18,22 @@ export class DocumentsService {
   }
 
   findAll() {
-    return `This action returns all documents`;
+    return this.documentRepository.find();
   }
 
   findOne(id: string) {
     return this.documentRepository.findOne({ where: { id: id } });
   }
 
-  update(id: number, updateDocumentDto: UpdateDocumentDto) {
-    return `This action updates a #${id} document`;
+  async update(id: string, updateDocumentDto: UpdateDocumentDto) {
+    const document = await this.documentRepository.findOne({ where: { id } });
+    if (!document) return null;
+    Object.assign(document, updateDocumentDto);
+    return this.documentRepository.save(document);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} document`;
+  async remove(id: string) {
+    await this.documentRepository.delete(id);
+    return { id, deleted: true };
   }
 }

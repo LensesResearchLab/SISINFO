@@ -12,11 +12,14 @@ import {
   ParseFilePipe,
   FileTypeValidator,
   MaxFileSizeValidator,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AssistanceApplicationsService } from './assistance-applications.service';
 import { CreateAssistanceApplicationDto } from './dto/create-assistance-application.dto';
 import { UpdateAssistanceApplicationDto } from './dto/update-assistance-application.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('assistance-applications')
 export class AssistanceApplicationsController {
@@ -25,6 +28,7 @@ export class AssistanceApplicationsController {
   ) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   async create(
     @Body() createAssistanceApplicationDto: CreateAssistanceApplicationDto,
@@ -39,10 +43,11 @@ export class AssistanceApplicationsController {
     file: Express.Multer.File,
     @Query('studentId') studentId: string,
     @Query('graduatedAssistanceId') graduatedAssistanceId: string,
+    @Req() req: Request & { user: { id: string } },
   ) {
     await this.assistanceApplicationsService.create(
       createAssistanceApplicationDto,
-      studentId,
+      req.user.id,
       graduatedAssistanceId,
       file,
     );
@@ -75,6 +80,7 @@ export class AssistanceApplicationsController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string,
     @Body() updateAssistanceApplicationDto: UpdateAssistanceApplicationDto,
@@ -86,7 +92,8 @@ export class AssistanceApplicationsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
-    return this.assistanceApplicationsService.remove(+id);
+    return this.assistanceApplicationsService.remove(id);
   }
 }

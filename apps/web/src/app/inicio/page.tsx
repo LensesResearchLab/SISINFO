@@ -72,6 +72,10 @@ useEffect(() => {
   fetchUserRoles(setRoles, setLoading, fetchedRef);
   let interval: number | undefined;
   getUserInfo().then((data) => {
+    if (!data.success || !data.user) {
+      window.location.replace("/");
+      return;
+    }
     const userId = data.user.id;
     const userRoles = data.user.roles;
     const loadTasks = async () => {
@@ -80,7 +84,7 @@ useEffect(() => {
         getPendingTasksForProfessor(userId),
       ];
       if (userRoles.includes("coordinador")) taskPromises.push(getPendingTasksForCoordinator());
-      const results = await Promise.all(taskPromises);
+      const results = await Promise.all(taskPromises.map((request) => request.catch(() => [])));
       setTasks(mapTasksToTaskTable(results.flat()));
     };
     void loadTasks();

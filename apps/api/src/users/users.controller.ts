@@ -78,20 +78,21 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('coordinador', 'admin')
+  @Roles('coordinador', 'administrador')
   @Get()
   findAll() {
     return this.usersService.findAll();
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   @Get('roles')
   findAllWithRoles() {
     return this.usersService.findAllWithRoles();
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('coordinador', 'admin')
+  @Roles('coordinador', 'administrador')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
@@ -103,12 +104,15 @@ export class UsersController {
     return this.usersService.findAllStudents();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 
   @Post('assign-role')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   async assignRole(@Body() assignRoleDto: AssignRoleDto) {
     const { userId, roleType, roleInfo } = assignRoleDto;
     const user = await this.usersService.findOne(userId);
@@ -125,6 +129,8 @@ export class UsersController {
   }
 
   @Post('students/import')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
   importStudents(@Body() body: { students: Array<{ code: string; name: string; email: string; program?: string; role?: string }> }) {
     return this.usersService.importStudents(body.students ?? []);
   }

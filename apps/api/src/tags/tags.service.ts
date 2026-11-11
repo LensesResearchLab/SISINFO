@@ -19,18 +19,23 @@ export class TagsService {
   }
 
   findAll() {
-    return `This action returns all tag`;
+    return this.tagRepository.find({ relations: ['theses'] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tag`;
+  findOne(id: string) {
+    return this.tagRepository.findOne({ where: { id }, relations: ['theses'] });
   }
 
-  update(id: number, updateTagDto: UpdateTagDto) {
-    return `This action updates a #${id} tag`;
+  async update(id: string, updateTagDto: UpdateTagDto) {
+    const tag = await this.tagRepository.findOne({ where: { id } });
+    if (!tag) return null;
+    Object.assign(tag, updateTagDto);
+    return this.tagRepository.save(tag);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tag`;
+  async remove(id: string) {
+    await this.tagRepository.manager.query('DELETE FROM thesis_tags WHERE "tagId" = $1', [id]);
+    await this.tagRepository.delete(id);
+    return { id, deleted: true };
   }
 }

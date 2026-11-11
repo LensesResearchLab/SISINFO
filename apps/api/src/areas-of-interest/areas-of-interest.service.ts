@@ -27,18 +27,23 @@ export class AreasOfInterestService {
   }
 
   findAll() {
-    return `This action returns all areasOfInterest`;
+    return this.areasOfInterestRepository.find({ relations: ['projects'] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} areasOfInterest`;
+  findOne(id: string) {
+    return this.areasOfInterestRepository.findOne({ where: { id }, relations: ['projects'] });
   }
 
-  update(id: number, updateAreasOfInterestDto: UpdateAreasOfInterestDto) {
-    return `This action updates a #${id} areasOfInterest`;
+  async update(id: string, updateAreasOfInterestDto: UpdateAreasOfInterestDto) {
+    const area = await this.areasOfInterestRepository.findOne({ where: { id } });
+    if (!area) return null;
+    Object.assign(area, updateAreasOfInterestDto);
+    return this.areasOfInterestRepository.save(area);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} areasOfInterest`;
+  async remove(id: string) {
+    await this.areasOfInterestRepository.manager.query('DELETE FROM project_areas_of_interest WHERE "areasOfInterestId" = $1', [id]);
+    await this.areasOfInterestRepository.delete(id);
+    return { id, deleted: true };
   }
 }

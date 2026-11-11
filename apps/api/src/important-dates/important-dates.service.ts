@@ -32,8 +32,13 @@ export class ImportantDatesService {
     return await this.importantDateRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} importantDate`;
+  async findOne(id: string) {
+    const date = await this.importantDateRepository.findOne({
+      where: { id },
+      relations: ['importantSection', 'importantSection.period'],
+    });
+    if (!date) throw new NotFoundException('Important date not found');
+    return date;
   }
 
   async update(id: string, dto: UpdateImportantDateDto) {
@@ -58,7 +63,16 @@ export class ImportantDatesService {
     return this.importantDateRepository.save(entity);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} importantDate`;
+  async remove(id: string) {
+    const date = await this.importantDateRepository.findOne({ where: { id } });
+    if (!date) throw new NotFoundException('Important date not found');
+    await this.importantDateRepository
+      .createQueryBuilder()
+      .update('tasks')
+      .set({ date: null })
+      .where('"dateId" = :id', { id })
+      .execute();
+    await this.importantDateRepository.delete(id);
+    return { id, deleted: true };
   }
 }

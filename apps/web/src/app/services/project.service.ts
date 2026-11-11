@@ -127,6 +127,12 @@ export async function getProjectsByProfessor(): Promise<Project[]> {
   return await response.json();
 }
 
+export async function deleteProfessorProject(id: string) {
+  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}/${id}`, { method: "DELETE", credentials: "include" });
+  if (!response.ok) throw new Error("No fue posible eliminar el proyecto.");
+  return response.json();
+}
+
 export async function getProfessorProjectsHistory(period?: string): Promise<Project[]> {
   const baseUrl = `${API_ROUTES.BASE}/${API_ROUTES.PROJECTS}/professor/history`;
   const url = period ? `${baseUrl}?period=${period}` : baseUrl;

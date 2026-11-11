@@ -236,11 +236,24 @@ export class PeriodsService {
     }
   }
 
-  update(id: number, updatePeriodDto: UpdatePeriodDto) {
-    return `This action updates a #${id} period`;
+  async update(id: string, updatePeriodDto: UpdatePeriodDto) {
+    const period = await this.periodRepository.findOne({ where: { id } });
+    if (!period) throw new NotFoundException('Periodo no encontrado');
+    Object.assign(period, updatePeriodDto);
+    return this.periodRepository.save(period);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} period`;
+  async remove(id: string) {
+    const period = await this.periodRepository.findOne({ where: { id }, relations: ['importantSections', 'projects', 'theses', 'projectApplication', 'sections', 'assistances', 'teachingAssistances'] });
+    if (!period) throw new NotFoundException('Periodo no encontrado');
+    const hasDependencies = [period.projects, period.theses, period.projectApplication, period.sections, period.assistances, period.teachingAssistances].some((items) => (items?.length ?? 0) > 0);
+    if (hasDependencies) throw new ConflictException('No se puede eliminar un periodo que ya tiene información asociada');
+    const sections = await this.importantSectionRepository.find({ where: { period: { id } }, relations: ['importantDates'] });
+    for (const section of sections) {
+      for (const date of section.importantDates ?? []) await this.importantDateRepository.delete(date.id);
+      await this.importantSectionRepository.delete(section.id);
+    }
+    await this.periodRepository.delete(id);
+    return { id, deleted: true };
   }
 }

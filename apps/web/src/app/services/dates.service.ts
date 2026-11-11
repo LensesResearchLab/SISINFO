@@ -41,3 +41,11 @@ export async function updateImportantDate(dateId: string, updateData:updateImpor
   
   return response.json();
 }
+
+export async function deleteImportantDate(dateId: string): Promise<void> {
+  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.IMPORTAT_DATE}/${dateId}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!response.ok) throw new Error('No fue posible eliminar la fecha importante.');
+}

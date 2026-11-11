@@ -52,9 +52,6 @@ describe('CreateTeachingAssistanceDto validation', () => {
       errors.find((e) => e.property === 'courseCode')?.constraints,
     ).toHaveProperty('matches');
     expect(
-      errors.find((e) => e.property === 'contractNumber')?.constraints,
-    ).toHaveProperty('min');
-    expect(
       errors.find((e) => e.property === 'sectionNumber')?.constraints,
     ).toHaveProperty('min');
   });

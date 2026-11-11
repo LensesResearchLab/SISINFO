@@ -6,6 +6,8 @@ import { Repository } from 'typeorm';
 import { ProfessorsService } from '../professors/professors.service';
 import { PeriodsService } from '../periods/periods.service';
 import { AreasOfInterestService } from '../areas-of-interest/areas-of-interest.service';
+import { DocumentsService } from '../documents/documents.service';
+import { TasksService } from '../tasks/tasks.service';
 
 describe('ProjectService', () => {
   let service: ProjectsService;
@@ -60,6 +62,8 @@ describe('ProjectService', () => {
           provide: AreasOfInterestService,
           useValue: mockAreasOfInterestService,
         },
+        { provide: DocumentsService, useValue: {} },
+        { provide: TasksService, useValue: {} },
       ],
     }).compile();
 
@@ -117,7 +121,7 @@ describe('ProjectService', () => {
         relations: {
           professor: { user: true },
           areasOfInterest: true,
-          students: true,
+          students: { user: true },
         },
         order: {
           title: 'ASC',
@@ -145,7 +149,7 @@ describe('ProjectService', () => {
         relations: {
           professor: { user: true },
           areasOfInterest: true,
-          students: true,
+          students: { user: true },
         },
         order: {
           title: 'ASC',

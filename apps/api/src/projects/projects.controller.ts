@@ -54,12 +54,14 @@ export class ProjectController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectsService.update(id, updateProjectDto);
+  @UseGuards(JwtAuthGuard)
+  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto, @Req() req: Request & { user: { id: string } }) {
+    return this.projectsService.update(id, updateProjectDto, req.user.id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.projectsService.remove(id);
+  @UseGuards(JwtAuthGuard)
+  remove(@Param('id') id: string, @Req() req: Request & { user: { id: string } }) {
+    return this.projectsService.remove(id, req.user.id);
   }
 }
