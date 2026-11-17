@@ -14,6 +14,7 @@ import {
 import SisinfoHeaderLogo from "./sisinfo-header-logo";
 import {
   undergraduateData,
+  professorData,
   plantProfessorData,
   coordinatorData,
   supportData,
@@ -58,7 +59,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       : section)],
     ["coordinador", coordinatorData],
     ["profesor", plantProfessorData],
-    ["profesor_planta", plantProfessorData],
+    ["profesor_planta", professorData],
     ["estudiante", undergraduateData],
     ["estudiante_maestria", graduateData],
   ]);

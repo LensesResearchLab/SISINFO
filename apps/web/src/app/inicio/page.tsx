@@ -11,6 +11,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import CoordinatorFeatures from "@/app/inicio/components/coordinator-features";
+import ProfessorFeatures from "@/app/inicio/components/professor-features";
 import InformationSection from "@/app/inicio/components/information-section";
 import { plantProfessorData } from "@/components/links-per-group";
 import StudentFeatures from "@/app/inicio/components/student-features";
@@ -26,6 +27,7 @@ import { useHomeStore } from "./home.store";
 import { fetchUserRoles, getUserInfo } from "../auth/auth-service";
 import {
   getPendingTasksForStudent,
+  getPendingTasksForProfessor,
   getPendingTasksForCoordinator,
 } from "@/app/services/project-application.service";
 import { mapTasksToTaskTable } from "../mappers/task.mapper";
@@ -49,7 +51,12 @@ const roleMap = new Map<string, React.ReactNode>([
     </GraduateStudentFeatures>,
   ],
   ["profesor", <PlantProfessorFeatures key="profesor" />],
-  ["profesor_planta", <PlantProfessorFeatures key="profesor_planta" />],
+  [
+    "profesor_planta",
+    <ProfessorFeatures key="profesor_planta">
+      <SupportFeatures />
+    </ProfessorFeatures>,
+  ],
   ["coordinador", <CoordinatorFeatures key={"coordinador"} />],
   ["administrador", <AdministratorFeatures key={"administrador"} />],
 ]);
@@ -90,6 +97,9 @@ useEffect(() => {
       const taskPromises: Promise<Task[]>[] = [];
       if (userRoles.includes("estudiante") || userRoles.includes("estudiante_maestria")) {
         taskPromises.push(getPendingTasksForStudent(userId));
+      }
+      if (userRoles.includes("profesor_planta")) {
+        taskPromises.push(getPendingTasksForProfessor(userId));
       }
       if (userRoles.includes("coordinador")) taskPromises.push(getPendingTasksForCoordinator());
       const results = await Promise.all(taskPromises.map((request) => request.catch(() => [])));
