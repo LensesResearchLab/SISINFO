@@ -37,6 +37,20 @@ const LABELS: Record<string, string> = {
   cargar_profesores: "Administrar profesores",
 };
 
+// Only these prefixes correspond to pages that can safely be revisited.
+// Menu/group names and folder-like segments are intentionally excluded.
+const NAVIGABLE_PATHS = new Set([
+  "/inicio",
+  "/inicio/coordinador/programas/lista",
+  "/inicio/coordinador/cartelera",
+  "/inicio/coordinador/reportes",
+  "/inicio/coordinador/asistencias",
+  "/inicio/profesor/asistencias/lista",
+  "/inicio/profesor/asistencias/nuevo",
+  "/inicio/profesor/maestria/lista",
+  "/inicio/profesor/pregrado/lista",
+]);
+
 function getBreadcrumbText(pathname: string) {
   const segments = pathname.split("/").filter(Boolean);
   const breadcrumbs = segments.map((segment, index) => {
@@ -47,10 +61,25 @@ function getBreadcrumbText(pathname: string) {
   });
   
 
-  return breadcrumbs.filter(
+  const filtered = breadcrumbs.filter(
     (breadcrumb) =>
       !EXCLUDED_SEGMENTS.has(breadcrumb.originalSegment.toLowerCase())
   );
+
+  const parentLists = [
+    ["/inicio/profesor/maestria/nuevo", "/inicio/profesor/maestria/lista", "Lista"],
+    ["/inicio/profesor/pregrado/nuevo", "/inicio/profesor/pregrado/lista", "Lista"],
+  ] as const;
+  const parent = parentLists.find(([screen]) => pathname === screen);
+  if (parent && !filtered.some((breadcrumb) => breadcrumb.path === parent[1])) {
+    filtered.splice(Math.max(filtered.length - 1, 0), 0, {
+      path: parent[1],
+      capitalizedName: parent[2],
+      originalSegment: "lista",
+    });
+  }
+
+  return filtered;
 }
 
 export default function BreadCrumbDetail() {
@@ -67,10 +96,10 @@ export default function BreadCrumbDetail() {
           <React.Fragment key={breadcrumb.path}>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
-              {index === breadcrumbs.length - 1 ? (
+              {index === breadcrumbs.length - 1 || !NAVIGABLE_PATHS.has(breadcrumb.path) ? (
               <BreadcrumbPage>{breadcrumb.capitalizedName}</BreadcrumbPage>
               ) : (
-                <span>{breadcrumb.capitalizedName}</span>
+                <BreadcrumbLink href={breadcrumb.path}>{breadcrumb.capitalizedName}</BreadcrumbLink>
               )}
             </BreadcrumbItem>
           </React.Fragment>

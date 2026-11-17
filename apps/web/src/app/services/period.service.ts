@@ -4,13 +4,17 @@ import { API_ROUTES } from "../routes"
 
 export async function getPeriods() {
   const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.PERIODS}`)
-  const periods: Period[] = await response.json()
+  if (!response.ok) throw new Error("Failed to fetch periods")
+  const payload = await response.json()
+  const periods: Period[] = Array.isArray(payload) ? payload : (payload.value ?? [])
   return mapPeriodsToStringList(periods)
 }
 
 export async function getPeriodsWMap() {
   const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.PERIODS}`)
-  const periods: Period[] = await response.json()
+  if (!response.ok) throw new Error("Failed to fetch periods")
+  const payload = await response.json()
+  const periods: Period[] = Array.isArray(payload) ? payload : (payload.value ?? [])
   return periods
 }
 

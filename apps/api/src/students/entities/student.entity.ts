@@ -31,6 +31,9 @@ export class Student extends Role {
   @Column('boolean')
   isUndergraduate: boolean;
 
+  @Column('boolean', { default: false })
+  isGraduate: boolean;
+
   @Index()
   @Column('text')
   code: string;

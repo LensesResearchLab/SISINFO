@@ -28,7 +28,7 @@ import { updateAssistanceApplication } from "@/app/services/assistance.service";
 
 interface Section {
   readonly title: string;
-  readonly description: string;
+  readonly description: React.ReactNode;
   readonly icon: React.ReactNode;
 }
 

@@ -12,6 +12,8 @@
 import { useEffect, useState, useRef } from "react";
 import CoordinatorFeatures from "@/app/inicio/components/coordinator-features";
 import ProfessorFeatures from "@/app/inicio/components/professor-features";
+import InformationSection from "@/app/inicio/components/information-section";
+import { plantProfessorData } from "@/components/links-per-group";
 import StudentFeatures from "@/app/inicio/components/student-features";
 import GraduateStudentFeatures from "./components/graduate-student-features";
 import AdministratorFeatures from "./components/administrator-features";
@@ -53,9 +55,21 @@ const roleMap = new Map<string, React.ReactNode>([
       <SupportFeatures />
     </ProfessorFeatures>,
   ],
+  ["profesor_planta", <PlantProfessorFeatures key="profesor_planta" />],
   ["coordinador", <CoordinatorFeatures key={"coordinador"} />],
   ["administrador", <AdministratorFeatures key={"administrador"} />],
 ]);
+
+function PlantProfessorFeatures() {
+  return (
+    <div className="min-h-full min-w-full mx-auto p-4 space-y-8">
+      {plantProfessorData.map((feature) => (
+        <InformationSection key={feature.title} title={feature.title} features={feature.items} background="bg-core-highlight" />
+      ))}
+      <SupportFeatures />
+    </div>
+  );
+}
 
 /**
  * Top-level Home component rendered upon login.

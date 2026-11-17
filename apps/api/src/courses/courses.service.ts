@@ -185,6 +185,28 @@ export class CoursesService {
     return { ...course, mainProfessor: professor };
   }
 
+  async assignProfessorToUndergraduateCourse(id: string, professorId: string) {
+    const course = await this.courseRepository.findOne({
+      where: { id },
+      relations: ['sections', 'sections.professors'],
+    });
+    if (!course) throw new Error('Course not found');
+    if (!this.isUndergraduateCode(course.code)) {
+      throw new Error('Solo se pueden asignar profesores por materia de pregrado');
+    }
+    const professor = await this.professorsService.findOne(professorId);
+    course.mainProfessor = professor;
+    for (const section of course.sections ?? []) {
+      const current = section.professors ?? [];
+      if (!current.some((item) => item.id === professor.id)) {
+        section.professors = [...current, professor];
+        await this.sectionRepository.save(section);
+      }
+    }
+    await this.courseRepository.save(course);
+    return course;
+  }
+
   async updateProgram(id: string, program: Document) {
     const course = await this.courseRepository.findOne({ where: { id } });
     if (course) {

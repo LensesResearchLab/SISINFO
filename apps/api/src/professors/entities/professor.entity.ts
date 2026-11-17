@@ -14,9 +14,12 @@ import {
   OneToOne,
 } from 'typeorm';
 import { Role } from '../../common/entities/role.entity';
+import { Column } from 'typeorm';
 
 @Entity()
 export class Professor extends Role {
+  @Column('boolean', { default: false })
+  isPlant: boolean;
   @OneToOne(() => User, (user) => user.professor, {
     eager: true,
     cascade: true,

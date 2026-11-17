@@ -13,6 +13,7 @@ import {
 } from "@/app/services/assistance.service";
 import { GraduatedAssistance } from "@/app/types/entities/graduated-assistance.type";
 import SpinnerPage from "@/components/shared/spinner-page";
+import LinkifiedText from "@/components/shared/linkified-text";
 
 /**
  * AssistanceManagePage Component
@@ -56,7 +57,7 @@ export default function AssistanceManagePage() {
     fetchData();
   }, [id]);
 
-  const path = `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST}`;
+  const path = `${ROUTES.HOME}${ROUTES.PROFESSOR_ASSISTANCE_LIST}`;
   const dialogTextAccepted = {
     title: "Confirmar Accion",
     description: "¿Estás seguro de que quieres proceder?",
@@ -80,7 +81,7 @@ export default function AssistanceManagePage() {
     },
     {
       title: "Descripción",
-      description: assistance?.description ?? "No title available",
+      description: <LinkifiedText text={assistance?.description ?? "No title available"} />,
       icon: <ClipboardList className="h-8 w-8 text-core-highlight" />,
     },
   ];
@@ -107,11 +108,7 @@ export default function AssistanceManagePage() {
   };
 
   const handleConfirmDeletion = async (id: string) => {
-    try {
-      await deleteGraduatedAssistance(id);
-    } catch (error) {
-      console.error(error);
-    }
+    await deleteGraduatedAssistance(id);
   };
 
   if (isLoading) return <SpinnerPage />

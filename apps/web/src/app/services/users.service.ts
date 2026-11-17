@@ -83,3 +83,15 @@ export async function deleteUser(userId: string) {
   }
   return response.json();
 }
+
+export async function updateUser(userId: string, data: { name: string; email: string }) {
+  const response = await fetch(`${API_ROUTES.BASE}/users/${encodeURIComponent(userId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(body?.message ?? "No fue posible actualizar el usuario.");
+  return body;
+}

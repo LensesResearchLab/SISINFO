@@ -23,7 +23,7 @@ export class ProfessorsService implements RoleService {
   }
 
   async findAll(): Promise<Professor[]> {
-    return this.professorRepository.find();
+    return this.findAllWithUsers();
   }
 
   async findWithTasByPeriod(periodStr: string, id: string) {
@@ -77,9 +77,24 @@ export class ProfessorsService implements RoleService {
     return qb.getOne();
   }
 
-  findAllWithUsers(): Promise<Professor[]> {
-    return this.professorRepository.find({
-      relations: ['user'],
+  async findAllWithUsers(): Promise<Professor[]> {
+    const professors = await this.professorRepository.find({
+      relations: [
+        'user',
+        'user.administrator',
+        'user.coordinator',
+        'user.professor',
+      ],
+    });
+    return professors.map((professor) => {
+      const user = professor.user;
+      const roles: string[] = [];
+      if (user?.administrator?.isActive) roles.push('administrador');
+      if (user?.coordinator?.isActive) roles.push('coordinador');
+      if (user?.professor?.isActive) {
+        roles.push(user.professor.isPlant ? 'profesor_planta' : 'profesor');
+      }
+      return { ...professor, user: { ...user, roles } } as Professor;
     });
   }
 

@@ -24,6 +24,7 @@ import {
   Requirement,
 } from "@/app/types/entities/graduated-assistance.type";
 import { useAuth } from "@/hooks/use-auth";
+import LinkifiedText from "@/components/shared/linkified-text";
 
 interface AssistanceProps {
   readonly assistance: GraduatedAssistance;
@@ -33,7 +34,7 @@ interface AssistanceProps {
 interface InfoItemProps {
   readonly icon: React.ReactNode;
   readonly title: string;
-  readonly content: string;
+  readonly content: React.ReactNode;
 }
 
 /**
@@ -234,7 +235,7 @@ function MainInformation({
             <FileText className="w-10 h-10 text-core-highlight flex-shrink-0 mt-1" />
           }
           title="Descripción"
-          content={assistance.description}
+          content={<LinkifiedText text={assistance.description} />}
         />
       </div>
     </div>

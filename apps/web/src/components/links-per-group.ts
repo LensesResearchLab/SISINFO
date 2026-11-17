@@ -173,6 +173,7 @@ export const administratorData = [
     icon: Calendar,
     items: [
       { Icon: Calendar, title: "Asignar profesores líderes por maestría", description: "Administrar profesores líderes por programa de maestría.", url: ROUTES.ADMINISTRATOR_COURSE_LEADERS },
+      { Icon: BookOpen, title: "Asignar profesores por materia", description: "Asignar profesores encargados a materias de pregrado.", url: ROUTES.ADMINISTRATOR_UNDERGRADUATE_PROFESSORS },
       { Icon: Calendar, title: "Administrar períodos", description: "Agregar y administrar periodos académicos.", url: ROUTES.ADMINISTRATOR_PERIODS },
       { Icon: FileCog, title: "Administrar subáreas de investigación", description: "Administrar subáreas de investigación.", url: ROUTES.ADMINISTRATOR_PROFILES },
     ],
@@ -291,7 +292,41 @@ export const professorData = [
   },
 ];
 
+export const plantProfessorData = [
+  {
+    title: "Monitores",
+    url: "monitores",
+    icon: BookOpen,
+    items: [{ Icon: BookOpen, title: "Consultar monitores", description: "Aquí puedes consultar los monitores de los distintos cursos.", url: ROUTES.PROFESSOR_TEACHING_ASSISTANCE_LIST }],
+  },
+  {
+    title: "Programa",
+    url: "programa",
+    icon: FileText,
+    items: [{ Icon: FileText, title: "Subir programas de curso", description: "Aquí puedes cargar el PDF del programa de tus cursos.", url: ROUTES.PROFESSOR_COURSE_PROGRAMS }],
+  },
+];
+
 export const coordinatorData = [
+  {
+    title: "Asistencias graduadas",
+    url: "asistencia",
+    icon: Settings2,
+    items: [
+      {
+        Icon: BookOpen,
+        title: "Ver asistencias publicadas",
+        description: "Aquí puedes ver las asistencias publicadas y sus aplicantes.",
+        url: "/inicio/coordinador/asistencias",
+      },
+      {
+        Icon: PenSquare,
+        title: "Crear oferta",
+        description: "Crea una oferta de asistencia graduada.",
+        url: "/inicio/coordinador/asistencias/nueva",
+      },
+    ],
+  },
   {
     title: "Configuración del semestre",
     url: "configuracion",

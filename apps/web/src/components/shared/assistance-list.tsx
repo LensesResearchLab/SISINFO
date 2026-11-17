@@ -18,7 +18,7 @@ import { Search } from "lucide-react";
 
 interface AssistanceListProps {
   readonly professorName?: string;
-  readonly role: "estudiante" | "profesor";
+  readonly role: "estudiante" | "profesor" | "coordinador";
 }
 
 interface FilterBarProps {
@@ -26,7 +26,7 @@ interface FilterBarProps {
   readonly setSelectedSemester: (value: string) => void;
   readonly showOnlyMyAssistance: boolean;
   readonly setShowOnlyMyAssistance: (value: boolean) => void;
-  readonly role: "estudiante" | "profesor";
+  readonly role: "estudiante" | "profesor" | "coordinador";
 }
 
 const formatDate = (date: Date) => (date ? date.toLocaleDateString() : "-");
@@ -59,7 +59,7 @@ function FilterBar({
               ))}
           </SelectContent>
         </Select>
-        {role === "profesor" && (
+        {(role === "profesor" || role === "coordinador") && (
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
@@ -105,6 +105,8 @@ export function AssistanceList({
       const path =
         role === "profesor"
           ? `${ROUTES.HOME}/${ROUTES.PROFESSOR_ASSISTANCE_LIST_EDIT}/${id}`
+          : role === "coordinador"
+          ? `${ROUTES.HOME}/coordinador/asistencias/${id}`
           : `${ROUTES.HOME}/${ROUTES.ASSISTANCE_LIST}/${id}`;
       router.push(path);
     },
@@ -140,7 +142,7 @@ export function AssistanceList({
       header: "Ver",
       cell: ({ row }) => {
         const isOwn =
-          role === "estudiante" ||
+          role !== "profesor" ||
           (professorName && row.original.professor?.user.name === professorName);
 
         return isOwn ? (

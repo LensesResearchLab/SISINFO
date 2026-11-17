@@ -21,6 +21,7 @@ const roleRoutes = {
     "/inicio/tareas",
   ],
   profesor: ["/inicio/profesor", "/inicio/tareas", "/inicio/soporte"],
+  profesor_planta: ["/inicio/profesor/monitores", "/inicio/profesor/programas", "/inicio/soporte"],
   coordinador: ["/inicio/coordinador", "/inicio/tareas", "/inicio/soporte"],
   administrador: ["/inicio/administrador"]
 };
@@ -59,6 +60,12 @@ function hasRoleAccess(path: string, userRoles: string[]) {
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
+
+  // In production the login page is not directly addressable. The Microsoft
+  // callback and the internal session endpoint remain available for SSO.
+  if (process.env.NODE_ENV === "production" && (path === "/auth" || path === "/auth/")) {
+    return NextResponse.redirect(new URL("/", req.nextUrl.origin));
+  }
 
   const isProtectedRoute =
     path.startsWith("/inicio") ||

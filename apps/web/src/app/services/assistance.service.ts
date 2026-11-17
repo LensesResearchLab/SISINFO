@@ -26,11 +26,12 @@ export async function createGraduatedAssistance(
 }
 
 export async function getGraduatedAssistance() {
-  const response = await fetch(`${API_URL}`);
+  const response = await fetch(`${API_URL}?_=${Date.now()}`, { cache: "no-store" });
   if (!response.ok) {
     throw new Error("Failed to fetch graduated assistance data.");
   }
-  return response.json();
+  const payload = await response.json();
+  return Array.isArray(payload) ? payload : (payload.value ?? []);
 }
 
 export async function getGraduatedAssistanceById(id: string) {
@@ -111,6 +112,7 @@ export async function createRequirimentForGraduatedAssistance(
 export async function deleteGraduatedAssistance(id: string) {
   const response = await fetch(`${API_URL}/${id}`, {
     method: "DELETE",
+    credentials: "include",
   });
   if (!response.ok) {
     throw new Error(`Failed to delete Graduated Assistance with ID ${id}.`);
@@ -155,6 +157,7 @@ export async function updateGraduatedAssistance(
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(updateData),
   });
 

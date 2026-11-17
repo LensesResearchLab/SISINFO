@@ -31,6 +31,10 @@ export class CreateProjectDto {
   @IsOptional()
   isEnded?: boolean;
 
+  @IsBoolean()
+  @IsOptional()
+  containsConfidentiality?: boolean;
+
   @IsString()
   @IsNotEmpty()
   @Matches(/^\d{6}$/)

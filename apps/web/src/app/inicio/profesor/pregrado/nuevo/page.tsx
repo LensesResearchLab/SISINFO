@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ConfirmationModal } from '@/components/shared/confirmation-modal';
@@ -48,6 +49,7 @@ const thesisSchema = z.object({
   description: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
   students: z.number().min(1, "Debe haber al menos 1 estudiante"),
   category: z.string(),
+  containsConfidentiality: z.boolean(),
   tags: z.array(z.string()).min(1, "Debe agregar al menos un tag"),
   lastPeriod: z.string()
 })
@@ -60,6 +62,7 @@ export default function ThesisForm() {
       description: "",
       students: 3,
       category: "",
+      containsConfidentiality: false,
       tags: [],
       lastPeriod: "202510",
     },
@@ -81,6 +84,7 @@ export default function ThesisForm() {
       description: values.description,
       maxStudents: values.students,
       category: values.category,
+      containsConfidentiality: values.containsConfidentiality,
       areasOfInterest: values.tags,
       period: values.lastPeriod
     };
@@ -197,6 +201,29 @@ export default function ThesisForm() {
                   </FormItem>
                 )}
               />
+
+              {/* Confidentiality Field */}
+              <div className="md:col-span-2">
+                <FormField
+                  control={form.control}
+                  name="containsConfidentiality"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 text-primary">
+                      <FormControl>
+                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="font-semibold">
+                          El proyecto contiene un componente de confidencialidad
+                        </FormLabel>
+                        <p className="text-sm text-muted-foreground">
+                          Marca esta opción si el proyecto maneja información restringida o confidencial.
+                        </p>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               {/* Tags Field */}
               <div className="md:col-span-2">

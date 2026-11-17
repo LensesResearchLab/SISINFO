@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Delete,
   Body,
   Param,
@@ -110,6 +111,13 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
+  update(@Param('id') id: string, @Body() body: { name?: string; email?: string }) {
+    return this.usersService.update(id, body);
+  }
+
   @Post('assign-role')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('coordinador', 'administrador')
@@ -117,11 +125,16 @@ export class UsersController {
     const { userId, roleType, roleInfo } = assignRoleDto;
     const user = await this.usersService.findOne(userId);
     const effectiveRoleInfo = roleInfo ?? (roleType === 'estudiante' ? {
-      id: user.id, isActive: true, isUndergraduate: true, code: '000000000',
+      id: user.id, isActive: true, isUndergraduate: true, isGraduate: false, code: '000000000',
     } : roleType === 'estudiante_maestria' ? {
-      id: user.id, isActive: true, isUndergraduate: false, code: '000000000',
+      id: user.id, isActive: true, isUndergraduate: false, isGraduate: true, code: '000000000',
     } : { id: user.id, isActive: true });
-    const result = await this.usersService.assignRole(user, roleType === 'estudiante_maestria' ? 'estudiante' : roleType, effectiveRoleInfo);
+    const normalizedRoleInfo = roleType === 'profesor_planta'
+      ? { ...(effectiveRoleInfo as object), isPlant: true }
+      : roleType === 'profesor'
+      ? { ...(effectiveRoleInfo as object), isPlant: false }
+      : effectiveRoleInfo;
+    const result = await this.usersService.assignRole(user, roleType === 'estudiante_maestria' ? 'estudiante' : roleType === 'profesor_planta' ? 'profesor' : roleType, normalizedRoleInfo);
     return {
       message: 'Rol asignado correctamente',
       result,

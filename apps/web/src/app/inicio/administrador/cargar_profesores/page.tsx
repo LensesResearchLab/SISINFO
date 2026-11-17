@@ -12,10 +12,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import * as XLSX from "xlsx";
 import { Professor } from "@/app/types/entities/professor.type";
 import { getProfessors } from "@/app/services/professor.service";
-import { assignRole, deleteUser } from "@/app/services/users.service";
+import { assignRole, deleteUser, updateUser } from "@/app/services/users.service";
 import { toast } from "sonner";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export default function UploadProfessors() {
   const [profesorsData, setProfesorsData] = useState<Professor[]>([]);
@@ -42,7 +43,7 @@ export default function UploadProfessors() {
 
   useEffect(() => {
     const interval = window.setInterval(() => {
-      getProfessors().then((list) => setProfesorsData(list ?? [])).catch(() => undefined);
+      getProfessors().then((list) => setProfesorsData((current) => preserveProfessorOrder(current, list ?? []))).catch(() => undefined);
     }, 4000);
     return () => window.clearInterval(interval);
   }, []);
@@ -129,7 +130,7 @@ export default function UploadProfessors() {
         dialogText={dialogText}
         typeUpload="professors"
       >
-        <UploadedProfessors profesorsData={profesorsData} loadError={loadError} onDeleted={(id) => setProfesorsData((current) => current.filter((prof) => prof.id !== id))} />
+        <UploadedProfessors profesorsData={profesorsData} loadError={loadError} onDeleted={(id) => setProfesorsData((current) => current.filter((prof) => prof.id !== id))} onRoleChanged={(id, roles) => setProfesorsData((current) => current.map((professor) => professor.id === id ? { ...professor, user: { ...professor.user, roles } } : professor))} onUpdated={(id, data) => setProfesorsData((current) => current.map((professor) => professor.id === id ? { ...professor, user: { ...professor.user, ...data } } : professor))} />
       </UploadFilePage >
 
       <AlertDialogError open={loadError} onOpenChange={setLoadError} />
@@ -137,9 +138,20 @@ export default function UploadProfessors() {
   );
 }
 
-const roleOptions = ["profesor", "coordinador", "administrador"];
+function preserveProfessorOrder(current: Professor[], incoming: Professor[]) {
+  const byId = new Map(incoming.map((professor) => [professor.id, professor]));
+  const existing = current.flatMap((professor) => {
+    const refreshed = byId.get(professor.id);
+    if (!refreshed) return [];
+    byId.delete(professor.id);
+    return [refreshed];
+  });
+  return [...existing, ...byId.values()];
+}
 
-function getColumns(onDeleted: (id: string) => void): ColumnDef<Professor>[] { return [
+const roleOptions = ["profesor", "profesor_planta", "coordinador", "administrador"];
+
+function getColumns(onDeleted: (id: string) => void, onRoleChanged: (id: string, roles: string[]) => void, onUpdated: (id: string, data: { name: string; email: string }) => void): ColumnDef<Professor>[] { return [
   {
     id: "name",
     accessorFn: (row) => row.user?.name ?? "",
@@ -153,12 +165,12 @@ function getColumns(onDeleted: (id: string) => void): ColumnDef<Professor>[] { r
   {
     id: "roles",
     header: "Roles",
-    cell: ({ row }) => <ProfessorRoleSelector professor={row.original} />,
+    cell: ({ row }) => <ProfessorRoleBadges professor={row.original} />,
   },
   {
     id: "actions",
     header: "Acciones",
-    cell: ({ row }) => <DeleteProfessorButton professor={row.original} onDeleted={onDeleted} />,
+    cell: ({ row }) => <div className="flex flex-wrap gap-2"><ProfessorRoleSelector professor={row.original} onRoleChanged={onRoleChanged} /><EditProfessorButton professor={row.original} onUpdated={onUpdated} /><DeleteProfessorButton professor={row.original} onDeleted={onDeleted} /></div>,
   },
 ]; }
 
@@ -166,10 +178,14 @@ function UploadedProfessors({
   profesorsData,
   loadError,
   onDeleted,
+  onRoleChanged,
+  onUpdated,
 }: {
   readonly profesorsData: Professor[];
   readonly loadError: boolean;
   readonly onDeleted: (id: string) => void;
+  readonly onRoleChanged: (id: string, roles: string[]) => void;
+  readonly onUpdated: (id: string, data: { name: string; email: string }) => void;
 }) {
   if (loadError) return <BillboardNotFound />;
   return (
@@ -179,7 +195,7 @@ function UploadedProfessors({
           Cargar profesores
         </h2>
         <DataTable
-          columns={getColumns(onDeleted)}
+          columns={getColumns(onDeleted, onRoleChanged, onUpdated)}
           data={profesorsData}
         />
       </div>
@@ -187,20 +203,39 @@ function UploadedProfessors({
   );
 }
 
-function ProfessorRoleSelector({ professor }: { readonly professor: Professor }) {
-  const [roles, setRoles] = useState<string[]>(["profesor"]);
+const roleColors: Record<string, string> = {
+  profesor: "bg-red-100 text-red-800 border border-red-800",
+  profesor_planta: "bg-green-100 text-green-800 border border-green-800",
+  coordinador: "bg-yellow-100 text-yellow-800 border border-yellow-800",
+  administrador: "bg-blue-100 text-blue-800 border border-blue-800",
+};
+
+const formatRole = (role: string) => role === "profesor_planta" ? "Profesor de planta" : role === "profesor" ? "Profesor de cátedra" : role.charAt(0).toUpperCase() + role.slice(1);
+
+function ProfessorRoleBadges({ professor }: { readonly professor: Professor }) {
+  const roles = professor.user?.roles ?? [];
+  return <div className="flex flex-wrap gap-1">{roles.length > 0 ? roles.map((role) => <Badge key={role} className={roleColors[role] ?? "bg-gray-100 text-gray-800"}>{formatRole(role)}</Badge>) : <Badge className="bg-gray-100 text-gray-800 border border-gray-400">Sin roles</Badge>}</div>;
+}
+
+function ProfessorRoleSelector({ professor, onRoleChanged }: { readonly professor: Professor; readonly onRoleChanged: (id: string, roles: string[]) => void }) {
+  const [roles, setRoles] = useState<string[]>(professor.user?.roles ?? ["profesor"]);
   const [loading, setLoading] = useState(false);
   async function toggle(role: string) {
     const adding = !roles.includes(role);
     setLoading(true);
     try {
       await assignRole({ userId: professor.id, roleType: role, roleInfo: { id: professor.id, isActive: adding } });
-      setRoles((current) => adding ? [...current, role] : current.filter((item) => item !== role));
+      const professorTypes = ["profesor", "profesor_planta"];
+      const updatedRoles = adding
+        ? [...roles.filter((item) => !professorTypes.includes(item) || item === role), role]
+        : roles.filter((item) => item !== role);
+      setRoles(updatedRoles);
+      onRoleChanged(professor.id, updatedRoles);
       toast.success("Roles actualizados correctamente.");
     } catch { toast.error("No fue posible actualizar los roles."); }
     finally { setLoading(false); }
   }
-  return <DropdownMenu><DropdownMenuTrigger asChild><Button size="sm" disabled={loading}>Asignar roles</Button></DropdownMenuTrigger><DropdownMenuContent>{roleOptions.map((role) => <DropdownMenuCheckboxItem key={role} checked={roles.includes(role)} onCheckedChange={() => void toggle(role)}>{role.charAt(0).toUpperCase() + role.slice(1)}</DropdownMenuCheckboxItem>)}</DropdownMenuContent></DropdownMenu>;
+  return <DropdownMenu><DropdownMenuTrigger asChild><Button size="sm" disabled={loading}>Asignar roles</Button></DropdownMenuTrigger><DropdownMenuContent>{roleOptions.map((role) => <DropdownMenuCheckboxItem key={role} checked={roles.includes(role)} onCheckedChange={() => void toggle(role)}>{formatRole(role)}</DropdownMenuCheckboxItem>)}</DropdownMenuContent></DropdownMenu>;
 }
 
 function DeleteProfessorButton({ professor, onDeleted }: { readonly professor: Professor; readonly onDeleted: (id: string) => void }) {
@@ -219,6 +254,23 @@ function DeleteProfessorButton({ professor, onDeleted }: { readonly professor: P
     } catch (error) { toast.error(error instanceof Error ? error.message : "No fue posible eliminar el usuario."); }
   }
   return <Button size="sm" variant="destructive" onClick={() => void handleDelete()}>Eliminar</Button>;
+}
+
+function EditProfessorButton({ professor, onUpdated }: { readonly professor: Professor; readonly onUpdated: (id: string, data: { name: string; email: string }) => void }) {
+  async function handleEdit() {
+    const name = window.prompt("Nombre del usuario:", professor.user?.name ?? "");
+    if (name === null) return;
+    const email = window.prompt("Correo del usuario:", professor.user?.email ?? "");
+    if (email === null) return;
+    try {
+      await updateUser(professor.id, { name, email });
+      onUpdated(professor.id, { name, email });
+      toast.success("Usuario actualizado correctamente.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "No fue posible actualizar el usuario.");
+    }
+  }
+  return <Button size="sm" variant="outline" onClick={() => void handleEdit()}>Editar</Button>;
 }
 
 function BillboardNotFound() {

@@ -67,7 +67,7 @@ export function NavMain({
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <Link href={`${ROUTES.HOME}/${subItem.url}`}>
+                        <Link href={subItem.url.startsWith("/inicio/") ? subItem.url : `${ROUTES.HOME}/${subItem.url.replace(/^\/+/, "")}`}>
                           <span>{subItem.title}</span>
                         </Link>
                       </SidebarMenuSubButton>

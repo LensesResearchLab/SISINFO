@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGraduatedAssistanceDto } from './dto/create-graduated-assistance.dto';
 import { UpdateGraduatedAssistanceDto } from './dto/update-graduated-assistance.dto';
 import { GraduatedAssistance } from './entities/graduated-assistance.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PeriodsService } from '../periods/periods.service';
 import { RequirementsService } from '../requirements/requirements.service';
@@ -22,6 +22,7 @@ export class GraduatedAssistancesService {
 
     @InjectRepository(AssistanceApplication)
     private readonly applicationRepository: Repository<AssistanceApplication>,
+    private readonly dataSource: DataSource,
 
     private readonly periodsService: PeriodsService,
     private readonly requirementsService: RequirementsService,
@@ -111,12 +112,34 @@ export class GraduatedAssistancesService {
       );
     }
 
-    Object.assign(assistance, updateGraduatedAssistanceDto);
+    // Only scalar columns belong to this entity update. Period and
+    // requirements are relations handled by their own endpoints.
+    const { title, category, description, startDate, endDate } =
+      updateGraduatedAssistanceDto;
+    Object.assign(assistance, {
+      title,
+      category,
+      description,
+      startDate,
+      endDate,
+    });
     return this.graduatedAssistanceRepository.save(assistance);
   }
 
   async remove(id: string): Promise<void> {
     const assistance = await this.findOne(id);
-    await this.graduatedAssistanceRepository.remove(assistance);
+    await this.dataSource.transaction(async (manager) => {
+      await manager
+        .createQueryBuilder()
+        .delete()
+        .from(AssistanceApplication)
+        .where('"graduatedAssistanceId" = :id', { id })
+        .execute();
+      await manager.query(
+        'DELETE FROM "graduated_assistance_requirements" WHERE "graduatedAssistanceId" = $1',
+        [id],
+      );
+      await manager.delete(GraduatedAssistance, id);
+    });
   }
 }

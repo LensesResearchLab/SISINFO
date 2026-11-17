@@ -67,6 +67,23 @@ export class UsersService {
     return user;
   }
 
+  async update(id: string, data: { name?: string; email?: string }) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException(`User with id ${id} not found`);
+    const name = data.name?.trim();
+    const email = data.email?.trim().toLowerCase();
+    if (name !== undefined && !name) throw new Error('El nombre no puede estar vacío');
+    if (email !== undefined) {
+      if (!email) throw new Error('El correo no puede estar vacío');
+      const existing = await this.userRepository.findOne({ where: { email } });
+      if (existing && existing.id !== id) throw new Error('El correo ya está registrado');
+      user.email = email;
+    }
+    if (name !== undefined) user.name = name;
+    await this.userRepository.save(user);
+    return this.findOne(id);
+  }
+
   findAll() {
     return this.userRepository.find({
       select: ['email', 'name'],
@@ -80,9 +97,7 @@ export class UsersService {
       relations: ['coordinator', 'professor', 'administrator', 'student'],
     });
 
-    const filteredUsers = users.filter((user) => this.getUserRoles(user).length > 0);
-
-    return filteredUsers.map((user) =>
+    return users.map((user) =>
       deletePasswordFromUser(user, this.getUserRoles(user)),
     );
   }
@@ -111,7 +126,17 @@ export class UsersService {
 
   async findAllStudents() {
     const students = await this.studentRepository.find({ relations: ['user'] });
-    return students.filter((student) => student.isActive).map((student) => ({ id: student.id, code: student.code, name: student.user?.name ?? '', email: student.user?.email ?? '', role: student.isUndergraduate ? 'estudiante' : 'estudiante_maestria', isActive: student.isActive }));
+    return students.filter((student) => student.isActive).map((student) => ({
+      id: student.id,
+      code: student.code,
+      name: student.user?.name ?? '',
+      email: student.user?.email ?? '',
+      roles: [
+        ...(student.isUndergraduate ? ['estudiante'] : []),
+        ...(student.isGraduate ? ['estudiante_maestria'] : []),
+      ],
+      isActive: student.isActive,
+    }));
   }
 
   async remove(id: string) {
@@ -213,7 +238,7 @@ export class UsersService {
       if (professorName && !existing.professor) {
         const professor = this.professorRepository.create({ id: existing.id, user: existing, isActive: true });
         await this.professorRepository.save(professor);
-        return { ...existing, professor, roles: ['profesor'] };
+        return { ...existing, professor, roles: [professor.isPlant ? 'profesor_planta' : 'profesor'] };
       }
       // Microsoft users that are not in the institutional role allowlist do not
       // inherit old/default SISINFO roles from previous provisioning attempts.
@@ -242,7 +267,7 @@ export class UsersService {
     if (professorName) {
       const professor = this.professorRepository.create({ id: user.id, user, isActive: true });
       await this.professorRepository.save(professor);
-      return { ...user, professor, roles: ['profesor'] };
+      return { ...user, professor, roles: [professor.isPlant ? 'profesor_planta' : 'profesor'] };
     }
     return { ...user, roles: [] };
   }
@@ -273,6 +298,7 @@ export class UsersService {
       student.code = row.code.trim();
       const academicRole = (row.role ?? row.program ?? '').trim().toLowerCase();
       student.isUndergraduate = academicRole === 'estudiante' || academicRole.includes('pregrado');
+      student.isGraduate = academicRole.includes('maestr') || academicRole.includes('posgrado');
       await this.studentRepository.save(student);
       imported.push({ email, code: student.code, name: user.name, program: student.isUndergraduate ? 'pregrado' : 'maestria' });
     }
@@ -283,13 +309,16 @@ export class UsersService {
     const roles: string[] = [];
     if (user.administrator?.isActive) roles.push('administrador');
     if (user.coordinator?.isActive) roles.push('coordinador');
-    if (user.professor?.isActive) roles.push('profesor');
-    // Staff roles are mutually exclusive from the student navigation.
+    if (user.professor?.isActive) {
+      roles.push(user.professor.isPlant ? 'profesor_planta' : 'profesor');
+    }
     if (roles.length > 0) return roles;
+    // Staff roles are mutually exclusive from the student navigation.
     if (user.student?.isActive) {
       if (user.student.isUndergraduate) {
         roles.push('estudiante');
-      } else {
+      }
+      if (user.student.isGraduate) {
         roles.push('estudiante_maestria');
       }
     }

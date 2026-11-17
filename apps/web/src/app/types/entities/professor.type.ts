@@ -3,7 +3,7 @@ import { CreateUser, User } from "./user.type";
 export interface Professor {
   id: string;
   isActive: boolean;
-  user: User
+  user: User & { roles?: string[] }
 }
 
 export interface ProfessorCreate {

@@ -18,7 +18,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Check, AlertTriangle } from "lucide-react";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export interface DialogTextProps {
   title: string;
@@ -126,11 +125,10 @@ function ResultModal({
   readonly setIsConfirmed: (confirmed: boolean) => void;
   readonly isError?: boolean;
 }) {
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const handleAccept = () => {
     if (url && url.trim() !== "") {
-      router.push(url);
+      window.location.assign(`${url}${url.includes("?") ? "&" : "?"}_=${Date.now()}`);
     } else {
       setIsConfirmed(false);
       setIsOpen(false);

@@ -94,7 +94,7 @@ export function InformationCard({
 }: InformationCardProps) {
   return (
     <Link
-      href={opensWindow ? url : `/inicio/${url}`}
+      href={opensWindow ? url : (url.startsWith("/inicio/") ? url : `/inicio/${url.replace(/^\/+/, "")}`)}
       className="block group focus:outline-none"
       aria-label={`Ir a ${title}`}
       target={opensWindow ? "_blank" : "_self"}

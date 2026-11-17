@@ -39,7 +39,7 @@ export default function UploadFiles({
 }: UploadFilesProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
-  const [, setIsDragging] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [loadSucess,setLoadSucess] = useState({'sucess':false,'message':dialogText.successText});
 
   function toErrorMessage(err: unknown): string {
@@ -293,10 +293,10 @@ const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               htmlFor="dropzone-file"
-              className="inline-flex h-9 w-64 max-w-64 min-w-0 items-center justify-center gap-2 rounded-md bg-core px-4 py-2 text-sm font-medium text-white shadow-xs transition-all cursor-pointer"
+              className={`inline-flex h-10 w-64 max-w-64 min-w-0 items-center justify-center gap-2 rounded-md bg-core px-4 py-2 text-sm font-medium text-white shadow-xs transition-all cursor-pointer ${isDragging ? "ring-2 ring-core-highlight scale-[1.02]" : "hover:bg-core-dark"}`}
             >
               <Upload className="size-4" />
-              <span>Seleccionar archivo</span>
+              <span>{isDragging ? "Suelta el archivo aquí" : "Seleccionar o arrastrar"}</span>
               <input id="dropzone-file" type="file" className="hidden" accept=".csv, .xlsx, .xlsm" onChange={handleFileChange} />
             </label>
           </div>

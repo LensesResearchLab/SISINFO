@@ -27,6 +27,7 @@ export default function CoordinatorFeatures({
 }) {
   // List of coordinator feature titles to be displayed
   const coordinatorFeatures = [
+    "Asistencias graduadas",
     "Configuración del semestre",
     "Alertas y reportes",
     "Monitores",

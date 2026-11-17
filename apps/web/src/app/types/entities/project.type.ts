@@ -10,6 +10,7 @@ export interface Project {
   category: string;
   maxStudents: number;
   isEnded?: boolean;
+  containsConfidentiality?: boolean;
   projectApplications?: ProjectApplication[];
   areasOfInterest?: AreasOfInterest[];
   professor?: Professor;
@@ -23,6 +24,7 @@ export interface CreateProject {
   maxStudents: number;
   areasOfInterest: string[];
   period?: string;
+  containsConfidentiality?: boolean;
 }
 export interface AreasOfInterest {
   description: string

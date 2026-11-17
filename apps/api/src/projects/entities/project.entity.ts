@@ -30,6 +30,9 @@ export class Project extends Base {
   @Column('boolean', { default: false })
   isEnded: boolean;
 
+  @Column('boolean', { default: false })
+  containsConfidentiality: boolean;
+
   @OneToMany(
     () => ProjectApplication,
     (projectApplication) => projectApplication.project,

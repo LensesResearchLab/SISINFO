@@ -35,6 +35,16 @@ export class CourseController {
     return this.coursesService.updateMainProfessor(id, professorId);
   }
 
+  @Patch(':id/assignProfessor/:professorId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('coordinador', 'administrador')
+  assignProfessorToUndergraduateCourse(
+    @Param('id') id: string,
+    @Param('professorId') professorId: string,
+  ) {
+    return this.coursesService.assignProfessorToUndergraduateCourse(id, professorId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.coursesService.findOne(id);

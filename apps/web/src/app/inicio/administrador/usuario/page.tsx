@@ -51,7 +51,7 @@ function getColumns(onDeleted: (id: string) => void): ColumnDef<User>[] {
       const roles = row.original.roles;
       return (
         <div className="flex flex-wrap gap-2">
-          {(roles ?? []).map((role: string) => {
+          {(roles ?? []).length === 0 ? <Badge className="text-sm font-medium px-3 py-1 rounded-md bg-gray-100 text-gray-800 border border-gray-400">Sin roles</Badge> : (roles ?? []).map((role: string) => {
             const colorClasses = roleColorMap[role] ?? "bg-gray-100 text-gray-800 border border-gray-800";
             return (
               <Badge

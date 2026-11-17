@@ -9,6 +9,7 @@ export async function findProfessorsForCourseInCurrentPeriod(id: string) {
       headers: {
         'Content-Type': 'application/json'
       },
+      credentials: 'include',
     });
   
     if (!response.ok) {
@@ -48,6 +49,7 @@ export async function assignProfessorAsCourseLeader(professorId: string, courseI
       headers: {
         'Content-Type': 'application/json'
       },
+      credentials: 'include',
     });
   
     if (!response.ok) {
@@ -55,6 +57,20 @@ export async function assignProfessorAsCourseLeader(professorId: string, courseI
       throw new Error(`Error asignando como lider: ${response.statusText}`, { cause: errorData });
     }
     return response.json();
+}
+
+export async function assignProfessorToUndergraduateCourse(professorId: string, courseId: string) {
+  const url = `${API_ROUTES.BASE}/${API_ROUTES.COURSES}/${encodeURIComponent(courseId)}/assignProfessor/${encodeURIComponent(professorId)}`;
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData?.message ?? `Error asignando profesor: ${response.statusText}`);
+  }
+  return response.json();
 }
 
 export async function uploadCourseProgram(courseId: string, file: File) {

@@ -8,6 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FileText, Calendar, User, GraduationCap } from "lucide-react"
 import Footer from "@/components/shared/footer"
 import CoreFeatures from "@/components/shared/core-features"
+import { useEffect, useState } from "react"
+import { getGraduatedAssistance } from "@/app/services/assistance.service"
+import { GraduatedAssistance } from "@/app/types/entities/graduated-assistance.type"
+import LinkifiedText from "@/components/shared/linkified-text"
 
 function handleLoginClick(event: React.MouseEvent<HTMLAnchorElement>) {
   if (!window.location.hostname.startsWith("qa-")) {
@@ -204,25 +208,30 @@ function PostgraduateThesisTabContent(){
 
 
 function GraduateAssistanceTabContent(){
+  const [assistances, setAssistances] = useState<GraduatedAssistance[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getGraduatedAssistance()
+      .then((data) => setAssistances(Array.isArray(data) ? data : []))
+      .catch(() => setAssistances([]))
+      .finally(() => setLoading(false))
+  }, [])
+
   return (
     <TabsContent value="assistances" className="mt-6">
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center gap-4">
-            <GraduationCap className="h-6 w-6" />
-            <div>
-              <CardTitle>Ver Asistencias Disponibles</CardTitle>
-              <CardDescription>Consulta las asistencias graduadas disponibles</CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Accede a la lista completa de asistencias graduadas disponibles en el departamento.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
+      <div className="space-y-6">
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-4">
+              <GraduationCap className="h-6 w-6" />
+              <div>
+                <CardTitle>Asistencias disponibles</CardTitle>
+                <CardDescription>Consulta las ofertas publicadas sin iniciar sesión.</CardDescription>
+              </div>
+            </CardHeader>
+          </Card>
+          <Card>
           <CardHeader className="flex flex-row items-center gap-4">
             <FileText className="h-6 w-6" />
             <div>
@@ -235,7 +244,26 @@ function GraduateAssistanceTabContent(){
               Verifica el estado de tus aplicaciones a asistencias graduadas y los resultados del proceso.
             </p>
           </CardContent>
-        </Card>
+          </Card>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {loading && <p className="text-muted-foreground md:col-span-2 lg:col-span-3">Cargando ofertas...</p>}
+          {!loading && assistances.length === 0 && <p className="text-muted-foreground md:col-span-2 lg:col-span-3">No hay asistencias publicadas actualmente.</p>}
+          {assistances.map((assistance) => (
+            <Card key={assistance.id} className="h-full">
+              <CardHeader>
+                <CardTitle>{assistance.title}</CardTitle>
+                <CardDescription>{assistance.category}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <p><LinkifiedText text={assistance.description} /></p>
+                <p className="text-muted-foreground">
+                  {new Date(assistance.startDate).toLocaleDateString()} – {new Date(assistance.endDate).toLocaleDateString()}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     </TabsContent>
   )
