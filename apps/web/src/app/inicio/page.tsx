@@ -11,7 +11,6 @@
 
 import { useEffect, useState, useRef } from "react";
 import CoordinatorFeatures from "@/app/inicio/components/coordinator-features";
-import ProfessorFeatures from "@/app/inicio/components/professor-features";
 import InformationSection from "@/app/inicio/components/information-section";
 import { plantProfessorData } from "@/components/links-per-group";
 import StudentFeatures from "@/app/inicio/components/student-features";
@@ -27,10 +26,10 @@ import { useHomeStore } from "./home.store";
 import { fetchUserRoles, getUserInfo } from "../auth/auth-service";
 import {
   getPendingTasksForStudent,
-  getPendingTasksForProfessor,
   getPendingTasksForCoordinator,
 } from "@/app/services/project-application.service";
 import { mapTasksToTaskTable } from "../mappers/task.mapper";
+import { Task } from "../types/entities/task.type";
 
 /**
  * Maps each user role to the corresponding dashboard component.
@@ -49,12 +48,7 @@ const roleMap = new Map<string, React.ReactNode>([
       <SupportFeatures />
     </GraduateStudentFeatures>,
   ],
-  [
-    "profesor",
-    <ProfessorFeatures key={"profesor"}>
-      <SupportFeatures />
-    </ProfessorFeatures>,
-  ],
+  ["profesor", <PlantProfessorFeatures key="profesor" />],
   ["profesor_planta", <PlantProfessorFeatures key="profesor_planta" />],
   ["coordinador", <CoordinatorFeatures key={"coordinador"} />],
   ["administrador", <AdministratorFeatures key={"administrador"} />],
@@ -93,10 +87,10 @@ useEffect(() => {
     const userId = data.user.id;
     const userRoles = data.user.roles;
     const loadTasks = async () => {
-      const taskPromises = [
-        getPendingTasksForStudent(userId),
-        getPendingTasksForProfessor(userId),
-      ];
+      const taskPromises: Promise<Task[]>[] = [];
+      if (userRoles.includes("estudiante") || userRoles.includes("estudiante_maestria")) {
+        taskPromises.push(getPendingTasksForStudent(userId));
+      }
       if (userRoles.includes("coordinador")) taskPromises.push(getPendingTasksForCoordinator());
       const results = await Promise.all(taskPromises.map((request) => request.catch(() => [])));
       setTasks(mapTasksToTaskTable(results.flat()));

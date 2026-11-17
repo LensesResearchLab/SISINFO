@@ -14,7 +14,6 @@ import {
 import SisinfoHeaderLogo from "./sisinfo-header-logo";
 import {
   undergraduateData,
-  professorData,
   plantProfessorData,
   coordinatorData,
   supportData,
@@ -58,7 +57,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       ? { ...section, items: section.items.filter((item) => ["Consultar usuarios y roles", "Administrar profesores", "Administrar estudiantes"].includes(item.title)) }
       : section)],
     ["coordinador", coordinatorData],
-    ["profesor", professorData],
+    ["profesor", plantProfessorData],
     ["profesor_planta", plantProfessorData],
     ["estudiante", undergraduateData],
     ["estudiante_maestria", graduateData],

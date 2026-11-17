@@ -20,7 +20,7 @@ const roleRoutes = {
     "/inicio/soporte",
     "/inicio/tareas",
   ],
-  profesor: ["/inicio/profesor", "/inicio/tareas", "/inicio/soporte"],
+  profesor: ["/inicio/profesor/monitores", "/inicio/profesor/programas", "/inicio/soporte"],
   profesor_planta: ["/inicio/profesor/monitores", "/inicio/profesor/programas", "/inicio/soporte"],
   coordinador: ["/inicio/coordinador", "/inicio/tareas", "/inicio/soporte"],
   administrador: ["/inicio/administrador"]

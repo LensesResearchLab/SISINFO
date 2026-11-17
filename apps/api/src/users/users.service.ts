@@ -91,8 +91,9 @@ export class UsersService {
   }
 
   async findAllWithRoles() {
-    await this.ensureConfiguredMicrosoftRoles();
-    await this.importStudents(DEFAULT_STUDENTS);
+    // This endpoint must only read the current database state. Provisioning
+    // users here caused deleted accounts to be recreated every time the
+    // administrative list was opened or refreshed.
     const users = await this.userRepository.find({
       relations: ['coordinator', 'professor', 'administrator', 'student'],
     });
