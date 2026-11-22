@@ -107,11 +107,16 @@ function ActionsCell({ row }: { readonly row: { original: Task } }) {
   const periodStr = periodObj ? `${periodObj.year}-${periodObj.period}` : "";
 
   const closeAssignment = async () => {
-    await fetch(`${API_ROUTES.BASE}/${API_ROUTES.TASKS}/${task.id}`, {
+    const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.TASKS}/${task.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ approved: true }),
     });
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body?.message ?? "No fue posible completar la tarea.");
+    }
     setTasks(useHomeStore.getState().tasks.filter((item) => item.id !== task.id));
   };
 
@@ -121,7 +126,11 @@ function ActionsCell({ row }: { readonly row: { original: Task } }) {
       size="icon"
       onClick={() => {
         if (task.flow === "asignacionCurso") {
-          if (window.confirm("¿Quieres marcar esta tarea como completada?")) void closeAssignment();
+          if (window.confirm("¿Quieres marcar esta tarea como completada?")) {
+            void closeAssignment().catch((error: unknown) => {
+              window.alert(error instanceof Error ? error.message : "No fue posible completar la tarea.");
+            });
+          }
           return;
         }
         router.push(
@@ -309,7 +318,8 @@ function TasksTable({ role }: TasksTableProps) {
       if (task.projectActualTask) {
         await createTask(task.id, { type: TaskType.SEND_APPROVE, approved: true, comment: "", date: new Date(), step: task.step });
       } else {
-        await fetch(`${API_ROUTES.BASE}/${API_ROUTES.TASKS}/${task.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ approved: true }) });
+        const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.TASKS}/${task.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ approved: true }) });
+        if (!response.ok) throw new Error("No fue posible completar una de las tareas seleccionadas.");
       }
     }
     window.location.reload();

@@ -18,6 +18,7 @@ interface UploadFilePageProps {
   readonly dialogText: DialogTextProps;
   readonly children?: React.ReactNode;
   readonly typeUpload: string;
+  readonly templateTitle?: string;
 }
 
 export function UploadFilePage({
@@ -29,7 +30,8 @@ export function UploadFilePage({
     handleUploadCsv,
     dialogText,
     children,
-    typeUpload
+    typeUpload,
+    templateTitle = "Plantillas"
   }: UploadFilePageProps) {
     const [error,setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("")
@@ -38,7 +40,7 @@ export function UploadFilePage({
         <AlertDialogError open={error} onOpenChange={setError} message={errorMessage}></AlertDialogError>
         <div className={`grid grid-cols-1 ${period ? "lg:grid-cols-3" : "lg:grid-cols-2"} gap-4 items-stretch`}>
           {period && <TermCard handlePeriodChange={handlePeriodChange} footer="" />}
-          <TemplateCard handleDownload={handleDownload} title="Plantillas" description="Descargar plantilla" footer="" />
+          <TemplateCard handleDownload={handleDownload} title={templateTitle} description="Descargar plantilla" footer="" />
           <UploadFiles title={title} handleUploadCsv={handleUploadCsv} dialogText={dialogText} setError={setError} setErrorMessage={setErrorMessage} typeUpload={typeUpload} selectedPeriod={selectedPeriod} />
         </div>
 

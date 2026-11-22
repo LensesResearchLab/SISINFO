@@ -144,7 +144,7 @@ export default function UploadFiles({
           .map((row) => {
             const out: Record<string, any> = {};
             for (const k of Object.keys(row)) {
-              const key = k.toString().trim().toUpperCase();
+              const key = k.toString().trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
               // reuse sanitizeCell from utils for trimming/empty -> null
               // inline simple sanitize to avoid circular imports at runtime
               const raw = row[k];
@@ -214,12 +214,14 @@ export default function UploadFiles({
           const professorsData = normalizedRows.map((row) => {
             const name = String(row["NOMBRE"] ?? row["PERSONAL"] ?? row["NAME"] ?? "");
             const email = String(row["CORREO"] ?? row["EMAIL"] ?? row["E-MAIL"] ?? "").toLowerCase().trim();
+            const role = String(row["ROL"] ?? row["ROLE"] ?? "profesor de cátedra").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             return {
               user: {
                 name: normalizeName(name),
                 email: email,
                 password: email || "",
               },
+              isPlant: role.includes("planta"),
             };
           }).filter(r => (r.user.email && r.user.email !== ""));
 

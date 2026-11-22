@@ -9,6 +9,7 @@ export async function getBillboard(periodId: string) {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     }
   );
 
@@ -28,6 +29,7 @@ export async function getBillboardWithUploadedProgram(periodId: string) {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     }
   );
 
@@ -45,6 +47,7 @@ export async function createBillboard(coursesInformation: Billboard[]) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(coursesInformation),
   });
 
@@ -59,12 +62,14 @@ export async function createBillboard(coursesInformation: Billboard[]) {
 
 export async function getCourseWithDocument(id: string) {
   const response = await fetch(
-    `${API_ROUTES.BASE}/${API_ROUTES.COURSES}/${id}`,
+    `${API_ROUTES.BASE}/${API_ROUTES.COURSES}/${id}?documentVersion=${Date.now()}`,
     {
       method: "GET",
       headers: {
         "Content-type": "application/json",
       },
+      credentials: "include",
+      cache: "no-store",
     }
   );
   if (!response.ok) {

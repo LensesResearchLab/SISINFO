@@ -64,12 +64,13 @@ export default function ProgramsList() {
 
   const downloadProgram = async (course: Course) => {
     const full = await getCourseWithDocument(course.id) as any;
-    const data = full?.program?.file?.data;
+    const rawFile = full?.program?.file;
+    const data = Array.isArray(rawFile?.data) ? rawFile.data : Array.isArray(rawFile) ? rawFile : typeof rawFile === "string" ? Array.from(atob(rawFile), (char) => char.charCodeAt(0)) : undefined;
     if (data) downloadBlob(new Blob([new Uint8Array(data)], { type: "application/pdf" }), `${course.code}.pdf`);
   };
   const downloadSelected = async () => {
     const files = [];
-    for (const course of selectedCourses) { const full = await getCourseWithDocument(course.id) as any; const data = full?.program?.file?.data; if (data) files.push({ name: `${course.code}.pdf`, data: new Uint8Array(data) }); }
+    for (const course of selectedCourses) { const full = await getCourseWithDocument(course.id) as any; const rawFile = full?.program?.file; const data = Array.isArray(rawFile?.data) ? rawFile.data : Array.isArray(rawFile) ? rawFile : typeof rawFile === "string" ? Array.from(atob(rawFile), (char) => char.charCodeAt(0)) : undefined; if (data) files.push({ name: `${course.code}.pdf`, data: new Uint8Array(data) }); }
     if (files.length) downloadBlob(await createZip(files), "listado de programas.zip");
   };
 

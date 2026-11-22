@@ -8,4 +8,5 @@ export interface Professor {
 
 export interface ProfessorCreate {
   user: CreateUser;
+  isPlant?: boolean;
 }

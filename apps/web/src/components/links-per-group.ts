@@ -56,6 +56,12 @@ export const undergraduateData = [
           "Aquí puedes administrar las tareas de tu proyecto de grado.",
         url: ROUTES.TASK_LIST
       },
+      {
+        Icon: FileText,
+        title: "Consultar notas del proyecto",
+        description: "Consulta las notas parciales y finales publicadas.",
+        url: ROUTES.STUDENT_GRADES,
+      },
     ],
   },
   {
@@ -113,6 +119,12 @@ export const graduateData = [
         description:
           "Aquí puedes consultar las fechas importantes del proceso.",
         url: ROUTES.POSTGRADUATE_THESIS_DATES,
+      },
+      {
+        Icon: FileText,
+        title: "Consultar notas del proyecto",
+        description: "Consulta las notas parciales y finales publicadas.",
+        url: ROUTES.STUDENT_GRADES,
       },
     ],
   },
@@ -290,6 +302,12 @@ export const professorData = [
       },
     ],
   },
+  {
+    title: "Notas de proyectos",
+    url: "notas-proyectos",
+    icon: FileText,
+    items: [{ Icon: FileText, title: "Publicar notas de proyectos", description: "Publica las notas parciales y finales de proyectos de grado.", url: ROUTES.PROFESSOR_GRADES }],
+  },
 ];
 
 export const plantProfessorData = [
@@ -306,6 +324,8 @@ export const plantProfessorData = [
     items: [{ Icon: FileText, title: "Subir programas de curso", description: "Aquí puedes cargar el PDF del programa de tus cursos.", url: ROUTES.PROFESSOR_COURSE_PROGRAMS }],
   },
 ];
+
+plantProfessorData.push({ title: "Notas de proyectos", url: "notas-proyectos", icon: FileText, items: [{ Icon: FileText, title: "Publicar notas de proyectos", description: "Publica las notas parciales y finales de proyectos de grado.", url: ROUTES.PROFESSOR_GRADES }] });
 
 export const coordinatorData = [
   {

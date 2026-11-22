@@ -88,7 +88,7 @@ export class CoursesService {
 
   async findAllWithMainProfessor() {
     const courses = await this.courseRepository.find({
-      relations: ['mainProfessor'],
+      relations: ['mainProfessor', 'mainProfessor.user'],
     });
 
     const byCode = new Map<string, Course>();
@@ -254,6 +254,10 @@ export class CoursesService {
 
   private isUndergraduateCode(code: string) {
     const normalized = code.toUpperCase().replace(/\s/g, '');
+    // DATA identifies the undergraduate Data Science program. Keep its
+    // original course codes, but apply undergraduate assignment and upload
+    // permissions to it.
+    if (normalized.startsWith('DATA')) return true;
     return normalized.startsWith('ISIS')
       && !(normalized.startsWith('ISIS-4') || normalized.startsWith('ISIS4'));
   }

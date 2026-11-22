@@ -26,6 +26,7 @@ export async function createPeriod(createDto: {
   const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.PERIODS}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(createDto),
   });
   if (!response.ok) {

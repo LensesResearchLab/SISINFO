@@ -28,7 +28,8 @@ export async function findAllWithMainProfessor() {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
-    credentials: 'include'
+    credentials: 'include',
+    cache: 'no-store',
   })
 
   const text = await response.text();

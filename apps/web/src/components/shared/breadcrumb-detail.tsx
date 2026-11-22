@@ -49,6 +49,12 @@ const NAVIGABLE_PATHS = new Set([
   "/inicio/profesor/asistencias/nuevo",
   "/inicio/profesor/maestria/lista",
   "/inicio/profesor/pregrado/lista",
+  "/inicio/pregrado/tesis/lista",
+  "/inicio/posgrado/tesis/lista",
+  "/inicio/profesor/pregrado/tesis/lista",
+  "/inicio/profesor/maestria/tesis/lista",
+  "/inicio/estudiante/notas-proyectos",
+  "/inicio/profesor/notas-proyectos",
 ]);
 
 function getBreadcrumbText(pathname: string) {
@@ -96,7 +102,7 @@ export default function BreadCrumbDetail() {
           <React.Fragment key={breadcrumb.path}>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
-              {index === breadcrumbs.length - 1 || !NAVIGABLE_PATHS.has(breadcrumb.path) ? (
+              {!NAVIGABLE_PATHS.has(breadcrumb.path) ? (
               <BreadcrumbPage>{breadcrumb.capitalizedName}</BreadcrumbPage>
               ) : (
                 <BreadcrumbLink href={breadcrumb.path}>{breadcrumb.capitalizedName}</BreadcrumbLink>

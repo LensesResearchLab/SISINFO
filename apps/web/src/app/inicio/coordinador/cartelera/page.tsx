@@ -89,7 +89,8 @@ const handleUploadXlsm = async (file: File) => {
   return (
     <>
       <UploadFilePage
-        title="Cargar cartelera"
+        title="Cargar cartelera horizontal"
+        templateTitle="Plantilla de cartelera horizontal"
         handlePeriodChange={handlePeriodChange}
         handleDownload={handleDownload}
         handleUploadCsv={(rows) => {

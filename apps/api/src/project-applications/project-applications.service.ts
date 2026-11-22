@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -139,7 +140,7 @@ export class ProjectApplicationsService {
           flow: 'proyectoPregrado',
           step: 0,
           comment: '',
-          coordinator: { id: coordinator.id } as any,
+          ...(coordinator ? { coordinator: { id: coordinator.id } as any } : {}),
         });
 
         const savedTask = await manager.save(initialTask);
@@ -262,6 +263,42 @@ export class ProjectApplicationsService {
       );
     }
     return application;
+  }
+
+  async getStudentGrades(studentId: string) {
+    const applications = await this.projectApplicationRepository.find({
+      where: { student: { id: studentId } },
+      relations: ['project', 'period'],
+      order: { id: 'DESC' },
+    });
+    return applications.map((application) => ({
+      id: application.id,
+      project: application.project,
+      period: application.period,
+      partialGrade: application.partialGrade ?? null,
+      finalGrade: application.finalGrade ?? null,
+    }));
+  }
+
+  async getProfessorGradeApplications(professorId: string) {
+    return this.projectApplicationRepository.find({
+      where: { project: { professor: { id: professorId } } },
+      relations: ['student', 'student.user', 'project', 'period'],
+      order: { id: 'DESC' },
+    });
+  }
+
+  async publishGrade(id: string, body: { kind: 'partial' | 'final'; grade: number }, professorId: string) {
+    if (!['partial', 'final'].includes(body.kind) || typeof body.grade !== 'number' || body.grade < 0 || body.grade > 5) {
+      throw new BadRequestException('La nota debe ser un número entre 0 y 5');
+    }
+    const application = await this.projectApplicationRepository.findOne({ where: { id }, relations: ['student', 'project', 'project.professor', 'period'] });
+    if (!application || application.project?.professor?.id !== professorId) throw new ForbiddenException('No puedes publicar esta nota');
+    if (body.kind === 'partial') application.partialGrade = body.grade;
+    else { application.finalGrade = body.grade; application.grade = String(body.grade); }
+    const saved = await this.projectApplicationRepository.save(application);
+    await this.tasksService.create(TaskType.SEND_COMMENTS, { studentId: application.student.id, projectApplicationId: application.id, comment: `Se publicó la nota ${body.kind === 'partial' ? 'del 30%' : 'final'} de tu proyecto de grado: ${body.grade}`, flow: 'proyectoGrado', approved: false } as any);
+    return saved;
   }
 
   async findTasksByStudent(studentId: string): Promise<Task[]> {

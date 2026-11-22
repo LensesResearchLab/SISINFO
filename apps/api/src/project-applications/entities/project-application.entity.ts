@@ -28,6 +28,12 @@ export class ProjectApplication extends Base {
   @Column({ nullable: true })
   grade?: string = 'No establecido';
 
+  @Column({ type: 'decimal', nullable: true })
+  partialGrade?: number;
+
+  @Column({ type: 'decimal', nullable: true })
+  finalGrade?: number;
+
   @Column('boolean', { default: false })
   wasContacted: boolean;
 

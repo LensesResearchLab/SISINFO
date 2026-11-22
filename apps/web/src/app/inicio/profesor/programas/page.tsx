@@ -39,6 +39,7 @@ export default function ProfessorCourseProgramsPage() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [viewTitle, setViewTitle] = useState<string>("");
+  const [locallyUploaded, setLocallyUploaded] = useState<Set<string>>(new Set());
 
   // Periods
   const { data: fetchedPeriods } = useQuery({
@@ -74,7 +75,8 @@ export default function ProfessorCourseProgramsPage() {
     return courses.filter((course: any) => {
       const code = String(course.code ?? "").toUpperCase().replace(/\s/g, "");
       const isMisis = code.startsWith("ISIS-4") || code.startsWith("ISIS4");
-      const isOtherMaster = !code.startsWith("ISIS");
+      const isDataUndergraduate = code.startsWith("DATA");
+      const isOtherMaster = !code.startsWith("ISIS") && !isDataUndergraduate;
       const isAssigned = (course.professors ?? []).some((professor: any) =>
         professor?.id === user.id
         || professor?.user?.id === user.id
@@ -97,11 +99,19 @@ export default function ProfessorCourseProgramsPage() {
     }
     try {
       setUploadingFor(courseId);
+      setLocallyUploaded((current) => new Set(current).add(courseId));
+      qc.setQueryData(["billboard", selectedPeriod], (current: any) => current ? {
+        ...current,
+        courses: (current.courses ?? []).map((course: any) => course.id === courseId ? { ...course, program: { ...(course.program ?? {}), name: file.name } } : course),
+      } : current);
+      toast.info("El PDF se está cargando…");
       await uploadCourseProgram(courseId, file);
       toast.success("Programa subido correctamente");
       // Refresh billboard and possibly course cache
       await qc.invalidateQueries({ queryKey: ["billboard", selectedPeriod] });
     } catch (e: any) {
+      setLocallyUploaded((current) => { const next = new Set(current); next.delete(courseId); return next; });
+      await qc.invalidateQueries({ queryKey: ["billboard", selectedPeriod] });
       toast.error(e?.message ?? "Error al subir el programa");
     } finally {
       setUploadingFor(null);
@@ -118,6 +128,16 @@ export default function ProfessorCourseProgramsPage() {
     try {
       setUploadingZip(true);
       const result = await uploadCourseProgramsZip(file);
+      const uploadedCodes = new Set<string>((result.uploaded ?? []).map((code: string) => code.toUpperCase()));
+      setLocallyUploaded((current) => {
+        const next = new Set(current);
+        (billboard?.courses ?? []).forEach((course: any) => { if (uploadedCodes.has(String(course.code).toUpperCase())) next.add(course.id); });
+        return next;
+      });
+      qc.setQueryData(["billboard", selectedPeriod], (current: any) => current ? {
+        ...current,
+        courses: (current.courses ?? []).map((course: any) => uploadedCodes.has(String(course.code).toUpperCase()) ? { ...course, program: course.program ?? { name: "Programa cargado" } } : course),
+      } : current);
       await qc.invalidateQueries({ queryKey: ["billboard", selectedPeriod] });
       const uploaded = result.uploaded?.length ?? 0;
       const rejected = result.rejected?.length ?? 0;
@@ -136,7 +156,14 @@ export default function ProfessorCourseProgramsPage() {
       setPdfLoading(true);
       setPdfUrl(null);
       const detail = await getCourseWithDocument(course.id);
-      const bytes = detail?.program?.file?.data as number[] | undefined;
+      const rawFile = detail?.program?.file;
+      const bytes = Array.isArray(rawFile?.data)
+        ? rawFile.data
+        : Array.isArray(rawFile)
+          ? rawFile
+          : typeof rawFile === "string"
+            ? Array.from(atob(rawFile), (char) => char.charCodeAt(0))
+            : undefined;
       if (!bytes || bytes.length === 0) {
         toast.info("Este curso no tiene programa cargado");
         setViewOpen(false);
@@ -174,7 +201,7 @@ export default function ProfessorCourseProgramsPage() {
       id: "status",
       header: "Estado",
       cell: ({ row }) => {
-        const loaded = Boolean(row.original.program);
+        const loaded = Boolean(row.original.program) || locallyUploaded.has(row.original.id);
         return <span className="text-foreground">{loaded ? "Cargado" : "Pendiente"}</span>;
       },
     },
@@ -216,6 +243,7 @@ export default function ProfessorCourseProgramsPage() {
               accept="application/pdf"
               className="hidden"
               id={inputId}
+              onClick={(event) => { event.currentTarget.value = ""; }}
               onChange={(e) => onFileSelected(course.id, e.target.files)}
             />
               <Button
@@ -233,7 +261,7 @@ export default function ProfessorCourseProgramsPage() {
         );
       },
     },
-  ], [onFileSelected, uploadingFor, pdfLoading]);
+  ], [onFileSelected, uploadingFor, pdfLoading, locallyUploaded]);
 
   return (
     <div className="min-w-full mx-auto p-4 space-y-6 text-foreground">

@@ -76,6 +76,15 @@ export class GraduatedAssistancesService {
     return assistances;
   }
 
+  async findCurrent(): Promise<GraduatedAssistance[]> {
+    const currentPeriod = await this.periodsService.findCurrentPeriod();
+    return this.graduatedAssistanceRepository.find({
+      where: { period: { id: currentPeriod.id } },
+      relations: ['requirements', 'assistant', 'professor', 'period'],
+      order: { startDate: 'ASC', title: 'ASC' },
+    });
+  }
+
   async findOne(id: string): Promise<GraduatedAssistance> {
     const assistance = await this.graduatedAssistanceRepository.findOne({
       where: { id },

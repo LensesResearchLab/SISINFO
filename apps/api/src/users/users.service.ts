@@ -297,9 +297,12 @@ export class UsersService {
       if (!student) student = this.studentRepository.create({ id: user.id, user });
       student.isActive = true;
       student.code = row.code.trim();
-      const academicRole = (row.role ?? row.program ?? '').trim().toLowerCase();
-      student.isUndergraduate = academicRole === 'estudiante' || academicRole.includes('pregrado');
-      student.isGraduate = academicRole.includes('maestr') || academicRole.includes('posgrado');
+      const academicRole = (row.role ?? row.program ?? '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const both = academicRole.includes('ambos') || academicRole.includes('ambas') ||
+        (academicRole.includes('pregrado') && academicRole.includes('maestr')) ||
+        (academicRole.includes('estudiante') && academicRole.includes('maestr') && (academicRole.includes(' y ') || academicRole.includes(',')));
+      student.isUndergraduate = both || academicRole === 'estudiante' || academicRole.includes('pregrado');
+      student.isGraduate = both || academicRole.includes('maestr') || academicRole.includes('posgrado');
       await this.studentRepository.save(student);
       imported.push({ email, code: student.code, name: user.name, program: student.isUndergraduate ? 'pregrado' : 'maestria' });
     }

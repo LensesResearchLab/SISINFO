@@ -28,6 +28,7 @@ export default function ProfessorFeatures({
     "Proyecto de grado",
     "Proyecto de maestría",
     "Asistencias graduadas",
+    "Notas de proyectos",
   ];
 
   // Map each feature title to its corresponding props for the InformationSection

@@ -104,6 +104,25 @@ export class ProjectApplicationsController {
     return this.projectApplicationsService.getProjectApplicationsReport(period);
   }
 
+  @Get('student/grades/:id')
+  @UseGuards(JwtAuthGuard)
+  getStudentGrades(@Param('id') id: string, @Req() req: Request & { user: { id: string } }) {
+    if (id !== req.user.id) throw new ForbiddenException('No puedes consultar notas de otro estudiante');
+    return this.projectApplicationsService.getStudentGrades(id);
+  }
+
+  @Get('professor/grade-applications')
+  @UseGuards(JwtAuthGuard)
+  getProfessorGradeApplications(@Req() req: Request & { user: { id: string } }) {
+    return this.projectApplicationsService.getProfessorGradeApplications(req.user.id);
+  }
+
+  @Patch(':id/grade')
+  @UseGuards(JwtAuthGuard)
+  publishGrade(@Param('id') id: string, @Body() body: { kind: 'partial' | 'final'; grade: number }, @Req() req: Request & { user: { id: string } }) {
+    return this.projectApplicationsService.publishGrade(id, body, req.user.id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.projectApplicationsService.findOne(id);

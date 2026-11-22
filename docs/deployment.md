@@ -53,6 +53,8 @@ FRONT_URL=...
 ```
 **Importante:** cada vez que se modifique el `.env` es necesario hacer un rebuild completo (`npm run build`) y reiniciar los procesos (`pm2 restart all`). Las variables `NEXT_PUBLIC_*` se embeben en tiempo de compilación y no se ve reflejado el cambio si solo se reinicia.
 
+Para ocultar la ruta directa `/auth`, configure `DISABLE_AUTH_PAGE=true` únicamente en producción. En QA esta variable debe omitirse o establecerse en `false`; QA también utiliza `NODE_ENV=production` para ejecutar Next.js y por eso no debe usarse `NODE_ENV` para diferenciar ambos ambientes.
+
 ---
 
 ## 4. Despliegue completo

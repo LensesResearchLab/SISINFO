@@ -37,6 +37,11 @@ export class GraduatedAssistancesController {
     return this.graduatedAssistancesService.findAll();
   }
 
+  @Get('current')
+  findCurrent() {
+    return this.graduatedAssistancesService.findCurrent();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.graduatedAssistancesService.findOne(id);

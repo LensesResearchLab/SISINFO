@@ -34,6 +34,13 @@ export async function getGraduatedAssistance() {
   return Array.isArray(payload) ? payload : (payload.value ?? []);
 }
 
+export async function getCurrentGraduatedAssistance() {
+  const response = await fetch(`${API_URL}/current?_=${Date.now()}`, { cache: "no-store" });
+  if (!response.ok) throw new Error("Failed to fetch current graduated assistance data.");
+  const payload = await response.json();
+  return Array.isArray(payload) ? payload : (payload.value ?? []);
+}
+
 export async function getGraduatedAssistanceById(id: string) {
   const response = await fetch(`${API_URL}/${id}`);
   if (!response.ok) {

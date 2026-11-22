@@ -62,6 +62,8 @@ export const ROUTES: Record<string, string> = {
 
   // Professor course programs
   PROFESSOR_COURSE_PROGRAMS: "/profesor/programas",
+  PROFESSOR_GRADES: "/profesor/notas-proyectos",
+  STUDENT_GRADES: "/estudiante/notas-proyectos",
 
   /*  Coordinators  */
 

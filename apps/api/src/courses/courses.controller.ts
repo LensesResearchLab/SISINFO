@@ -53,7 +53,7 @@ export class CourseController {
   // Upload program PDF according to the program's upload permissions.
   @Post(':id/program')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('professor')
+  @Roles('profesor', 'profesor_planta')
   @UseInterceptors(FileInterceptor('file'))
   async uploadProgram(
     @Param('id') id: string,
@@ -78,7 +78,7 @@ export class CourseController {
 
   @Post('programs/zip')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('professor')
+  @Roles('profesor', 'profesor_planta')
   @UseInterceptors(FileInterceptor('file'))
   async uploadProgramsZip(
     @UploadedFile() file: Express.Multer.File,

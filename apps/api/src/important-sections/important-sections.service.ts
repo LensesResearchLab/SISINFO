@@ -36,7 +36,7 @@ export class ImportantSectionsService {
       throw new Error(`Invalid academicProcess: ${academicProcessStr}`);
     }
 
-    return this.importantSectionRepository.find({
+    const sections = await this.importantSectionRepository.find({
       where: {
         academicProcess,
         period: {
@@ -46,6 +46,18 @@ export class ImportantSectionsService {
       relations: ['importantDates'],
       order: { position: 'ASC', name: 'ASC' },
     });
+
+    return sections.map((section) => ({
+      ...section,
+      importantDates: section.importantDates?.map((importantDate) => ({
+        ...importantDate,
+        name: importantDate.name
+          .replace(/^.*ltimo d..a/, '\u00daltimo d\u00eda')
+          .replace(/p..ster/g, 'p\u00f3ster')
+          .replace(/apreciacion/g, 'apreciaci\u00f3n')
+          .replace(/envie/g, 'env\u00ede'),
+      })),
+    }));
   }
 
   findAll() {

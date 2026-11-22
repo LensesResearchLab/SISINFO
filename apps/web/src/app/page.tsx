@@ -14,10 +14,8 @@ import { GraduatedAssistance } from "@/app/types/entities/graduated-assistance.t
 import LinkifiedText from "@/components/shared/linkified-text"
 
 function handleLoginClick(event: React.MouseEvent<HTMLAnchorElement>) {
-  if (!window.location.hostname.startsWith("qa-")) {
-    event.preventDefault()
-    window.location.href = "/auth/microsoft/start"
-  }
+  event.preventDefault()
+  window.location.href = "/auth/microsoft/start"
 }
 
 export default function LandingPage() {
@@ -48,7 +46,7 @@ function HeroSection(){
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
               <Link
-                href="/auth"
+                href="/auth/microsoft/start"
                 onClick={handleLoginClick}
                 className="inline-flex h-10 items-center justify-center rounded-md bg-white px-8 text-sm font-medium text-core shadow transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
               >
@@ -93,7 +91,7 @@ function FeaturesSection(){
           </TabsList>
           <UndergraduateThesisTabContent/>
           <PostgraduateThesisTabContent/>
-          <GraduateAssistanceTabContent/>
+          <CleanGraduateAssistanceTabContent/>
         </Tabs>
       </div>
     </section>
@@ -207,7 +205,75 @@ function PostgraduateThesisTabContent(){
 }
 
 
+function CleanGraduateAssistanceTabContent(){
+  return (
+    <TabsContent value="assistances" className="mt-6">
+      <div className="grid gap-6 md:grid-cols-2">
+        <Link href="/asistencias-graduadas" className="block">
+          <Card className="h-full transition-shadow hover:shadow-md">
+            <CardHeader className="flex flex-row items-center gap-4">
+              <GraduationCap className="h-6 w-6" />
+              <div>
+                <CardTitle>Asistencias disponibles</CardTitle>
+                <CardDescription>Consulta las ofertas del periodo actual sin iniciar sesión.</CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <span className="font-semibold text-core underline underline-offset-4">Consultar asistencias graduadas</span>
+            </CardContent>
+          </Card>
+        </Link>
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-4">
+            <FileText className="h-6 w-6" />
+            <div>
+              <CardTitle>Estado de Aplicación</CardTitle>
+              <CardDescription>Consulta el proceso de selección de asistencias</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">Verifica el estado de tus aplicaciones a asistencias graduadas y los resultados del proceso.</p>
+          </CardContent>
+        </Card>
+      </div>
+    </TabsContent>
+  )
+}
+
 function GraduateAssistanceTabContent(){
+  return (
+    <TabsContent value="assistances" className="mt-6">
+      <div className="grid gap-6 md:grid-cols-2">
+        <Link href="/asistencias-graduadas" className="block">
+          <Card className="h-full transition-shadow hover:shadow-md">
+            <CardHeader className="flex flex-row items-center gap-4">
+              <GraduationCap className="h-6 w-6" />
+              <div>
+                <CardTitle>Asistencias disponibles</CardTitle>
+                <CardDescription>Consulta las ofertas del periodo actual sin iniciar sesiÃ³n.</CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <span className="font-semibold text-core underline underline-offset-4">Consultar asistencias graduadas</span>
+            </CardContent>
+          </Card>
+        </Link>
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-4">
+            <FileText className="h-6 w-6" />
+            <div>
+              <CardTitle>Estado de AplicaciÃ³n</CardTitle>
+              <CardDescription>Consulta el proceso de selecciÃ³n de asistencias</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">Verifica el estado de tus aplicaciones a asistencias graduadas y los resultados del proceso.</p>
+          </CardContent>
+        </Card>
+      </div>
+    </TabsContent>
+  )
+
   const [assistances, setAssistances] = useState<GraduatedAssistance[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -285,7 +351,7 @@ function AccessSection(){
           <CoreFeatures/>
           <div className="pt-4">
             <Button className="bg-core hover:bg-core-highlight px-8 py-6 text-base">
-              <Link href="/auth" onClick={handleLoginClick}>
+              <Link href="/auth/microsoft/start" onClick={handleLoginClick}>
                 Iniciar sesión
               </Link>
             </Button>
@@ -313,7 +379,7 @@ function Header(){
           Departamento de Ingeniería de Sistemas y Computación
         </span>
         <Link
-          href="/auth"
+          href="/auth/microsoft/start"
           onClick={handleLoginClick}
           className="inline-flex h-12  items-center justify-center rounded-md bg-core px-5 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-core-highlight focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
         >

@@ -119,6 +119,36 @@ export class PeriodsService {
       ],
     };
 
+    if (String(period.period) === '10') {
+      sectionsDatesMap.Inicio = [
+        { name: 'Ãšltimo dÃ­a para publicar temas de proyectos de grado', month: 1, day: 24 },
+        { name: 'Ãšltimo dÃ­a inscribir proyecto', month: 1, day: 24 },
+        { name: 'Ãšltimo dÃ­a para que el asesor acepte el proyecto de grado', month: 1, day: 24 },
+      ];
+      sectionsDatesMap.Desarrollo = [
+        { name: 'Ãšltimo dÃ­a para que el estudiante envie la propuesta', month: 3, day: 3 },
+        { name: 'Ãšltimo dÃ­a para que el profesor valide la propuesta', month: 3, day: 3 },
+        { name: 'Ãšltimo dÃ­a para que el profesor envie la apreciacion (30%)', month: 4, day: 15 },
+        { name: 'Ãšltimo dÃ­a para que el estudiante entregue el pÃ³ster', month: 5, day: 27 },
+        { name: 'Ãšltimo dÃ­a para que el asesor valide el pÃ³ster', month: 5, day: 29 },
+        { name: 'Ãšltimo dÃ­a para que el estudiante informe retiro', month: 4, day: 13 },
+        { name: 'Ãšltimo dÃ­a para que el asesor reporte la nota', month: 6, day: 4 },
+        { name: 'Ãšltimo dÃ­a para que el asesor suba el documento ABET', month: 6, day: 5 },
+      ];
+      sectionsDatesMap.Pendiente = [
+        { name: 'Ãšltimo dÃ­a para que el asesor solicite pendiente', month: 5, day: 22 },
+        { name: 'Ãšltimo dÃ­a para que el asesor levante pendiente', month: 6, day: 30 },
+        { name: 'Ãšltimo dÃ­a para que el estudiante entregue el pÃ³ster', month: 6, day: 26 },
+        { name: 'Ãšltimo dÃ­a para que el asesor valide el pÃ³ster', month: 6, day: 27 },
+      ];
+      sectionsDatesMap['Pendiente Especial'] = [
+        { name: 'Ãšltimo dÃ­a para que el asesor solicite pendiente especial', month: 5, day: 22 },
+        { name: 'Ãšltimo dÃ­a para que el asesor levante pendiente especial', month: 7, day: 30 },
+        { name: 'Ãšltimo dÃ­a para que el estudiante entregue el pÃ³ster', month: 7, day: 16 },
+        { name: 'Ãšltimo dÃ­a para que el asesor valide el pÃ³ster', month: 7, day: 23 },
+      ];
+    }
+
     for (const academicProcess of academicProcesses) {
       let positionCounter = 1;
       for (const [sectionName, dates] of Object.entries(sectionsDatesMap)) {
@@ -134,8 +164,13 @@ export class PeriodsService {
         for (const d of dates) {
           const year = period.year + (d.yearOffset || 0);
           const dateObj = new Date(year, d.month - 1, d.day);
+          const normalizedName = d.name
+            .replace(/^.*ltimo d..a/, '\u00daltimo d\u00eda')
+            .replace(/p..ster/g, 'p\u00f3ster')
+            .replace(/apreciacion/g, 'apreciaci\u00f3n')
+            .replace(/envie/g, 'env\u00ede');
           const importantDate = this.importantDateRepository.create({
-            name: d.name,
+            name: normalizedName,
             date: dateObj,
             importantSection: savedSection,
           } as Partial<ImportantDate>);

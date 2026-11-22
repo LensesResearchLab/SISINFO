@@ -61,9 +61,10 @@ function hasRoleAccess(path: string, userRoles: string[]) {
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
-  // In production the login page is not directly addressable. The Microsoft
-  // callback and the internal session endpoint remain available for SSO.
-  if (process.env.NODE_ENV === "production" && (path === "/auth" || path === "/auth/")) {
+  // Only the production deployment hides the direct login page. QA also runs
+  // Next.js in production mode, so NODE_ENV cannot be used to distinguish the
+  // environments. Set DISABLE_AUTH_PAGE=true only in production.
+  if (process.env.DISABLE_AUTH_PAGE === "true" && (path === "/auth" || path === "/auth/")) {
     return NextResponse.redirect(new URL("/", req.nextUrl.origin));
   }
 

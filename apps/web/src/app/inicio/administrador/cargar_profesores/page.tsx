@@ -11,7 +11,7 @@ import { DataTable } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import * as XLSX from "xlsx";
 import { Professor } from "@/app/types/entities/professor.type";
-import { getProfessors } from "@/app/services/professor.service";
+import { getProfessors, uploadProfessors } from "@/app/services/professor.service";
 import { assignRole, deleteUser, updateUser } from "@/app/services/users.service";
 import { toast } from "sonner";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -58,13 +58,9 @@ export default function UploadProfessors() {
 
         // Build rows: header + data rows
         const rows: Array<Array<string>> = [];
-        rows.push(["Nombre", "Correo"]);
-
-        (list ?? []).forEach((prof) => {
-          const name = prof?.user?.name ?? "";
-          const email = prof?.user?.email ?? "";
-          rows.push([name, email]);
-        });
+        rows.push(["Nombre", "Correo", "Rol"]);
+        rows.push(["ejemplo", "ejemplo@uniandes.edu.co", "profesor de cátedra"]);
+        rows.push(["ejemplo2", "ejemplo2@uniandes.edu.co", "profesor de planta"]);
 
         const ws = XLSX.utils.aoa_to_sheet(rows);
         const wb = XLSX.utils.book_new();
@@ -81,16 +77,23 @@ export default function UploadProfessors() {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
       } catch (err) {
-        // Fallback to existing static file if anything goes wrong
-        const link = document.createElement("a");
-        link.href = "/plantillap.xlsm";
-        link.download = "plantilla.xlsm";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        toast.error("No fue posible generar la plantilla.");
       }
     })();
   };
+
+  async function addProfessor() {
+    const name = window.prompt("Nombre del profesor:");
+    if (!name?.trim()) return;
+    const email = window.prompt("Correo del profesor:");
+    if (!email?.trim()) return;
+    const isPlant = window.confirm("¿Es profesor de planta? (Aceptar = planta, Cancelar = cátedra)");
+    try {
+      await uploadProfessors([{ user: { name: name.trim(), email: email.trim().toLowerCase(), password: email.trim() }, isPlant }]);
+      setProfesorsData(await getProfessors());
+      toast.success("Profesor añadido correctamente.");
+    } catch (error) { toast.error(error instanceof Error ? error.message : "No fue posible añadir el profesor."); }
+  }
 
   const handleUploadXlsm = async (file: File) => {
     const data = await file.arrayBuffer();
@@ -130,7 +133,7 @@ export default function UploadProfessors() {
         dialogText={dialogText}
         typeUpload="professors"
       >
-        <UploadedProfessors profesorsData={profesorsData} loadError={loadError} onDeleted={(id) => setProfesorsData((current) => current.filter((prof) => prof.id !== id))} onRoleChanged={(id, roles) => setProfesorsData((current) => current.map((professor) => professor.id === id ? { ...professor, user: { ...professor.user, roles } } : professor))} onUpdated={(id, data) => setProfesorsData((current) => current.map((professor) => professor.id === id ? { ...professor, user: { ...professor.user, ...data } } : professor))} />
+        <UploadedProfessors profesorsData={profesorsData} loadError={loadError} onAdd={() => void addProfessor()} onDeleted={(id) => setProfesorsData((current) => current.filter((prof) => prof.id !== id))} onRoleChanged={(id, roles) => setProfesorsData((current) => current.map((professor) => professor.id === id ? { ...professor, user: { ...professor.user, roles } } : professor))} onUpdated={(id, data) => setProfesorsData((current) => current.map((professor) => professor.id === id ? { ...professor, user: { ...professor.user, ...data } } : professor))} />
       </UploadFilePage >
 
       <AlertDialogError open={loadError} onOpenChange={setLoadError} />
@@ -178,12 +181,14 @@ function UploadedProfessors({
   profesorsData,
   loadError,
   onDeleted,
+  onAdd,
   onRoleChanged,
   onUpdated,
 }: {
   readonly profesorsData: Professor[];
   readonly loadError: boolean;
   readonly onDeleted: (id: string) => void;
+  readonly onAdd: () => void;
   readonly onRoleChanged: (id: string, roles: string[]) => void;
   readonly onUpdated: (id: string, data: { name: string; email: string }) => void;
 }) {
@@ -194,6 +199,7 @@ function UploadedProfessors({
         <h2 className="text-2xl font-bold text-core text-center">
           Cargar profesores
         </h2>
+        <div className="flex justify-end"><Button onClick={onAdd}>Añadir profesor</Button></div>
         <DataTable
           columns={getColumns(onDeleted, onRoleChanged, onUpdated)}
           data={profesorsData}
