@@ -61,10 +61,13 @@ function hasRoleAccess(path: string, userRoles: string[]) {
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
-  // QA must not expose the authentication routes. NODE_ENV is "production" in
-  // both QA and production, so use an explicit deployment environment.
-  // Production must set DEPLOYMENT_ENV=production; QA must set DEPLOYMENT_ENV=qa.
-  if (process.env.DEPLOYMENT_ENV?.toLowerCase() === "qa" && path.startsWith("/auth")) {
+  // Authentication is available only in local and QA. In production every
+  // auth route redirects to the public landing page. NODE_ENV alone cannot be
+  // used because QA also runs Next.js in production mode.
+  const deploymentEnv = process.env.DEPLOYMENT_ENV?.toLowerCase();
+  const authAllowed = deploymentEnv === "local" || deploymentEnv === "qa" ||
+    (!deploymentEnv && process.env.NODE_ENV !== "production");
+  if (!authAllowed && path.startsWith("/auth")) {
     return NextResponse.redirect(new URL("/", req.nextUrl.origin));
   }
 

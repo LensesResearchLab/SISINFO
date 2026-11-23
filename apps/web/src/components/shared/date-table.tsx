@@ -9,7 +9,7 @@ import { ImportantDate } from "@/app/types/entities/Important-date"
 import { EditDateDialog } from "../edit-date-dialog"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/use-auth"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { ArrowDown, ArrowUp, ArrowUpDown, Trash2 } from "lucide-react"
 
 
@@ -27,6 +27,11 @@ export function DateTable({sectionId,title, dates, onUpdateDate, onDeleteDate }:
     key: "name" | "date" | null;
     direction: "asc" | "desc";
   }>({ key: null, direction: "asc" })
+  const [visibleDates, setVisibleDates] = useState(dates)
+
+  useEffect(() => {
+    setVisibleDates(dates)
+  }, [dates])
 
   const collator = useMemo(
     () => new Intl.Collator("es", { sensitivity: "base" }),
@@ -34,9 +39,9 @@ export function DateTable({sectionId,title, dates, onUpdateDate, onDeleteDate }:
   )
 
   const sortedDates = useMemo(() => {
-    if (!sortConfig.key) return dates
+    if (!sortConfig.key) return visibleDates
 
-    const sorted = [...dates].sort((a, b) => {
+    const sorted = [...visibleDates].sort((a, b) => {
       if (sortConfig.key === "date") {
         const aDate = Date.parse(a.date)
         const bDate = Date.parse(b.date)
@@ -49,7 +54,7 @@ export function DateTable({sectionId,title, dates, onUpdateDate, onDeleteDate }:
     })
 
     return sorted
-  }, [collator, dates, sortConfig])
+  }, [collator, visibleDates, sortConfig])
 
   const handleSort = (key: "name" | "date") => {
     setSortConfig((prev) => {
@@ -73,6 +78,13 @@ export function DateTable({sectionId,title, dates, onUpdateDate, onDeleteDate }:
     ) : (
       <ArrowDown className="h-4 w-4" />
     )
+  }
+
+  const handleUpdate = async (dateId: string, data: { name: string; date: string }) => {
+    await onUpdateDate(dateId, { ...data, importantSectionId: sectionId })
+    setVisibleDates((current) => current.map((date) =>
+      date.id === dateId ? { ...date, name: data.name, date: data.date } : date,
+    ))
   }
 
   return (
@@ -106,21 +118,21 @@ export function DateTable({sectionId,title, dates, onUpdateDate, onDeleteDate }:
             </TableRow>
           </TableHeader>
           <TableBody>
-            {dates.length === 0 ? (
+            {visibleDates.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="text-center text-muted-foreground">
                   No hay fechas definidas
                 </TableCell>
               </TableRow>
             ) : (
-              sortedDates.map((date) => (
+              visibleDates.map((date) => (
                 <TableRow key={date.id}>
                   <TableCell className="font-medium">{date.name}</TableCell>
                   <TableCell>{format(new Date(date.date + "T00:00:00"), "PPP", { locale: es })}</TableCell>
                   <TableCell>
                     {user?.roles?.some((role) => ['coordinador', 'administrador'].includes(role)) ? (
                       <div className="flex items-center gap-1">
-                        <EditDateDialog date={date} onSave={(data) => onUpdateDate(date.id, { ...data, importantSectionId: sectionId })} />
+                        <EditDateDialog date={date} onSave={(data) => handleUpdate(date.id, data)} />
                         <Button variant="ghost" size="icon" onClick={() => void onDeleteDate(date.id)} aria-label="Eliminar fecha">
                           <Trash2 className="size-4 text-destructive" />
                         </Button>
