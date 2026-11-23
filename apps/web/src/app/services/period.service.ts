@@ -46,3 +46,19 @@ export async function createPeriod(createDto: {
   }
   return await response.json();
 }
+
+export async function deletePeriodByCode(code: string) {
+  const periods = await getPeriodsWMap()
+  const period = periods.find((item) => `${item.year}${item.period}` === code)
+  const periodId = (period as (Period & { id: string }) | undefined)?.id
+  if (!periodId) throw new Error("Periodo no encontrado")
+
+  const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.PERIODS}/${periodId}`, {
+    method: "DELETE",
+    credentials: "include",
+  })
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}))
+    throw new Error(payload?.message ?? "No fue posible eliminar el periodo")
+  }
+}

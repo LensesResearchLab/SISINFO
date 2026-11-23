@@ -61,10 +61,10 @@ function hasRoleAccess(path: string, userRoles: string[]) {
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
-  // Only the production deployment hides the direct login page. QA also runs
-  // Next.js in production mode, so NODE_ENV cannot be used to distinguish the
-  // environments. Set DISABLE_AUTH_PAGE=true only in production.
-  if (process.env.DISABLE_AUTH_PAGE === "true" && (path === "/auth" || path === "/auth/")) {
+  // QA must not expose the authentication routes. NODE_ENV is "production" in
+  // both QA and production, so use an explicit deployment environment.
+  // Production must set DEPLOYMENT_ENV=production; QA must set DEPLOYMENT_ENV=qa.
+  if (process.env.DEPLOYMENT_ENV?.toLowerCase() === "qa" && path.startsWith("/auth")) {
     return NextResponse.redirect(new URL("/", req.nextUrl.origin));
   }
 

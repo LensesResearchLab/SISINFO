@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import SpinnerPage from "./shared/spinner-page"
 import { DateTable } from "./shared/date-table"
 import { deleteImportantDate, findByAcademicProcessAndPeriod, updateImportantDate } from "@/app/services/dates.service"
+import { ImportantSection } from "@/app/types/entities/important-section"
 
 
 
@@ -40,9 +41,17 @@ export default function ImportantDatesManager({ selectedPeriod }: { selectedPeri
       dateId: string
       data: { importantSectionId: string; name: string; date: string }
     }) => updateImportantDate(dateId, data),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["student-dates", "PREGRADO"] })
-      await queryClient.invalidateQueries({ queryKey: ["student-dates", "POSGRADO"] })
+    onSuccess: async (updatedDate: any, variables) => {
+      const updatedId = variables.dateId
+      queryClient.setQueriesData<ImportantSection[]>({ queryKey: ["student-dates"] }, (sections) =>
+        sections?.map((section) => ({
+          ...section,
+          importantDates: section.importantDates?.map((date) =>
+            date.id === updatedId ? { ...date, ...updatedDate, id: updatedId } : date,
+          ),
+        })),
+      )
+      await queryClient.refetchQueries({ queryKey: ["student-dates"], type: "active" })
      
     },
     onError: () => {
@@ -57,7 +66,13 @@ export default function ImportantDatesManager({ selectedPeriod }: { selectedPeri
   const handleDeleteDate = async (dateId: string) => {
     if (!window.confirm("¿Confirmas eliminar esta fecha importante?")) return
     await deleteImportantDate(dateId)
-    await queryClient.invalidateQueries({ queryKey: ["student-dates"] })
+    queryClient.setQueriesData<ImportantSection[]>({ queryKey: ["student-dates"] }, (sections) =>
+      sections?.map((section) => ({
+        ...section,
+        importantDates: section.importantDates?.filter((date) => date.id !== dateId),
+      })),
+    )
+    await queryClient.refetchQueries({ queryKey: ["student-dates"], type: "active" })
   }
 
   if (isFetchingPregrado || isFetchingPosgrado) {

@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { createPeriod, getPeriods } from "@/app/services/period.service";
+import { createPeriod, deletePeriodByCode, getPeriods } from "@/app/services/period.service";
 import { toast } from "sonner";
 
 export default function AdminPeriodsPage() {
@@ -62,6 +62,21 @@ export default function AdminPeriodsPage() {
       toast.success("Periodo actual actualizado");
     } catch (e) {
       toast.error("No se pudo establecer el periodo actual");
+    }
+  };
+
+  const handleDelete = async (period: string) => {
+    if (!window.confirm(`¿Confirmas eliminar el periodo ${period}?`)) return;
+    try {
+      await deletePeriodByCode(period);
+      if (currentPeriod === period) {
+        localStorage.removeItem("current_period");
+        setCurrentPeriod(null);
+      }
+      toast.success("Periodo eliminado");
+      await fetchPeriods();
+    } catch (e: any) {
+      toast.error(e?.message ?? "No fue posible eliminar el periodo");
     }
   };
 
@@ -130,7 +145,7 @@ export default function AdminPeriodsPage() {
               <thead>
                 <tr className="text-left text-muted-foreground">
                   <th className="py-2">Código</th>
-                  <th className="py-2">Acción</th>
+                  <th className="py-2">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -138,7 +153,7 @@ export default function AdminPeriodsPage() {
                   periods.map((p) => (
                     <tr key={p} className="border-t">
                       <td className="py-2">{p}</td>
-                      <td className="py-2">
+                      <td className="py-2 flex items-center gap-3">
                         {currentPeriod === p ? (
                           <span className="px-2 py-1 rounded bg-green-100 text-green-800 text-xs">Actual</span>
                         ) : (
@@ -149,6 +164,12 @@ export default function AdminPeriodsPage() {
                             Establecer como actual
                           </button>
                         )}
+                        <button
+                          className="text-sm text-red-600 hover:underline"
+                          onClick={() => void handleDelete(p)}
+                        >
+                          Eliminar
+                        </button>
                       </td>
                     </tr>
                   ))
