@@ -1,7 +1,7 @@
 import InformationSection, {
   InformationSectionProps,
 } from "@/app/inicio/components/information-section";
-import { coordinatorData } from "@/components/links-per-group";
+import { coordinatorData, supportData } from "@/components/links-per-group";
 
 /**
  * CoordinatorFeatures Component
@@ -31,11 +31,12 @@ export default function CoordinatorFeatures({
     "Configuración del semestre",
     "Alertas y reportes",
     "Monitores",
+    "Ayuda",
   ];
 
   // Map each feature title to its corresponding props for the InformationSection component
   const informationPerFeature = new Map<string, InformationSectionProps>();
-  coordinatorData.forEach((feature) => {
+  [...coordinatorData, ...supportData].forEach((feature) => {
     informationPerFeature.set(feature.title, {
       title: feature.title,
       features: feature.items,
