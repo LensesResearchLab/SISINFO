@@ -22,7 +22,10 @@ export async function createTask(taskId: string, taskData: CreateTask, file?: Fi
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(`Error creando los proyectos: ${response.statusText}`, {
+    const backendMessage = Array.isArray(errorData?.message)
+      ? errorData.message.join(', ')
+      : errorData?.message;
+    throw new Error(backendMessage || `Error creando la tarea: ${response.statusText}`, {
       cause: errorData,
     });
   }
@@ -64,5 +67,33 @@ export async function getPendingStandaloneTasksForStudent(id: string) {
   );
   if (!response.ok) throw new Error("Error buscando tareas del estudiante.");
   return response.json();
+}
+
+/** Keeps one visible item per pending activity, even when the same task is
+ * returned by both the project-flow and generic task endpoints. */
+export function deduplicatePendingTasks<T extends Record<string, any>>(tasks: T[]): T[] {
+  const validTasks = tasks.filter((task) =>
+    !(task.flow === 'proyectoPregrado' && !task.projectActualTask?.id && !task.projectApplicationId)
+  );
+  return validTasks.filter((task, index, source) => {
+    const key = [
+      task.flow ?? '',
+      task.type ?? '',
+      task.step ?? '',
+      task.projectActualTask?.id ?? task.projectPreviousTasks?.id ?? task.projectApplicationId ?? '',
+      task.student?.id ?? '',
+      task.professor?.id ?? '',
+      task.coordinator?.id ?? '',
+    ].join('|');
+    return index === source.findIndex((candidate) => [
+      candidate.flow ?? '',
+      candidate.type ?? '',
+      candidate.step ?? '',
+      candidate.projectActualTask?.id ?? candidate.projectPreviousTasks?.id ?? candidate.projectApplicationId ?? '',
+      candidate.student?.id ?? '',
+      candidate.professor?.id ?? '',
+      candidate.coordinator?.id ?? '',
+    ].join('|') === key);
+  });
 }
 

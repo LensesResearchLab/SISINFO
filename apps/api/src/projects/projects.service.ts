@@ -10,6 +10,8 @@ import { Student } from '../students/entities/student.entity';
 import { AreasOfInterestService } from '../areas-of-interest/areas-of-interest.service';
 import { AreasOfInterest } from '../areas-of-interest/entities/areas-of-interest.entity';
 import { deletePasswordFromUser } from '../common/utils/deletePasswordFromUser';
+import { ProjectApplication } from '../project-applications/entities/project-application.entity';
+import { Task } from '../tasks/entities/task.entity';
 
 @Injectable()
 export class ProjectsService {
@@ -38,6 +40,11 @@ export class ProjectsService {
     if (!professor) {
       throw new NotFoundException(
         `Professor with document ${professorId} not found`,
+      );
+    }
+    if (!professor.isPlant) {
+      throw new ForbiddenException(
+        'Solo un profesor de planta puede publicar proyectos de grado',
       );
     }
     if (!period) {
@@ -158,6 +165,10 @@ export class ProjectsService {
         'professor',
         'students',
         'projectApplications.student',
+        'projectApplications.student.user',
+        'projectApplications.actualTask',
+        'projectApplications.actualTask.professor',
+        'projectApplications.actualTask.coordinator',
       ],
     });
     if (!project) {
@@ -204,11 +215,35 @@ export class ProjectsService {
     if (professorId && project.professor?.id !== professorId) {
       throw new Error('Solo el profesor propietario puede eliminar este proyecto');
     }
-    await this.projectRepository.manager.query('UPDATE student SET "projectId" = NULL WHERE "projectId" = $1', [id]);
-    await this.projectRepository.manager.query('UPDATE project_application SET actual_task_id = NULL WHERE "projectId" = $1', [id]);
-    await this.projectRepository.manager.query('DELETE FROM tasks WHERE "projectApplicationId" IN (SELECT id FROM project_application WHERE "projectId" = $1)', [id]);
-    await this.projectRepository.manager.query('DELETE FROM project_application WHERE "projectId" = $1', [id]);
-    await this.projectRepository.manager.query('DELETE FROM project_areas_of_interest WHERE "projectId" = $1', [id]);
-    return this.projectRepository.remove(project);
+    return this.projectRepository.manager.transaction(async (manager) => {
+      await manager.query('UPDATE student SET "projectId" = NULL WHERE "projectId" = $1', [id]);
+      const applications = await manager.getRepository(ProjectApplication).find({
+        where: { project: { id } },
+        select: { id: true },
+      });
+      const applicationIds = applications.map((application) => application.id);
+      if (applicationIds.length) {
+        await manager.getRepository(ProjectApplication)
+          .createQueryBuilder()
+          .update()
+          .set({ actualTask: null as any })
+          .whereInIds(applicationIds)
+          .execute();
+        await manager.getRepository(Task)
+          .createQueryBuilder()
+          .delete()
+          .where('"projectApplicationId" IN (:...applicationIds)', { applicationIds })
+          .execute();
+        await manager.getRepository(ProjectApplication)
+          .createQueryBuilder()
+          .delete()
+          .whereInIds(applicationIds)
+          .execute();
+      }
+      await manager.query('DELETE FROM project_areas_of_interest WHERE "projectId" = $1', [id]);
+      const result = await manager.getRepository(Project).delete(id);
+      if (!result.affected) throw new NotFoundException(`Proyecto ${id} no encontrado`);
+      return { id };
+    });
   }
 }

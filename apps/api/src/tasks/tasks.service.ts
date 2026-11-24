@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { ImportantDate } from '../important-dates/entities/important-date.entity';
 import { ProjectApplication } from '../project-applications/entities/project-application.entity';
 import { Task } from './entities/task.entity';
@@ -92,7 +92,10 @@ export class TasksService {
         relations: ['project', 'period', 'student'],
       });
       if (pa) {
-        // associate from the Task side
+        // projectApplicationId is persisted through this owning relation.
+        // projectActualTask is inverse-only and cannot establish the foreign
+        // key by itself.
+        entity.projectPreviousTasks = pa;
         (entity as any).projectActualTask = pa;
         // If this is the student upload task (step 2) attach the corresponding important date
         try {
@@ -156,6 +159,12 @@ export class TasksService {
       ],
     });
     if (!task) throw new NotFoundException(`Task ${id} not found`);
+    // projectApplicationId is owned by projectPreviousTasks.  Older code and
+    // some TypeORM queries exposed only the inverse projectActualTask side,
+    // which made the task detail lose its project context after submission.
+    if (!task.projectActualTask && task.projectPreviousTasks) {
+      (task as any).projectActualTask = task.projectPreviousTasks;
+    }
     return task;
   }
   async update(id: string, dto: UpdateTaskDto, actorId?: string): Promise<Task> {
@@ -244,7 +253,7 @@ export class TasksService {
       }
     }
     return this.repo.find({
-      where: { professor: { id: professorId }, approved: false },
+      where: { professor: { id: professorId }, approved: false, flow: Not('proyectoPregrado') },
       relations: [
         'student',
         'student.user',
@@ -259,7 +268,7 @@ export class TasksService {
 
   async findPendingByStudent(studentId: string): Promise<Task[]> {
     return this.repo.find({
-      where: { student: { id: studentId }, approved: false },
+      where: { student: { id: studentId }, approved: false, flow: Not('proyectoPregrado') },
       relations: ['student', 'student.user', 'thesisApplication'],
     });
   }

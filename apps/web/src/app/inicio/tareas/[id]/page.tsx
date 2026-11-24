@@ -22,6 +22,7 @@ import { toast } from "sonner"
 import SpinnerPage from "@/components/shared/spinner-page"
 import { YesNoRadioGroup } from "@/components/shared/yes-no-radio-group"
 import { flows } from "../flows"
+import { useHomeStore } from "../../home.store"
 
 const taskSchema = z.object({
   type: z.nativeEnum(TaskType),
@@ -86,6 +87,7 @@ export default function TaskForm() {
   const [task, setTask] = useState<Task  | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const [pdfLoading, setPdfLoading] = useState(false)
+  const setTasks = useHomeStore((state) => state.setTasks)
 
   const form = useForm<z.infer<typeof taskSchema>>({
     resolver: zodResolver(taskSchema),
@@ -177,7 +179,7 @@ useEffect(() => {
     }
     try {
       // If this task is attached to a ProjectApplication flow, use existing endpoint
-      if (task?.projectActualTask) {
+      if (task?.projectActualTask || task?.flow === "proyectoPregrado") {
         await createTask(id as string, taskData, values.document)
       } else {
         // Standalone task (e.g., subarea inscription): update task directly
@@ -204,7 +206,14 @@ useEffect(() => {
         }
       }
 
+      // Remove the completed task from the shared list immediately. Otherwise
+      // the tasks page can keep rendering the stale item even though the API
+      // has already advanced the project application.
+      setTasks(useHomeStore.getState().tasks.filter((item) => item.id !== id));
       toast.success("Tarea enviada correctamente")
+      setIsModalOpen(false)
+      router.push(`${ROUTES.HOME}/${ROUTES.TASK_LIST}`)
+      router.refresh()
     } catch (e) {
       const error = e as Error
       console.error("Error creando tarea:", e)

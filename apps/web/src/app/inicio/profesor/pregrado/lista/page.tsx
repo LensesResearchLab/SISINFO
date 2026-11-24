@@ -12,7 +12,7 @@
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ import { Eye, Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function UndergraduateProjects() {
+  const [removedProjectIds, setRemovedProjectIds] = useState<Set<string>>(new Set());
   const reset = useProfessorThesisListStore((state) => state.reset);
   const sortDirection = useProfessorThesisListStore((state) => state.sortDirection);
   const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
@@ -53,9 +54,10 @@ export default function UndergraduateProjects() {
   if (error || !projectList) return <ProjectListNotFound />;
 
   const sortedList = projectList.sort((a, b) => a.title.localeCompare(b.title) * sortDirection);
+  const visibleProjects = sortedList.filter((project) => !removedProjectIds.has(String(project.id)));
   const filtered = searchQuery
-    ? sortedList.filter((p) => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
-    : sortedList;
+    ? visibleProjects.filter((p) => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    : visibleProjects;
 
   const columns: ColumnDef<Project>[] = [
     {
@@ -66,7 +68,7 @@ export default function UndergraduateProjects() {
     {
       id: "delete",
       header: "Eliminar",
-      cell: ({ row }) => <Button variant="ghost" size="icon" title="Eliminar proyecto" onClick={async () => { if (!window.confirm("¿Eliminar este proyecto publicado?")) return; await deleteProfessorProject(row.original.id); await queryClient.invalidateQueries({ queryKey: ["projects-professor-list"] }); }}><Trash2 className="h-4 w-4 text-red-600" /></Button>,
+      cell: ({ row }) => <Button variant="ghost" size="icon" title="Eliminar proyecto" onClick={async () => { if (!window.confirm("¿Eliminar este proyecto publicado?")) return; const id = String(row.original.id); setRemovedProjectIds((current) => new Set(current).add(id)); try { await deleteProfessorProject(row.original.id); queryClient.setQueryData<Project[]>(["projects-professor-list"], (current) => current?.filter((project) => String(project.id) !== id) ?? []); await queryClient.invalidateQueries({ queryKey: ["projects-professor-list"] }); } catch (error) { setRemovedProjectIds((current) => { const next = new Set(current); next.delete(id); return next; }); throw error; } }}><Trash2 className="h-4 w-4 text-red-600" /></Button>,
     },
     {
       accessorKey: "description",
@@ -79,6 +81,13 @@ export default function UndergraduateProjects() {
     },
     {
       accessorKey: "period",
+      sortingFn: (rowA, rowB) => {
+        const value = (row: typeof rowA) => {
+          const period = row.original.period;
+          return period?.year && period?.period ? Number(`${period.year}${String(period.period).padStart(2, "0")}`) : -1;
+        };
+        return value(rowA) - value(rowB);
+      },
       header: "Período",
       cell: ({ row }) => row.original.period ? `${row.original.period.year}-${row.original.period.period}` : "",
     },

@@ -14,6 +14,8 @@ import {
   Query,
   BadRequestException,
   ForbiddenException,
+  HttpException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ProjectApplicationsService } from './project-applications.service';
 import { CreateProjectApplicationDto } from './dto/create-project-application.dto';
@@ -45,6 +47,11 @@ export class ProjectApplicationsController {
     @Param('id') id: string,
   ) {
     taskDto = JSON.parse(taskDto.taskDto);
+    // Multipart form fields arrive as strings. Convert the approval value
+    // before applying workflow comparisons such as `approved === true`.
+    if (typeof taskDto.approved === 'string') {
+      taskDto.approved = taskDto.approved === 'true';
+    }
     const taskDto_l = plainToInstance(CreateTaskDto, taskDto);
 
     // If this task expects an ABET report, ensure the uploaded file is Excel
@@ -75,11 +82,24 @@ export class ProjectApplicationsController {
       }
     }
 
-    return this.projectApplicationsService.completeAndAdvance(
-      id,
-      taskDto_l,
-      file,
-    );
+    try {
+      const result = await this.projectApplicationsService.completeAndAdvance(
+        id,
+        taskDto_l,
+        file,
+      );
+      // Do not serialize the complete entity graph here. Task and
+      // ProjectApplication reference each other, which creates a circular
+      // object and makes Express fail with JSON.stringify().
+      return {
+        id: result.id,
+        status: result.status,
+      };
+    } catch (error) {
+      console.error('Error completando tarea de proyecto:', error);
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(error instanceof Error ? error.message : 'Error interno al completar la tarea');
+    }
   }
 
   @Post()

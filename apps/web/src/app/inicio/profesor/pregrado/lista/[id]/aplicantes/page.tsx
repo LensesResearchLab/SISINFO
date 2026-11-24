@@ -151,7 +151,9 @@ const approvedColumns: ColumnDef<Application>[] = [
     return <SpinnerPage />
   if (error || !data)
     return <ErrorPage />
-  const approvedData = (data ?? []).filter((applicant) => applicant.status === "Aceptado");
+  // Las postulaciones nuevas quedan en Postulado mientras esperan la revisión
+  // del profesor; deben ser visibles antes de llegar al coordinador.
+  const approvedData = (data ?? []).filter((applicant) => applicant.status === "Postulado" || applicant.status === "Aceptado");
   const inProyectData = (data ?? []).filter((applicant) => applicant.status === "Inscrito");
   console.log(data);
 

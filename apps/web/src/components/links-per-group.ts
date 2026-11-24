@@ -58,8 +58,8 @@ export const undergraduateData = [
       },
       {
         Icon: FileText,
-        title: "Consultar notas del proyecto",
-        description: "Consulta las notas parciales y finales publicadas.",
+        title: "Consultar notas de materias",
+        description: "Consulta las notas parciales y finales de tus materias.",
         url: ROUTES.STUDENT_GRADES,
       },
     ],
@@ -122,8 +122,8 @@ export const graduateData = [
       },
       {
         Icon: FileText,
-        title: "Consultar notas del proyecto",
-        description: "Consulta las notas parciales y finales publicadas.",
+        title: "Consultar notas de materias",
+        description: "Consulta las notas parciales y finales de tus materias.",
         url: ROUTES.STUDENT_GRADES,
       },
     ],
@@ -303,10 +303,10 @@ export const professorData = [
     ],
   },
   {
-    title: "Notas de proyectos",
+    title: "Notas de materias",
     url: "notas-proyectos",
     icon: FileText,
-    items: [{ Icon: FileText, title: "Publicar notas de proyectos", description: "Publica las notas parciales y finales de proyectos de grado.", url: ROUTES.PROFESSOR_GRADES }],
+    items: [{ Icon: FileText, title: "Publicar notas de materias", description: "Publica las notas parciales y finales de tus secciones.", url: ROUTES.PROFESSOR_GRADES }],
   },
 ];
 
@@ -325,7 +325,7 @@ export const plantProfessorData = [
   },
 ];
 
-plantProfessorData.push({ title: "Notas de proyectos", url: "notas-proyectos", icon: FileText, items: [{ Icon: FileText, title: "Publicar notas de proyectos", description: "Publica las notas parciales y finales de proyectos de grado.", url: ROUTES.PROFESSOR_GRADES }] });
+plantProfessorData.push({ title: "Notas de materias", url: "notas-proyectos", icon: FileText, items: [{ Icon: FileText, title: "Publicar notas de materias", description: "Publica las notas parciales y finales de tus secciones.", url: ROUTES.PROFESSOR_GRADES }] });
 
 export const coordinatorData = [
   {

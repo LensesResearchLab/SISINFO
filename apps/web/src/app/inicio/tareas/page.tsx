@@ -21,7 +21,7 @@ import {
 } from "@/app/services/project-application.service";
 import { getUserInfo } from "@/app/auth/auth-service";
 import { createTask } from "@/app/services/tasks.service";
-import { getPendingStandaloneTasksForProfessor, getPendingStandaloneTasksForStudent } from "@/app/services/tasks.service";
+import { deduplicatePendingTasks, getPendingStandaloneTasksForProfessor, getPendingStandaloneTasksForStudent } from "@/app/services/tasks.service";
 import { Task } from "@/app/types/entities/task.type";
 import { TaskType, flows } from "./flows";
 import { mapTasksToTaskTable } from "@/app/mappers/task.mapper";
@@ -160,8 +160,6 @@ export default function Tasks() {
   const [loading, setLoading] = useState(tasks.length === 0);
 
     useEffect(() => {
-    if (tasks.length > 0) return; // No hace fetch si ya estan cargadas las tareas
-
     (async () => {
       try {
         const data = await getUserInfo();
@@ -192,7 +190,8 @@ export default function Tasks() {
         const results = await Promise.all(taskPromises);
         const allTasks = results.flat();
 
-        const parsedTasks = mapTasksToTaskTable(allTasks as Task[]).map((task: Task) => {
+        const uniqueTasks = deduplicatePendingTasks(allTasks as any[]);
+        const parsedTasks = mapTasksToTaskTable(uniqueTasks as Task[]).map((task: Task) => {
           const stepNumber =
             typeof task.step === "number" ? task.step : Number(task.step);
           // mapTasksToTaskTable already resolves flow-specific titles and descriptions.
@@ -218,7 +217,7 @@ export default function Tasks() {
         setLoading(false);
       }
     })();
-  }, [tasks.length, setTasks]);
+  }, [setTasks]);
 
   if (loading) return <SpinnerPage />;
   if (roles.length === 0) return null;
@@ -329,8 +328,9 @@ function TasksTable({ role }: TasksTableProps) {
    * Filter tasks by current role.
    */
   const filtered = allTasks.filter((task) => {
-    if (role === "estudiante") return Boolean(task.student);
-    if (role === "profesor") return Boolean(task.professor);
+    if (role === "estudiante") return task.student?.isUndergraduate === true;
+    if (role === "estudiante_maestria") return task.student?.isUndergraduate === false;
+    if (role === "profesor" || role === "profesor_planta") return Boolean(task.professor);
     if (role === "coordinador") return Boolean(task.coordinator);
     return false;
   });

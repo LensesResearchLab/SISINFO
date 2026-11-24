@@ -4,8 +4,8 @@ import Link from "next/link";
 import { ROUTES } from "@/app/routes";
 import { useEffect, useState } from "react";
 import { getUserInfo } from "@/app/auth/auth-service";
-import { getPendingTasksForProfessor, getPendingTasksForStudent } from "@/app/services/project-application.service";
-import { getPendingStandaloneTasksForProfessor, getPendingStandaloneTasksForStudent } from "@/app/services/tasks.service";
+import { getPendingTasksForCoordinator, getPendingTasksForProfessor, getPendingTasksForStudent } from "@/app/services/project-application.service";
+import { deduplicatePendingTasks, getPendingStandaloneTasksForProfessor, getPendingStandaloneTasksForStudent } from "@/app/services/tasks.service";
 
 export default function RingBell({tasks}: { readonly tasks: number }) {
   const [pendingCount, setPendingCount] = useState(tasks);
@@ -20,8 +20,9 @@ export default function RingBell({tasks}: { readonly tasks: number }) {
         getPendingStandaloneTasksForStudent(id).catch(() => []),
         getPendingTasksForProfessor(id).catch(() => []),
         getPendingStandaloneTasksForProfessor(id).catch(() => []),
+        ...(session.user.roles?.includes("coordinador") ? [getPendingTasksForCoordinator().catch(() => [])] : []),
       ]);
-      setPendingCount(results.flat().length);
+      setPendingCount(deduplicatePendingTasks(results.flat() as any[]).length);
     };
     void load();
     timer = window.setInterval(() => void load(), 10000);

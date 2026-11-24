@@ -16,7 +16,7 @@
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ import { Eye, Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function ThesisProjects() {
+  const [removedThesisIds, setRemovedThesisIds] = useState<Set<string>>(new Set());
   const reset = useProfessorThesisListStore((state) => state.reset);
   const sortDirection = useProfessorThesisListStore((state) => state.sortDirection);
   const searchQuery = useProfessorThesisListStore((state) => state.searchQuery);
@@ -57,9 +58,10 @@ export default function ThesisProjects() {
   if (error || !thesisList) return <ThesisListNotFound />;
 
   const sortedList = thesisList.sort((a, b) => a.title.localeCompare(b.title) * sortDirection);
+  const visibleTheses = sortedList.filter((thesis) => !removedThesisIds.has(String(thesis.id)));
   const filtered = searchQuery
-    ? sortedList.filter((t) => t.title.toLowerCase().includes(searchQuery.toLowerCase()))
-    : sortedList;
+    ? visibleTheses.filter((t) => t.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    : visibleTheses;
 
   const columns: ColumnDef<Thesis>[] = [
     {
@@ -78,6 +80,13 @@ export default function ThesisProjects() {
     },
     {
       accessorKey: "period",
+      sortingFn: (rowA, rowB) => {
+        const value = (row: typeof rowA) => {
+          const period = row.original.period;
+          return period?.year && period?.period ? Number(`${period.year}${String(period.period).padStart(2, "0")}`) : -1;
+        };
+        return value(rowA) - value(rowB);
+      },
       header: "Período",
       cell: ({ row }) => row.original.period ? `${row.original.period.year}-${row.original.period.period}` : "",
     },
@@ -97,7 +106,7 @@ export default function ThesisProjects() {
     {
       id: "delete",
       header: "Eliminar",
-      cell: ({ row }) => <Button variant="ghost" size="icon" title="Eliminar proyecto" onClick={async () => { if (!window.confirm("¿Eliminar este proyecto publicado?")) return; await deleteProfessorThesis(String(row.original.id)); await queryClient.invalidateQueries({ queryKey: ["theses-professor-list"] }); }}><Trash2 className="h-4 w-4 text-red-600" /></Button>,
+      cell: ({ row }) => <Button variant="ghost" size="icon" title="Eliminar proyecto" onClick={async () => { if (!window.confirm("¿Eliminar este proyecto publicado?")) return; const id = String(row.original.id); setRemovedThesisIds((current) => new Set(current).add(id)); try { await deleteProfessorThesis(id); queryClient.setQueryData<Thesis[]>(["theses-professor-list"], (current) => current?.filter((thesis) => String(thesis.id) !== id) ?? []); await queryClient.invalidateQueries({ queryKey: ["theses-professor-list"] }); } catch (error) { setRemovedThesisIds((current) => { const next = new Set(current); next.delete(id); return next; }); throw error; } }}><Trash2 className="h-4 w-4 text-red-600" /></Button>,
     },
   ];
 

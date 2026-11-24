@@ -10,15 +10,15 @@ export const flows: Record<string, Step[]> = {
   proyectoPregrado: [
     {
       type: TaskType.SEND_APPROVE,
-      assignee: 'coordinator',
+      assignee: 'professor',
       title: 'Aprobar estudiante',
-      description: 'Aprobar al estudiante',
+      description: 'El profesor revisa y acepta o rechaza la postulación',
     },
     {
       type: TaskType.SEND_APPROVE,
-      assignee: 'professor',
+      assignee: 'coordinator',
       title: 'Aceptar estudiante',
-      description: 'Profesor acepta al estudiante para su proyecto',
+      description: 'El coordinador confirma la inscripción del estudiante',
     },
     {
       type: TaskType.UPLOAD_FILE,

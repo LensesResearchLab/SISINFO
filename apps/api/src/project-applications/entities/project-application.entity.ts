@@ -12,6 +12,7 @@ import { Project } from '../../projects/entities/project.entity';
 import { Base } from '../../common/entities/base.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Period } from '../../periods/entities/period.entity';
+import { Section } from '../../sections/entities/section.entity';
 
 @Entity()
 export class ProjectApplication extends Base {
@@ -31,8 +32,10 @@ export class ProjectApplication extends Base {
   @Column({ type: 'decimal', nullable: true })
   partialGrade?: number;
 
-  @Column({ type: 'decimal', nullable: true })
-  finalGrade?: number;
+  // Sección de cartelera a la que corresponde la nota del proyecto.
+  // Es opcional para conservar aplicaciones históricas creadas antes de este flujo.
+  @ManyToOne(() => Section, { nullable: true })
+  section?: Section;
 
   @Column('boolean', { default: false })
   wasContacted: boolean;

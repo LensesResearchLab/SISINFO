@@ -66,6 +66,12 @@ function getCurrentStep(
   applicationStatus?: string
 ) {
 
+  // El estado persistido es la fuente de verdad al finalizar. Una tarea
+  // histórica no debe hacer retroceder la vista a Poster o ABET.
+  if (applicationStatus === "Finalizado" || applicationStatus === "FINISHED") {
+    return { label: "Finalizado", index: processSteps.indexOf("Finalizado") };
+  }
+
   if (applicationStatus === "Rechazado") {
     return { label: "Rechazado", index: -1 };
   }

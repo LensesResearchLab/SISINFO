@@ -26,7 +26,15 @@ export default function RoleTab({ children, showTaskCounts = false }: { readonly
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
               .join(" ")}
             {showTaskCounts && (() => {
-              const count = tasks.filter((task) => role === "profesor" ? Boolean(task.professor) : role === "coordinador" ? Boolean(task.coordinator) : role.startsWith("estudiante") ? Boolean(task.student) : false).length;
+              const count = tasks.filter((task) => role === "profesor" || role === "profesor_planta"
+                ? Boolean(task.professor)
+                : role === "coordinador"
+                  ? Boolean(task.coordinator)
+                  : role === "estudiante"
+                    ? task.student?.isUndergraduate === true
+                    : role === "estudiante_maestria"
+                      ? task.student?.isUndergraduate === false
+                      : false).length;
               return count > 0 ? <span className="ml-2 rounded-full bg-red-500 px-2 py-0.5 text-xs text-white">{count}</span> : null;
             })()}
           </TabsTrigger>

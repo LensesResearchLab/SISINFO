@@ -22,4 +22,9 @@ export class CreateProjectApplicationDto {
   @IsNotEmpty()
   @IsOptional()
   grade?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  sectionId?: string;
 }
