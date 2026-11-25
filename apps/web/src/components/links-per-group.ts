@@ -56,12 +56,6 @@ export const undergraduateData = [
           "Aquí puedes administrar las tareas de tu proyecto de grado.",
         url: ROUTES.TASK_LIST
       },
-      {
-        Icon: FileText,
-        title: "Consultar notas de materias",
-        description: "Consulta las notas parciales y finales de tus materias.",
-        url: ROUTES.STUDENT_GRADES,
-      },
     ],
   },
   {
@@ -119,12 +113,6 @@ export const graduateData = [
         description:
           "Aquí puedes consultar las fechas importantes del proceso.",
         url: ROUTES.POSTGRADUATE_THESIS_DATES,
-      },
-      {
-        Icon: FileText,
-        title: "Consultar notas de materias",
-        description: "Consulta las notas parciales y finales de tus materias.",
-        url: ROUTES.STUDENT_GRADES,
       },
     ],
   },

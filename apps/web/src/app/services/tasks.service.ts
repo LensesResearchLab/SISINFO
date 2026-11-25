@@ -76,24 +76,13 @@ export function deduplicatePendingTasks<T extends Record<string, any>>(tasks: T[
     !(task.flow === 'proyectoPregrado' && !task.projectActualTask?.id && !task.projectApplicationId)
   );
   return validTasks.filter((task, index, source) => {
-    const key = [
-      task.flow ?? '',
-      task.type ?? '',
-      task.step ?? '',
-      task.projectActualTask?.id ?? task.projectPreviousTasks?.id ?? task.projectApplicationId ?? '',
-      task.student?.id ?? '',
-      task.professor?.id ?? '',
-      task.coordinator?.id ?? '',
-    ].join('|');
-    return index === source.findIndex((candidate) => [
-      candidate.flow ?? '',
-      candidate.type ?? '',
-      candidate.step ?? '',
-      candidate.projectActualTask?.id ?? candidate.projectPreviousTasks?.id ?? candidate.projectApplicationId ?? '',
-      candidate.student?.id ?? '',
-      candidate.professor?.id ?? '',
-      candidate.coordinator?.id ?? '',
-    ].join('|') === key);
+    const applicationId = task.projectActualTask?.id ?? task.projectPreviousTasks?.id ?? task.projectApplicationId ?? '';
+    const key = applicationId ? [task.flow ?? '', task.type ?? '', task.step ?? '', applicationId].join('|') : `task:${task.id}`;
+    return index === source.findIndex((candidate) => {
+      const candidateApplicationId = candidate.projectActualTask?.id ?? candidate.projectPreviousTasks?.id ?? candidate.projectApplicationId ?? '';
+      const candidateKey = candidateApplicationId ? [candidate.flow ?? '', candidate.type ?? '', candidate.step ?? '', candidateApplicationId].join('|') : `task:${candidate.id}`;
+      return candidateKey === key;
+    });
   });
 }
 

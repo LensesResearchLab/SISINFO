@@ -41,6 +41,7 @@ const LABELS: Record<string, string> = {
 // Menu/group names and folder-like segments are intentionally excluded.
 const NAVIGABLE_PATHS = new Set([
   "/inicio",
+  "/inicio/tareas",
   "/inicio/coordinador/programas/lista",
   "/inicio/coordinador/cartelera",
   "/inicio/coordinador/reportes",

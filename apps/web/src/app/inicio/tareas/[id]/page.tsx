@@ -139,7 +139,7 @@ export default function TaskForm() {
     cancelled = true;
   };
   // ✅ solo depende de id
-}, [form, id]);
+}, [id]);
 
 // Limpieza del ObjectURL en un efecto aparte
 useEffect(() => {
@@ -364,6 +364,12 @@ useEffect(() => {
           ) : (
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {task.comment && task.type !== TaskType.SEND_APPROVE && (
+                  <div className="bg-muted rounded-md p-3 border border-gray-200 text-sm text-gray-700 whitespace-pre-line">
+                    <strong>Comentarios del profesor:</strong>
+                    <div className="mt-1">{task.comment}</div>
+                  </div>
+                )}
                 {(task.type === TaskType.UPLOAD_FILE || task.type === TaskType.ABET_TASK) && (
                   <FormField
                     control={form.control}
@@ -489,6 +495,24 @@ useEffect(() => {
                     />
                   )}
 </>
+                )}
+
+                {task.type === TaskType.SEND_APPROVE && task.step === 3 && (
+                  <FormField
+                    control={form.control}
+                    name="comment"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-primary font-semibold">
+                          Comentarios sobre la propuesta
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea {...field} placeholder="Agrega comentarios sobre la propuesta (opcional)" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 )}
 
                 {task.type === TaskType.SEND_APPROVE && (

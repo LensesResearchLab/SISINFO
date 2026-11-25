@@ -311,13 +311,14 @@ function TasksTable({ role }: TasksTableProps) {
   /**
    * Approve all selected tasks in bulk, then refresh.
    */
-  const handleBulkApprove = async () => {
-    if (!window.confirm(`¿Quieres marcar como completadas las ${selectedTasks.length} tareas seleccionadas?`)) return;
+  const handleBulkDecision = async (approved: boolean) => {
+    const action = approved ? "aceptar" : "rechazar";
+    if (!window.confirm(`¿Quieres ${action} las ${selectedTasks.length} tareas seleccionadas?`)) return;
     for (const task of selectedTasks) {
       if (task.projectActualTask) {
-        await createTask(task.id, { type: TaskType.SEND_APPROVE, approved: true, comment: "", date: new Date(), step: task.step });
+        await createTask(task.id, { type: TaskType.SEND_APPROVE, approved, comment: "", date: new Date(), step: task.step });
       } else {
-        const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.TASKS}/${task.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ approved: true }) });
+        const response = await fetch(`${API_ROUTES.BASE}/${API_ROUTES.TASKS}/${task.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify({ approved }) });
         if (!response.ok) throw new Error("No fue posible completar una de las tareas seleccionadas.");
       }
     }
@@ -339,10 +340,8 @@ function TasksTable({ role }: TasksTableProps) {
     <div className="space-y-4">
       {selectedTasks.length > 0 && (
         <div className="flex justify-end">
-          <Button onClick={handleBulkApprove}>
-            Completar / aprobar {selectedTasks.length} tarea
-            {selectedTasks.length > 1 ? "s" : ""}
-          </Button>
+          <Button onClick={() => handleBulkDecision(true)}>Aceptar seleccionadas</Button>
+          <Button variant="destructive" onClick={() => handleBulkDecision(false)}>Rechazar seleccionadas</Button>
         </div>
       )}
 

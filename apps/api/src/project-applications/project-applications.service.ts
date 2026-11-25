@@ -584,8 +584,7 @@ export class ProjectApplicationsService {
       // imponerle el tipo/step inicial calculado a partir del estado general.
       // Así se evita duplicar tareas durante las transiciones del flujo.
       if (existingTask) {
-        application.actualTask = existingTask;
-        await this.projectApplicationRepository.save(application);
+        await this.projectApplicationRepository.query('UPDATE project_application SET actual_task_id = $1 WHERE id = $2', [existingTask.id, application.id]);
         continue;
       }
 
@@ -599,7 +598,7 @@ export class ProjectApplicationsService {
       } else if (application.status === ProjecStatusEnum.ENROLLED) {
         task = await this.tasksService.create(TaskType.UPLOAD_FILE, { flow: 'proyectoPregrado', step: 2, comment: '', projectApplicationId: application.id, studentId: application.student.id });
       }
-      if (task) { application.actualTask = task; await this.projectApplicationRepository.save(application); }
+      if (task) await this.projectApplicationRepository.query('UPDATE project_application SET actual_task_id = $1 WHERE id = $2', [task.id, application.id]);
     }
   }
 
@@ -658,17 +657,11 @@ export class ProjectApplicationsService {
       const task = await manager.getRepository(Task).findOne({
         where: { id: taskId },
         relations: [
-          'projectActualTask',
-          'projectActualTask.actualTask',
-          'projectActualTask.previousTasks.document',
-          'projectActualTask.student',
-          'projectActualTask.project.professor',
           'projectPreviousTasks',
-          'projectPreviousTasks.actualTask',
-          'projectPreviousTasks.previousTasks.document',
           'projectPreviousTasks.student',
           'projectPreviousTasks.project.professor',
           'projectPreviousTasks.period',
+          'document',
         ],
       });
       // Tasks created through TasksService keep the application in the
@@ -684,8 +677,6 @@ export class ProjectApplicationsService {
         projectApplication = await manager.getRepository(ProjectApplication)
           .createQueryBuilder('application')
           .leftJoinAndSelect('application.actualTask', 'actualTask')
-          .leftJoinAndSelect('application.previousTasks', 'previousTask')
-          .leftJoinAndSelect('previousTask.document', 'previousDocument')
           .leftJoinAndSelect('application.student', 'student')
           .leftJoinAndSelect('application.project', 'project')
           .leftJoinAndSelect('project.professor', 'projectProfessor')
@@ -701,7 +692,6 @@ export class ProjectApplicationsService {
           where: { actualTask: { id: task.id } },
           relations: {
             actualTask: true,
-            previousTasks: { document: true },
             student: true,
             project: { professor: true },
             period: true,
@@ -716,7 +706,6 @@ export class ProjectApplicationsService {
       // the workflow.
       const actualTask = task;
       if (!actualTask) throw new NotFoundException('Tarea de proyecto no encontrada');
-      const previousTasks = projectApplication.previousTasks;
       const actualIndex = actualTask.step ?? 0;
 
       const steps = flows[actualTask.flow];
@@ -735,10 +724,9 @@ export class ProjectApplicationsService {
         comment = taskDto.comment;
         
         // Si es el step 7 (nota final) y viene la nota, guardarla en projectApplication
-        if (actualIndex === 7 && taskDto.grade !== undefined) {
-          projectApplication.grade = String(taskDto.grade);
-        }
       }
+
+      if (taskDto.type === TaskType.SEND_APPROVE) comment = taskDto.comment || '';
 
       if (taskDto.type === TaskType.VIEW_COMMENTS) {
         // VIEW_COMMENTS es opcional (solo lectura), no avanza el flujo principal
@@ -749,12 +737,9 @@ export class ProjectApplicationsService {
         // El flujo principal ya avanzó cuando el profesor envió la nota del 100%
         if (actualIndex === 8) {
           // Solo guardamos que el estudiante vio la nota, no creamos nueva tarea
-          if (!projectApplication.previousTasks) {
-            projectApplication.previousTasks = [];
-          }
-          projectApplication.previousTasks.push(actualTask);
-          projectApplication.actualTask = null as any; // Ya no hay tarea pendiente para el estudiante
-          return manager.getRepository(ProjectApplication).save(projectApplication);
+          await manager.query('UPDATE tasks SET approved = TRUE WHERE id = $1', [actualTask.id]);
+          await manager.query('UPDATE project_application SET actual_task_id = NULL WHERE id = $1', [projectApplication.id]);
+          return { id: projectApplication.id, status: projectApplication.status } as any;
         }
       }
 
@@ -773,9 +758,9 @@ export class ProjectApplicationsService {
       } else if (
         actualTask.flow === 'proyectoPregrado' &&
         actualIndex === 2 &&
-        previousTasks[actualIndex]?.document?.id
+        actualTask.document?.id
       ) {
-        documentId = previousTasks[actualIndex]?.document?.id;
+        documentId = actualTask.document.id;
       }
 
       if (!projectApplication.previousTasks) {
@@ -786,7 +771,6 @@ export class ProjectApplicationsService {
       // query and the student never advances to the next reviewer.
       if (actualTask && !actualTask.approved) {
         actualTask.approved = true;
-        await manager.getRepository(Task).save(actualTask);
       }
       // Keep the completion independent from the hydrated relation graph.
       // This prevents upload/comment tasks from reappearing in pending-task
@@ -802,23 +786,26 @@ export class ProjectApplicationsService {
       ) {
         const previousFlowStep = steps[actualIndex - 1];
         if (previousFlowStep?.type === TaskType.UPLOAD_FILE) {
-          projectApplication.previousTasks.push(actualTask); // Si se rechazo el documento, el estudiante puede volver a subir
-          const reuploadTask = await this.tasksService.create(previousFlowStep.type, {
+          const inserted = await manager.getRepository(Task).insert({
+            type: previousFlowStep.type,
             step: actualIndex - 1,
-            comment: '',
+            // Preserve the professor's feedback on the student's re-submission
+            // task (proposal or poster) so it is visible when the task returns.
+            comment,
             flow: actualTask.flow,
-            projectApplicationId: projectApplication.id,
-            studentId: projectApplication.student.id,
-          });
-          projectApplication.actualTask = reuploadTask;
-          return manager.getRepository(ProjectApplication).save(projectApplication);
+            approved: false,
+            projectPreviousTasks: { id: projectApplication.id },
+            student: { id: projectApplication.student.id },
+          } as any);
+          const reuploadId = inserted.identifiers[0]?.id;
+          if (!reuploadId) throw new InternalServerErrorException('No fue posible crear la tarea de reenvío');
+          await manager.query('UPDATE project_application SET actual_task_id = $1 WHERE id = $2', [reuploadId, projectApplication.id]);
+          return { id: projectApplication.id, status: projectApplication.status } as any;
         }
 
         projectApplication.status = ProjecStatusEnum.REJECTED;
-        projectApplication.actualTask = null as any;
-        return manager
-          .getRepository(ProjectApplication)
-          .save(projectApplication);
+        await manager.query('UPDATE project_application SET status = $1, actual_task_id = NULL WHERE id = $2', [ProjecStatusEnum.REJECTED, projectApplication.id]);
+        return { id: projectApplication.id, status: ProjecStatusEnum.REJECTED } as any;
       }
       if (taskDto.type === TaskType.SEND_APPROVE) {
         // Step 5 is the student's withdrawal decision. Both answers finish
@@ -826,9 +813,8 @@ export class ProjectApplicationsService {
         // that the task remains pending. Leaving it false caused the old
         // "Retiro" task to remain alongside the poster task.
         actualTask.approved = actualIndex === 5 ? true : (taskDto.approved ?? false);
-        await manager.getRepository(Task).save(actualTask);
+        await manager.query('UPDATE tasks SET approved = TRUE WHERE id = $1', [actualTask.id]);
       }
-      projectApplication.previousTasks.push(actualTask);
 
 
       if (
@@ -851,6 +837,13 @@ export class ProjectApplicationsService {
         );
       }
 
+      if (actualIndex === 0 && taskDto.type === TaskType.SEND_APPROVE && taskDto.approved === true) {
+        await manager.query('UPDATE project_application SET status = $1 WHERE id = $2', [ProjecStatusEnum.APPROVED, projectApplication.id]);
+      }
+      if (actualIndex === 1 && taskDto.type === TaskType.SEND_APPROVE && taskDto.approved === true) {
+        await manager.query('UPDATE project_application SET status = $1 WHERE id = $2', [ProjecStatusEnum.ENROLLED, projectApplication.id]);
+      }
+
       // Si es el último paso (ABET_TASK), marcar como finalizado y limpiar actualTask
       if (taskDto.type === TaskType.ABET_TASK) {
         // Cerrar también posibles duplicados ABET del mismo proyecto. Esto
@@ -864,10 +857,7 @@ export class ProjectApplicationsService {
         
         // Marcar el proyecto como finalizado para que aparezca en el histórico
         const project = projectApplication.project;
-        if (project) {
-          project.isEnded = true;
-          await manager.getRepository(Project).save(project);
-        }
+        if (project) await manager.query('UPDATE project SET "isEnded" = TRUE WHERE id = $1', [project.id]);
         
         // Evitar guardar el grafo completo Task <-> ProjectApplication,
         // porque sus relaciones circulares pueden desbordar TypeORM.
@@ -875,7 +865,7 @@ export class ProjectApplicationsService {
           'UPDATE project_application SET status = $1, actual_task_id = NULL WHERE id = $2',
           [ProjecStatusEnum.FINISHED, projectApplication.id],
         );
-        return { ...projectApplication, actualTask: null } as any;
+        return { id: projectApplication.id, status: ProjecStatusEnum.FINISHED } as any;
       }
 
       // Caso especial: Step 7 (Nota 100%) crea dos tareas simultáneas
@@ -924,12 +914,8 @@ export class ProjectApplicationsService {
         // points back to the application through projectPreviousTasks and
         // TypeORM recursively traverses that graph. Persist only the scalar
         // grade fields and the actual task foreign key.
-        await manager.query(
-          'UPDATE project_application SET grade = $1, actual_task_id = $2 WHERE id = $3',
-          [String(taskDto.grade ?? ''), abetTask.id, projectApplication.id],
-        );
-
-        return { ...projectApplication, actualTask: abetTask } as any;
+        await manager.query('UPDATE project_application SET actual_task_id = $1 WHERE id = $2', [abetTask.id, projectApplication.id]);
+        return { id: projectApplication.id, status: projectApplication.status } as any;
       }
 
       const nextStepIndex = actualIndex + 1;
@@ -978,9 +964,7 @@ export class ProjectApplicationsService {
         [savedNextTask.id, projectApplication.status, projectApplication.id],
       );
 
-      projectApplication.actualTask = savedNextTask;
-
-      return projectApplication;
+      return { id: projectApplication.id, status: projectApplication.status } as any;
     });
   }
 }

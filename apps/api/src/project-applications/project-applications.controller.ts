@@ -34,12 +34,12 @@ export class ProjectApplicationsController {
 
   @Post(':id/task')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 20 * 1024 * 1024 } }))
   async complete(
     @Body() taskDto: any,
     @UploadedFile(
       new ParseFilePipe({
-        validators: [new MaxFileSizeValidator({ maxSize: 10000000000 })],
+        validators: [new MaxFileSizeValidator({ maxSize: 20 * 1024 * 1024 })],
         fileIsRequired: false,
       }),
     )
